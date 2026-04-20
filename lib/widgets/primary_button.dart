@@ -1,0 +1,92 @@
+import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+class PrimaryButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final IconData? prefixIcon;
+  final IconData? suffixIcon;
+  final bool isLoading;
+  final bool isDisabled;
+
+  const PrimaryButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.isLoading = false,
+    this.isDisabled = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Tombol tidak bisa diklik jika sedang loading atau sengaja di-disable
+    final bool isActionDisabled = isDisabled || isLoading;
+
+    return Container(
+      width: double.infinity,
+      height: 56.h,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        boxShadow: [
+          if (!isActionDisabled)
+            BoxShadow(
+              color: AppColors.primary.withAlpha(64),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: isActionDisabled ? null : onPressed,
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.zero,
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: Colors.grey.shade300,
+          disabledForegroundColor: Colors.grey.shade500,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.full),
+          ),
+        ),
+        child: isLoading
+            ? SizedBox(
+                height: 24.h,
+                width: 24.h,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.grey.shade500,
+                  ),
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (prefixIcon != null) ...[
+                    Icon(prefixIcon, size: 20.sp),
+                    SizedBox(width: 8.w),
+                  ],
+                  Text(
+                    text,
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.onPrimary,
+                    ),
+                  ),
+                  if (suffixIcon != null) ...[
+                    SizedBox(width: 8.w),
+                    Icon(suffixIcon, size: 20.sp),
+                  ],
+                ],
+              ),
+      ),
+    );
+  }
+}

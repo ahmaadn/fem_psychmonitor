@@ -1,33 +1,56 @@
+import 'package:fem_psychmonitor/app/config/app_theme.dart';
+import 'package:fem_psychmonitor/routes/app_routes.dart';
 import 'package:flutter/material.dart';
-import 'app/config/app_theme.dart';
-import 'routes/app_routes.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-// Variabel Global sederhana untuk status login (Tanpa Provider)
-ValueNotifier<bool> authNotifier = ValueNotifier<bool>(false);
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
-  runApp(const PsychMonitorApp());
+  runApp(const MyApp());
 }
 
-class PsychMonitorApp extends StatelessWidget {
-  const PsychMonitorApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: authNotifier,
-      builder: (context, isLoggedIn, child) {
-        return MaterialApp(
-          title: 'Psych Monitor',
+    return ScreenUtilInit(
+      designSize: const Size(390, 844),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return MaterialApp.router(
+          title: 'Aura Echo',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
+          routerConfig: AppRouter.router,
+          // LOCALIZATION SETUP
+          // Delegate standar Material, Cupertino, dan Widget dari Flutter
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
 
-          // Guard dipasang di sini
-          onGenerateRoute: (settings) =>
-              AppRoutes.onGenerateRoute(settings, isLoggedIn: false),
+            // Nanti tambahkan AppLocalizations.delegate di sini jika Anda menggunakan
+            // flutter_gen (l10n.yaml) untuk menerjemahkan teks custom.
+          ],
+          supportedLocales: const [
+            Locale('en', 'US'), // English (United States)
+            Locale('id', 'ID'), // Bahasa Indonesia
+          ],
 
-          // Halaman awal
-          initialRoute: AppRoutes.splash,
+          builder: (context, widget) {
+            // Anda dapat menambahkan pembungkus tambahan di sini jika butuh
+            // (misal: bot_toast, easy_loading, dsb).
+            return MediaQuery(
+              // Mencegah teks membesar secara tidak wajar jika user mengubah setelan HP
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: const TextScaler.linear(1.0)),
+              child: widget!,
+            );
+          },
         );
       },
     );

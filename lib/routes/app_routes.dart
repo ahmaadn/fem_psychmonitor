@@ -1,39 +1,51 @@
+import 'package:fem_psychmonitor/pages/auth/forgot_password_page.dart';
 import 'package:fem_psychmonitor/pages/home_page.dart';
-import 'package:fem_psychmonitor/pages/login_page.dart';
+import 'package:fem_psychmonitor/pages/auth/login_page.dart';
+import 'package:fem_psychmonitor/pages/auth/register_page.dart';
 import 'package:fem_psychmonitor/pages/splash_page.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-class AppRoutes {
-  static const String splash = '/splash';
-  static const String login = '/login';
-  static const String home = '/home';
-  static const String profile = '/profile';
-  static const String onBoarding = '/onboarding';
-
-  //  Middleware untuk authentication
-  static Route<dynamic> onGenerateRoute(
-    RouteSettings settings, {
-    bool isLoggedIn = false, // Simulasi status login
-  }) {
-    final protectedRoutes = []; //[home, profile];
-
-    // Jika ke halaman rahasia tapi belum login -> tendang ke login
-    if (protectedRoutes.contains(settings.name) && !isLoggedIn) {
-      return MaterialPageRoute(builder: (_) => const LoginPage());
-    }
-
-    // Navigasi
-    switch (settings.name) {
-      case login:
-        return MaterialPageRoute(builder: (_) => const LoginPage());
-      case home:
-        return MaterialPageRoute(builder: (_) => const HomePage());
-      case splash:
-        return MaterialPageRoute(builder: (_) => const SplashPage());
-      case onBoarding:
-        return MaterialPageRoute(builder: (_) => const SplashPage());
-      default:
-        return MaterialPageRoute(builder: (_) => const LoginPage());
-    }
-  }
+class AppRouter {
+  static final GoRouter router = GoRouter(
+    initialLocation: '/',
+    // errorBuilder: (context, state) => const ErrorScreen(),
+    routes: <RouteBase>[
+      GoRoute(
+        path: '/',
+        name: 'splash',
+        builder: (BuildContext context, GoRouterState state) {
+          return const SplashPage();
+        },
+      ),
+      GoRoute(
+        path: '/home',
+        name: 'home',
+        builder: (BuildContext context, GoRouterState state) {
+          return const HomePage();
+        },
+      ),
+      GoRoute(
+        path: '/auth/register',
+        name: 'register',
+        builder: (BuildContext context, GoRouterState state) {
+          return const RegisterPage();
+        },
+      ),
+      GoRoute(
+        path: '/auth/login',
+        name: 'login',
+        builder: (BuildContext context, GoRouterState state) {
+          return const LoginPage();
+        },
+      ),
+      GoRoute(
+        path: '/auth/forgot-password',
+        name: 'forgot-password',
+        builder: (BuildContext context, GoRouterState state) {
+          return const ForgotPasswordPage();
+        },
+      ),
+    ],
+  );
 }
