@@ -69,6 +69,37 @@ class AppColors {
   // Ambient Shadow: 6% opacity dari on_surface (#1A1C1C)
   static const Color shadow = Color(0x0F1A1C1C);
 
+  // --- Emotion Colors ---
+  // 1. Marah (Anger)
+  static const Color emotionAnger = warning; // #D67D7D (Muted Coral)
+  static const Color emotionAngerSurface = Color(0xFFF8EFEF);
+  static const Color onEmotionAnger = Color(0xFFFFFFFF); // Teks Putih
+
+  // 2. Sedih (Sadness)
+  static const Color emotionSadness = info; // #AEC6CF (Misty Blue)
+  static const Color emotionSadnessSurface = Color(0xFFEEF3F5);
+  static const Color onEmotionSadness = Color(0xFF1A1C1C);
+
+  // 3. Bahagia (Happiness)
+  static const Color emotionHappiness = secondary; // #FED172 (Soft Gold)
+  static const Color emotionHappinessSurface = Color(0xFFFFF8E7);
+  static const Color onEmotionHappiness = Color(0xFF1A1C1C);
+
+  // 4. Jijik (Disgust)
+  static const Color emotionDisgust = Color(0xFFB8C297); // Soft Matcha
+  static const Color emotionDisgustSurface = Color(0xFFF6F8EF);
+  static const Color onEmotionDisgust = Color(0xFF1A1C1C);
+
+  // 5. Takut (Fear)
+  static const Color emotionFear = Color(0xFFA39CB8); // Dusty Indigo
+  static const Color emotionFearSurface = Color(0xFFF3F2F6);
+  static const Color onEmotionFear = Color(0xFF1A1C1C);
+
+  // 6. Netral (Neutral)
+  static const Color emotionNetral = Color(0xFFD1CFC9); // Warm Greige
+  static const Color emotionNetralSurface = Color(0xFFF9F8F6);
+  static const Color onEmotionNetral = Color(0xFF1A1C1C);
+
   static ColorScheme colorScheme = const ColorScheme.light(
     primary: primary,
     onPrimary: onPrimary,

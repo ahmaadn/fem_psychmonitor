@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/pages/auth/forgot_password_page.dart';
+import 'package:fem_psychmonitor/pages/main/history_page.dart';
 import 'package:fem_psychmonitor/pages/main/home_page.dart';
 import 'package:fem_psychmonitor/pages/auth/login_page.dart';
 import 'package:fem_psychmonitor/pages/auth/register_page.dart';
@@ -10,7 +11,6 @@ import 'package:go_router/go_router.dart';
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/',
-    // errorBuilder: (context, state) => const ErrorScreen(),
     routes: <RouteBase>[
       GoRoute(
         path: '/',
@@ -40,9 +40,22 @@ class AppRouter {
           return const ForgotPasswordPage();
         },
       ),
-      StatefulShellRoute.indexedStack(
+      StatefulShellRoute(
         builder: (context, state, navigationShell) {
           return MainLayout(navigationShell: navigationShell);
+        },
+        navigatorContainerBuilder: (context, navigationShell, children) {
+          return Scaffold(
+            body: PageView(
+              controller: PageController(
+                initialPage: navigationShell.currentIndex,
+              ),
+              onPageChanged: (index) {
+                navigationShell.goBranch(index);
+              },
+              children: children,
+            ),
+          );
         },
         branches: [
           StatefulShellBranch(
@@ -51,7 +64,7 @@ class AppRouter {
                 path: '/home',
                 name: 'home',
                 builder: (BuildContext context, GoRouterState state) {
-                  return const HomePage();
+                  return HomePage();
                 },
               ),
             ],
@@ -62,7 +75,7 @@ class AppRouter {
                 path: '/history',
                 name: 'history',
                 builder: (BuildContext context, GoRouterState state) {
-                  return const HomePage();
+                  return HistoryPage();
                 },
               ),
             ],
@@ -73,7 +86,7 @@ class AppRouter {
                 path: '/profile',
                 name: 'profile',
                 builder: (BuildContext context, GoRouterState state) {
-                  return const HomePage();
+                  return HomePage();
                 },
               ),
             ],

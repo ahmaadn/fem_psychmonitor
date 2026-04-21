@@ -39,6 +39,7 @@ dependencies:
   flutter_screenutil: ^5.9.3
   flutter_localizations:
     sdk: flutter
+  syncfusion_flutter_datepicker: ^33.1.49
 
 dev_dependencies:
   flutter_test:
