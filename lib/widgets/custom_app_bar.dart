@@ -9,6 +9,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final bool showBackButton;
   final Color? backgroundColor;
+  final bool centerTitle;
+  final bool isScrollable;
 
   const CustomAppBar({
     super.key,
@@ -17,15 +19,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.showBackButton = true,
     this.backgroundColor,
+    this.centerTitle = true,
+    this.isScrollable = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      // Jika masuk ke dalam area scroll (yang sudah punya SafeArea), matikan primary padding
+      // agar tidak terjadi double padding di bagian atas layar.
+      primary: !isScrollable,
       backgroundColor: backgroundColor ?? Colors.transparent,
       elevation: 0,
-      centerTitle: true,
-
+      centerTitle: centerTitle,
+      titleSpacing: centerTitle ? null : 24.w,
       leading:
           leading ??
           (showBackButton && context.canPop()
@@ -39,7 +46,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   },
                 )
               : null),
-
       title: Text(
         title,
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
