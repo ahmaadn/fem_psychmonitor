@@ -1,5 +1,6 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/widgets/auth_footer_prompt.dart';
+import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_text_field.dart';
 import 'package:fem_psychmonitor/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
@@ -13,30 +14,9 @@ class ForgotPasswordPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_rounded,
-            color: AppColors.onSurface.withAlpha(127),
-          ),
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            }
-          },
-        ),
-        title: Text(
-          'FEM-PSYCHMONITOR',
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.0,
-            color: AppColors.primary,
-          ),
-        ),
-        centerTitle: true,
+        showBackButton: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -45,7 +25,6 @@ class ForgotPasswordPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 48.h),
-
               Text(
                 'Reset Password',
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
@@ -56,9 +35,7 @@ class ForgotPasswordPage extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-
               SizedBox(height: 12.h),
-
               Text(
                 'Enter your email to receive a reset link',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -67,9 +44,7 @@ class ForgotPasswordPage extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-
               SizedBox(height: 48.h),
-
               Form(
                 child: Column(
                   children: [
@@ -79,9 +54,7 @@ class ForgotPasswordPage extends StatelessWidget {
                       prefixIcon: Icons.email_outlined,
                       keyboardType: TextInputType.emailAddress,
                     ),
-
                     SizedBox(height: 40.h),
-
                     PrimaryButton(
                       text: 'Send Link',
                       suffixIcon: Icons.arrow_forward_rounded,
@@ -90,7 +63,6 @@ class ForgotPasswordPage extends StatelessWidget {
                   ],
                 ),
               ),
-
               SizedBox(height: 48.h),
               Center(
                 child: AuthFooterPrompt(

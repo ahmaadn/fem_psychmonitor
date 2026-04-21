@@ -1,5 +1,6 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/widgets/auth_footer_prompt.dart';
+import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_text_field.dart';
 import 'package:fem_psychmonitor/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
@@ -13,20 +14,9 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        // centerTitle: false,
-        elevation: 0,
-        title: Text(
-          'FEM-PSYCHMONITOR',
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.0,
-            color: AppColors.primary,
-          ),
-        ),
+        showBackButton: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -35,7 +25,6 @@ class LoginPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 48.h),
-
               Text(
                 'Welcome Back',
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
@@ -45,9 +34,7 @@ class LoginPage extends StatelessWidget {
                   letterSpacing: -0.5,
                 ),
               ),
-
               SizedBox(height: 12.h),
-
               Text(
                 'Continue your journey to well-being.',
                 textAlign: TextAlign.center,
@@ -57,9 +44,7 @@ class LoginPage extends StatelessWidget {
                   height: 1.5,
                 ),
               ),
-
               SizedBox(height: 48.h),
-
               Form(
                 child: Column(
                   children: [
@@ -68,9 +53,7 @@ class LoginPage extends StatelessWidget {
                       hintText: 'name@example.com',
                       keyboardType: TextInputType.emailAddress,
                     ),
-
                     SizedBox(height: 24.h),
-
                     CustomTextField(
                       label: 'Password',
                       hintText: '••••••••',
@@ -90,16 +73,12 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
                     ),
-
                     SizedBox(height: 40.h),
-
                     PrimaryButton(text: 'Login', onPressed: () {}),
                   ],
                 ),
               ),
-
               SizedBox(height: 32.h),
-
               Center(
                 child: AuthFooterPrompt(
                   text: 'Don\'t have an account? ',
@@ -109,7 +88,6 @@ class LoginPage extends StatelessWidget {
                   },
                 ),
               ),
-
               SizedBox(height: 32.h),
             ],
           ),

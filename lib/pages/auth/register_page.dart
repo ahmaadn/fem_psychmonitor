@@ -1,5 +1,6 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/widgets/auth_footer_prompt.dart';
+import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_text_field.dart';
 import 'package:fem_psychmonitor/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
@@ -13,20 +14,9 @@ class RegisterPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
+      appBar: CustomAppBar(
         backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        // centerTitle: false,
-        elevation: 0,
-        title: Text(
-          'FEM-PSYCHMONITOR',
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.0,
-            color: AppColors.primary,
-          ),
-        ),
+        showBackButton: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -35,7 +25,6 @@ class RegisterPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 48.h),
-
               Center(
                 child: Text(
                   'Create Your Account',
@@ -47,9 +36,7 @@ class RegisterPage extends StatelessWidget {
                   ),
                 ),
               ),
-
               SizedBox(height: 12.h),
-
               Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -64,43 +51,32 @@ class RegisterPage extends StatelessWidget {
                   ),
                 ),
               ),
-
               SizedBox(height: 48.h),
-
               Form(
                 child: Column(
                   children: [
                     const CustomTextField(
                       label: 'Full Name',
                       hintText: 'Evelyn Thorne',
-                      // Tidak pakai prefixIcon sesuai gambar
                     ),
-
                     SizedBox(height: 24.h),
-
                     const CustomTextField(
                       label: 'Email',
                       hintText: 'hello@sanctuary.com',
                       keyboardType: TextInputType.emailAddress,
                     ),
-
                     SizedBox(height: 24.h),
-
                     const CustomTextField(
                       label: 'Password',
                       hintText: '••••••••',
                       isPassword: true,
                     ),
-
                     SizedBox(height: 40.h),
-
                     PrimaryButton(text: 'Register', onPressed: () {}),
                   ],
                 ),
               ),
-
               SizedBox(height: 32.h),
-
               Center(
                 child: AuthFooterPrompt(
                   text: 'Already have an account? ',
@@ -110,9 +86,7 @@ class RegisterPage extends StatelessWidget {
                   },
                 ),
               ),
-
               SizedBox(height: 48.h),
-
               // Teks: Terms & Conditions
               Center(
                 child: Padding(
@@ -128,7 +102,6 @@ class RegisterPage extends StatelessWidget {
                   ),
                 ),
               ),
-
               SizedBox(height: 32.h),
             ],
           ),
