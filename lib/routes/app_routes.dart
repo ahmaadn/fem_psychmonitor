@@ -1,7 +1,8 @@
 import 'package:fem_psychmonitor/pages/auth/forgot_password_page.dart';
-import 'package:fem_psychmonitor/pages/home_page.dart';
+import 'package:fem_psychmonitor/pages/main/home_page.dart';
 import 'package:fem_psychmonitor/pages/auth/login_page.dart';
 import 'package:fem_psychmonitor/pages/auth/register_page.dart';
+import 'package:fem_psychmonitor/pages/main_layout.dart';
 import 'package:fem_psychmonitor/pages/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,13 +17,6 @@ class AppRouter {
         name: 'splash',
         builder: (BuildContext context, GoRouterState state) {
           return const SplashPage();
-        },
-      ),
-      GoRoute(
-        path: '/home',
-        name: 'home',
-        builder: (BuildContext context, GoRouterState state) {
-          return const HomePage();
         },
       ),
       GoRoute(
@@ -45,6 +39,46 @@ class AppRouter {
         builder: (BuildContext context, GoRouterState state) {
           return const ForgotPasswordPage();
         },
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return MainLayout(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home',
+                name: 'home',
+                builder: (BuildContext context, GoRouterState state) {
+                  return const HomePage();
+                },
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/history',
+                name: 'history',
+                builder: (BuildContext context, GoRouterState state) {
+                  return const HomePage();
+                },
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile',
+                name: 'profile',
+                builder: (BuildContext context, GoRouterState state) {
+                  return const HomePage();
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );
