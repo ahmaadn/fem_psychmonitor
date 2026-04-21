@@ -7,13 +7,12 @@ class AppColors {
   static const Color primary = Color(0xFF1B6B51);
   static const Color onPrimary = Color(0xFFFFFFFF);
   static const Color primaryContainer = Color(0xFF78C2A4);
-
-  // "Gradient Soul" base colors
   static const Color primaryFixed = Color(0xFFA6F2D2);
-  static const Color tertiaryContainer = Color(0xFFC5A5F1);
 
   // Chips / Selection
+  static const Color tertiary = Color(0xFF6D5096);
   static const Color tertiaryFixed = Color(0xFFEDDCFF);
+  static const Color tertiaryContainer = Color(0xFFC5A5F1);
 
   // Secondary / Actions
   static const Color secondary = Color(0xFFFED172);
