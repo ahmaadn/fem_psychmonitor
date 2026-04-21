@@ -6,12 +6,16 @@ class CustomBadge extends StatelessWidget {
   final String text;
   final Color backgroundColor;
   final Color textColor;
+  final IconData? icon;
+  final Color? iconColor;
 
   const CustomBadge({
     super.key,
     required this.text,
     required this.backgroundColor,
     required this.textColor,
+    this.icon,
+    this.iconColor,
   });
 
   @override
@@ -22,13 +26,23 @@ class CustomBadge extends StatelessWidget {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontSize: 10.sp,
-          color: textColor,
-          letterSpacing: 1.0,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 8.sp, color: iconColor ?? textColor),
+            SizedBox(width: 4.w),
+          ],
+
+          Text(
+            text,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontSize: 10.sp,
+              color: textColor,
+              letterSpacing: 1.0,
+            ),
+          ),
+        ],
       ),
     );
   }
