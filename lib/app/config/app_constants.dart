@@ -10,4 +10,5 @@ class RouteNames {
   static const String profile = "profile";
   static const String liveRecording = "live-recording";
   static const String recordingProcessing = "recording-processing";
+  static const String analysisResult = "analysis-result";
 }

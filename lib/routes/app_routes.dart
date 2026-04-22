@@ -7,6 +7,7 @@ import 'package:fem_psychmonitor/pages/auth/login_page.dart';
 import 'package:fem_psychmonitor/pages/auth/register_page.dart';
 import 'package:fem_psychmonitor/pages/main_layout.dart';
 import 'package:fem_psychmonitor/pages/recording/ai_processing_page.dart';
+import 'package:fem_psychmonitor/pages/recording/analysis_result_page.dart';
 import 'package:fem_psychmonitor/pages/recording/live_recording_page.dart';
 import 'package:fem_psychmonitor/pages/splash_page.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +76,15 @@ class AppRouter {
                 builder: (BuildContext context, GoRouterState state) {
                   return HistoryPage();
                 },
+                routes: [
+                  GoRoute(
+                    path: '/analysis-result',
+                    name: RouteNames.analysisResult,
+                    builder: (BuildContext context, GoRouterState state) {
+                      return AnalysisResultPage();
+                    },
+                  ),
+                ],
               ),
             ],
           ),
