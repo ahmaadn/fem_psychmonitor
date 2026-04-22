@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/widgets/auth_footer_prompt.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_text_field.dart';
@@ -58,7 +59,9 @@ class ForgotPasswordPage extends StatelessWidget {
                     PrimaryButton(
                       text: 'Send Link',
                       suffixIcon: Icons.arrow_forward_rounded,
-                      onPressed: () {},
+                      onPressed: () {
+                        context.goNamed(RouteNames.login);
+                      },
                     ),
                   ],
                 ),
@@ -72,7 +75,7 @@ class ForgotPasswordPage extends StatelessWidget {
                     if (context.canPop()) {
                       context.pop();
                     } else {
-                      context.goNamed('login');
+                      context.goNamed(RouteNames.login);
                     }
                   },
                 ),

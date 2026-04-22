@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UploadAudioButton extends StatelessWidget {
-  const UploadAudioButton({super.key});
+  final VoidCallback onTap;
+
+  const UploadAudioButton({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // Aksi upload audio dari storage
-      },
+      onTap: onTap,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

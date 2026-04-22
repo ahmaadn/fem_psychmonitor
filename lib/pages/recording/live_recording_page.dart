@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/widgets/control_action.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
@@ -117,7 +118,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                         ControlAction(
                           icon: Icons.delete_outline_rounded,
                           label: 'Discard',
-                          bgColor: const Color(0xFFF1F5F9), // Slate 100
+                          bgColor: const Color(0xFFF1F5F9),
                           iconColor: AppColors.primary.withAlpha(153),
                           onTap: () {},
                         ),
@@ -131,15 +132,15 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                         ControlAction(
                           icon: Icons.check_rounded,
                           label: 'Done',
-                          bgColor: AppColors.primary, // Biru Trust
+                          bgColor: AppColors.primary,
                           iconColor: Colors.white,
-                          onTap: () {},
+                          onTap: () {
+                            context.goNamed(RouteNames.recordingProcessing);
+                          },
                         ),
                       ],
                     ),
-
                     SizedBox(height: 48.h),
-
                     Container(
                       padding: EdgeInsets.all(24.w),
                       decoration: BoxDecoration(

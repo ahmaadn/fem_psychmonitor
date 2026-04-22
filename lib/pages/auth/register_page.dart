@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/widgets/auth_footer_prompt.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_text_field.dart';
@@ -72,7 +73,12 @@ class RegisterPage extends StatelessWidget {
                       isPassword: true,
                     ),
                     SizedBox(height: 40.h),
-                    PrimaryButton(text: 'Register', onPressed: () {}),
+                    PrimaryButton(
+                      text: 'Register',
+                      onPressed: () {
+                        context.goNamed(RouteNames.home);
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -82,7 +88,7 @@ class RegisterPage extends StatelessWidget {
                   text: 'Already have an account? ',
                   linkText: 'Log In',
                   onTap: () {
-                    context.goNamed('login');
+                    context.goNamed(RouteNames.login);
                   },
                 ),
               ),

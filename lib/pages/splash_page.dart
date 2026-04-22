@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,7 +37,7 @@ class _SplashPageState extends State<SplashPage>
       return;
     }
     _hasNavigated = true;
-    context.goNamed('register');
+    context.goNamed(RouteNames.register);
   }
 
   @override

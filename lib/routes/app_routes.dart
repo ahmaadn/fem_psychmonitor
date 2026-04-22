@@ -1,3 +1,4 @@
+import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/pages/auth/forgot_password_page.dart';
 import 'package:fem_psychmonitor/pages/main/history_page.dart';
 import 'package:fem_psychmonitor/pages/main/home_page.dart';
@@ -16,28 +17,28 @@ class AppRouter {
     routes: <RouteBase>[
       GoRoute(
         path: '/',
-        name: 'splash',
+        name: RouteNames.splash,
         builder: (BuildContext context, GoRouterState state) {
           return const SplashPage();
         },
       ),
       GoRoute(
         path: '/auth/register',
-        name: 'register',
+        name: RouteNames.register,
         builder: (BuildContext context, GoRouterState state) {
           return const RegisterPage();
         },
       ),
       GoRoute(
         path: '/auth/login',
-        name: 'login',
+        name: RouteNames.login,
         builder: (BuildContext context, GoRouterState state) {
           return const LoginPage();
         },
       ),
       GoRoute(
         path: '/auth/forgot-password',
-        name: 'forgot-password',
+        name: RouteNames.forgotPassword,
         builder: (BuildContext context, GoRouterState state) {
           return const ForgotPasswordPage();
         },
@@ -64,7 +65,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/home',
-                name: 'home',
+                name: RouteNames.home,
                 builder: (BuildContext context, GoRouterState state) {
                   return HomePage();
                 },
@@ -75,7 +76,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/history',
-                name: 'history',
+                name: RouteNames.history,
                 builder: (BuildContext context, GoRouterState state) {
                   return HistoryPage();
                 },
@@ -86,7 +87,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/profile',
-                name: 'profile',
+                name: RouteNames.profile,
                 builder: (BuildContext context, GoRouterState state) {
                   return HomePage();
                 },
@@ -97,14 +98,14 @@ class AppRouter {
       ),
       GoRoute(
         path: "/live-recording",
-        name: 'live-recording',
+        name: RouteNames.liveRecording,
         builder: (context, state) {
           return LiveRecordingPage();
         },
       ),
       GoRoute(
         path: "/recording/processing",
-        name: 'recording-processing',
+        name: RouteNames.recordingProcessing,
         builder: (context, state) {
           return AiProcessingPage();
         },

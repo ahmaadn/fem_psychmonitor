@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PulsingMicButton extends StatefulWidget {
-  const PulsingMicButton({super.key});
+  final VoidCallback onTap;
+
+  const PulsingMicButton({super.key, required this.onTap});
 
   @override
   State<PulsingMicButton> createState() => _PulsingMicButtonState();
@@ -74,22 +76,25 @@ class _PulsingMicButtonState extends State<PulsingMicButton>
 
             buildPulse(maxSize: 150, delay: 0.5, color: AppColors.primary),
 
-            Container(
-              width: 140,
-              height: 140,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primary,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha((255 * 0.18).toInt()),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: const Center(
-                child: Icon(Icons.mic, color: Colors.white, size: 42),
+            GestureDetector(
+              onTap: widget.onTap,
+              child: Container(
+                width: 140,
+                height: 140,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primary,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha((255 * 0.18).toInt()),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Icon(Icons.mic, color: Colors.white, size: 42),
+                ),
               ),
             ),
           ],

@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/widgets/auth_footer_prompt.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_text_field.dart';
@@ -60,7 +61,7 @@ class LoginPage extends StatelessWidget {
                       isPassword: true,
                       trailingLabel: GestureDetector(
                         onTap: () {
-                          context.goNamed('forgot-password');
+                          context.goNamed(RouteNames.forgotPassword);
                         },
                         child: Text(
                           'Forgot Password?',
@@ -74,7 +75,12 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 40.h),
-                    PrimaryButton(text: 'Login', onPressed: () {}),
+                    PrimaryButton(
+                      text: 'Login',
+                      onPressed: () {
+                        context.goNamed(RouteNames.home);
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -84,7 +90,7 @@ class LoginPage extends StatelessWidget {
                   text: 'Don\'t have an account? ',
                   linkText: 'Sign Up',
                   onTap: () {
-                    context.goNamed('register');
+                    context.goNamed(RouteNames.register);
                   },
                 ),
               ),

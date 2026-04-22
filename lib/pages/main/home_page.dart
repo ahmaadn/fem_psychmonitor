@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/mood_overview_card.dart';
@@ -6,6 +7,7 @@ import 'package:fem_psychmonitor/widgets/upload_audio_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:fem_psychmonitor/widgets/pulsing_mic_button.dart";
+import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -59,7 +61,13 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 48.h),
               Column(
                 children: [
-                  Center(child: PulsingMicButton()),
+                  Center(
+                    child: PulsingMicButton(
+                      onTap: () {
+                        context.goNamed(RouteNames.liveRecording);
+                      },
+                    ),
+                  ),
                   SizedBox(height: 24.h),
                   Text(
                     'Record Your Voice',
@@ -76,7 +84,11 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   SizedBox(height: 16.h),
-                  UploadAudioButton(),
+                  UploadAudioButton(
+                    onTap: () {
+                      context.goNamed(RouteNames.liveRecording);
+                    },
+                  ),
                 ],
               ),
               SizedBox(height: 48.h),

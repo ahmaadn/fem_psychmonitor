@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,11 +20,10 @@ class _AiProcessingPageState extends State<AiProcessingPage>
   @override
   void initState() {
     super.initState();
-    // Animation controller untuk rotasi dan efek denyut (pulse)
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4), // Kecepatan putaran 4 detik penuh
-    )..repeat(); // Akan terus berputar berulang kali
+      duration: const Duration(seconds: 4),
+    )..repeat();
   }
 
   @override
@@ -50,10 +50,10 @@ class _AiProcessingPageState extends State<AiProcessingPage>
                 ),
                 onPressed: () {
                   if (context.canPop()) context.pop();
+                  context.goNamed(RouteNames.home);
                 },
               ),
             ),
-
             Expanded(
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 24.w),
