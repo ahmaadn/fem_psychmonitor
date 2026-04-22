@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/app/utils/navigator_container_with_page_view.dart';
 import 'package:fem_psychmonitor/pages/auth/forgot_password_page.dart';
 import 'package:fem_psychmonitor/pages/main/history_page.dart';
 import 'package:fem_psychmonitor/pages/main/home_page.dart';
@@ -48,16 +49,10 @@ class AppRouter {
           return MainLayout(navigationShell: navigationShell);
         },
         navigatorContainerBuilder: (context, navigationShell, children) {
-          return Scaffold(
-            body: PageView(
-              controller: PageController(
-                initialPage: navigationShell.currentIndex,
-              ),
-              onPageChanged: (index) {
-                navigationShell.goBranch(index);
-              },
-              children: children,
-            ),
+          /// Implementation: https://medium.com/@danieletulone.work/building-a-swipable-stateful-navigator-shell-in-flutter-using-go-router-49ced62c2446
+          return NavigatorContainerWithPageView(
+            navigationShell: navigationShell,
+            children: children,
           );
         },
         branches: [
