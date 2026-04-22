@@ -4,6 +4,7 @@ import 'package:fem_psychmonitor/pages/main/home_page.dart';
 import 'package:fem_psychmonitor/pages/auth/login_page.dart';
 import 'package:fem_psychmonitor/pages/auth/register_page.dart';
 import 'package:fem_psychmonitor/pages/main_layout.dart';
+import 'package:fem_psychmonitor/pages/recording/ai_processing_page.dart';
 import 'package:fem_psychmonitor/pages/recording/live_recording_page.dart';
 import 'package:fem_psychmonitor/pages/splash_page.dart';
 import 'package:flutter/material.dart';
@@ -99,6 +100,13 @@ class AppRouter {
         name: 'live-recording',
         builder: (context, state) {
           return LiveRecordingPage();
+        },
+      ),
+      GoRoute(
+        path: "/recording/processing",
+        name: 'recording-processing',
+        builder: (context, state) {
+          return AiProcessingPage();
         },
       ),
     ],
