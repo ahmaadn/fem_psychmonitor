@@ -2,25 +2,37 @@ import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class AnalysisResultPage extends StatelessWidget {
   const AnalysisResultPage({super.key});
 
-  static final Map<EmotionLabelType, int> _emotionPercentages = {
-    EmotionLabelType.happy: 78,
-    EmotionLabelType.neutral: 64,
-    EmotionLabelType.fearful: 12,
-  };
-
   @override
   Widget build(BuildContext context) {
-    final emotionEntries = _emotionPercentages.entries.toList(growable: false);
+    final detector = context.watch<EmotionDetector>();
+    final timeline = detector.timeline;
+
+    final countMap = <EmotionLabelType, int>{};
+    for (final item in timeline) {
+      countMap[item.label] = (countMap[item.label] ?? 0) + 1;
+    }
+
+    final total = timeline.isEmpty ? 1 : timeline.length;
+    final emotionPercentages = countMap.map(
+      (key, value) => MapEntry(key, ((value / total) * 100).round()),
+    );
+    final emotionEntries = emotionPercentages.entries.toList(growable: false)
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    final dominant = detector.latest?.label ?? EmotionLabelType.neutral;
+    final dominantConfidence = detector.latest?.confidence ?? 0.0;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -61,7 +73,7 @@ class AnalysisResultPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'Calm',
+                          dominant.displayName,
                           style: Theme.of(context).textTheme.displayLarge
                               ?.copyWith(
                                 fontSize: 40.sp,
@@ -114,7 +126,9 @@ class AnalysisResultPage extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Suasana hati pada XX hari XX',
+                        detector.lastDetectionPath == null
+                            ? 'Belum ada hasil analisis.'
+                            : 'Hasil analisis sesi terbaru',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontSize: 15.sp,
                           color: AppColors.primary.withValues(alpha: 0.6),
@@ -130,7 +144,7 @@ class AnalysisResultPage extends StatelessWidget {
                     CircularPercentIndicator(
                       radius: 80.w, // Setengah dari lebar yang diinginkan (160)
                       lineWidth: 12.w,
-                      percent: 0.92,
+                      percent: dominantConfidence.clamp(0.0, 1.0),
                       animation: true, // Animasi saat loading
                       animationDuration: 1200,
                       circularStrokeCap: CircularStrokeCap.round,
@@ -140,7 +154,7 @@ class AnalysisResultPage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '92%',
+                            '${(dominantConfidence * 100).round()}%',
                             style: Theme.of(context).textTheme.displayLarge
                                 ?.copyWith(
                                   fontSize: 40.sp,
@@ -166,7 +180,7 @@ class AnalysisResultPage extends StatelessWidget {
                     ),
                     SizedBox(height: 48.h),
                     Text(
-                      'Emosi Dominan Calm',
+                      'Emosi Dominan ${dominant.displayName}',
                       style: Theme.of(context).textTheme.headlineLarge
                           ?.copyWith(
                             fontSize: 24.sp,
@@ -180,7 +194,8 @@ class AnalysisResultPage extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Text(
-                        'Your voice pattern suggests a state of centered tranquility and emotional balance.',
+                        detector.error ??
+                            'Ringkasan dibuat dari timeline deteksi rekaman terbaru Anda.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontSize: 15.sp,
                           color: AppColors.primary.withValues(alpha: 0.6),
@@ -190,7 +205,7 @@ class AnalysisResultPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 40.h),
-                    _buildRecordingTimeline(context),
+                    _buildRecordingTimeline(context, timeline),
                     SizedBox(height: 40.h),
                     Container(
                       padding: EdgeInsets.all(24.w),
@@ -218,6 +233,11 @@ class AnalysisResultPage extends StatelessWidget {
                           ),
                           SizedBox(height: 24.h),
 
+                          if (emotionEntries.isEmpty)
+                            Text(
+                              'Belum ada komponen emosi. Lakukan rekaman atau upload audio dahulu.',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
                           for (var i = 0; i < emotionEntries.length; i++) ...[
                             _buildEmotionProgressRow(
                               context,
@@ -372,7 +392,33 @@ class AnalysisResultPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecordingTimeline(BuildContext context) {
+  Widget _buildRecordingTimeline(
+    BuildContext context,
+    List<EmotionResult> timeline,
+  ) {
+    final totalSec = timeline.isEmpty ? 0.0 : timeline.last.endSec;
+    final totalLabel =
+        '${(totalSec ~/ 60).toString().padLeft(2, '0')}:${(totalSec % 60).toInt().toString().padLeft(2, '0')} Total';
+
+    final segmentWidgets = timeline.isEmpty
+        ? [
+            Expanded(
+              child: Container(color: AppColors.primary.withValues(alpha: 0.2)),
+            ),
+          ]
+        : timeline
+              .map((e) {
+                final segmentDuration = (e.endSec - e.startSec).clamp(
+                  1.0,
+                  30.0,
+                );
+                return Expanded(
+                  flex: (segmentDuration * 10).round(),
+                  child: Container(color: e.label.color),
+                );
+              })
+              .toList(growable: false);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -398,7 +444,7 @@ class AnalysisResultPage extends StatelessWidget {
               ],
             ),
             Text(
-              '02:45 Total',
+              totalLabel,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontSize: 14.sp,
                 color: AppColors.primary.withValues(alpha: 0.6),
@@ -412,22 +458,7 @@ class AnalysisResultPage extends StatelessWidget {
           child: SizedBox(
             height: 10.h,
             width: double.infinity,
-            child: Row(
-              children: [
-                Expanded(flex: 30, child: Container(color: AppColors.primary)),
-                Expanded(
-                  flex: 20,
-                  child: Container(
-                    color: const Color(0xFFFEF08A),
-                  ), // Kuning pastel muda
-                ),
-                Expanded(flex: 35, child: Container(color: AppColors.primary)),
-                Expanded(
-                  flex: 15,
-                  child: Container(color: AppColors.secondary),
-                ),
-              ],
-            ),
+            child: Row(children: segmentWidgets),
           ),
         ),
         SizedBox(height: 12.h),

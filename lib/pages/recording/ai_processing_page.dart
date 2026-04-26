@@ -1,13 +1,17 @@
 import 'dart:math' as math;
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class AiProcessingPage extends StatefulWidget {
-  const AiProcessingPage({super.key});
+  const AiProcessingPage({super.key, this.uploadedAudioPath});
+
+  final String? uploadedAudioPath;
 
   @override
   State<AiProcessingPage> createState() => _AiProcessingPageState();
@@ -16,6 +20,7 @@ class AiProcessingPage extends StatefulWidget {
 class _AiProcessingPageState extends State<AiProcessingPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
+  String? _processingError;
 
   @override
   void initState() {
@@ -24,6 +29,39 @@ class _AiProcessingPageState extends State<AiProcessingPage>
       vsync: this,
       duration: const Duration(seconds: 4),
     )..repeat();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _process();
+    });
+  }
+
+  Future<void> _process() async {
+    final detector = context.read<EmotionDetector>();
+
+    try {
+      if (widget.uploadedAudioPath != null &&
+          widget.uploadedAudioPath!.trim().isNotEmpty) {
+        await detector.detectFromAudioFile(widget.uploadedAudioPath!);
+      } else if (detector.isDetecting) {
+        await detector.stopDetection();
+      }
+
+      if (!mounted) return;
+
+      if (detector.error != null) {
+        setState(() {
+          _processingError = detector.error;
+        });
+        return;
+      }
+
+      context.goNamed(RouteNames.analysisResult);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _processingError = '$e';
+      });
+    }
   }
 
   @override
@@ -154,10 +192,12 @@ class _AiProcessingPageState extends State<AiProcessingPage>
                     SizedBox(height: 16.h),
 
                     Text(
-                      'Analyzing your audio data...',
+                      _processingError ?? 'Analyzing your audio data...',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 16.sp,
-                        color: AppColors.onSurface,
+                        color: _processingError == null
+                            ? AppColors.onSurface
+                            : Colors.red,
                         fontWeight: FontWeight.w500,
                       ),
                       textAlign: TextAlign.center,

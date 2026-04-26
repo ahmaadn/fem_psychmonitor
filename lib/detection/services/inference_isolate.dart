@@ -32,8 +32,8 @@ class _WorkerConfig {
 
 // ─── Worker (background isolate)
 
-Future<void> _inferenceWorker(Object initMsg) async {
-  final config = initMsg as _WorkerConfig;
+Future<void> _inferenceWorker(_WorkerConfig initMsg) async {
+  final config = initMsg;
   final receivePort = ReceivePort();
 
   // 1. Kirim balik SendPort kita ke UI isolate
@@ -44,13 +44,13 @@ Future<void> _inferenceWorker(Object initMsg) async {
   late int inputTensorIndex;
 
   try {
-    interpreter = await Interpreter.fromFile(
+    interpreter = Interpreter.fromFile(
       File(config.modelPath),
       options: InterpreterOptions()..threads = 2,
     );
     interpreter.allocateTensors();
 
-    // Nama input bisa berubah antar-export (contoh: serving_default_*:0).
+    // Nama input tensor di model: 'serving_default_female_model_input:0'
     inputTensorIndex = interpreter.getInputIndex(
       'serving_default_female_model_input:0',
     );
@@ -58,7 +58,7 @@ Future<void> _inferenceWorker(Object initMsg) async {
     final inTensor = interpreter.getInputTensor(inputTensorIndex);
     final outTensor = interpreter.getOutputTensor(0);
     config.replyPort.send(
-      'READY: input[${inputTensorIndex}]=${inTensor.shape} '
+      'READY: input[$inputTensorIndex]=${inTensor.shape} '
       'dtype=${inTensor.type} | output[0]=${outTensor.shape} '
       'dtype=${outTensor.type}',
     );
@@ -211,19 +211,21 @@ class InferenceIsolateManager {
   }
 
   /// Kirim chunk audio ke worker. [audioChunk] harus tepat 48000 sample.
-  void infer(List<double> audioChunk, double chunkStartSec) {
+  int infer(List<double> audioChunk, double chunkStartSec) {
     assert(_workerPort != null, 'Panggil start() terlebih dahulu');
     assert(
       audioChunk.length == 48000,
       'Butuh tepat 48000 sample, dapat ${audioChunk.length}',
     );
+    final requestId = _reqId++;
     _workerPort!.send(
       _InferenceRequest(
         audioChunk: audioChunk,
         chunkStartSec: chunkStartSec,
-        requestId: _reqId++,
+        requestId: requestId,
       ),
     );
+    return requestId;
   }
 
   /// Shutdown bersih.

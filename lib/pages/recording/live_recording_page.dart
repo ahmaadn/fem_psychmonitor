@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
 import 'package:fem_psychmonitor/widgets/control_action.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class LiveRecordingPage extends StatefulWidget {
   const LiveRecordingPage({super.key});
@@ -16,8 +20,69 @@ class LiveRecordingPage extends StatefulWidget {
 }
 
 class _LiveRecordingPageState extends State<LiveRecordingPage> {
+  Timer? _ticker;
+  Duration _elapsed = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startSession();
+    });
+  }
+
+  Future<void> _startSession() async {
+    final detector = context.read<EmotionDetector>();
+    await detector.startDetection(saveToFile: true);
+
+    if (!mounted) return;
+    if (detector.error != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(detector.error!)));
+      return;
+    }
+
+    _ticker?.cancel();
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      setState(() {
+        _elapsed += const Duration(seconds: 1);
+      });
+    });
+  }
+
+  Future<void> _discardSession() async {
+    final detector = context.read<EmotionDetector>();
+    await detector.stopDetection();
+    detector.clearTimeline();
+    if (!mounted) return;
+    if (context.canPop()) context.pop();
+  }
+
+  Future<void> _finishSession() async {
+    final detector = context.read<EmotionDetector>();
+    await detector.stopDetection();
+    if (!mounted) return;
+    context.goNamed(RouteNames.recordingProcessing);
+  }
+
+  String _formatDuration(Duration d) {
+    final mm = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final ss = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$mm:$ss';
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final detector = context.watch<EmotionDetector>();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -32,9 +97,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                   Icons.close_rounded,
                   color: AppColors.primary.withAlpha(153),
                 ),
-                onPressed: () {
-                  if (context.canPop()) context.pop();
-                },
+                onPressed: _discardSession,
               ),
             ),
             Expanded(
@@ -78,7 +141,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                         ),
                         // Timer
                         Text(
-                          '02:45',
+                          _formatDuration(_elapsed),
                           style: Theme.of(context).textTheme.headlineMedium
                               ?.copyWith(
                                 fontSize: 28.sp,
@@ -89,7 +152,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                       ],
                     ),
                     SizedBox(height: 48.h),
-                    _buildWaveformVisualizer(),
+                    _buildWaveformVisualizer(detector),
                     SizedBox(height: 48.h),
                     Center(
                       child: Container(
@@ -120,7 +183,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                           label: 'Discard',
                           bgColor: const Color(0xFFF1F5F9),
                           iconColor: AppColors.primary.withAlpha(153),
-                          onTap: () {},
+                          onTap: _discardSession,
                         ),
                         ControlAction(
                           icon: Icons.pause_rounded,
@@ -130,16 +193,27 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                           onTap: () {},
                         ),
                         ControlAction(
-                          icon: Icons.check_rounded,
+                          icon: detector.isDetecting
+                              ? Icons.check_rounded
+                              : Icons.play_arrow_rounded,
                           label: 'Done',
                           bgColor: AppColors.primary,
                           iconColor: Colors.white,
-                          onTap: () {
-                            context.goNamed(RouteNames.recordingProcessing);
-                          },
+                          onTap: detector.isDetecting
+                              ? _finishSession
+                              : _startSession,
                         ),
                       ],
                     ),
+                    if (detector.error != null) ...[
+                      SizedBox(height: 16.h),
+                      Text(
+                        detector.error!,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: Colors.red),
+                      ),
+                    ],
                     SizedBox(height: 48.h),
                     Container(
                       padding: EdgeInsets.all(24.w),
@@ -199,28 +273,34 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
     );
   }
 
-  Widget _buildWaveformVisualizer() {
-    final List<double> heights = [
-      30,
-      45,
-      60,
-      40,
-      80,
-      50,
-      90,
-      70,
-      100,
-      60,
-      40,
-      85,
-      75,
-      45,
-      95,
-      60,
-      80,
-      50,
-      35,
-    ];
+  Widget _buildWaveformVisualizer(EmotionDetector detector) {
+    final probs = detector.latest?.allProbs;
+    final List<double> heights = probs == null || probs.isEmpty
+        ? [
+            30,
+            45,
+            60,
+            40,
+            80,
+            50,
+            90,
+            70,
+            100,
+            60,
+            40,
+            85,
+            75,
+            45,
+            95,
+            60,
+            80,
+            50,
+            35,
+          ]
+        : List<double>.generate(19, (i) {
+            final value = probs[i % probs.length].clamp(0.0, 1.0);
+            return 25 + (value * 95);
+          });
 
     return SizedBox(
       height: 120.h,
@@ -232,7 +312,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
             width: 4.w,
             height: height.h,
             decoration: BoxDecoration(
-              color: AppColors.primary, // Warna Trust Blue
+              color: AppColors.primary,
               borderRadius: BorderRadius.circular(AppRadius.full),
             ),
           );

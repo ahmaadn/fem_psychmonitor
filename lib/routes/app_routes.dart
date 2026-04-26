@@ -1,6 +1,4 @@
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
-import 'package:fem_psychmonitor/app/utils/navigator_container_with_page_view.dart';
-import 'package:fem_psychmonitor/detection/pages/test_detection_page.dart';
 import 'package:fem_psychmonitor/pages/auth/forgot_password_page.dart';
 import 'package:fem_psychmonitor/pages/main/history_page.dart';
 import 'package:fem_psychmonitor/pages/main/home_page.dart';
@@ -22,7 +20,7 @@ class AppRouter {
         path: '/',
         name: RouteNames.splash,
         builder: (BuildContext context, GoRouterState state) {
-          return const TestDetectionPage();
+          return const SplashPage();
         },
       ),
       GoRoute(
@@ -46,17 +44,17 @@ class AppRouter {
           return const ForgotPasswordPage();
         },
       ),
-      StatefulShellRoute(
+      StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return MainLayout(navigationShell: navigationShell);
         },
-        navigatorContainerBuilder: (context, navigationShell, children) {
-          /// Implementation: https://medium.com/@danieletulone.work/building-a-swipable-stateful-navigator-shell-in-flutter-using-go-router-49ced62c2446
-          return NavigatorContainerWithPageView(
-            navigationShell: navigationShell,
-            children: children,
-          );
-        },
+        // navigatorContainerBuilder: (context, navigationShell, children) {
+        //   /// Implementation: https://medium.com/@danieletulone.work/building-a-swipable-stateful-navigator-shell-in-flutter-using-go-router-49ced62c2446
+        //   return NavigatorContainerWithPageView(
+        //     navigationShell: navigationShell,
+        //     children: children,
+        //   );
+        // },
         branches: [
           StatefulShellBranch(
             routes: [
@@ -113,7 +111,10 @@ class AppRouter {
         path: "/recording/processing",
         name: RouteNames.recordingProcessing,
         builder: (context, state) {
-          return AiProcessingPage();
+          final uploadedPath = state.extra is String
+              ? state.extra as String
+              : null;
+          return AiProcessingPage(uploadedAudioPath: uploadedPath);
         },
       ),
     ],
