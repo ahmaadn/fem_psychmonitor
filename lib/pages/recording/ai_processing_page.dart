@@ -22,6 +22,8 @@ class _AiProcessingPageState extends State<AiProcessingPage>
   late AnimationController _animationController;
   String? _processingError;
 
+  static const Duration _minimumLoadingDuration = Duration(seconds: 5);
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +39,7 @@ class _AiProcessingPageState extends State<AiProcessingPage>
 
   Future<void> _process() async {
     final detector = context.read<EmotionDetector>();
+    final startedAt = DateTime.now();
 
     try {
       if (widget.uploadedAudioPath != null &&
@@ -45,6 +48,8 @@ class _AiProcessingPageState extends State<AiProcessingPage>
       } else if (detector.isDetecting) {
         await detector.stopDetection();
       }
+
+      await _waitMinimumLoading(startedAt);
 
       if (!mounted) return;
 
@@ -57,10 +62,19 @@ class _AiProcessingPageState extends State<AiProcessingPage>
 
       context.goNamed(RouteNames.analysisResult);
     } catch (e) {
+      await _waitMinimumLoading(startedAt);
       if (!mounted) return;
       setState(() {
         _processingError = '$e';
       });
+    }
+  }
+
+  Future<void> _waitMinimumLoading(DateTime startedAt) async {
+    final elapsed = DateTime.now().difference(startedAt);
+    final remaining = _minimumLoadingDuration - elapsed;
+    if (remaining > Duration.zero) {
+      await Future.delayed(remaining);
     }
   }
 
@@ -73,152 +87,166 @@ class _AiProcessingPageState extends State<AiProcessingPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.background,
+      appBar: CustomAppBar(
+        title: 'Analysis', // Kosong
+        showBackButton: false,
+        isScrollable: false,
+        leading: IconButton(
+          icon: Icon(
+            Icons.close_rounded,
+            color: AppColors.primary.withValues(alpha: 0.7),
+          ),
+          onPressed: () {
+            if (context.canPop()) context.pop();
+            context.goNamed(RouteNames.home);
+          },
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            CustomAppBar(
-              title: 'Analysis', // Kosong
-              showBackButton: false,
-              isScrollable: false,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.close_rounded,
-                  color: AppColors.primary.withValues(alpha: 0.7),
-                ),
-                onPressed: () {
-                  if (context.canPop()) context.pop();
-                  context.goNamed(RouteNames.home);
-                },
-              ),
-            ),
             Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AnimatedBuilder(
-                      animation: _animationController,
-                      builder: (context, child) {
-                        // Hitung skala pulse menggunakan Sinus (0.98 hingga 1.02)
-                        final double pulseScale =
-                            1.0 +
-                            0.02 *
-                                math.sin(
-                                  _animationController.value * 2 * math.pi * 2,
-                                );
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AnimatedBuilder(
+                              animation: _animationController,
+                              builder: (context, child) {
+                                // Hitung skala pulse menggunakan Sinus (0.98 hingga 1.02)
+                                final double pulseScale =
+                                    1.0 +
+                                    0.02 *
+                                        math.sin(
+                                          _animationController.value *
+                                              2 *
+                                              math.pi *
+                                              2,
+                                        );
 
-                        return SizedBox(
-                          width: 240.w,
-                          height: 240.w,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Transform.rotate(
-                                angle: _animationController.value * 2 * math.pi,
-                                child: CustomPaint(
-                                  size: Size(240.w, 240.w),
-                                  painter: _SegmentedRingPainter(
-                                    color: AppColors.tertiary.withValues(
-                                      alpha: 0.4,
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              Transform.scale(
-                                scale: pulseScale,
-                                child: Container(
-                                  width: 170.w,
-                                  height: 170.w,
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        // Color(0xFF26A8FF), // Biru agak terang
-                                        AppColors.primary, // Biru Trust
-                                        AppColors
-                                            .primaryContainer, // Trust Blue
-                                      ],
-                                    ),
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.primary.withValues(
-                                          alpha: 0.3,
-                                        ),
-                                        blurRadius: 30,
-                                        offset: const Offset(0, 10),
-                                      ),
-                                    ],
-                                  ),
-
+                                return SizedBox(
+                                  width: 240.w,
+                                  height: 240.w,
                                   child: Stack(
+                                    alignment: Alignment.center,
                                     children: [
-                                      Positioned(
-                                        right: 32.w,
-                                        top: 60.w,
-                                        child: Icon(
-                                          Icons.auto_awesome_rounded,
-                                          color: Colors.white,
-                                          size: 36.sp,
+                                      Transform.rotate(
+                                        angle:
+                                            _animationController.value *
+                                            2 *
+                                            math.pi,
+                                        child: CustomPaint(
+                                          size: Size(240.w, 240.w),
+                                          painter: _SegmentedRingPainter(
+                                            color: AppColors.tertiary
+                                                .withValues(alpha: 0.4),
+                                          ),
+                                        ),
+                                      ),
+
+                                      Transform.scale(
+                                        scale: pulseScale,
+                                        child: Container(
+                                          width: 170.w,
+                                          height: 170.w,
+                                          decoration: BoxDecoration(
+                                            gradient: const LinearGradient(
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                              colors: [
+                                                AppColors.primary, // Biru Trust
+                                                AppColors
+                                                    .primaryContainer, // Trust Blue
+                                              ],
+                                            ),
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: AppColors.primary
+                                                    .withValues(alpha: 0.3),
+                                                blurRadius: 30,
+                                                offset: const Offset(0, 10),
+                                              ),
+                                            ],
+                                          ),
+
+                                          child: Stack(
+                                            children: [
+                                              Positioned(
+                                                right: 32.w,
+                                                top: 60.w,
+                                                child: Icon(
+                                                  Icons.auto_awesome_rounded,
+                                                  color: Colors.white,
+                                                  size: 36.sp,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+                                );
+                              },
+                            ),
+                            SizedBox(height: 64.h),
+                            Text(
+                              'Processing Audio',
+                              style: Theme.of(context).textTheme.displayLarge
+                                  ?.copyWith(
+                                    fontSize: 28.sp,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.primary,
+                                    letterSpacing: -0.5,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 16.h),
+                            Text(
+                              _processingError ??
+                                  'Analyzing your audio data...',
+                              style: Theme.of(context).textTheme.bodyLarge
+                                  ?.copyWith(
+                                    fontSize: 16.sp,
+                                    color: _processingError == null
+                                        ? AppColors.onSurface
+                                        : Colors.red,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
 
-                    SizedBox(height: 64.h),
+                            SizedBox(height: 12.h),
 
-                    Text(
-                      'Processing Audio',
-                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                        fontSize: 28.sp,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.primary,
-                        letterSpacing: -0.5,
+                            Text(
+                              'Please wait while we prepare your insights.',
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(
+                                    fontSize: 10.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.onSecondaryFixed,
+                                    letterSpacing: 1.5,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+
+                            SizedBox(height: 48.h),
+                          ],
+                        ),
                       ),
-                      textAlign: TextAlign.center,
                     ),
-
-                    SizedBox(height: 16.h),
-
-                    Text(
-                      _processingError ?? 'Analyzing your audio data...',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontSize: 16.sp,
-                        color: _processingError == null
-                            ? AppColors.onSurface
-                            : Colors.red,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-
-                    SizedBox(height: 12.h),
-
-                    Text(
-                      'Please wait while we prepare your insights.',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.onSecondaryFixed,
-                        letterSpacing: 1.5,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-
-                    SizedBox(height: 48.h),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ],
@@ -228,9 +256,6 @@ class _AiProcessingPageState extends State<AiProcessingPage>
   }
 }
 
-// ==========================================
-// CUSTOM PAINTER: Garis Lingkaran Putus-putus
-// ==========================================
 class _SegmentedRingPainter extends CustomPainter {
   final Color color;
 

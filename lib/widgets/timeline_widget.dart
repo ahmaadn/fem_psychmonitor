@@ -1,0 +1,272 @@
+import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
+
+class TimelineSegment {
+  final double startSec;
+  double endSec;
+  final EmotionLabelType label;
+  int flex;
+
+  TimelineSegment({
+    required this.startSec,
+    required this.endSec,
+    required this.label,
+    this.flex = 1,
+  });
+
+  @override
+  String toString() =>
+      '[${startSec.toStringAsFixed(1)}-${endSec.toStringAsFixed(1)}s] ${label.displayName}';
+}
+
+class RecordingTimeline extends StatelessWidget {
+  const RecordingTimeline({super.key, required this.timeline});
+
+  final List<EmotionResult> timeline;
+
+  int _toFlex(double startSec, double endSec) {
+    final duration = (endSec - startSec).clamp(0.0, double.infinity);
+    return (duration * 10).round().clamp(1, 1000000);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final totalSec = timeline.isEmpty ? 0.0 : timeline.last.endSec;
+    final totalLabel =
+        '${(totalSec ~/ 60).toString().padLeft(2, '0')}:${(totalSec % 60).toInt().toString().padLeft(2, '0')} Total';
+
+    List<TimelineSegment> segments = [];
+
+    TimelineSegment? currentSegment;
+    for (var i = 0; i < timeline.length; i++) {
+      if (currentSegment == null) {
+        currentSegment = TimelineSegment(
+          startSec: timeline[i].startSec,
+          endSec: timeline[i].endSec,
+          label: timeline[i].label,
+          flex: _toFlex(timeline[i].startSec, timeline[i].endSec),
+        );
+        segments.add(currentSegment);
+        continue;
+      }
+
+      if (i == timeline.length - 1) {
+        break; // Cegah out of range untuk nextResult
+      }
+
+      final nextResult = timeline[i + 1];
+      if (timeline[i].label == nextResult.label) {
+        // Jika label sama, perpanjang segmen saat ini
+        currentSegment.endSec = nextResult.endSec;
+        currentSegment.flex = _toFlex(
+          currentSegment.startSec,
+          currentSegment.endSec,
+        );
+      } else {
+        // Jika label berbeda, buat segmen baru
+        currentSegment = TimelineSegment(
+          startSec: nextResult.startSec,
+          endSec: nextResult.endSec,
+          label: nextResult.label,
+          flex: _toFlex(nextResult.startSec, nextResult.endSec),
+        );
+        segments.add(currentSegment);
+      }
+    }
+
+    final segmentWidgets = timeline.isEmpty
+        ? [
+            Expanded(
+              child: Container(color: AppColors.primary.withValues(alpha: 0.2)),
+            ),
+          ]
+        : segments
+              .map((e) {
+                return Expanded(
+                  flex: e.flex,
+                  child: Container(color: e.label.color),
+                );
+              })
+              .toList(growable: false);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.schedule_rounded,
+                  size: 20.sp,
+                  color: AppColors.primary.withValues(alpha: 0.8),
+                ),
+                SizedBox(width: 8.w),
+                Text(
+                  'Timeline Rekaman',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              totalLabel,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 14.sp,
+                color: AppColors.primary.withValues(alpha: 0.6),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 16.h),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(AppRadius.full),
+          child: SizedBox(
+            height: 10.h,
+            width: double.infinity,
+            child: Row(children: segmentWidgets),
+          ),
+        ),
+        SizedBox(height: 12.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Awal',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontSize: 10.sp,
+                color: AppColors.primary.withValues(alpha: 0.5),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              'Selesai',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontSize: 10.sp,
+                color: AppColors.primary.withValues(alpha: 0.5),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class ComponentTimeline extends StatelessWidget {
+  final List<EmotionResult> timeline;
+
+  const ComponentTimeline({super.key, required this.timeline});
+
+  @override
+  Widget build(BuildContext context) {
+    final countMap = <EmotionLabelType, int>{};
+    for (final item in timeline) {
+      countMap[item.label] = (countMap[item.label] ?? 0) + 1;
+    }
+
+    final total = timeline.isEmpty ? 1 : timeline.length;
+    final emotionPercentages = countMap.map(
+      (key, value) => MapEntry(key, ((value / total) * 100).round()),
+    );
+    final emotionEntries = emotionPercentages.entries.toList(growable: false)
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    return Container(
+      padding: EdgeInsets.all(24.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.xxl),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Component Analysis',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          SizedBox(height: 24.h),
+
+          if (emotionEntries.isEmpty)
+            Text(
+              'Belum ada komponen emosi. Lakukan rekaman atau upload audio dahulu.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          for (var i = 0; i < emotionEntries.length; i++) ...[
+            _buildEmotionProgressRow(
+              context,
+              emotion: emotionEntries[i].key,
+              percentage: emotionEntries[i].value,
+            ),
+            if (i < emotionEntries.length - 1) SizedBox(height: 20.h),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmotionProgressRow(
+    BuildContext context, {
+    required EmotionLabelType emotion,
+    required int percentage,
+  }) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Text(
+                  emotion.label,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              '$percentage%',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.primary.withValues(alpha: 0.7),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 12.h),
+        // Linear Progress Bar (Menggunakan Package)
+        LinearPercentIndicator(
+          lineHeight: 8.h,
+          percent: percentage / 100,
+          animation: true,
+          animationDuration: 1000,
+          backgroundColor: Colors.grey.shade200,
+          progressColor: emotion.color,
+          barRadius: const Radius.circular(AppRadius.full),
+          padding: EdgeInsets.zero, // Penting agar sejajar ujung ke ujung
+        ),
+      ],
+    );
+  }
+}
