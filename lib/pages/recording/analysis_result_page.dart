@@ -12,10 +12,10 @@ import 'package:percent_indicator/percent_indicator.dart';
 class AnalysisResultPage extends StatelessWidget {
   const AnalysisResultPage({super.key});
 
-  static final Map<EmotionEnumType, int> _emotionPercentages = {
-    EmotionEnumType.happiness: 78,
-    EmotionEnumType.netral: 64,
-    EmotionEnumType.fear: 12,
+  static final Map<EmotionLabelType, int> _emotionPercentages = {
+    EmotionLabelType.happy: 78,
+    EmotionLabelType.neutral: 64,
+    EmotionLabelType.fearful: 12,
   };
 
   @override
@@ -327,7 +327,7 @@ class AnalysisResultPage extends StatelessWidget {
   // --- KOMPONEN: BARIS PROGRESS EMOSI ---
   Widget _buildEmotionProgressRow(
     BuildContext context, {
-    required EmotionEnumType emotion,
+    required EmotionLabelType emotion,
     required int percentage,
   }) {
     return Column(

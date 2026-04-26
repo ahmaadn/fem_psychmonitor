@@ -21,7 +21,7 @@ class _HistoryPageState extends State<HistoryPage> {
   String _currentMonthText = '';
 
   // Data tiruan (Mock Data) untuk emosi pada tanggal tertentu
-  final Map<DateTime, EmotionEnumType> _emotionData = {};
+  final Map<DateTime, EmotionLabelType> _emotionData = {};
 
   @override
   void initState() {
@@ -42,13 +42,13 @@ class _HistoryPageState extends State<HistoryPage> {
   // Menghasilkan data acak/statis untuk contoh tampilan kalender
   void _generateMockData() {
     final now = DateTime.now();
-    _emotionData[DateTime(now.year, now.month, 1)] = EmotionEnumType.anger;
-    _emotionData[DateTime(now.year, now.month, 3)] = EmotionEnumType.sadness;
-    _emotionData[DateTime(now.year, now.month, 5)] = EmotionEnumType.happiness;
-    _emotionData[DateTime(now.year, now.month, 8)] = EmotionEnumType.disgust;
-    _emotionData[DateTime(now.year, now.month, 12)] = EmotionEnumType.fear;
-    _emotionData[DateTime(now.year, now.month, 15)] = EmotionEnumType.netral;
-    _emotionData[DateTime(now.year, now.month, 18)] = EmotionEnumType.happiness;
+    _emotionData[DateTime(now.year, now.month, 1)] = EmotionLabelType.anger;
+    _emotionData[DateTime(now.year, now.month, 3)] = EmotionLabelType.sad;
+    _emotionData[DateTime(now.year, now.month, 5)] = EmotionLabelType.happy;
+    _emotionData[DateTime(now.year, now.month, 8)] = EmotionLabelType.disgust;
+    _emotionData[DateTime(now.year, now.month, 12)] = EmotionLabelType.fearful;
+    _emotionData[DateTime(now.year, now.month, 15)] = EmotionLabelType.neutral;
+    _emotionData[DateTime(now.year, now.month, 18)] = EmotionLabelType.happy;
   }
 
   void _updateMonthText(DateTime date) {

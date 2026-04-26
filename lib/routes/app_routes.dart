@@ -1,5 +1,6 @@
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/utils/navigator_container_with_page_view.dart';
+import 'package:fem_psychmonitor/detection/pages/test_detection_page.dart';
 import 'package:fem_psychmonitor/pages/auth/forgot_password_page.dart';
 import 'package:fem_psychmonitor/pages/main/history_page.dart';
 import 'package:fem_psychmonitor/pages/main/home_page.dart';
@@ -21,7 +22,7 @@ class AppRouter {
         path: '/',
         name: RouteNames.splash,
         builder: (BuildContext context, GoRouterState state) {
-          return const SplashPage();
+          return const TestDetectionPage();
         },
       ),
       GoRoute(

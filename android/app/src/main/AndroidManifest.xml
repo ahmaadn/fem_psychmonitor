@@ -1,4 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- android/app/src/main/AndroidManifest.xml  (add these inside <manifest>) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- optional: keep CPU awake during recording -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
     <application
         android:label="fem_psychmonitor"
         android:name="${applicationName}"

@@ -7,7 +7,7 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CalendarCard extends StatelessWidget {
   final DateRangePickerController datePickerController;
-  final Map<DateTime, EmotionEnumType> emotionData;
+  final Map<DateTime, EmotionLabelType> emotionData;
   final String currentMonthText;
   final VoidCallback? onMonthChanged;
   final Function(DateTime)? updateMonthText;
@@ -97,7 +97,7 @@ class CalendarCard extends StatelessWidget {
             spacing: 16.w,
             runSpacing: 12.h,
             alignment: WrapAlignment.center,
-            children: EmotionEnumType.values.map((emotion) {
+            children: EmotionLabelType.values.map((emotion) {
               return _buildLegendItem(context, emotion: emotion);
             }).toList(),
           ),
@@ -116,7 +116,7 @@ class CalendarCard extends StatelessWidget {
     final DateTime midDate =
         details.visibleDates[details.visibleDates.length ~/ 2];
     final bool isOutDate = date.month != midDate.month;
-    final EmotionEnumType? emotion =
+    final EmotionLabelType? emotion =
         emotionData[DateTime(date.year, date.month, date.day)];
     final bool isToday =
         date.day == DateTime.now().day &&
@@ -180,7 +180,7 @@ class CalendarCard extends StatelessWidget {
 
   Widget _buildLegendItem(
     BuildContext context, {
-    required EmotionEnumType emotion,
+    required EmotionLabelType emotion,
   }) {
     return Row(
       mainAxisSize: MainAxisSize.min,
