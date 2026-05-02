@@ -22,83 +22,89 @@ class AppColors {
 
   // --- Background & Surface (Stacked Silk / Sanctuary Vibe) ---
   /// Base Layer
-  static const Color background = Color(0xFFF9F9F9);
+  static const Color background = Color(0xFFF7F8FA);
 
   /// The Canvas
-  static const Color surface = Color(0xFFF9F9F9);
+  static const Color surface = Color(0xFFFFFFFF);
 
   /// Secondary Content
-  static const Color surfaceContainerLow = Color(0xFFF3F3F3);
+  static const Color surfaceContainerLow = Color(0xFFF7F8FA);
 
   /// Floating Cards / Pop
   static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
 
   /// Deep Context (Modals)
-  static const Color surfaceDim = Color(0xFFDADADA);
+  static const Color surfaceDim = Color(0xFFEAEAEA);
 
   /// Text Fields
-  static const Color surfaceContainerHighest = Color(0xFFE2E2E2);
+  static const Color surfaceContainerHighest = Color(0xFFF3F3F3);
+
+  /// Input fields
+  static const Color inputFill = Color(0xFFF3F3F3);
 
   // Text & Icon Colors
-  static const Color onSurface = Color(0xFF1A1C1C);
+  static const Color textPrimary = Color(0xFF1A1C1C);
+  static const Color textSecondary = Color(0xFF212529);
+  static const Color textPrimaryInverse = Color(0xFFEAEAEA);
+  static const Color onSurface = textPrimary;
 
   /// Untuk fine-line icons
-  static const Color onSurfaceVariant = Color(0xFF1A1C1C);
-  static const Color onBackground = Color(0xFF1A1C1C);
+  static const Color onSurfaceVariant = textSecondary;
+  static const Color onBackground = textPrimary;
 
   // Success
   // Indikator progres positif, keberhasilan upload.
-  static const Color success = Color(0xFF8BA888);
-  static const Color successSurface = Color(0xFFE8EFE8);
+  static const Color success = Color(0xFF059669); // Emerald 600
+  static const Color successSurface = Color(0xFFD1FAE5); // Emerald 100
 
   // Info
   // Informasi tambahan atau bantuan.
-  static const Color info = Color(0xFFAEC6CF);
-  static const Color infoSurface = Color(0xFFEEF3F5);
+  static const Color info = Color(0xFF2563EB); // Blue 600
+  static const Color infoSurface = Color(0xFFDBEAFE); // Blue 100
 
   // Error/Warning
   // Peringatan atau emosi negatif yang kuat.
-  static const Color warning = Color(0xFFD67D7D);
-  static const Color warningSurface = Color(0xFFF8EFEF);
+  static const Color warning = Color(0xFFDC2626); // Red 600
+  static const Color warningSurface = Color(0xFFFEE2E2); // Red 100
 
   // Border / Outline
   // The "Ghost Border" (Gunakan dengan opacity 15% pada UI)
-  static const Color outline = Color(0xFFBEC9C2);
-  static const Color outlineVariant = Color(0xFFBEC9C2);
+  static const Color outline = Color(0xFFE0E0E0);
+  static const Color outlineVariant = Color(0xFFE0E0E0);
 
   // Ambient Shadow: 6% opacity dari on_surface (#1A1C1C)
   static const Color shadow = Color(0x0F1A1C1C);
 
   // --- Emotion Colors ---
   // 1. Marah (Anger)
-  static const Color emotionAnger = warning; // #D67D7D (Muted Coral)
-  static const Color emotionAngerSurface = Color(0xFFF8EFEF);
+  static const Color emotionAnger = warning; // Red 600
+  static const Color emotionAngerSurface = warningSurface;
   static const Color onEmotionAnger = Color(0xFFFFFFFF); // Teks Putih
 
   // 2. Sedih (Sadness)
-  static const Color emotionSadness = info; // #AEC6CF (Misty Blue)
-  static const Color emotionSadnessSurface = Color(0xFFEEF3F5);
-  static const Color onEmotionSadness = Color(0xFF1A1C1C);
+  static const Color emotionSadness = info; // Blue 600
+  static const Color emotionSadnessSurface = infoSurface;
+  static const Color onEmotionSadness = Color(0xFFFFFFFF); // Teks Putih
 
   // 3. Bahagia (Happiness)
-  static const Color emotionHappiness = secondary; // #FED172 (Soft Gold)
-  static const Color emotionHappinessSurface = Color(0xFFFFF8E7);
-  static const Color onEmotionHappiness = Color(0xFF1A1C1C);
+  static const Color emotionHappiness = Color(0xFFF59E0B); // Amber 500
+  static const Color emotionHappinessSurface = Color(0xFFFEF3C7); // Amber 100
+  static const Color onEmotionHappiness = Color(0xFFFFFFFF); // Teks Putih
 
   // 4. Jijik (Disgust)
-  static const Color emotionDisgust = Color(0xFFB8C297); // Soft Matcha
-  static const Color emotionDisgustSurface = Color(0xFFF6F8EF);
-  static const Color onEmotionDisgust = Color(0xFF1A1C1C);
+  static const Color emotionDisgust = success; // Emerald 600
+  static const Color emotionDisgustSurface = successSurface;
+  static const Color onEmotionDisgust = Color(0xFFFFFFFF); // Teks Putih
 
   // 5. Takut (Fear)
-  static const Color emotionFear = Color(0xFFA39CB8); // Dusty Indigo
-  static const Color emotionFearSurface = Color(0xFFF3F2F6);
-  static const Color onEmotionFear = Color(0xFF1A1C1C);
+  static const Color emotionFear = Color(0xFF7C3AED); // Violet 600
+  static const Color emotionFearSurface = Color(0xFFEDE9FE); // Violet 100
+  static const Color onEmotionFear = Color(0xFFFFFFFF); // Teks Putih
 
   // 6. Netral (Neutral)
-  static const Color emotionNetral = Color(0xFFD1CFC9); // Warm Greige
-  static const Color emotionNetralSurface = Color(0xFFF9F8F6);
-  static const Color onEmotionNetral = Color(0xFF1A1C1C);
+  static const Color emotionNetral = Color(0xFF475569); // Slate 600
+  static const Color emotionNetralSurface = Color(0xFFF1F5F9); // Slate 100
+  static const Color onEmotionNetral = Color(0xFFFFFFFF); // Teks Putih
 
   static ColorScheme colorScheme = const ColorScheme.light(
     primary: primary,

@@ -2,7 +2,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
-import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/mood_overview_card.dart';
 import 'package:fem_psychmonitor/widgets/upload_audio_button.dart';
 import 'package:flutter/material.dart';
@@ -43,10 +42,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: CustomAppBar(
-        backgroundColor: Colors.transparent,
-        showBackButton: false,
-      ),
       body: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
@@ -56,7 +51,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               // SizedBox(height: 32.h),
               Text(
-                'Good evening, Elena',
+                'Selamat malam, Elena',
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.w800,
@@ -66,48 +61,62 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 8.h),
               Text(
-                'How is your heart feeling in this moment?',
+                'Bagaimana perasaan hatimu saat ini?',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontSize: 15.sp,
                   color: AppColors.onSurface.withAlpha(153),
                 ),
               ),
+              SizedBox(height: 24.h),
+              
+              _buildDailyTracker(context),
+
               SizedBox(height: 32.h),
               MoodOverviewCard(
-                mood: 'Serene',
+                mood: 'Tenang',
                 percentage: 76,
                 description:
-                    'Your heart feels calm and balanced. Keep nurturing this tranquility with mindful moments and self-care.',
+                    'Hatimu terasa tenang dan seimbang. Jaga terus ketenangan ini dengan aktivitas relaksasi dan self-care.',
               ),
 
               SizedBox(height: 48.h),
-              Column(
-                children: [
-                  Center(
-                    child: PulsingMicButton(
-                      onTap: () {
-                        context.goNamed(RouteNames.liveRecording);
-                      },
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 24.w),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
+                  border: Border.all(color: AppColors.outline),
+                ),
+                child: Column(
+                  children: [
+                    Center(
+                      child: PulsingMicButton(
+                        onTap: () {
+                          context.goNamed(RouteNames.liveRecording);
+                        },
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 24.h),
-                  Text(
-                    'Record Your Voice',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w800,
+                    SizedBox(height: 24.h),
+                    Text(
+                      'Rekam Suaramu',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Let the AI decode your true emotions',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: 13.sp,
-                      color: AppColors.onSurface.withAlpha(153),
+                    SizedBox(height: 4.h),
+                    Text(
+                      'Biarkan AI mengenali emosi aslimu',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontSize: 13.sp,
+                        color: AppColors.onSurface.withAlpha(153),
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 16.h),
-                  UploadAudioButton(onTap: _handleUploadAudio),
-                ],
+                    SizedBox(height: 24.h),
+                    UploadAudioButton(onTap: _handleUploadAudio),
+                  ],
+                ),
               ),
               SizedBox(height: 48.h),
               Row(
@@ -115,11 +124,10 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: _buildStatCard(
                       context,
-                      color: AppColors.infoSurface,
+                      color: AppColors.info,
                       icon: Icons.sentiment_satisfied_alt_rounded,
-                      title: 'Serene',
-                      subtitle: 'CURRENT MOOD',
-                      textColor: AppColors.info,
+                      title: 'Tenang',
+                      subtitle: 'MOOD SAAT INI',
                     ),
                   ),
                   SizedBox(width: 16.w),
@@ -129,8 +137,7 @@ class _HomePageState extends State<HomePage> {
                       color: AppColors.secondary,
                       icon: Icons.history_rounded,
                       title: '24',
-                      subtitle: 'TOTAL RECORDS',
-                      textColor: AppColors.onSurface,
+                      subtitle: 'TOTAL REKAMAN',
                     ),
                   ),
                 ],
@@ -150,25 +157,32 @@ class _HomePageState extends State<HomePage> {
     required IconData icon,
     required String title,
     required String subtitle,
-    required Color textColor,
   }) {
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: color,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: textColor, size: 28.sp),
+          Container(
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(
+              color: color.withAlpha(25),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 24.sp),
+          ),
           SizedBox(height: 16.h),
           Text(
             title,
             style: Theme.of(context).textTheme.displayLarge?.copyWith(
               fontSize: 24.sp,
               fontWeight: FontWeight.w800,
-              color: textColor,
+              color: AppColors.textPrimary,
               letterSpacing: -0.5,
             ),
           ),
@@ -177,12 +191,92 @@ class _HomePageState extends State<HomePage> {
             subtitle,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontSize: 10.sp,
-              color: textColor.withAlpha(179),
+              color: AppColors.textSecondary,
               letterSpacing: 1.0,
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDailyTracker(BuildContext context) {
+    final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    // For mock, let's say Monday to Thursday are checked.
+    final checkedDays = [true, true, true, true, false, false, false];
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Runtutan Check-in Anda',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            Row(
+              children: [
+                Icon(Icons.local_fire_department_rounded, color: const Color(0xFFF59E0B), size: 18.sp),
+                SizedBox(width: 4.w),
+                Text(
+                  '4 Hari',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFF59E0B),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+        SizedBox(height: 16.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(7, (index) {
+            final isChecked = checkedDays[index];
+            final isToday = index == 4; // Let's say Friday is today
+            
+            return Container(
+              width: 40.w,
+              height: 52.h,
+              decoration: BoxDecoration(
+                color: isChecked 
+                    ? AppColors.primary.withAlpha(20) 
+                    : (isToday ? AppColors.surface : Colors.transparent),
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                border: Border.all(
+                  color: isChecked 
+                      ? AppColors.primary 
+                      : (isToday ? const Color(0xFFF59E0B) : AppColors.outline),
+                  width: isToday ? 2 : 1,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    days[index],
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: isChecked 
+                          ? AppColors.primary 
+                          : (isToday ? AppColors.textPrimary : AppColors.textSecondary),
+                      fontWeight: isToday || isChecked ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                  ),
+                  if (isChecked) ...[
+                    SizedBox(height: 4.h),
+                    Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 14.sp),
+                  ]
+                ],
+              ),
+            );
+          }),
+        ),
+      ],
     );
   }
 }

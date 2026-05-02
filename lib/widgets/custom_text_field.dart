@@ -10,6 +10,8 @@ class CustomTextField extends StatefulWidget {
   final bool isPassword;
   final TextInputType keyboardType;
   final Widget? trailingLabel;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
 
   const CustomTextField({
     super.key,
@@ -19,6 +21,8 @@ class CustomTextField extends StatefulWidget {
     this.isPassword = false,
     this.keyboardType = TextInputType.text,
     this.trailingLabel,
+    this.controller,
+    this.validator,
   });
 
   @override
@@ -40,9 +44,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
             Text(
               widget.label,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                fontSize: 14.sp,
-                color: AppColors.onSurface.withAlpha(230),
-                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
               ),
             ),
             // Tampilkan trailingLabel jika ada
@@ -51,62 +54,77 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         SizedBox(height: 8.h),
         // Kotak Input
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(AppRadius.lg),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withAlpha(7),
-                blurRadius: 15,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: TextFormField(
-            obscureText: widget.isPassword ? _obscureText : false,
-            keyboardType: widget.keyboardType,
-            style: Theme.of(context).textTheme.bodyMedium,
-            decoration: InputDecoration(
-              hintText: widget.hintText,
-              hintStyle: TextStyle(color: Colors.grey.shade400),
+        TextFormField(
+          controller: widget.controller,
+          validator: widget.validator,
+          obscureText: widget.isPassword ? _obscureText : false,
+          keyboardType: widget.keyboardType,
+          style: Theme.of(context).textTheme.bodyMedium,
+          decoration: InputDecoration(
+            hintText: widget.hintText,
+            hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary.withAlpha(140),
+            ),
+            filled: true,
+            fillColor: AppColors.inputFill,
 
-              // Menampilkan prefix icon hanya jika ada isinya
-              prefixIcon: widget.prefixIcon != null
-                  ? Icon(
-                      widget.prefixIcon,
-                      color: AppColors.onSurface.withAlpha(127),
-                      size: 20.sp,
-                    )
-                  : null,
+            // Menampilkan prefix icon hanya jika ada isinya
+            prefixIcon: widget.prefixIcon != null
+                ? Icon(
+                    widget.prefixIcon,
+                    color: AppColors.textSecondary.withAlpha(160),
+                    size: 20.sp,
+                  )
+                : null,
 
-              // Menampilkan suffix icon (mata) khusus form password
-              suffixIcon: widget.isPassword
-                  ? IconButton(
-                      icon: Icon(
-                        _obscureText
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: AppColors.onSurface.withAlpha(102),
-                        size: 22.sp,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureText = !_obscureText;
-                        });
-                      },
-                    )
-                  : null,
+            // Menampilkan suffix icon (mata) khusus form password
+            suffixIcon: widget.isPassword
+                ? IconButton(
+                    icon: Icon(
+                      _obscureText
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: AppColors.textSecondary.withAlpha(140),
+                      size: 22.sp,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  )
+                : null,
 
-              // Menghilangkan garis tepi bawaan untuk style yang lebih bersih
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadius.lg),
-                borderSide: BorderSide.none,
+            // Border normal
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: const BorderSide(color: AppColors.outline),
+            ),
+            // Border saat focused
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(
+                color: AppColors.primary.withValues(alpha: 0.5),
+                width: 2,
               ),
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 16.h,
-                horizontal: 16.w,
-              ),
+            ),
+            // Border saat ada error
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: const BorderSide(color: AppColors.warning, width: 1.5),
+            ),
+            // Border saat focused & ada error
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: const BorderSide(color: AppColors.warning, width: 2),
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              vertical: AppSpacing.md.h,
+              horizontal: AppSpacing.md.w,
+            ),
+            errorStyle: TextStyle(
+              color: AppColors.warning,
+              fontSize: 12,
             ),
           ),
         ),

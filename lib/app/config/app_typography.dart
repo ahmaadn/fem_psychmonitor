@@ -11,65 +11,65 @@ class AppTypography {
   /// * Ringkasan status emosional utama.
   static TextStyle get display => GoogleFonts.plusJakartaSans(
     fontSize: 32,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeight.w700,
     letterSpacing: -0.64, // -2% Tracking
-    color: AppColors.onSurface,
+    color: AppColors.textPrimary,
   );
 
-  /// **H1 (24px, Bold)**
+  /// **H1 (32px, Bold)**
   ///
   /// Gunakan untuk:
   /// * Header layar utama (Misal: Judul halaman "Dashboard" atau "Profile").
   static TextStyle get h1 => GoogleFonts.plusJakartaSans(
-    fontSize: 24,
-    fontWeight: FontWeight.bold,
-    color: AppColors.onSurface,
+    fontSize: 32,
+    fontWeight: FontWeight.w700,
+    color: AppColors.textPrimary,
   );
 
-  /// **H2 (20px, Semi-bold)**
+  /// **H2 (18px, Semi-bold)**
   ///
   /// Gunakan untuk:
   /// * Header/Judul dari sebuah section (bagian).
   /// * Judul di dalam Card (Card titles).
   static TextStyle get h2 => GoogleFonts.plusJakartaSans(
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: FontWeight.w600,
-    color: AppColors.onSurface,
+    color: AppColors.textPrimary,
   );
 
-  /// **Body Large (18px, Medium)**
+  /// **Body Large (16px, Regular)**
   ///
   /// Gunakan untuk:
   /// * Teks body utama.
   /// * Paragraf pengantar (Intro paragraphs).
   /// * **Pesan "Companion"**: Nasihat langsung atau *insight* psikologis yang diberikan kepada pengguna.
-  static TextStyle get bodyLg => GoogleFonts.manrope(
-    fontSize: 18,
-    fontWeight: FontWeight.w500,
-    color: AppColors.onSurface,
+  static TextStyle get bodyLg => GoogleFonts.beVietnamPro(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textPrimary,
   );
 
-  /// **Body Medium (16px, Regular)**
+  /// **Body Medium (14px, Regular)**
   ///
   /// Gunakan untuk:
   /// * Teks body standar.
   /// * Label pada form input.
-  static TextStyle get bodyMd => GoogleFonts.manrope(
-    fontSize: 16,
+  static TextStyle get bodyMd => GoogleFonts.beVietnamPro(
+    fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: AppColors.onSurface,
+    color: AppColors.textPrimary,
   );
 
-  /// **Body Small (14px, Regular)**
+  /// **Body Small (12px, Regular)**
   ///
   /// Gunakan untuk:
   /// * Deskripsi sekunder/tambahan.
   /// * *Captions* di bawah gambar atau grafik.
   /// * Metadata untuk item di dalam *list* (daftar).
-  static TextStyle get bodySm => GoogleFonts.manrope(
-    fontSize: 14,
+  static TextStyle get bodySm => GoogleFonts.beVietnamPro(
+    fontSize: 12,
     fontWeight: FontWeight.w400,
-    color: AppColors.onSurface,
+    color: AppColors.textSecondary,
   );
 
   /// **Label (12px, Semi-bold)**
@@ -80,8 +80,8 @@ class AppTypography {
   /// * *Micro-copy* (teks instruksi singkat).
   static TextStyle get label => GoogleFonts.beVietnamPro(
     fontSize: 12,
-    fontWeight: FontWeight.w600,
-    color: AppColors.onSurface,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textPrimary,
   );
 
   /// **Extra Small / XS (10px, Semi-bold)**
@@ -92,8 +92,8 @@ class AppTypography {
   /// * Label pada *Bottom Navigation Bar*.
   static TextStyle get xs => GoogleFonts.beVietnamPro(
     fontSize: 10,
-    fontWeight: FontWeight.w600,
-    color: AppColors.onSurface,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textSecondary,
   );
 
   /// Menggabungkan semua style di atas ke dalam [TextTheme] Material Design.

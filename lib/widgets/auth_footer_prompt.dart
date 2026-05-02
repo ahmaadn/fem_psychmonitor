@@ -21,16 +21,16 @@ class AuthFooterPrompt extends StatelessWidget {
       text: TextSpan(
         text: text,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontSize: 14.sp,
-          color: AppColors.onSurface.withAlpha(179),
+          fontSize: 12.sp,
+          color: AppColors.textSecondary,
         ),
         children: [
           TextSpan(
             text: linkText,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              fontSize: 14.sp,
+              fontSize: 12.sp,
               color: AppColors.primary,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
             ),
             recognizer: TapGestureRecognizer()..onTap = onTap,
           ),

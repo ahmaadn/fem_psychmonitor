@@ -1,5 +1,6 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/widgets/auth_footer_prompt.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_text_field.dart';
@@ -16,61 +17,74 @@ class ForgotPasswordPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: CustomAppBar(
+        title: 'Lupa Kata Sandi',
         backgroundColor: Colors.transparent,
         showBackButton: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 48.h),
-              Text(
-                'Reset Password',
-                style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  fontSize: 32.sp,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.onSurface,
-                  letterSpacing: -0.5,
+              SizedBox(height: AppSpacing.xl.h),
+              Container(
+                width: 72.w,
+                height: 72.w,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.outline),
                 ),
+                child: Icon(
+                  Icons.lock_reset_rounded,
+                  color: AppColors.primary,
+                  size: 32.sp,
+                ),
+              ),
+              SizedBox(height: AppSpacing.lg.h),
+              Text(
+                'Atur ulang kata sandi',
+                style: Theme.of(context).textTheme.headlineLarge,
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: AppSpacing.sm.h),
               Text(
-                'Enter your email to receive a reset link',
+                'Masukkan email untuk menerima tautan pemulihan.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: 15.sp,
-                  color: AppColors.onSurface.withAlpha(153),
+                  color: AppColors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 48.h),
-              Form(
-                child: Column(
-                  children: [
-                    const CustomTextField(
-                      label: 'EMAIL ADDRESS',
-                      hintText: 'name@example.com',
-                      prefixIcon: Icons.email_outlined,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    SizedBox(height: 40.h),
-                    PrimaryButton(
-                      text: 'Send Link',
-                      suffixIcon: Icons.arrow_forward_rounded,
-                      onPressed: () {
-                        context.goNamed(RouteNames.login);
-                      },
-                    ),
-                  ],
+              SizedBox(height: AppSpacing.xl.h),
+              SizedBox(
+                width: double.infinity,
+                child: Form(
+                  child: Column(
+                    children: [
+                      const CustomTextField(
+                        label: 'Email',
+                        hintText: 'nama@contoh.com',
+                        prefixIcon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      SizedBox(height: AppSpacing.lg.h),
+                      PrimaryButton(
+                        text: 'Kirim tautan',
+                        suffixIcon: Icons.arrow_forward_rounded,
+                        onPressed: () {
+                          context.goNamed(RouteNames.login);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              SizedBox(height: 48.h),
+              SizedBox(height: AppSpacing.xl.h),
               Center(
                 child: AuthFooterPrompt(
-                  text: "Remember your password? ",
-                  linkText: "Login here",
+                  text: 'Ingat kata sandi? ',
+                  linkText: 'Masuk di sini',
                   onTap: () {
                     if (context.canPop()) {
                       context.pop();

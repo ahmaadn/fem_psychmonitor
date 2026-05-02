@@ -2,6 +2,7 @@ class RouteNames {
   RouteNames._();
 
   static const String splash = "splash";
+  static const String onboarding = "onboarding";
   static const String register = "register";
   static const String login = "login";
   static const String forgotPassword = "forgot-password";
@@ -11,4 +12,7 @@ class RouteNames {
   static const String liveRecording = "live-recording";
   static const String recordingProcessing = "recording-processing";
   static const String analysisResult = "analysis-result";
+  static const String analysisResultTeaser = "analysis-result-teaser";
+  static const String initialQuestions = "initial-questions";
+  static const String permissions = "permissions";
 }

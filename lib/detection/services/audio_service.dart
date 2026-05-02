@@ -21,6 +21,14 @@ class AudioService {
   final List<double> _ringBuffer = [];
   double _recordedSeconds = 0.0;
   bool _running = false;
+  bool _isPaused = false;
+  bool get isPaused => _isPaused;
+
+  final StreamController<double> _amplitudeController = StreamController<double>.broadcast();
+  Stream<double> get onAmplitudeChanged => _amplitudeController.stream;
+
+  int _sampleCounter = 0;
+  double _currentMax = 0.0;
 
   StreamSubscription<Uint8List>? _audioSub;
   Timer? _strideTimer;
@@ -42,6 +50,7 @@ class AudioService {
     if (!hasPermission) throw Exception('Microphone permission denied');
 
     _running = true;
+    _isPaused = false;
     _recordedSeconds = 0.0;
     _ringBuffer.clear();
 
@@ -81,6 +90,7 @@ class AudioService {
   // ── Stop recording
   Future<String?> stop() async {
     _running = false;
+    _isPaused = false;
     _strideTimer?.cancel();
     _strideTimer = null;
     await _audioSub?.cancel();
@@ -103,6 +113,24 @@ class AudioService {
     return savedPath;
   }
 
+  Future<void> pause() async {
+    if (!_running || _isPaused) return;
+    await _recorder.pause();
+    _isPaused = true;
+    _strideTimer?.cancel();
+    _strideTimer = null;
+  }
+
+  Future<void> resume() async {
+    if (!_running || !_isPaused) return;
+    await _recorder.resume();
+    _isPaused = false;
+    _strideTimer = Timer.periodic(
+      const Duration(milliseconds: _strideMs),
+      _onStrideTick,
+    );
+  }
+
   // ── Incoming PCM bytes → float32 ring buffer
   void _onAudioBytes(Uint8List bytes) {
     _pcmSink?.add(bytes);
@@ -115,7 +143,19 @@ class AudioService {
     final int sampleCount = bytes.length ~/ 2;
     for (int i = 0; i < sampleCount; i++) {
       final int raw = bd.getInt16(i * 2, Endian.little);
-      _ringBuffer.add(raw / 32768.0);
+      final double val = raw / 32768.0;
+      _ringBuffer.add(val);
+
+      final absVal = val.abs();
+      if (absVal > _currentMax) _currentMax = absVal;
+
+      _sampleCounter++;
+      // Update ~20 times per second (16000 / 20 = 800 samples)
+      if (_sampleCounter >= 800) {
+        _amplitudeController.add(_currentMax);
+        _sampleCounter = 0;
+        _currentMax = 0.0;
+      }
     }
     _recordedSeconds += sampleCount / _sampleRate;
 
@@ -147,5 +187,6 @@ class AudioService {
 
   void dispose() {
     stop();
+    _amplitudeController.close();
   }
 }

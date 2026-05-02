@@ -163,12 +163,29 @@ class RecordingTimeline extends StatelessWidget {
 
 class ComponentTimeline extends StatelessWidget {
   final List<EmotionResult> timeline;
+  final String title;
+  final bool animateFromLastPercent;
+  final bool sortByFrequency;
+  final bool showAllEmotions;
 
-  const ComponentTimeline({super.key, required this.timeline});
+  const ComponentTimeline({
+    super.key,
+    required this.timeline,
+    this.title = 'Component Analysis',
+    this.animateFromLastPercent = false,
+    this.sortByFrequency = true,
+    this.showAllEmotions = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final countMap = <EmotionLabelType, int>{};
+    if (showAllEmotions) {
+      for (final label in EmotionLabelType.values) {
+        countMap[label] = 0;
+      }
+    }
+
     for (final item in timeline) {
       countMap[item.label] = (countMap[item.label] ?? 0) + 1;
     }
@@ -177,27 +194,26 @@ class ComponentTimeline extends StatelessWidget {
     final emotionPercentages = countMap.map(
       (key, value) => MapEntry(key, ((value / total) * 100).round()),
     );
-    final emotionEntries = emotionPercentages.entries.toList(growable: false)
-      ..sort((a, b) => b.value.compareTo(a.value));
+    final emotionEntries = emotionPercentages.entries.toList(growable: false);
+
+    if (sortByFrequency) {
+      emotionEntries.sort((a, b) => b.value.compareTo(a.value));
+    } else {
+      emotionEntries.sort((a, b) => a.key.index.compareTo(b.key.index));
+    }
 
     return Container(
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.all(AppSpacing.relaxed.w),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppRadius.xxl),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Component Analysis',
+            title,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontSize: 18.sp,
               fontWeight: FontWeight.w800,
@@ -235,8 +251,10 @@ class ComponentTimeline extends StatelessWidget {
           children: [
             Row(
               children: [
+                Text(emotion.emoji, style: TextStyle(fontSize: 18.sp)),
+                SizedBox(width: 8.w),
                 Text(
-                  emotion.label,
+                  emotion.displayName,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
@@ -260,8 +278,9 @@ class ComponentTimeline extends StatelessWidget {
           lineHeight: 8.h,
           percent: percentage / 100,
           animation: true,
-          animationDuration: 1000,
-          backgroundColor: Colors.grey.shade200,
+          animateFromLastPercent: animateFromLastPercent,
+          animationDuration: animateFromLastPercent ? 500 : 1000,
+          backgroundColor: AppColors.outline.withValues(alpha: 0.6),
           progressColor: emotion.color,
           barRadius: const Radius.circular(AppRadius.full),
           padding: EdgeInsets.zero, // Penting agar sejajar ujung ke ujung

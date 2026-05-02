@@ -26,9 +26,9 @@ class MoodOverviewCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.xxl),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withAlpha(76),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
+            color: AppColors.shadow,
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),

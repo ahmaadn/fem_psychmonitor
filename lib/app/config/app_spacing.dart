@@ -4,6 +4,23 @@ class AppSpacing {
   // Grid dasar menggunakan kelipatan 8px
   static const double none = 0.0;
 
+  // Design aliases (DESIGN.md)
+
+  /// 4px, untuk jarak sangat kecil, seperti antara ikon dan teks dalam tombol.
+  static const double xs = 4.0;
+
+  /// 8px, untuk jarak kecil, seperti antara elemen dalam satu grup (misalnya, antara label dan input).
+  static const double sm = 8.0;
+
+  /// 16px, untuk jarak standar antar elemen utama (misalnya, antara form fields).
+  static const double md = 16.0;
+
+  /// 24px, untuk jarak lebih longgar antar grup elemen (misalnya, antara sections dalam satu page).
+  static const double lg = 24.0;
+
+  /// 32px, untuk jarak besar antar section utama (misalnya, antara header dan content).
+  static const double xl = 32.0;
+
   /// Internal grouping, icon labels.
   static const double tight = 4.0;
 
@@ -31,15 +48,18 @@ class AppRadius {
 
   // Pembulatan sudut (Corner Radius) untuk kesan UI yang empatik dan lembut
   /// Checkboxes, tag kecil.
-  static const double sm = 4.0;
+  static const double xs = 4.0;
 
-  /// Tombol standar, card kecil.
-  static const double md = 8.0;
+  /// Checkboxes, tag kecil.
+  static const double sm = 8.0;
 
-  /// Input fields, tombol aksi utama.
-  static const double lg = 16.0;
+  /// Tombol standar, input fields.
+  static const double md = 16.0;
 
-  /// Content cards.
+  /// Banner besar, modal bawah.
+  static const double lg = 24.0;
+
+  /// Content cards (legacy size).
   static const double xl = 24.0;
 
   /// Large feature cards, dashboard summaries.

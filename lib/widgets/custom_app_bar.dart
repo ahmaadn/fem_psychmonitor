@@ -14,7 +14,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const CustomAppBar({
     super.key,
-    this.title = 'FEM-PSYCHMONITOR',
+    this.title = '',
     this.leading,
     this.actions,
     this.showBackButton = true,
@@ -39,7 +39,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ? IconButton(
                   icon: Icon(
                     Icons.arrow_back_rounded,
-                    color: AppColors.primary.withAlpha(127),
+                    color: AppColors.textSecondary,
                   ),
                   onPressed: () {
                     context.pop();
@@ -48,12 +48,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               : null),
       title: Text(
         title,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          fontSize: 12.sp,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 1.0,
-          color: AppColors.primary,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.headlineMedium?.copyWith(color: AppColors.textPrimary),
       ),
 
       actions: actions != null ? [...actions!, SizedBox(width: 8.w)] : null,

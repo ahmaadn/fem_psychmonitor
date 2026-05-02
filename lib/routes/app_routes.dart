@@ -9,7 +9,9 @@ import 'package:fem_psychmonitor/pages/main_layout.dart';
 import 'package:fem_psychmonitor/pages/recording/ai_processing_page.dart';
 import 'package:fem_psychmonitor/pages/recording/analysis_result_page.dart';
 import 'package:fem_psychmonitor/pages/recording/live_recording_page.dart';
+import 'package:fem_psychmonitor/pages/initial_questionnaire_page.dart';
 import 'package:fem_psychmonitor/pages/splash_page.dart';
+import 'package:fem_psychmonitor/pages/onboarding_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -25,17 +27,33 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: '/onboarding',
+        name: RouteNames.onboarding,
+        builder: (BuildContext context, GoRouterState state) {
+          return const OnboardingPage();
+        },
+      ),
+      GoRoute(
+        path: '/initial-questions',
+        name: RouteNames.initialQuestions,
+        builder: (BuildContext context, GoRouterState state) {
+          return const InitialQuestionnairePage();
+        },
+      ),
+      GoRoute(
         path: '/auth/register',
         name: RouteNames.register,
         builder: (BuildContext context, GoRouterState state) {
-          return const RegisterPage();
+          final returnTo = state.extra is String ? state.extra as String : null;
+          return RegisterPage(returnTo: returnTo);
         },
       ),
       GoRoute(
         path: '/auth/login',
         name: RouteNames.login,
         builder: (BuildContext context, GoRouterState state) {
-          return const LoginPage();
+          final returnTo = state.extra is String ? state.extra as String : null;
+          return LoginPage(returnTo: returnTo);
         },
       ),
       GoRoute(
@@ -116,6 +134,13 @@ class AppRouter {
               ? state.extra as String
               : null;
           return AiProcessingPage(uploadedAudioPath: uploadedPath);
+        },
+      ),
+      GoRoute(
+        path: '/recording/analysis-teaser',
+        name: RouteNames.analysisResultTeaser,
+        builder: (context, state) {
+          return AnalysisResultPage(isTeaser: true);
         },
       ),
     ],

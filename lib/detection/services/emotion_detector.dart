@@ -40,6 +40,8 @@ class EmotionDetector extends ChangeNotifier {
   String? get lastDetectionPath => _lastDetectionPath;
   String? get lastUploadedPath => _lastUploadedPath;
   List<EmotionResult> get timeline => List.unmodifiable(_timeline);
+  Stream<double> get onAmplitudeChanged => _ready ? _audio.onAmplitudeChanged : const Stream.empty();
+  bool get isPaused => _ready ? _audio.isPaused : false;
 
   // ── Internals ──────────────────────────────────────────────────────────────
   late final InferenceIsolateManager _isolate;
@@ -108,6 +110,18 @@ class EmotionDetector extends ChangeNotifier {
     _detecting = false;
     notifyListeners();
     return _lastRecordingPath;
+  }
+
+  Future<void> pauseDetection() async {
+    if (!_detecting || isPaused) return;
+    await _audio.pause();
+    notifyListeners();
+  }
+
+  Future<void> resumeDetection() async {
+    if (!_detecting || !isPaused) return;
+    await _audio.resume();
+    notifyListeners();
   }
 
   Future<String?> detectFromAudioFile(String filePath) async {

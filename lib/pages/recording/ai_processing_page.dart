@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -60,9 +61,15 @@ class _AiProcessingPageState extends State<AiProcessingPage>
         return;
       }
 
-      context.goNamed(RouteNames.analysisResult);
+      // If user is not authenticated, show teaser result and prompt to login/register.
+      // TODO: Replace with real auth check when available.
+      final bool isAuthenticated = await _isAuthenticated();
+      if (isAuthenticated) {
+        context.goNamed(RouteNames.analysisResult);
+      } else {
+        context.goNamed(RouteNames.analysisResultTeaser);
+      }
     } catch (e) {
-      await _waitMinimumLoading(startedAt);
       if (!mounted) return;
       setState(() {
         _processingError = '$e';
@@ -82,6 +89,11 @@ class _AiProcessingPageState extends State<AiProcessingPage>
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  Future<bool> _isAuthenticated() async {
+    // Placeholder: integrate real auth check (SharedPreferences / AuthProvider)
+    return false;
   }
 
   @override
@@ -104,202 +116,105 @@ class _AiProcessingPageState extends State<AiProcessingPage>
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: constraints.maxHeight,
-                      ),
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 64.h),
+              // decoration: BoxDecoration(
+              //   color: AppColors.surface,
+              //   borderRadius: BorderRadius.circular(AppRadius.xxl),
+              //   border: Border.all(color: AppColors.outline),
+              // ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) {
+                      // Soft breathing pulse: 1.0 to 1.15
+                      final double pulseScale =
+                          1.0 +
+                          0.15 * math.sin(_animationController.value * math.pi);
+
+                      return SizedBox(
+                        width: 160.w,
+                        height: 160.w,
+                        child: Stack(
+                          alignment: Alignment.center,
                           children: [
-                            AnimatedBuilder(
-                              animation: _animationController,
-                              builder: (context, child) {
-                                // Hitung skala pulse menggunakan Sinus (0.98 hingga 1.02)
-                                final double pulseScale =
-                                    1.0 +
-                                    0.02 *
-                                        math.sin(
-                                          _animationController.value *
-                                              2 *
-                                              math.pi *
-                                              2,
-                                        );
-
-                                return SizedBox(
-                                  width: 240.w,
-                                  height: 240.w,
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Transform.rotate(
-                                        angle:
-                                            _animationController.value *
-                                            2 *
-                                            math.pi,
-                                        child: CustomPaint(
-                                          size: Size(240.w, 240.w),
-                                          painter: _SegmentedRingPainter(
-                                            color: AppColors.tertiary
-                                                .withValues(alpha: 0.4),
-                                          ),
-                                        ),
-                                      ),
-
-                                      Transform.scale(
-                                        scale: pulseScale,
-                                        child: Container(
-                                          width: 170.w,
-                                          height: 170.w,
-                                          decoration: BoxDecoration(
-                                            gradient: const LinearGradient(
-                                              begin: Alignment.topCenter,
-                                              end: Alignment.bottomCenter,
-                                              colors: [
-                                                AppColors.primary, // Biru Trust
-                                                AppColors
-                                                    .primaryContainer, // Trust Blue
-                                              ],
-                                            ),
-                                            shape: BoxShape.circle,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: AppColors.primary
-                                                    .withValues(alpha: 0.3),
-                                                blurRadius: 30,
-                                                offset: const Offset(0, 10),
-                                              ),
-                                            ],
-                                          ),
-
-                                          child: Stack(
-                                            children: [
-                                              Positioned(
-                                                right: 32.w,
-                                                top: 60.w,
-                                                child: Icon(
-                                                  Icons.auto_awesome_rounded,
-                                                  color: Colors.white,
-                                                  size: 36.sp,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                            Transform.scale(
+                              scale: pulseScale * 1.2,
+                              child: Container(
+                                width: 120.w,
+                                height: 120.w,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.05,
                                   ),
-                                );
-                              },
+                                ),
+                              ),
                             ),
-                            SizedBox(height: 64.h),
-                            Text(
-                              'Processing Audio',
-                              style: Theme.of(context).textTheme.displayLarge
-                                  ?.copyWith(
-                                    fontSize: 28.sp,
-                                    fontWeight: FontWeight.w800,
-                                    color: AppColors.primary,
-                                    letterSpacing: -0.5,
+                            Transform.scale(
+                              scale: pulseScale,
+                              child: Container(
+                                width: 120.w,
+                                height: 120.w,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.1,
                                   ),
-                              textAlign: TextAlign.center,
+                                ),
+                              ),
                             ),
-                            SizedBox(height: 16.h),
-                            Text(
-                              _processingError ??
-                                  'Analyzing your audio data...',
-                              style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(
-                                    fontSize: 16.sp,
-                                    color: _processingError == null
-                                        ? AppColors.onSurface
-                                        : Colors.red,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                              textAlign: TextAlign.center,
+                            Container(
+                              width: 80.w,
+                              height: 80.w,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.primary,
+                              ),
+                              child: Icon(
+                                Icons.eco_rounded,
+                                color: Colors.white,
+                                size: 40.sp,
+                              ),
                             ),
-
-                            SizedBox(height: 12.h),
-
-                            Text(
-                              'Please wait while we prepare your insights.',
-                              style: Theme.of(context).textTheme.labelSmall
-                                  ?.copyWith(
-                                    fontSize: 10.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.onSecondaryFixed,
-                                    letterSpacing: 1.5,
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-
-                            SizedBox(height: 48.h),
                           ],
                         ),
-                      ),
+                      );
+                    },
+                  ),
+                  SizedBox(height: 48.h),
+                  Text(
+                    'Menganalisis Emosi',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primary,
                     ),
-                  );
-                },
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(
+                    _processingError ?? 'Menyusun wawasan personal Anda...',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 14.sp,
+                      color: _processingError == null
+                          ? AppColors.textSecondary
+                          : Colors.red,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
-  }
-}
-
-class _SegmentedRingPainter extends CustomPainter {
-  final Color color;
-
-  _SegmentedRingPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0
-      ..strokeCap = StrokeCap.round; // Ujung garis dibuat tumpul/membulat
-
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = (size.width / 2) - 2; // Kurangi sedikit agar tidak terpotong
-
-    // Membuat 4 segmen busur garis (arc) dengan jarak kosong (gap) di antaranya
-    const int segments = 4;
-    const double sweepAngle =
-        (math.pi * 2) /
-        segments *
-        0.7; // Panjang garis 70% dari ruang yang tersedia
-    const double gapAngle =
-        (math.pi * 2) /
-        segments *
-        0.3; // Gap kosong 30% dari ruang yang tersedia
-
-    double startAngle = 0.0;
-
-    for (int i = 0; i < segments; i++) {
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        startAngle,
-        sweepAngle,
-        false,
-        paint,
-      );
-      // Pindahkan sudut mulai untuk segmen berikutnya
-      startAngle += sweepAngle + gapAngle;
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _SegmentedRingPainter oldDelegate) {
-    return oldDelegate.color != color;
   }
 }

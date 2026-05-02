@@ -27,7 +27,8 @@ class AppTheme {
       elevation: 0,
       shadowColor: AppColors.shadow,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.xxl),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        side: const BorderSide(color: AppColors.outline),
       ),
       margin: const EdgeInsets.all(AppSpacing.base),
     ),
@@ -43,7 +44,7 @@ class AppTheme {
           vertical: AppSpacing.base,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.full),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         textStyle: AppTypography.textTheme.labelLarge,
       ),
@@ -52,36 +53,36 @@ class AppTheme {
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primary,
-        side: BorderSide(color: AppColors.outlineVariant.withOpacity(0.15)),
+        side: const BorderSide(color: AppColors.outline),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.relaxed,
           vertical: AppSpacing.base,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.full),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
       ),
     ),
 
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.surfaceContainerLowest,
+      fillColor: AppColors.inputFill,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.base,
         vertical: AppSpacing.base,
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.lg),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.lg),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.lg),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         borderSide: BorderSide(
-          color: AppColors.primary.withOpacity(0.3),
+          color: AppColors.primary.withValues(alpha: 0.4),
           width: 2,
         ),
       ),
@@ -91,15 +92,15 @@ class AppTheme {
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: AppColors.surfaceContainerLowest,
       selectedItemColor: AppColors.primary,
-      unselectedItemColor: const Color(0xFF94A3B8),
+      unselectedItemColor: AppColors.textSecondary,
       type: BottomNavigationBarType.fixed,
       elevation: 0,
       selectedLabelStyle: AppTypography.textTheme.labelSmall,
       unselectedLabelStyle: AppTypography.textTheme.labelSmall,
     ),
 
-    dividerColor: Colors.transparent,
-    splashColor: AppColors.primary.withAlpha((255 * 0.08).toInt()),
+    dividerColor: AppColors.outline,
+    splashColor: AppColors.primary.withValues(alpha: 0.08),
     highlightColor: Colors.transparent,
     // hoverColor: AppColors.surfaceContainerHigh,
   );

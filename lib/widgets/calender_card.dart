@@ -26,8 +26,9 @@ class CalendarCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.xxl),
+        border: Border.all(color: AppColors.outline),
       ),
       child: Column(
         children: [
@@ -163,15 +164,9 @@ class CalendarCard extends StatelessWidget {
         width: 32.w,
         height: 32.w,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(25),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          border: Border.all(color: AppColors.outline),
         ),
         child: Icon(icon, size: 20.sp, color: Colors.grey.shade600),
       ),

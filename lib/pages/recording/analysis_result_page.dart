@@ -1,9 +1,9 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
-import 'package:fem_psychmonitor/widgets/page_header.dart';
 import 'package:fem_psychmonitor/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/widgets/timeline_widget.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,9 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 class AnalysisResultPage extends StatelessWidget {
-  const AnalysisResultPage({super.key});
+  final bool isTeaser;
+
+  const AnalysisResultPage({super.key, this.isTeaser = false});
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,9 @@ class AnalysisResultPage extends StatelessWidget {
 
     final dominant = detector.latest?.label ?? EmotionLabelType.neutral;
     final dominantConfidence = detector.latest?.confidence ?? 0.0;
+    final summaryText =
+        detector.error ??
+        'Ringkasan dibuat dari timeline deteksi rekaman Anda.';
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -40,130 +45,217 @@ class AnalysisResultPage extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 16.h),
-                    PageHeader(
-                      title: 'Analysis Result',
-                      subtitle:
-                          'Ringkasan hasil analisis rekaman terbaru Anda.',
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.relaxed.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: AppSpacing.base.h),
+              _buildHeroBanner(
+                context,
+                dominant: dominant,
+                confidence: dominantConfidence,
+                summaryText: summaryText,
+              ),
+              SizedBox(height: AppSpacing.extraSpacious.h),
+              _buildSectionCard(child: RecordingTimeline(timeline: timeline)),
+              SizedBox(height: AppSpacing.relaxed.h),
+              ComponentTimeline(timeline: timeline, title: 'Komponen Emosi'),
+              SizedBox(height: AppSpacing.relaxed.h),
+              PrimaryButton(
+                text: 'Back to Dashboard',
+                prefixIcon: Icons.dashboard_customize_rounded,
+                onPressed: () {
+                  context.goNamed(RouteNames.home);
+                },
+              ),
+              SizedBox(height: AppSpacing.base.h),
+              SecondaryButton(
+                text: 'Retake Recording',
+                subText: '(Ulangi Rekaman)',
+                icon: Icons.replay_rounded,
+                onPressed: () {
+                  context.goNamed(RouteNames.liveRecording);
+                },
+              ),
+              if (isTeaser) ...[
+                SizedBox(height: AppSpacing.relaxed.h),
+                _buildTeaserCard(context),
+              ],
+              if (!isTeaser) ...[
+                SizedBox(height: AppSpacing.relaxed.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.base.w),
+                  child: Text(
+                    '*Perhatian: Hasil analisis ini bersifat indikatif dan tidak menggantikan penilaian profesional.',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontSize: 9.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary.withValues(alpha: 0.7),
+                      letterSpacing: 0.5,
+                      height: 1.5,
                     ),
-
-                    SizedBox(height: 48.h),
-
-                    CircularPercentIndicator(
-                      radius: 80.w, // Setengah dari lebar yang diinginkan (160)
-                      lineWidth: 12.w,
-                      percent: dominantConfidence.clamp(0.0, 1.0),
-                      animation: true, // Animasi saat loading
-                      animationDuration: 1200,
-                      circularStrokeCap: CircularStrokeCap.round,
-                      backgroundColor: Colors.grey.shade200,
-                      progressColor: AppColors.primary,
-                      center: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            '${(dominantConfidence * 100).round()}%',
-                            style: Theme.of(context).textTheme.displayLarge
-                                ?.copyWith(
-                                  fontSize: 40.sp,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.primary,
-                                  letterSpacing: -1.0,
-                                ),
-                          ),
-                          Text(
-                            'Confidence',
-                            style: Theme.of(context).textTheme.labelSmall
-                                ?.copyWith(
-                                  fontSize: 9.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.5,
-                                  ),
-                                  letterSpacing: 1.0,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 48.h),
-                    Text(
-                      'Emosi Dominan ${dominant.displayName}',
-                      style: Theme.of(context).textTheme.headlineLarge
-                          ?.copyWith(
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.primary,
-                            letterSpacing: -0.5,
-                          ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 12.h),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: Text(
-                        detector.error ??
-                            'Ringkasan dibuat dari timeline deteksi rekaman Anda.',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontSize: 15.sp,
-                          color: AppColors.primary.withValues(alpha: 0.6),
-                          height: 1.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    SizedBox(height: 40.h),
-                    RecordingTimeline(timeline: timeline),
-                    SizedBox(height: 40.h),
-                    ComponentTimeline(timeline: timeline),
-                    SizedBox(height: 40.h),
-                    PrimaryButton(
-                      text: 'Back to Dashboard',
-                      prefixIcon: Icons.dashboard_customize_rounded,
-                      onPressed: () {
-                        context.goNamed(RouteNames.home);
-                      },
-                    ),
-                    SizedBox(height: 16.h),
-                    SecondaryButton(
-                      text: 'Retake Recording',
-                      subText: '(Ulangi Rekaman)',
-                      icon: Icons.replay_rounded,
-                      onPressed: () {
-                        context.goNamed(RouteNames.liveRecording);
-                      },
-                    ),
-                    SizedBox(height: 40.h),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24.w),
-                      child: Text(
-                        '*Perhatian: Hasil analisis ini bersifat indikatif dan tidak menggantikan penilaian profesional.',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontSize: 9.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary.withValues(alpha: 0.4),
-                          letterSpacing: 0.5,
-                          height: 1.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-
-                    SizedBox(height: 48.h),
-                  ],
+                    textAlign: TextAlign.center,
+                  ),
                 ),
+              ],
+              SizedBox(height: AppSpacing.extraSpacious.h),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeroBanner(
+    BuildContext context, {
+    required EmotionLabelType dominant,
+    required double confidence,
+    required String summaryText,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(AppSpacing.relaxed.w),
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Analysis Result',
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+              fontSize: 24.sp,
+              fontWeight: FontWeight.w800,
+              color: AppColors.onPrimary,
+              letterSpacing: -0.5,
+            ),
+          ),
+          SizedBox(height: AppSpacing.sm.h),
+          Text(
+            'Ringkasan hasil analisis rekaman terbaru Anda.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontSize: 14.sp,
+              color: AppColors.textPrimaryInverse.withValues(alpha: 0.85),
+              height: 1.4,
+            ),
+          ),
+          SizedBox(height: AppSpacing.relaxed.h),
+          Center(
+            child: CircularPercentIndicator(
+              radius: 72.w,
+              lineWidth: 10.w,
+              percent: confidence.clamp(0.0, 1.0),
+              animation: true,
+              animationDuration: 1200,
+              circularStrokeCap: CircularStrokeCap.round,
+              backgroundColor: AppColors.surface.withValues(alpha: 0.2),
+              progressColor: AppColors.secondary,
+              center: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${(confidence * 100).round()}%',
+                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                      fontSize: 36.sp,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimaryInverse,
+                      letterSpacing: -1.0,
+                    ),
+                  ),
+                  Text(
+                    'Confidence',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontSize: 9.sp,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimaryInverse.withValues(
+                        alpha: 0.7,
+                      ),
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          SizedBox(height: AppSpacing.base.h),
+          Text(
+            'Emosi Dominan ${dominant.displayName}',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimaryInverse,
+            ),
+          ),
+          SizedBox(height: AppSpacing.sm.h),
+          Text(
+            summaryText,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              fontSize: 13.sp,
+              color: AppColors.textPrimaryInverse.withValues(alpha: 0.8),
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionCard({required Widget child}) {
+    return Container(
+      padding: EdgeInsets.all(AppSpacing.relaxed.w),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.outline),
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildTeaserCard(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(AppSpacing.relaxed.w),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Ingin melihat hasil lengkap?',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          SizedBox(height: AppSpacing.sm.h),
+          Text(
+            'Login / Register untuk melihat penuh.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              fontSize: 13.sp,
+              color: AppColors.textSecondary,
+              height: 1.4,
+            ),
+          ),
+          SizedBox(height: AppSpacing.base.h),
+          SecondaryButton(
+            text: 'Login / Register',
+            icon: Icons.lock_rounded,
+            backgroundColor: AppColors.secondaryFixed,
+            textColor: AppColors.onSecondaryFixed,
+            onPressed: () {
+              // pass desired post-auth route to restore full result
+              context.goNamed(
+                RouteNames.login,
+                extra: RouteNames.analysisResult,
+              );
+            },
+          ),
+        ],
       ),
     );
   }

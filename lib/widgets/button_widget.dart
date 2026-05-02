@@ -26,31 +26,20 @@ class PrimaryButton extends StatelessWidget {
     // Tombol tidak bisa diklik jika sedang loading atau sengaja di-disable
     final bool isActionDisabled = isDisabled || isLoading;
 
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 56.h,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppRadius.full),
-        boxShadow: [
-          if (!isActionDisabled)
-            BoxShadow(
-              color: AppColors.primary.withAlpha(64),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-        ],
-      ),
       child: ElevatedButton(
         onPressed: isActionDisabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.zero,
           backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: Colors.grey.shade300,
-          disabledForegroundColor: Colors.grey.shade500,
+          foregroundColor: AppColors.onPrimary,
+          disabledBackgroundColor: AppColors.surfaceContainerHighest,
+          disabledForegroundColor: AppColors.textSecondary,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.full),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
         ),
         child: isLoading
@@ -60,7 +49,7 @@ class PrimaryButton extends StatelessWidget {
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.grey.shade500,
+                    AppColors.textSecondary,
                   ),
                 ),
               )
@@ -75,8 +64,8 @@ class PrimaryButton extends StatelessWidget {
                   Text(
                     text,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.onPrimary,
                     ),
                   ),
@@ -121,7 +110,7 @@ class SecondaryButton extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 24.w),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(AppRadius.full),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

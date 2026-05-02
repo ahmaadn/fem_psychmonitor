@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
@@ -52,13 +51,17 @@ class DocumentsStorageService {
       return null;
     }
 
-    final rawBytes = await pcmFile.readAsBytes();
+    final pcmLength = await pcmFile.length();
     final recordingDir = await _getRecordingDir();
     final safeId = _sanitizeSessionId(sessionId);
     final wavFile = File('${recordingDir.path}/filerecord_$safeId.wav');
 
-    final header = _buildWavHeader(rawBytes.lengthInBytes);
-    await wavFile.writeAsBytes([...header, ...rawBytes], flush: true);
+    final header = _buildWavHeader(pcmLength);
+    final sink = wavFile.openWrite();
+    sink.add(header);
+    await sink.addStream(pcmFile.openRead());
+    await sink.flush();
+    await sink.close();
 
     await pcmFile.delete();
     return wavFile.path;
@@ -107,30 +110,17 @@ class DocumentsStorageService {
       'detected_labels': timeline.map((e) => e.label.name).toSet().toList(),
     };
 
-    final plaintextPayload = jsonEncode({
-      'metadata': metadata,
-      'timeline': timelineJson,
-    });
-
-    final iv = IV.fromSecureRandom(16);
-    final normalizedKey = _normalizeAesKey(_encryptionKey);
-    final encrypter = Encrypter(
-      AES(Key.fromUtf8(normalizedKey), mode: AESMode.cbc),
+    final finalJsonStr = await compute(
+      _performHeavyEncryption,
+      EncryptionIsolateData(
+        metadata: metadata,
+        timelineJson: timelineJson,
+        encryptionKey: _encryptionKey,
+      ),
     );
-    final encrypted = encrypter.encrypt(plaintextPayload, iv: iv);
-
-    final encryptedEnvelope = {
-      'metadata': metadata,
-      'encryption': {
-        'algorithm': 'AES-256-CBC',
-        'encoding': 'base64',
-        'iv': iv.base64,
-      },
-      'ciphertext': encrypted.base64,
-    };
 
     await outFile.writeAsString(
-      const JsonEncoder.withIndent('  ').convert(encryptedEnvelope),
+      finalJsonStr,
       flush: true,
     );
 
@@ -293,4 +283,52 @@ class DocumentsStorageService {
 
     return bytes.buffer.asUint8List();
   }
+}
+
+class EncryptionIsolateData {
+  final Map<String, dynamic> metadata;
+  final List<Map<String, dynamic>> timelineJson;
+  final String encryptionKey;
+
+  EncryptionIsolateData({
+    required this.metadata,
+    required this.timelineJson,
+    required this.encryptionKey,
+  });
+}
+
+String _performHeavyEncryption(EncryptionIsolateData data) {
+  final plaintextPayload = jsonEncode({
+    'metadata': data.metadata,
+    'timeline': data.timelineJson,
+  });
+
+  final iv = IV.fromSecureRandom(16);
+  final normalizedKey = _normalizeAesKeyStatic(data.encryptionKey);
+  final encrypter = Encrypter(
+    AES(Key.fromUtf8(normalizedKey), mode: AESMode.cbc),
+  );
+  final encrypted = encrypter.encrypt(plaintextPayload, iv: iv);
+
+  final encryptedEnvelope = {
+    'metadata': data.metadata,
+    'encryption': {
+      'algorithm': 'AES-256-CBC',
+      'encoding': 'base64',
+      'iv': iv.base64,
+    },
+    'ciphertext': encrypted.base64,
+  };
+
+  return const JsonEncoder.withIndent('  ').convert(encryptedEnvelope);
+}
+
+String _normalizeAesKeyStatic(String key) {
+  if (key.length == 16 || key.length == 24 || key.length == 32) {
+    return key;
+  }
+  if (key.length > 32) {
+    return key.substring(0, 32);
+  }
+  return key.padRight(32, '0');
 }

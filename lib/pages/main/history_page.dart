@@ -4,6 +4,8 @@ import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/utils/intl_format.dart';
 import 'package:fem_psychmonitor/widgets/calender_card.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
+import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -62,19 +64,17 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
+      appBar: const CustomAppBar(
+        title: 'Riwayat',
+        centerTitle: false,
+        showBackButton: false,
+      ),
       body: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const CustomAppBar(
-                title: 'History',
-                centerTitle: false,
-                showBackButton: false,
-                isScrollable: true,
-              ),
-
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24.w),
                 child: Column(
@@ -82,7 +82,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   children: [
                     SizedBox(height: 16.h),
                     Text(
-                      'Monthly Reflection',
+                      'Refleksi Bulanan',
                       style: Theme.of(context).textTheme.displayLarge?.copyWith(
                         fontSize: 32.sp,
                         fontWeight: FontWeight.w800,
@@ -95,16 +95,14 @@ class _HistoryPageState extends State<HistoryPage> {
                       text: TextSpan(
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontSize: 15.sp,
-                          color: AppColors.primary.withAlpha(178),
                           height: 1.5,
                         ),
                         children: [
                           const TextSpan(
-                            text:
-                                'Your emotional landscape has been predominantly ',
+                            text: 'Bulan ini didominasi oleh emosi yang ',
                           ),
                           const TextSpan(
-                            text: 'Calm ',
+                            text: 'Tenang',
                             style: TextStyle(
                               color: Color(0xFF6C5A00),
                               fontWeight: FontWeight.w800,
@@ -112,7 +110,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           ),
                           const TextSpan(
                             text:
-                                'this month, with gentle peaks of energy during the weekends.',
+                                ', dengan sedikit lonjakan energi pada akhir pekan.',
                           ),
                         ],
                       ),
@@ -130,7 +128,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          'Recent Recordings',
+                          'Rekaman Terbaru',
                           style: Theme.of(context).textTheme.headlineMedium
                               ?.copyWith(
                                 fontSize: 18.sp,
@@ -142,22 +140,28 @@ class _HistoryPageState extends State<HistoryPage> {
                     SizedBox(height: 16.h),
                     _buildRecordingCard(
                       context,
-                      title: 'Live Recording\nHistory',
-                      subtitle: 'Review your real-time\nemotional captures',
+                      title: 'Riwayat\nRekaman Langsung',
+                      subtitle: 'Tinjau rekaman emosi\nreal-time Anda',
                       icon: Icons.mic_none_rounded,
                       iconBgColor: AppColors.primary,
                       iconColor: Colors.white,
                       badgeColor: AppColors.secondary,
+                      onTap: () {
+                        context.pushNamed(RouteNames.analysisResult);
+                      },
                     ),
                     SizedBox(height: 16.h),
                     _buildRecordingCard(
                       context,
-                      title: 'Upload\nRecording\nHistory',
-                      subtitle: 'Browse your imported\naudio journals',
+                      title: 'Riwayat\nUnggahan Audio',
+                      subtitle: 'Jelajahi jurnal audio\nyang diunggah',
                       icon: Icons.cloud_upload_outlined,
                       iconBgColor: const Color(0xFFE2E8F0), // Slate 200
                       iconColor: AppColors.primary,
                       badgeColor: AppColors.tertiary,
+                      onTap: () {
+                        context.pushNamed(RouteNames.analysisResult);
+                      },
                     ),
                     SizedBox(height: 120.h),
                   ],
@@ -179,87 +183,85 @@ Widget _buildRecordingCard(
   required Color iconBgColor,
   required Color iconColor,
   required Color badgeColor,
+  VoidCallback? onTap,
 }) {
-  return Container(
-    padding: EdgeInsets.all(20.w),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(AppRadius.xl),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withAlpha(51),
-          blurRadius: 15,
-          offset: const Offset(0, 5),
-        ),
-      ],
-    ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              width: 56.w,
-              height: 56.w,
-              decoration: BoxDecoration(
-                color: iconBgColor,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: iconColor, size: 24.sp),
-            ),
-            Positioned(
-              bottom: 2,
-              right: 2,
-              child: Container(
-                width: 16.w,
-                height: 16.w,
-                decoration: BoxDecoration(
-                  color: badgeColor,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2.5),
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(width: 16.w),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.outline),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
             children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w800,
-                  height: 1.3,
+              Container(
+                width: 56.w,
+                height: 56.w,
+                decoration: BoxDecoration(
+                  color: iconBgColor,
+                  shape: BoxShape.circle,
                 ),
+                child: Icon(icon, color: iconColor, size: 24.sp),
               ),
-              SizedBox(height: 6.h),
-              Text(
-                subtitle,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: 12.sp,
-                  color: AppColors.primary.withAlpha(153),
-                  height: 1.4,
+              Positioned(
+                bottom: 2,
+                right: 2,
+                child: Container(
+                  width: 16.w,
+                  height: 16.w,
+                  decoration: BoxDecoration(
+                    color: badgeColor,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2.5),
+                  ),
                 ),
               ),
             ],
           ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.chevron_right_rounded,
-              color: Colors.grey.shade400,
-              size: 20.sp,
+          SizedBox(width: 16.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w800,
+                    height: 1.3,
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                Text(
+                  subtitle,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontSize: 12.sp,
+                    color: AppColors.primary.withAlpha(153),
+                    height: 1.4,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.chevron_right_rounded,
+                color: Colors.grey.shade400,
+                size: 20.sp,
+              ),
+            ],
+          ),
+        ],
+      ),
     ),
   );
 }
