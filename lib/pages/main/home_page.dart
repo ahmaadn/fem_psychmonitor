@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
@@ -17,6 +18,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Future<void> _handleUploadAudio() async {
+    final picked = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['wav', 'pcm'],
+    );
+
+    if (!mounted || picked == null || picked.files.isEmpty) {
+      return;
+    }
+
+    final path = picked.files.single.path;
+    if (path == null || path.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gagal membaca path file audio.')),
+      );
+      return;
+    }
+
+    context.goNamed(RouteNames.recordingProcessing, extra: path);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,11 +106,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   SizedBox(height: 16.h),
-                  UploadAudioButton(
-                    onTap: () {
-                      context.goNamed(RouteNames.liveRecording);
-                    },
-                  ),
+                  UploadAudioButton(onTap: _handleUploadAudio),
                 ],
               ),
               SizedBox(height: 48.h),

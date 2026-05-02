@@ -1,74 +1,126 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:flutter/material.dart';
 
-enum EmotionEnumType { anger, sadness, happiness, disgust, fear, netral }
+enum EmotionLabelType { happy, sad, anger, fearful, disgust, neutral }
 
-extension EmotionEnumTypeExtension on EmotionEnumType {
+extension EmotionLabelTypeExtension on EmotionLabelType {
+  String get emoji {
+    const emojis = [
+      '😄', // happy
+      '😢', // sad
+      '😠', // anger
+      '😨', // fearful
+      '🤢', // disgust
+      '😐', // neutral
+    ];
+    return emojis[index];
+  }
+
   String get label {
     switch (this) {
-      case EmotionEnumType.anger:
+      case EmotionLabelType.happy:
+        return 'Happy';
+      case EmotionLabelType.sad:
+        return 'Sad';
+      case EmotionLabelType.anger:
         return 'Anger';
-      case EmotionEnumType.sadness:
-        return 'Sadness';
-      case EmotionEnumType.happiness:
-        return 'Happiness';
-      case EmotionEnumType.disgust:
+      case EmotionLabelType.fearful:
+        return 'Fearful';
+      case EmotionLabelType.disgust:
         return 'Disgust';
-      case EmotionEnumType.fear:
-        return 'Fear';
-      case EmotionEnumType.netral:
+      case EmotionLabelType.neutral:
         return 'Neutral';
+    }
+  }
+
+  String get displayName {
+    switch (this) {
+      case EmotionLabelType.happy:
+        return 'Senang';
+      case EmotionLabelType.sad:
+        return 'Sedih';
+      case EmotionLabelType.anger:
+        return 'Marah';
+      case EmotionLabelType.fearful:
+        return 'Takut';
+      case EmotionLabelType.disgust:
+        return 'Jijik';
+      case EmotionLabelType.neutral:
+        return 'Netral';
     }
   }
 
   Color get color {
     switch (this) {
-      case EmotionEnumType.anger:
-        return AppColors.emotionAnger;
-      case EmotionEnumType.sadness:
-        return AppColors.emotionSadness;
-      case EmotionEnumType.happiness:
+      case EmotionLabelType.happy:
         return AppColors.emotionHappiness;
-      case EmotionEnumType.disgust:
-        return AppColors.emotionDisgust;
-      case EmotionEnumType.fear:
+      case EmotionLabelType.sad:
+        return AppColors.emotionSadness;
+      case EmotionLabelType.anger:
+        return AppColors.emotionAnger;
+      case EmotionLabelType.fearful:
         return AppColors.emotionFear;
-      case EmotionEnumType.netral:
+      case EmotionLabelType.disgust:
+        return AppColors.emotionDisgust;
+      case EmotionLabelType.neutral:
         return AppColors.emotionNetral;
     }
   }
 
   Color get surfaceColor {
     switch (this) {
-      case EmotionEnumType.anger:
-        return AppColors.emotionAngerSurface;
-      case EmotionEnumType.sadness:
-        return AppColors.emotionSadnessSurface;
-      case EmotionEnumType.happiness:
+      case EmotionLabelType.happy:
         return AppColors.emotionHappinessSurface;
-      case EmotionEnumType.disgust:
-        return AppColors.emotionDisgustSurface;
-      case EmotionEnumType.fear:
+      case EmotionLabelType.sad:
+        return AppColors.emotionSadnessSurface;
+      case EmotionLabelType.anger:
+        return AppColors.emotionAngerSurface;
+      case EmotionLabelType.fearful:
         return AppColors.emotionFearSurface;
-      case EmotionEnumType.netral:
+      case EmotionLabelType.disgust:
+        return AppColors.emotionDisgustSurface;
+      case EmotionLabelType.neutral:
         return AppColors.emotionNetralSurface;
     }
   }
 
   Color get onColor {
     switch (this) {
-      case EmotionEnumType.anger:
+      case EmotionLabelType.anger:
         return AppColors.onEmotionAnger;
-      case EmotionEnumType.sadness:
+      case EmotionLabelType.sad:
         return AppColors.onEmotionSadness;
-      case EmotionEnumType.happiness:
+      case EmotionLabelType.happy:
         return AppColors.onEmotionHappiness;
-      case EmotionEnumType.disgust:
+      case EmotionLabelType.disgust:
         return AppColors.onEmotionDisgust;
-      case EmotionEnumType.fear:
+      case EmotionLabelType.fearful:
         return AppColors.onEmotionFear;
-      case EmotionEnumType.netral:
+      case EmotionLabelType.neutral:
         return AppColors.onEmotionNetral;
     }
   }
+}
+
+class EmotionResult {
+  final double startSec;
+  final double endSec;
+  final EmotionLabelType label;
+  final double confidence;
+  final List<double> allProbs; // softmax probs for all 6 classes
+  final int requestId;
+
+  const EmotionResult({
+    required this.startSec,
+    required this.endSec,
+    required this.label,
+    required this.confidence,
+    required this.allProbs,
+    required this.requestId,
+  });
+
+  @override
+  String toString() =>
+      '[${startSec.toStringAsFixed(1)}-${endSec.toStringAsFixed(1)}s] '
+      '${label.displayName} (${(confidence * 100).toStringAsFixed(1)}%)';
 }
