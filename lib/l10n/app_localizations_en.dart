@@ -615,4 +615,88 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get startRecordToSeeTimeline =>
       'Start recording to see emotion timeline';
+
+  @override
+  String get personalityType => 'Personality Type';
+
+  @override
+  String get knowMbtiQuestion => 'Do you already know your MBTI type?';
+
+  @override
+  String get yesIKnow => 'Yes, I know';
+
+  @override
+  String get notSure => 'Not sure';
+
+  @override
+  String get selectYourMbti => 'Select your MBTI type:';
+
+  @override
+  String get continueButton => 'Continue';
+
+  @override
+  String get mbtiTest => 'MBTI Test';
+
+  @override
+  String get failedToLoadQuestionnaire => 'Failed to load questionnaire.';
+
+  @override
+  String questionXOfY(int current, int total) {
+    return 'Question $current of $total';
+  }
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get finishAndContinue => 'Finish & Continue';
+
+  @override
+  String get nextQuestion => 'Next';
+
+  @override
+  String get mbtiResultTitle => 'MBTI Result';
+
+  @override
+  String get yourPersonalityType => 'Your Personality Type';
+
+  @override
+  String get unknown => 'Unknown';
+
+  @override
+  String get mbtiResultDesc =>
+      'We will use this information to customize suggestions in the app.';
+
+  @override
+  String get continueToMentalHealth => 'Continue to Mental Health Instrument';
+
+  @override
+  String get mentalHealthAssessment => 'Mental Health Assessment';
+
+  @override
+  String get finishAndGoToRecording => 'Finish & Go to Recording';
+
+  @override
+  String get mentalHealthResultTitle => 'Mental Health Result';
+
+  @override
+  String get yourScore => 'Your Score';
+
+  @override
+  String suggestionLabel(String suggestion) {
+    return 'Suggestion:\n$suggestion';
+  }
+
+  @override
+  String get tryVoiceTestQuestion =>
+      'Would you like to try a voice test (recording) to detect your current emotions?';
+
+  @override
+  String get tryVoiceTest => 'Try Voice Test';
+
+  @override
+  String get goToDashboard => 'Go to Dashboard';
+
+  @override
+  String get mulai => 'Start';
 }

@@ -615,5 +615,89 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get startRecordToSeeTimeline =>
-      'Mulai rekam untuk melihat timeline emosi';
+      'Mulai merekam untuk melihat riwayat emosi';
+
+  @override
+  String get personalityType => 'Tipe Kepribadian';
+
+  @override
+  String get knowMbtiQuestion => 'Apakah Anda sudah mengetahui tipe MBTI Anda?';
+
+  @override
+  String get yesIKnow => 'Ya, saya tahu';
+
+  @override
+  String get notSure => 'Belum tahu';
+
+  @override
+  String get selectYourMbti => 'Pilih tipe MBTI Anda:';
+
+  @override
+  String get continueButton => 'Lanjutkan';
+
+  @override
+  String get mbtiTest => 'Tes MBTI';
+
+  @override
+  String get failedToLoadQuestionnaire => 'Gagal memuat kuesioner.';
+
+  @override
+  String questionXOfY(int current, int total) {
+    return 'Pertanyaan $current dari $total';
+  }
+
+  @override
+  String get back => 'Kembali';
+
+  @override
+  String get finishAndContinue => 'Selesai & Lanjut';
+
+  @override
+  String get nextQuestion => 'Selanjutnya';
+
+  @override
+  String get mbtiResultTitle => 'Hasil MBTI';
+
+  @override
+  String get yourPersonalityType => 'Tipe Kepribadian Anda';
+
+  @override
+  String get unknown => 'Tidak diketahui';
+
+  @override
+  String get mbtiResultDesc =>
+      'Kami akan menggunakan informasi ini untuk menyesuaikan rekomendasi saran dalam aplikasi.';
+
+  @override
+  String get continueToMentalHealth => 'Lanjut ke Instrumen Kesehatan Mental';
+
+  @override
+  String get mentalHealthAssessment => 'Penilaian Kesehatan Mental';
+
+  @override
+  String get finishAndGoToRecording => 'Selesai & Lanjut ke Rekaman';
+
+  @override
+  String get mentalHealthResultTitle => 'Hasil Kesehatan Mental';
+
+  @override
+  String get yourScore => 'Skor Anda';
+
+  @override
+  String suggestionLabel(String suggestion) {
+    return 'Saran:\n$suggestion';
+  }
+
+  @override
+  String get tryVoiceTestQuestion =>
+      'Apakah Anda ingin mencoba tes suara (rekaman) untuk mendeteksi emosi saat ini?';
+
+  @override
+  String get tryVoiceTest => 'Coba Tes Suara';
+
+  @override
+  String get goToDashboard => 'Ke Dashboard';
+
+  @override
+  String get mulai => 'Mulai';
 }

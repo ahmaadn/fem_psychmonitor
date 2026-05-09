@@ -1237,6 +1237,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start recording to see emotion timeline'**
   String get startRecordToSeeTimeline;
+
+  /// No description provided for @personalityType.
+  ///
+  /// In en, this message translates to:
+  /// **'Personality Type'**
+  String get personalityType;
+
+  /// No description provided for @knowMbtiQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you already know your MBTI type?'**
+  String get knowMbtiQuestion;
+
+  /// No description provided for @yesIKnow.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I know'**
+  String get yesIKnow;
+
+  /// No description provided for @notSure.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sure'**
+  String get notSure;
+
+  /// No description provided for @selectYourMbti.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your MBTI type:'**
+  String get selectYourMbti;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
+
+  /// No description provided for @mbtiTest.
+  ///
+  /// In en, this message translates to:
+  /// **'MBTI Test'**
+  String get mbtiTest;
+
+  /// No description provided for @failedToLoadQuestionnaire.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load questionnaire.'**
+  String get failedToLoadQuestionnaire;
+
+  /// No description provided for @questionXOfY.
+  ///
+  /// In en, this message translates to:
+  /// **'Question {current} of {total}'**
+  String questionXOfY(int current, int total);
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// No description provided for @finishAndContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish & Continue'**
+  String get finishAndContinue;
+
+  /// No description provided for @nextQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get nextQuestion;
+
+  /// No description provided for @mbtiResultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'MBTI Result'**
+  String get mbtiResultTitle;
+
+  /// No description provided for @yourPersonalityType.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Personality Type'**
+  String get yourPersonalityType;
+
+  /// No description provided for @unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
+
+  /// No description provided for @mbtiResultDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'We will use this information to customize suggestions in the app.'**
+  String get mbtiResultDesc;
+
+  /// No description provided for @continueToMentalHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to Mental Health Instrument'**
+  String get continueToMentalHealth;
+
+  /// No description provided for @mentalHealthAssessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Mental Health Assessment'**
+  String get mentalHealthAssessment;
+
+  /// No description provided for @finishAndGoToRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish & Go to Recording'**
+  String get finishAndGoToRecording;
+
+  /// No description provided for @mentalHealthResultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mental Health Result'**
+  String get mentalHealthResultTitle;
+
+  /// No description provided for @yourScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Score'**
+  String get yourScore;
+
+  /// No description provided for @suggestionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion:\n{suggestion}'**
+  String suggestionLabel(String suggestion);
+
+  /// No description provided for @tryVoiceTestQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like to try a voice test (recording) to detect your current emotions?'**
+  String get tryVoiceTestQuestion;
+
+  /// No description provided for @tryVoiceTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Voice Test'**
+  String get tryVoiceTest;
+
+  /// No description provided for @goToDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Dashboard'**
+  String get goToDashboard;
+
+  /// No description provided for @mulai.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get mulai;
 }
 
 class _AppLocalizationsDelegate

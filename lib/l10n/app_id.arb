@@ -209,5 +209,43 @@
 
   "voiceEmotionDetection": "Deteksi Emosi Suara",
   "clearTimeline": "Hapus timeline",
-  "startRecordToSeeTimeline": "Mulai rekam untuk melihat timeline emosi"
+  "startRecordToSeeTimeline": "Mulai merekam untuk melihat riwayat emosi",
+
+  "personalityType": "Tipe Kepribadian",
+  "knowMbtiQuestion": "Apakah Anda sudah mengetahui tipe MBTI Anda?",
+  "yesIKnow": "Ya, saya tahu",
+  "notSure": "Belum tahu",
+  "selectYourMbti": "Pilih tipe MBTI Anda:",
+  "continueButton": "Lanjutkan",
+  "mbtiTest": "Tes MBTI",
+  "failedToLoadQuestionnaire": "Gagal memuat kuesioner.",
+  "questionXOfY": "Pertanyaan {current} dari {total}",
+  "@questionXOfY": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "back": "Kembali",
+  "finishAndContinue": "Selesai & Lanjut",
+  "nextQuestion": "Selanjutnya",
+  "mbtiResultTitle": "Hasil MBTI",
+  "yourPersonalityType": "Tipe Kepribadian Anda",
+  "unknown": "Tidak diketahui",
+  "mbtiResultDesc": "Kami akan menggunakan informasi ini untuk menyesuaikan rekomendasi saran dalam aplikasi.",
+  "continueToMentalHealth": "Lanjut ke Instrumen Kesehatan Mental",
+  "mentalHealthAssessment": "Penilaian Kesehatan Mental",
+  "finishAndGoToRecording": "Selesai & Lanjut ke Rekaman",
+  "mentalHealthResultTitle": "Hasil Kesehatan Mental",
+  "yourScore": "Skor Anda",
+  "suggestionLabel": "Saran:\n{suggestion}",
+  "@suggestionLabel": {
+    "placeholders": {
+      "suggestion": { "type": "String" }
+    }
+  },
+  "tryVoiceTestQuestion": "Apakah Anda ingin mencoba tes suara (rekaman) untuk mendeteksi emosi saat ini?",
+  "tryVoiceTest": "Coba Tes Suara",
+  "goToDashboard": "Ke Dashboard",
+  "mulai": "Mulai"
 }

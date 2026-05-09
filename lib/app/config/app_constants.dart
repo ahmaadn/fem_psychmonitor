@@ -14,5 +14,10 @@ class RouteNames {
   static const String analysisResult = "analysis-result";
   static const String analysisResultTeaser = "analysis-result-teaser";
   static const String initialQuestions = "initial-questions";
+  static const String mbtiSelection = "mbti-selection";
+  static const String mbtiTest = "mbti-test";
+  static const String mbtiResult = "mbti-result";
+  static const String psychTest = "psych-test";
+  static const String psychResult = "psych-result";
   static const String permissions = "permissions";
 }

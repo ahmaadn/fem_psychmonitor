@@ -12,6 +12,11 @@ import 'package:fem_psychmonitor/features/recording/pages/live_recording_page.da
 import 'package:fem_psychmonitor/features/onboarding/pages/initial_questionnaire_page.dart';
 import 'package:fem_psychmonitor/features/onboarding/pages/splash_page.dart';
 import 'package:fem_psychmonitor/features/onboarding/pages/onboarding_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/pages/mbti_selection_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/pages/mbti_test_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/pages/mbti_result_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/pages/psych_test_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/pages/psych_result_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -38,6 +43,41 @@ class AppRouter {
         name: RouteNames.initialQuestions,
         builder: (BuildContext context, GoRouterState state) {
           return const InitialQuestionnairePage();
+        },
+      ),
+      GoRoute(
+        path: '/mbti-selection',
+        name: RouteNames.mbtiSelection,
+        builder: (BuildContext context, GoRouterState state) {
+          return const MbtiSelectionPage();
+        },
+      ),
+      GoRoute(
+        path: '/mbti-test',
+        name: RouteNames.mbtiTest,
+        builder: (BuildContext context, GoRouterState state) {
+          return const MbtiTestPage();
+        },
+      ),
+      GoRoute(
+        path: '/mbti-result',
+        name: RouteNames.mbtiResult,
+        builder: (BuildContext context, GoRouterState state) {
+          return const MbtiResultPage();
+        },
+      ),
+      GoRoute(
+        path: '/psych-test',
+        name: RouteNames.psychTest,
+        builder: (BuildContext context, GoRouterState state) {
+          return const PsychTestPage();
+        },
+      ),
+      GoRoute(
+        path: '/psych-result',
+        name: RouteNames.psychResult,
+        builder: (BuildContext context, GoRouterState state) {
+          return const PsychResultPage();
         },
       ),
       GoRoute(

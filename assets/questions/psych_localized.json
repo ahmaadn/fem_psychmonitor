@@ -1,0 +1,299 @@
+{
+    "womens_mental_health_assessment": {
+        "title": {
+            "id": "Instrumen Penilaian Kesehatan Mental Perempuan",
+            "en": "Women's Mental Health Assessment Instrument"
+        },
+        "description": {
+            "id": "Kuesioner ini dirancang dengan pendekatan psikologis untuk mengukur tingkat kesejahteraan mental perempuan.",
+            "en": "This questionnaire is designed with a psychological approach to measure women's mental well-being."
+        },
+        "questions": [
+            {
+                "id": 1,
+                "code": "psych_q1",
+                "category": {
+                    "id": "Beban Peran & Stres",
+                    "en": "Role Burden & Stress"
+                },
+                "question": {
+                    "id": "Seberapa sering Anda merasa kewalahan dengan ekspektasi atau peran ganda (sebagai pekerja, ibu, istri, atau anak perempuan)?",
+                    "en": "How often do you feel overwhelmed by expectations or multiple roles (as a worker, mother, wife, or daughter)?"
+                },
+                "options": [
+                    { "code": "psych_q1_opt0", "score": 0, "answer": { "id": "Tidak pernah / Sangat jarang", "en": "Never / Very rarely" } },
+                    { "code": "psych_q1_opt1", "score": 1, "answer": { "id": "Kadang-kadang", "en": "Sometimes" } },
+                    { "code": "psych_q1_opt2", "score": 2, "answer": { "id": "Sering", "en": "Often" } },
+                    { "code": "psych_q1_opt3", "score": 3, "answer": { "id": "Hampir setiap saat", "en": "Almost all the time" } }
+                ]
+            },
+            {
+                "id": 2,
+                "code": "psych_q2",
+                "category": { "id": "Regulasi Emosi & Hormonal", "en": "Emotional & Hormonal Regulation" },
+                "question": { "id": "Apakah Anda mengalami perubahan suasana hati (mood swings) yang ekstrem atau perasaan depresi yang signifikan menjelang atau selama siklus menstruasi?", "en": "Do you experience extreme mood swings or significant feelings of depression before or during your menstrual cycle?" },
+                "options": [
+                    { "code": "psych_q2_opt0", "score": 0, "answer": { "id": "Tidak pernah", "en": "Never" } },
+                    { "code": "psych_q2_opt1", "score": 1, "answer": { "id": "Terkadang, namun mudah diatasi", "en": "Sometimes, but manageable" } },
+                    { "code": "psych_q2_opt2", "score": 2, "answer": { "id": "Sering, dan cukup mengganggu aktivitas", "en": "Often, and quite disruptive to activities" } },
+                    { "code": "psych_q2_opt3", "score": 3, "answer": { "id": "Selalu, dan sangat melumpuhkan keseharian", "en": "Always, and very debilitating to daily life" } }
+                ]
+            },
+            {
+                "id": 3,
+                "code": "psych_q3",
+                "category": { "id": "Citra Tubuh (Body Image)", "en": "Body Image" },
+                "question": { "id": "Seberapa sering Anda merasa tidak berharga atau membenci diri sendiri karena merasa tidak memenuhi standar kecantikan sosial?", "en": "How often do you feel worthless or hate yourself for feeling you don't meet social beauty standards?" },
+                "options": [
+                    { "code": "psych_q3_opt0", "score": 0, "answer": { "id": "Tidak pernah, saya menerima diri apa adanya", "en": "Never, I accept myself as I am" } },
+                    { "code": "psych_q3_opt1", "score": 1, "answer": { "id": "Kadang-kadang merasa kurang percaya diri", "en": "Sometimes lack confidence" } },
+                    { "code": "psych_q3_opt2", "score": 2, "answer": { "id": "Sering membandingkan dan merasa buruk", "en": "Often compare and feel bad" } },
+                    { "code": "psych_q3_opt3", "score": 3, "answer": { "id": "Sangat sering hingga membatasi interaksi sosial", "en": "Very often, limiting social interactions" } }
+                ]
+            },
+            {
+                "id": 4,
+                "code": "psych_q4",
+                "category": { "id": "Batas Personal (Boundaries)", "en": "Personal Boundaries" },
+                "question": { "id": "Seberapa sulit bagi Anda untuk berkata 'tidak' kepada permintaan orang lain tanpa merasa bersalah yang berlebihan?", "en": "How difficult is it for you to say 'no' to others' requests without feeling excessive guilt?" },
+                "options": [
+                    { "code": "psych_q4_opt0", "score": 0, "answer": { "id": "Sangat mudah, saya tahu batasan saya", "en": "Very easy, I know my boundaries" } },
+                    { "code": "psych_q4_opt1", "score": 1, "answer": { "id": "Kadang sulit, tapi saya bisa melakukannya", "en": "Sometimes hard, but I can do it" } },
+                    { "code": "psych_q4_opt2", "score": 2, "answer": { "id": "Sering merasa bersalah setelah menolak", "en": "Often feel guilty after refusing" } },
+                    { "code": "psych_q4_opt3", "score": 3, "answer": { "id": "Sangat sulit, saya mengorbankan diri sendiri", "en": "Very difficult, I sacrifice myself" } }
+                ]
+            },
+            {
+                "id": 5,
+                "code": "psych_q5",
+                "category": { "id": "Gejala Depresif", "en": "Depressive Symptoms" },
+                "question": { "id": "Seberapa sering Anda kehilangan minat atau kesenangan pada aktivitas yang biasanya Anda nikmati?", "en": "How often do you lose interest or pleasure in activities you usually enjoy?" },
+                "options": [
+                    { "code": "psych_q5_opt0", "score": 0, "answer": { "id": "Tidak pernah", "en": "Never" } },
+                    { "code": "psych_q5_opt1", "score": 1, "answer": { "id": "Beberapa hari dalam sebulan", "en": "A few days a month" } },
+                    { "code": "psych_q5_opt2", "score": 2, "answer": { "id": "Lebih dari separuh waktu dalam sebulan", "en": "More than half the time in a month" } },
+                    { "code": "psych_q5_opt3", "score": 3, "answer": { "id": "Hampir setiap hari", "en": "Almost every day" } }
+                ]
+            },
+            {
+                "id": 6,
+                "code": "psych_q6",
+                "category": { "id": "Kecemasan", "en": "Anxiety" },
+                "question": { "id": "Seberapa sering Anda merasa tegang, gelisah, atau kesulitan menghentikan pikiran yang mengkhawatirkan masa depan?", "en": "How often do you feel tense, restless, or have trouble stopping thoughts that worry about the future?" },
+                "options": [
+                    { "code": "psych_q6_opt0", "score": 0, "answer": { "id": "Tidak pernah", "en": "Never" } },
+                    { "code": "psych_q6_opt1", "score": 1, "answer": { "id": "Beberapa hari", "en": "Several days" } },
+                    { "code": "psych_q6_opt2", "score": 2, "answer": { "id": "Sebagian besar hari", "en": "Most days" } },
+                    { "code": "psych_q6_opt3", "score": 3, "answer": { "id": "Setiap hari", "en": "Every day" } }
+                ]
+            },
+            {
+                "id": 7,
+                "code": "psych_q7",
+                "category": { "id": "Kelelahan & Tidur", "en": "Fatigue & Sleep" },
+                "question": { "id": "Bagaimana kualitas tidur Anda dalam sebulan terakhir (sulit tidur, sering terbangun, atau tidur berlebihan)?", "en": "How has your sleep quality been in the past month (trouble sleeping, waking up often, or oversleeping)?" },
+                "options": [
+                    { "code": "psych_q7_opt0", "score": 0, "answer": { "id": "Sangat baik dan nyenyak", "en": "Very good and sound" } },
+                    { "code": "psych_q7_opt1", "score": 1, "answer": { "id": "Sesekali mengalami gangguan", "en": "Occasional disturbances" } },
+                    { "code": "psych_q7_opt2", "score": 2, "answer": { "id": "Sering kesulitan tidur dengan baik", "en": "Often have trouble sleeping well" } },
+                    { "code": "psych_q7_opt3", "score": 3, "answer": { "id": "Tidur sangat terganggu setiap malam", "en": "Sleep is very disturbed every night" } }
+                ]
+            },
+            {
+                "id": 8,
+                "code": "psych_q8",
+                "category": { "id": "Perawatan Diri (Self-Care)", "en": "Self-Care" },
+                "question": { "id": "Apakah Anda merasa bersalah atau egois ketika meluangkan waktu murni untuk merawat diri sendiri (me-time)?", "en": "Do you feel guilty or selfish when taking time purely to care for yourself (me-time)?" },
+                "options": [
+                    { "code": "psych_q8_opt0", "score": 0, "answer": { "id": "Tidak, saya sadar itu penting", "en": "No, I realize it's important" } },
+                    { "code": "psych_q8_opt1", "score": 1, "answer": { "id": "Kadang sedikit bersalah", "en": "Sometimes a little guilty" } },
+                    { "code": "psych_q8_opt2", "score": 2, "answer": { "id": "Sering merasa bersalah", "en": "Often feel guilty" } },
+                    { "code": "psych_q8_opt3", "score": 3, "answer": { "id": "Selalu merasa egois dan akhirnya tidak melakukannya", "en": "Always feel selfish and end up not doing it" } }
+                ]
+            },
+            {
+                "id": 9,
+                "code": "psych_q9",
+                "category": { "id": "Isolasi Sosial", "en": "Social Isolation" },
+                "question": { "id": "Seberapa sering Anda merasa kesepian atau merasa tidak ada seorang pun yang benar-benar memahami beban Anda?", "en": "How often do you feel lonely or feel that no one truly understands your burden?" },
+                "options": [
+                    { "code": "psych_q9_opt0", "score": 0, "answer": { "id": "Tidak pernah", "en": "Never" } },
+                    { "code": "psych_q9_opt1", "score": 1, "answer": { "id": "Kadang-kadang", "en": "Sometimes" } },
+                    { "code": "psych_q9_opt2", "score": 2, "answer": { "id": "Sering", "en": "Often" } },
+                    { "code": "psych_q9_opt3", "score": 3, "answer": { "id": "Hampir setiap saat", "en": "Almost all the time" } }
+                ]
+            },
+            {
+                "id": 10,
+                "code": "psych_q10",
+                "category": { "id": "Gejala Fisik (Psikosomatis)", "en": "Physical Symptoms (Psychosomatic)" },
+                "question": { "id": "Seberapa sering Anda mengalami keluhan fisik tanpa penyebab medis yang jelas saat stres (misal: sakit kepala, asam lambung, nyeri otot)?", "en": "How often do you experience physical complaints without a clear medical cause when stressed (e.g., headache, acid reflux, muscle pain)?" },
+                "options": [
+                    { "code": "psych_q10_opt0", "score": 0, "answer": { "id": "Tidak pernah", "en": "Never" } },
+                    { "code": "psych_q10_opt1", "score": 1, "answer": { "id": "Jarang", "en": "Rarely" } },
+                    { "code": "psych_q10_opt2", "score": 2, "answer": { "id": "Sering", "en": "Often" } },
+                    { "code": "psych_q10_opt3", "score": 3, "answer": { "id": "Sangat sering", "en": "Very often" } }
+                ]
+            },
+            {
+                "id": 11,
+                "code": "psych_q11",
+                "category": { "id": "Kestabilan Emosi", "en": "Emotional Stability" },
+                "question": { "id": "Dalam situasi yang menekan, seberapa sering Anda menangis secara tiba-tiba tanpa alasan yang spesifik?", "en": "In stressful situations, how often do you cry suddenly without a specific reason?" },
+                "options": [
+                    { "code": "psych_q11_opt0", "score": 0, "answer": { "id": "Tidak pernah", "en": "Never" } },
+                    { "code": "psych_q11_opt1", "score": 1, "answer": { "id": "Jarang", "en": "Rarely" } },
+                    { "code": "psych_q11_opt2", "score": 2, "answer": { "id": "Sering", "en": "Often" } },
+                    { "code": "psych_q11_opt3", "score": 3, "answer": { "id": "Hampir setiap hari", "en": "Almost every day" } }
+                ]
+            },
+            {
+                "id": 12,
+                "code": "psych_q12",
+                "category": { "id": "Koping Mekanisme", "en": "Coping Mechanisms" },
+                "question": { "id": "Saat menghadapi masalah berat, apakah Anda menggunakan pelarian yang berisiko (seperti emotional eating, belanja impulsif, atau zat adiktif)?", "en": "When facing major problems, do you use risky escapes (such as emotional eating, impulsive shopping, or addictive substances)?" },
+                "options": [
+                    { "code": "psych_q12_opt0", "score": 0, "answer": { "id": "Tidak, saya menghadapinya dengan sehat", "en": "No, I deal with it healthily" } },
+                    { "code": "psych_q12_opt1", "score": 1, "answer": { "id": "Sesekali", "en": "Occasionally" } },
+                    { "code": "psych_q12_opt2", "score": 2, "answer": { "id": "Cukup sering sebagai jalan keluar cepat", "en": "Quite often as a quick way out" } },
+                    { "code": "psych_q12_opt3", "score": 3, "answer": { "id": "Ya, saya sangat bergantung pada hal tersebut", "en": "Yes, I heavily rely on them" } }
+                ]
+            },
+            {
+                "id": 13,
+                "code": "psych_q13",
+                "category": { "id": "Hubungan Interpersonal", "en": "Interpersonal Relationships" },
+                "question": { "id": "Apakah Anda memiliki sistem dukungan (support system) yang membuat Anda merasa aman menceritakan masalah Anda tanpa dihakimi?", "en": "Do you have a support system that makes you feel safe sharing your problems without being judged?" },
+                "options": [
+                    { "code": "psych_q13_opt0", "score": 0, "answer": { "id": "Ya, sangat kuat", "en": "Yes, very strong" } },
+                    { "code": "psych_q13_opt1", "score": 1, "answer": { "id": "Ada, namun terbatas", "en": "Yes, but limited" } },
+                    { "code": "psych_q13_opt2", "score": 2, "answer": { "id": "Hanya sedikit dan jarang bisa diandalkan", "en": "Very few and rarely reliable" } },
+                    { "code": "psych_q13_opt3", "score": 3, "answer": { "id": "Tidak ada sama sekali", "en": "None at all" } }
+                ]
+            },
+            {
+                "id": 14,
+                "code": "psych_q14",
+                "category": { "id": "Fokus & Konsentrasi", "en": "Focus & Concentration" },
+                "question": { "id": "Seberapa sering masalah emosional membuat Anda kehilangan fokus atau kesulitan mengambil keputusan sehari-hari?", "en": "How often do emotional problems make you lose focus or have difficulty making daily decisions?" },
+                "options": [
+                    { "code": "psych_q14_opt0", "score": 0, "answer": { "id": "Tidak pernah mengganggu", "en": "Never distracting" } },
+                    { "code": "psych_q14_opt1", "score": 1, "answer": { "id": "Kadang membuat lambat berpikir", "en": "Sometimes makes thinking slower" } },
+                    { "code": "psych_q14_opt2", "score": 2, "answer": { "id": "Sering membuat pekerjaan terbengkalai", "en": "Often makes work neglected" } },
+                    { "code": "psych_q14_opt3", "score": 3, "answer": { "id": "Sangat sering hingga tidak bisa berfungsi normal", "en": "Very often to the point of not functioning normally" } }
+                ]
+            },
+            {
+                "id": 15,
+                "code": "psych_q15",
+                "category": { "id": "Validasi Sosial", "en": "Social Validation" },
+                "question": { "id": "Seberapa besar komentar, opini, atau kritik masyarakat tentang hidup Anda (misal: pilihan karir, pernikahan, anak) memengaruhi kesehatan mental Anda?", "en": "How much do societal comments, opinions, or criticism about your life (e.g., career choices, marriage, children) affect your mental health?" },
+                "options": [
+                    { "code": "psych_q15_opt0", "score": 0, "answer": { "id": "Sangat kecil, saya memegang kendali hidup saya", "en": "Very little, I am in control of my life" } },
+                    { "code": "psych_q15_opt1", "score": 1, "answer": { "id": "Cukup memengaruhi sementara waktu", "en": "Affects me somewhat temporarily" } },
+                    { "code": "psych_q15_opt2", "score": 2, "answer": { "id": "Sangat memengaruhi dan membuat cemas", "en": "Affects me greatly and causes anxiety" } },
+                    { "code": "psych_q15_opt3", "score": 3, "answer": { "id": "Mendominasi seluruh keputusan dan pikiran saya", "en": "Dominates all my decisions and thoughts" } }
+                ]
+            },
+            {
+                "id": 16,
+                "code": "psych_q16",
+                "category": { "id": "Trauma & Masa Lalu", "en": "Trauma & Past" },
+                "question": { "id": "Seberapa sering memori buruk atau pengalaman traumatis di masa lalu muncul tiba-tiba dan mengganggu ketenangan Anda saat ini?", "en": "How often do bad memories or past traumatic experiences suddenly appear and disturb your current peace?" },
+                "options": [
+                    { "code": "psych_q16_opt0", "score": 0, "answer": { "id": "Tidak pernah", "en": "Never" } },
+                    { "code": "psych_q16_opt1", "score": 1, "answer": { "id": "Jarang dan bisa segera dikendalikan", "en": "Rarely and can be controlled quickly" } },
+                    { "code": "psych_q16_opt2", "score": 2, "answer": { "id": "Sering dan memicu rasa panik", "en": "Often and triggers panic" } },
+                    { "code": "psych_q16_opt3", "score": 3, "answer": { "id": "Sangat sering (flashbacks) yang melumpuhkan", "en": "Very often (flashbacks) that are paralyzing" } }
+                ]
+            },
+            {
+                "id": 17,
+                "code": "psych_q17",
+                "category": { "id": "Rasa Lelah (Burnout)", "en": "Burnout" },
+                "question": { "id": "Apakah Anda merasa kelelahan secara emosional dan fisik hingga merasa 'kosong' saat memulai hari?", "en": "Do you feel emotionally and physically exhausted to the point of feeling 'empty' when starting the day?" },
+                "options": [
+                    { "code": "psych_q17_opt0", "score": 0, "answer": { "id": "Tidak, saya bersemangat", "en": "No, I'm enthusiastic" } },
+                    { "code": "psych_q17_opt1", "score": 1, "answer": { "id": "Hanya saat jadwal sedang sangat padat", "en": "Only when my schedule is very packed" } },
+                    { "code": "psych_q17_opt2", "score": 2, "answer": { "id": "Sering merasa lelah bahkan setelah istirahat", "en": "Often feel tired even after resting" } },
+                    { "code": "psych_q17_opt3", "score": 3, "answer": { "id": "Hampir setiap hari merasa kosong (burnout)", "en": "Almost every day feeling empty (burnout)" } }
+                ]
+            },
+            {
+                "id": 18,
+                "code": "psych_q18",
+                "category": { "id": "Kemarahan", "en": "Anger" },
+                "question": { "id": "Seberapa mudah Anda merasa tersinggung, mudah marah, atau meledak-ledak pada hal-hal kecil di sekitar Anda?", "en": "How easily do you get offended, get angry easily, or explode at small things around you?" },
+                "options": [
+                    { "code": "psych_q18_opt0", "score": 0, "answer": { "id": "Saya sangat sabar dan tenang", "en": "I am very patient and calm" } },
+                    { "code": "psych_q18_opt1", "score": 1, "answer": { "id": "Kadang terpancing jika sudah sangat lelah", "en": "Sometimes provoked if very tired" } },
+                    { "code": "psych_q18_opt2", "score": 2, "answer": { "id": "Sering merespons dengan amarah", "en": "Often respond with anger" } },
+                    { "code": "psych_q18_opt3", "score": 3, "answer": { "id": "Sangat reaktif dan sulit mengendalikan emosi", "en": "Very reactive and have trouble controlling emotions" } }
+                ]
+            },
+            {
+                "id": 19,
+                "code": "psych_q19",
+                "category": { "id": "Insecurity Media Sosial", "en": "Social Media Insecurity" },
+                "question": { "id": "Saat melihat pencapaian atau kehidupan perempuan lain di media sosial, apa yang paling sering Anda rasakan?", "en": "When seeing the achievements or lives of other women on social media, what do you feel most often?" },
+                "options": [
+                    { "code": "psych_q19_opt0", "score": 0, "answer": { "id": "Biasa saja atau merasa terinspirasi", "en": "Normal or feel inspired" } },
+                    { "code": "psych_q19_opt1", "score": 1, "answer": { "id": "Kadang membandingkan sesaat", "en": "Sometimes compare momentarily" } },
+                    { "code": "psych_q19_opt2", "score": 2, "answer": { "id": "Sering merasa tertinggal dan cemas", "en": "Often feel left behind and anxious" } },
+                    { "code": "psych_q19_opt3", "score": 3, "answer": { "id": "Selalu merasa hidup saya gagal dan tidak berharga", "en": "Always feel my life is a failure and worthless" } }
+                ]
+            },
+            {
+                "id": 20,
+                "code": "psych_q20",
+                "category": { "id": "Harapan Hidup", "en": "Life Expectancy" },
+                "question": { "id": "Secara umum, bagaimana pandangan Anda terhadap masa depan Anda sendiri?", "en": "In general, what is your outlook on your own future?" },
+                "options": [
+                    { "code": "psych_q20_opt0", "score": 0, "answer": { "id": "Penuh harapan dan optimis", "en": "Hopeful and optimistic" } },
+                    { "code": "psych_q20_opt1", "score": 1, "answer": { "id": "Cukup realistis namun ada sedikit kekhawatiran", "en": "Quite realistic but with a little concern" } },
+                    { "code": "psych_q20_opt2", "score": 2, "answer": { "id": "Pesimis dan merasa tidak ada yang akan membaik", "en": "Pessimistic and feel nothing will improve" } },
+                    { "code": "psych_q20_opt3", "score": 3, "answer": { "id": "Sangat putus asa (hopeless)", "en": "Very hopeless" } }
+                ]
+            }
+        ],
+        "scoring_system": {
+            "total_max_score": 60,
+            "display_max_score": 100,
+            "calculation": "Jumlahkan seluruh skor dari 20 pertanyaan (maks 60), lalu kalikan dengan 100/60 untuk mendapatkan skor 0-100.",
+            "classes": [
+                {
+                    "class_level": 1,
+                    "class_name": { "id": "Sehat Optimal", "en": "Optimally Healthy" },
+                    "display_range": "80 - 100",
+                    "score_range": "0 - 15",
+                    "description": { "id": "Kondisi kesehatan mental Anda sangat baik. Anda memiliki mekanisme koping yang tangguh, batasan personal yang sehat, dan mampu mengelola stres serta tuntutan sosial dengan sangat efektif. Tetap pertahankan gaya hidup sehat dan dukungan sosial Anda.", "en": "Your mental health condition is excellent. You have resilient coping mechanisms, healthy personal boundaries, and are able to manage stress and social demands very effectively. Maintain your healthy lifestyle and social support." },
+                    "recommendation": { "id": "Pertahankan rutinitas sehat dan continue mendukung mereka yang membutuhkan.", "en": "Maintain a healthy routine and continue to support those in need." }
+                },
+                {
+                    "class_level": 2,
+                    "class_name": { "id": "Cukup Sehat", "en": "Fairly Healthy" },
+                    "display_range": "60 - 79",
+                    "score_range": "16 - 30",
+                    "description": { "id": "Kesehatan mental Anda secara umum stabil, namun ada beberapa pemicu stres (seperti beban ganda atau fluktuasi hormonal) yang mulai memengaruhi rutinitas. Ini adalah fase wajar. Sangat disarankan untuk meningkatkan waktu istirahat dan self-care.", "en": "Your mental health is generally stable, but there are some stressors (such as multiple roles or hormonal fluctuations) that are starting to affect your routine. This is a normal phase. It is highly recommended to increase rest and self-care." },
+                    "recommendation": { "id": "Tambahkan waktu istirahat dan aktivitas self-care.", "en": "Add rest time and self-care activities." }
+                },
+                {
+                    "class_level": 3,
+                    "class_name": { "id": "Rentan", "en": "Vulnerable" },
+                    "display_range": "40 - 59",
+                    "score_range": "31 - 45",
+                    "description": { "id": "Anda sedang menghadapi tantangan emosional yang signifikan. Terdapat gejala kelelahan mental (burnout), kecemasan, atau masalah citra diri yang mulai mengganggu fungsi harian. Mulailah berbicara dengan orang terpercaya atau pertimbangkan sesi konseling awal.", "en": "You are facing significant emotional challenges. There are symptoms of mental exhaustion (burnout), anxiety, or self-image issues that are starting to interfere with daily functioning. Start talking to someone you trust or consider an initial counseling session." },
+                    "recommendation": { "id": "Segera bicarakan dengan orang terpercaya atau konsultan profesional.", "en": "Talk to someone you trust or a professional consultant immediately." }
+                },
+                {
+                    "class_level": 4,
+                    "class_name": { "id": "Butuh Perhatian Klinis", "en": "Needs Clinical Attention" },
+                    "display_range": "0 - 39",
+                    "score_range": "46 - 60",
+                    "description": { "id": "Skor ini mengindikasikan distres psikologis yang tinggi. Anda mungkin merasa kewalahan, putus asa, atau mengalami gejala psikosomatis yang mengganggu kesehatan fisik. Sangat disarankan untuk segera mencari bantuan profesional (psikolog klinis/psikiater) untuk mendapatkan intervensi yang tepat.", "en": "This score indicates high psychological distress. You may feel overwhelmed, hopeless, or experience psychosomatic symptoms that affect physical health. It is highly recommended to immediately seek professional help (clinical psychologist/psychiatrist) for appropriate intervention." },
+                    "recommendation": { "id": "Segera cari bantuan profesional (psikolog klinis atau psikiater).", "en": "Seek professional help immediately (clinical psychologist or psychiatrist)." }
+                }
+            ]
+        }
+    }
+}
