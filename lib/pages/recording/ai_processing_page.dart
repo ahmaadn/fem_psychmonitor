@@ -5,13 +5,13 @@ import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class AiProcessingPage extends StatefulWidget {
   const AiProcessingPage({super.key, this.uploadedAudioPath});
-
   final String? uploadedAudioPath;
 
   @override
@@ -22,7 +22,6 @@ class _AiProcessingPageState extends State<AiProcessingPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   String? _processingError;
-
   static const Duration _minimumLoadingDuration = Duration(seconds: 5);
 
   @override
@@ -32,16 +31,12 @@ class _AiProcessingPageState extends State<AiProcessingPage>
       vsync: this,
       duration: const Duration(seconds: 4),
     )..repeat();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _process();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _process());
   }
 
   Future<void> _process() async {
     final detector = context.read<EmotionDetector>();
     final startedAt = DateTime.now();
-
     try {
       if (widget.uploadedAudioPath != null &&
           widget.uploadedAudioPath!.trim().isNotEmpty) {
@@ -49,20 +44,12 @@ class _AiProcessingPageState extends State<AiProcessingPage>
       } else if (detector.isDetecting) {
         await detector.stopDetection();
       }
-
       await _waitMinimumLoading(startedAt);
-
       if (!mounted) return;
-
       if (detector.error != null) {
-        setState(() {
-          _processingError = detector.error;
-        });
+        setState(() => _processingError = detector.error);
         return;
       }
-
-      // If user is not authenticated, show teaser result and prompt to login/register.
-      // TODO: Replace with real auth check when available.
       final bool isAuthenticated = await _isAuthenticated();
       if (isAuthenticated) {
         context.goNamed(RouteNames.analysisResult);
@@ -71,18 +58,14 @@ class _AiProcessingPageState extends State<AiProcessingPage>
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _processingError = '$e';
-      });
+      setState(() => _processingError = '$e');
     }
   }
 
   Future<void> _waitMinimumLoading(DateTime startedAt) async {
     final elapsed = DateTime.now().difference(startedAt);
     final remaining = _minimumLoadingDuration - elapsed;
-    if (remaining > Duration.zero) {
-      await Future.delayed(remaining);
-    }
+    if (remaining > Duration.zero) await Future.delayed(remaining);
   }
 
   @override
@@ -91,17 +74,15 @@ class _AiProcessingPageState extends State<AiProcessingPage>
     super.dispose();
   }
 
-  Future<bool> _isAuthenticated() async {
-    // Placeholder: integrate real auth check (SharedPreferences / AuthProvider)
-    return false;
-  }
+  Future<bool> _isAuthenticated() async => false;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: CustomAppBar(
-        title: 'Analysis', // Kosong
+        title: l10n.analysis,
         showBackButton: false,
         isScrollable: false,
         leading: IconButton(
@@ -122,22 +103,15 @@ class _AiProcessingPageState extends State<AiProcessingPage>
             child: Container(
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 64.h),
-              // decoration: BoxDecoration(
-              //   color: AppColors.surface,
-              //   borderRadius: BorderRadius.circular(AppRadius.xxl),
-              //   border: Border.all(color: AppColors.outline),
-              // ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AnimatedBuilder(
                     animation: _animationController,
                     builder: (context, child) {
-                      // Soft breathing pulse: 1.0 to 1.15
                       final double pulseScale =
                           1.0 +
                           0.15 * math.sin(_animationController.value * math.pi);
-
                       return SizedBox(
                         width: 160.w,
                         height: 160.w,
@@ -190,7 +164,7 @@ class _AiProcessingPageState extends State<AiProcessingPage>
                   ),
                   SizedBox(height: 48.h),
                   Text(
-                    'Menganalisis Emosi',
+                    l10n.analyzingEmotions,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontSize: 24.sp,
                       fontWeight: FontWeight.w700,
@@ -200,7 +174,7 @@ class _AiProcessingPageState extends State<AiProcessingPage>
                   ),
                   SizedBox(height: 16.h),
                   Text(
-                    _processingError ?? 'Menyusun wawasan personal Anda...',
+                    _processingError ?? l10n.compilingInsights,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontSize: 14.sp,
                       color: _processingError == null

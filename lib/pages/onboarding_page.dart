@@ -3,6 +3,7 @@ import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,6 +12,7 @@ class OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -40,13 +42,13 @@ class OnboardingPage extends StatelessWidget {
                           ),
                           SizedBox(height: AppSpacing.lg.h),
                           Text(
-                            'Selamat datang di FemMonitor',
+                            l10n.welcomeToApp,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headlineLarge,
                           ),
                           SizedBox(height: AppSpacing.sm.h),
                           Text(
-                            'Pilih cara masuk untuk mulai memantau emosi dan siklusmu.',
+                            l10n.chooseSignInMethod,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(
@@ -61,7 +63,7 @@ class OnboardingPage extends StatelessWidget {
                         child: Column(
                           children: [
                             PrimaryButton(
-                              text: 'Daftar',
+                              text: l10n.register,
                               onPressed: () {
                                 context.goNamed(RouteNames.register);
                               },
@@ -75,7 +77,7 @@ class OnboardingPage extends StatelessWidget {
                                   context.goNamed(RouteNames.login);
                                 },
                                 child: Text(
-                                  'Masuk',
+                                  l10n.signIn,
                                   style: Theme.of(context).textTheme.labelLarge
                                       ?.copyWith(
                                         color: AppColors.primary,
@@ -93,7 +95,7 @@ class OnboardingPage extends StatelessWidget {
                                 foregroundColor: AppColors.textSecondary,
                               ),
                               child: Text(
-                                'Lanjut sebagai tamu',
+                                l10n.continueAsGuest,
                                 style: Theme.of(context).textTheme.labelLarge
                                     ?.copyWith(
                                       color: AppColors.textSecondary,

@@ -2,6 +2,7 @@ import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -48,6 +49,7 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       // Menggunakan GestureDetector untuk menangkap aksi "Swipe Up"
@@ -85,13 +87,13 @@ class _SplashPageState extends State<SplashPage>
                             ),
                             SizedBox(height: AppSpacing.lg.h),
                             Text(
-                              'FemMonitor',
+                              l10n.appName,
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.headlineLarge,
                             ),
                             SizedBox(height: AppSpacing.sm.h),
                             Text(
-                              'Teman harian untuk memahami emosi\ndan siklusmu dengan lembut.',
+                              l10n.appTagline,
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(
@@ -109,11 +111,6 @@ class _SplashPageState extends State<SplashPage>
                               vertical: AppSpacing.md.h,
                               horizontal: AppSpacing.lg.w,
                             ),
-                            // decoration: BoxDecoration(
-                            //   color: AppColors.surface,
-                            //   borderRadius: BorderRadius.circular(AppRadius.md),
-                            //   border: Border.all(color: AppColors.outline),
-                            // ),
                             child: Column(
                               children: [
                                 AnimatedBuilder(
@@ -149,7 +146,7 @@ class _SplashPageState extends State<SplashPage>
                                 ),
                                 SizedBox(height: 4.h),
                                 Text(
-                                  'Geser ke atas untuk mulai',
+                                  l10n.swipeUpToStart,
                                   style: Theme.of(context).textTheme.labelLarge
                                       ?.copyWith(
                                         letterSpacing: 0.5,

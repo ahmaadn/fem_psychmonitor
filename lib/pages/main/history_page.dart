@@ -7,6 +7,7 @@ import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -22,14 +23,12 @@ class _HistoryPageState extends State<HistoryPage> {
       DateRangePickerController();
   String _currentMonthText = '';
 
-  // Data tiruan (Mock Data) untuk emosi pada tanggal tertentu
   final Map<DateTime, EmotionLabelType> _emotionData = {};
 
   @override
   void initState() {
     super.initState();
     _generateMockData();
-    // Set teks bulan awal (saat ini)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateMonthText(DateTime.now());
     });
@@ -41,7 +40,6 @@ class _HistoryPageState extends State<HistoryPage> {
     super.dispose();
   }
 
-  // Menghasilkan data acak/statis untuk contoh tampilan kalender
   void _generateMockData() {
     final now = DateTime.now();
     _emotionData[DateTime(now.year, now.month, 1)] = EmotionLabelType.anger;
@@ -62,10 +60,11 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: const CustomAppBar(
-        title: 'Riwayat',
+      appBar: CustomAppBar(
+        title: l10n.historyTitle,
         centerTitle: false,
         showBackButton: false,
       ),
@@ -82,7 +81,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   children: [
                     SizedBox(height: 16.h),
                     Text(
-                      'Refleksi Bulanan',
+                      l10n.monthlyReflection,
                       style: Theme.of(context).textTheme.displayLarge?.copyWith(
                         fontSize: 32.sp,
                         fontWeight: FontWeight.w800,
@@ -98,20 +97,15 @@ class _HistoryPageState extends State<HistoryPage> {
                           height: 1.5,
                         ),
                         children: [
-                          const TextSpan(
-                            text: 'Bulan ini didominasi oleh emosi yang ',
-                          ),
-                          const TextSpan(
-                            text: 'Tenang',
+                          TextSpan(text: l10n.monthDominatedBy),
+                          TextSpan(
+                            text: l10n.calmEmotion,
                             style: TextStyle(
                               color: Color(0xFF6C5A00),
                               fontWeight: FontWeight.w800,
                             ),
                           ),
-                          const TextSpan(
-                            text:
-                                ', dengan sedikit lonjakan energi pada akhir pekan.',
-                          ),
+                          TextSpan(text: l10n.monthEndNote),
                         ],
                       ),
                     ),
@@ -128,7 +122,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          'Rekaman Terbaru',
+                          l10n.recentRecordings,
                           style: Theme.of(context).textTheme.headlineMedium
                               ?.copyWith(
                                 fontSize: 18.sp,
@@ -140,28 +134,24 @@ class _HistoryPageState extends State<HistoryPage> {
                     SizedBox(height: 16.h),
                     _buildRecordingCard(
                       context,
-                      title: 'Riwayat\nRekaman Langsung',
-                      subtitle: 'Tinjau rekaman emosi\nreal-time Anda',
+                      title: l10n.liveRecordingHistory,
+                      subtitle: l10n.liveRecordingSubtitle,
                       icon: Icons.mic_none_rounded,
                       iconBgColor: AppColors.primary,
                       iconColor: Colors.white,
                       badgeColor: AppColors.secondary,
-                      onTap: () {
-                        context.pushNamed(RouteNames.analysisResult);
-                      },
+                      onTap: () => context.pushNamed(RouteNames.analysisResult),
                     ),
                     SizedBox(height: 16.h),
                     _buildRecordingCard(
                       context,
-                      title: 'Riwayat\nUnggahan Audio',
-                      subtitle: 'Jelajahi jurnal audio\nyang diunggah',
+                      title: l10n.uploadedAudioHistory,
+                      subtitle: l10n.uploadedAudioSubtitle,
                       icon: Icons.cloud_upload_outlined,
-                      iconBgColor: const Color(0xFFE2E8F0), // Slate 200
+                      iconBgColor: const Color(0xFFE2E8F0),
                       iconColor: AppColors.primary,
                       badgeColor: AppColors.tertiary,
-                      onTap: () {
-                        context.pushNamed(RouteNames.analysisResult);
-                      },
+                      onTap: () => context.pushNamed(RouteNames.analysisResult),
                     ),
                     SizedBox(height: 120.h),
                   ],
@@ -249,16 +239,10 @@ Widget _buildRecordingCard(
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.chevron_right_rounded,
-                color: Colors.grey.shade400,
-                size: 20.sp,
-              ),
-            ],
+          Icon(
+            Icons.chevron_right_rounded,
+            color: Colors.grey.shade400,
+            size: 20.sp,
           ),
         ],
       ),

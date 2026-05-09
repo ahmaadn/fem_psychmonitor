@@ -3,6 +3,7 @@ import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// Bottom sheet panduan penggunaan aplikasi.
@@ -26,51 +27,35 @@ class AppGuideSheet extends StatefulWidget {
 class _AppGuideSheetState extends State<AppGuideSheet> {
   int _selectedStep = 0;
 
-  static const List<_GuideStep> _steps = [
-    // _GuideStep(
-    //   icon: Icons.add_reaction_outlined,
-    //   iconColor: Color(0xFFF59E0B),
-    //   iconBg: Color(0xFFFEF3C7),
-    //   title: 'Catat Emosi Harian',
-    //   description:
-    //       'Buka tab "Catat" dan pilih emosi yang kamu rasakan hari ini. Tersedia 6 kategori emosi dasar. Tambahkan catatan singkat untuk konteks lebih mendalam.',
-    // ),
+  List<_GuideStep> _buildSteps(AppLocalizations l10n) => [
     _GuideStep(
       icon: Icons.mic_rounded,
       iconColor: Color(0xFF1B6B51),
       iconBg: Color(0xFFD1FAE5),
-      title: 'Rekam Suara',
-      description:
-          'Gunakan fitur rekam suara untuk mengekspresikan perasaan secara verbal. AI kami akan menganalisis nada dan sentimen suaramu.',
+      title: l10n.recordVoiceGuide,
+      description: l10n.recordVoiceGuideDesc,
     ),
     _GuideStep(
       icon: Icons.insights_rounded,
       iconColor: Color(0xFF6D5096),
       iconBg: Color(0xFFEDDCFF),
-      title: 'Lihat Insight Emosi',
-      description:
-          'Di tab "Insight", lihat pola emosi mingguanmu dan rekomendasi self-care yang dipersonalisasi berdasarkan data pencatatanmu.',
+      title: l10n.viewEmotionInsights,
+      description: l10n.viewInsightsDesc,
     ),
     _GuideStep(
       icon: Icons.calendar_month_rounded,
       iconColor: Color(0xFF2563EB),
       iconBg: Color(0xFFDBEAFE),
-      title: 'Pantau Siklus',
-      description:
-          'Hubungkan emosi dengan siklus menstruasimu. FemPsychMonitor membantu mengenali pola emosi terkait fase siklus agar kamu lebih memahami diri sendiri.',
+      title: l10n.monitorCycle,
+      description: l10n.monitorCycleDesc,
     ),
-    // _GuideStep(
-    //   icon: Icons.notifications_outlined,
-    //   iconColor: Color(0xFFEA580C),
-    //   iconBg: Color(0xFFFFEDD5),
-    //   title: 'Pengingat Harian',
-    //   description:
-    //       'Aktifkan pengingat agar kamu tidak lupa mencatat emosi setiap hari. Konsistensi adalah kunci untuk mendapatkan insight yang akurat.',
-    // ),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final steps = _buildSteps(l10n);
+
     return DraggableScrollableSheet(
       initialChildSize: 0.92,
       minChildSize: 0.5,
@@ -125,9 +110,9 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Panduan Aplikasi', style: AppTypography.h2),
+                          Text(l10n.appGuideTitle, style: AppTypography.h2),
                           Text(
-                            '${_steps.length} langkah memulai perjalananmu',
+                            l10n.stepsToStart(steps.length),
                             style: AppTypography.bodySm.copyWith(
                               color: AppColors.textSecondary.withValues(
                                 alpha: 0.7,
@@ -153,7 +138,7 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                 scrollDirection: Axis.horizontal,
                 padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg.w),
                 child: Row(
-                  children: List.generate(_steps.length, (i) {
+                  children: List.generate(steps.length, (i) {
                     final isSelected = _selectedStep == i;
                     return GestureDetector(
                       onTap: () => setState(() => _selectedStep = i),
@@ -197,8 +182,9 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                     duration: const Duration(milliseconds: 250),
                     child: _StepContent(
                       key: ValueKey(_selectedStep),
-                      step: _steps[_selectedStep],
+                      step: steps[_selectedStep],
                       index: _selectedStep,
+                      totalSteps: steps.length,
                     ),
                   ),
                 ),
@@ -216,7 +202,7 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                     if (_selectedStep > 0) ...[
                       Expanded(
                         child: SecondaryButton(
-                          text: 'Sebelumnya',
+                          text: l10n.previous,
                           onPressed: () => setState(() => _selectedStep--),
                           backgroundColor: AppColors.surfaceContainerHighest,
                           textColor: AppColors.textPrimary,
@@ -226,11 +212,11 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                     ],
                     Expanded(
                       child: PrimaryButton(
-                        text: _selectedStep < _steps.length - 1
-                            ? 'Selanjutnya'
-                            : 'Selesai',
+                        text: _selectedStep < steps.length - 1
+                            ? l10n.next
+                            : l10n.finished,
                         onPressed: () {
-                          if (_selectedStep < _steps.length - 1) {
+                          if (_selectedStep < steps.length - 1) {
                             setState(() => _selectedStep++);
                           } else {
                             Navigator.of(context).pop();
@@ -267,10 +253,17 @@ class _GuideStep {
 class _StepContent extends StatelessWidget {
   final _GuideStep step;
   final int index;
-  const _StepContent({super.key, required this.step, required this.index});
+  final int totalSteps;
+  const _StepContent({
+    super.key,
+    required this.step,
+    required this.index,
+    required this.totalSteps,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         Container(
@@ -287,7 +280,7 @@ class _StepContent extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.full),
           ),
           child: Text(
-            'Langkah ${index + 1} dari 5',
+            l10n.stepOf(index + 1, totalSteps),
             style: AppTypography.bodySm.copyWith(
               color: step.iconColor,
               fontWeight: FontWeight.w600,

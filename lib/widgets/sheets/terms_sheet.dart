@@ -3,6 +3,7 @@ import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// Bottom sheet syarat dan ketentuan penggunaan.
@@ -19,41 +20,29 @@ class TermsSheet extends StatelessWidget {
     );
   }
 
-  static const List<_TermsSection> _sections = [
+  List<_TermsSection> _buildSections(AppLocalizations l10n) => [
     _TermsSection(
-      title: '1. Penerimaan Ketentuan',
-      content:
-          'Dengan menggunakan aplikasi FemPsychMonitor ("Aplikasi"), Anda menyetujui untuk terikat oleh Syarat dan Ketentuan ini. Jika Anda tidak menyetujui ketentuan ini, harap jangan gunakan Aplikasi.',
+      title: l10n.termsAcceptance,
+      content: l10n.termsAcceptanceContent,
+    ),
+    _TermsSection(title: l10n.termsUsage, content: l10n.termsUsageContent),
+    _TermsSection(title: l10n.termsPrivacy, content: l10n.termsPrivacyContent),
+    _TermsSection(
+      title: l10n.termsAccountSecurity,
+      content: l10n.termsAccountSecurityContent,
     ),
     _TermsSection(
-      title: '2. Penggunaan Aplikasi',
-      content:
-          'Aplikasi ini dirancang sebagai alat pemantauan kesehatan emosional yang bersifat pendukung (supportive), bukan pengganti saran medis profesional. Pengguna diharapkan berusia minimal 17 tahun atau mendapatkan izin dari orang tua/wali.',
+      title: l10n.termsServiceLimitations,
+      content: l10n.termsServiceLimitationsContent,
     ),
-    _TermsSection(
-      title: '3. Privasi dan Data',
-      content:
-          'Kami mengumpulkan data emosi, rekaman suara (opsional), dan data siklus yang Anda masukkan. Data ini diproses secara lokal dan/atau di server kami dengan enkripsi AES-256. Kami tidak menjual data Anda kepada pihak ketiga.',
-    ),
-    _TermsSection(
-      title: '4. Keamanan Akun',
-      content:
-          'Anda bertanggung jawab menjaga kerahasiaan kredensial akun Anda. Harap segera beri tahu kami jika Anda menduga ada akses tidak sah ke akun Anda.',
-    ),
-    _TermsSection(
-      title: '5. Batasan Layanan',
-      content:
-          'FemPsychMonitor bukan layanan darurat. Jika Anda mengalami krisis mental atau pikiran untuk menyakiti diri sendiri, segera hubungi layanan kesehatan jiwa atau hotline 119 ext 8.',
-    ),
-    _TermsSection(
-      title: '6. Pembaruan Ketentuan',
-      content:
-          'Kami berhak memperbarui Syarat dan Ketentuan ini sewaktu-waktu. Perubahan signifikan akan diberitahukan melalui notifikasi aplikasi. Penggunaan berkelanjutan setelah perubahan berarti Anda menyetujui ketentuan yang diperbarui.',
-    ),
+    _TermsSection(title: l10n.termsUpdates, content: l10n.termsUpdatesContent),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final sections = _buildSections(l10n);
+
     return DraggableScrollableSheet(
       initialChildSize: 0.92,
       minChildSize: 0.5,
@@ -68,7 +57,6 @@ class TermsSheet extends StatelessWidget {
           ),
           child: Column(
             children: [
-              // Drag Handle
               Padding(
                 padding: EdgeInsets.only(top: AppSpacing.md.h),
                 child: Container(
@@ -80,7 +68,6 @@ class TermsSheet extends StatelessWidget {
                   ),
                 ),
               ),
-              // Header
               Padding(
                 padding: EdgeInsets.fromLTRB(
                   AppSpacing.lg.w,
@@ -108,9 +95,9 @@ class TermsSheet extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Syarat & Ketentuan', style: AppTypography.h2),
+                          Text(l10n.termsSheetTitle, style: AppTypography.h2),
                           Text(
-                            'Diperbarui 1 Januari 2024',
+                            l10n.termsUpdatedDate,
                             style: AppTypography.bodySm.copyWith(
                               color: AppColors.textSecondary.withValues(
                                 alpha: 0.6,
@@ -132,7 +119,6 @@ class TermsSheet extends StatelessWidget {
                 ),
               ),
               Divider(height: 1, thickness: 1, color: AppColors.outline),
-              // Content
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
@@ -140,7 +126,6 @@ class TermsSheet extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Intro notice
                       Container(
                         padding: EdgeInsets.all(AppSpacing.md.w),
                         decoration: BoxDecoration(
@@ -163,7 +148,7 @@ class TermsSheet extends StatelessWidget {
                             SizedBox(width: AppSpacing.sm.w),
                             Expanded(
                               child: Text(
-                                'Harap baca dengan seksama sebelum menggunakan aplikasi ini.',
+                                l10n.termsReadCarefully,
                                 style: AppTypography.bodySm.copyWith(
                                   color: const Color(0xFFEA580C),
                                   fontWeight: FontWeight.w500,
@@ -175,15 +160,12 @@ class TermsSheet extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: AppSpacing.lg.h),
-                      // Sections
-                      ...List.generate(_sections.length, (i) {
-                        final section = _sections[i];
+                      ...List.generate(sections.length, (i) {
                         return Padding(
                           padding: EdgeInsets.only(bottom: AppSpacing.lg.h),
-                          child: _TermsTile(section: section),
+                          child: _TermsTile(section: sections[i]),
                         );
                       }),
-                      // Contact
                       Container(
                         padding: EdgeInsets.all(AppSpacing.md.w),
                         decoration: BoxDecoration(
@@ -205,7 +187,7 @@ class TermsSheet extends StatelessWidget {
                                 ),
                                 SizedBox(width: AppSpacing.xs.w),
                                 Text(
-                                  'Hubungi Kami',
+                                  l10n.contactUs,
                                   style: AppTypography.bodyMd.copyWith(
                                     color: AppColors.primary,
                                     fontWeight: FontWeight.w600,
@@ -215,7 +197,7 @@ class TermsSheet extends StatelessWidget {
                             ),
                             SizedBox(height: AppSpacing.sm.h),
                             Text(
-                              'Jika ada pertanyaan mengenai syarat dan ketentuan ini, hubungi kami di:\nsupport@fempsychmonitor.id',
+                              l10n.contactUsMessage,
                               style: AppTypography.bodySm.copyWith(
                                 color: AppColors.textSecondary,
                                 height: 1.5,
@@ -229,7 +211,6 @@ class TermsSheet extends StatelessWidget {
                   ),
                 ),
               ),
-              // Close button
               Padding(
                 padding: EdgeInsets.fromLTRB(
                   AppSpacing.lg.w,
@@ -238,7 +219,7 @@ class TermsSheet extends StatelessWidget {
                   AppSpacing.lg.h + MediaQuery.of(context).padding.bottom,
                 ),
                 child: PrimaryButton(
-                  text: 'Saya Mengerti',
+                  text: l10n.iUnderstand,
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ),

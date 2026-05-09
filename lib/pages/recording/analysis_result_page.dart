@@ -7,6 +7,7 @@ import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/widgets/timeline_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -14,24 +15,21 @@ import 'package:provider/provider.dart';
 
 class AnalysisResultPage extends StatelessWidget {
   final bool isTeaser;
-
   const AnalysisResultPage({super.key, this.isTeaser = false});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final detector = context.watch<EmotionDetector>();
     final timeline = detector.timeline;
-
     final dominant = detector.latest?.label ?? EmotionLabelType.neutral;
     final dominantConfidence = detector.latest?.confidence ?? 0.0;
-    final summaryText =
-        detector.error ??
-        'Ringkasan dibuat dari timeline deteksi rekaman Anda.';
+    final summaryText = detector.error ?? l10n.resultSummaryDefault;
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: CustomAppBar(
-        title: 'HISTORY', // Kosongkan title tengah
+        title: l10n.history,
         showBackButton: false,
         isScrollable: false,
         leading: IconButton(
@@ -53,6 +51,7 @@ class AnalysisResultPage extends StatelessWidget {
               SizedBox(height: AppSpacing.base.h),
               _buildHeroBanner(
                 context,
+                l10n,
                 dominant: dominant,
                 confidence: dominantConfidence,
                 summaryText: summaryText,
@@ -60,34 +59,33 @@ class AnalysisResultPage extends StatelessWidget {
               SizedBox(height: AppSpacing.extraSpacious.h),
               _buildSectionCard(child: RecordingTimeline(timeline: timeline)),
               SizedBox(height: AppSpacing.relaxed.h),
-              ComponentTimeline(timeline: timeline, title: 'Komponen Emosi'),
+              ComponentTimeline(
+                timeline: timeline,
+                title: l10n.emotionComponent,
+              ),
               SizedBox(height: AppSpacing.relaxed.h),
               PrimaryButton(
-                text: 'Back to Dashboard',
+                text: l10n.backToDashboard,
                 prefixIcon: Icons.dashboard_customize_rounded,
-                onPressed: () {
-                  context.goNamed(RouteNames.home);
-                },
+                onPressed: () => context.goNamed(RouteNames.home),
               ),
               SizedBox(height: AppSpacing.base.h),
               SecondaryButton(
-                text: 'Retake Recording',
-                subText: '(Ulangi Rekaman)',
+                text: l10n.retakeRecording,
+                subText: l10n.retakeRecordingSub,
                 icon: Icons.replay_rounded,
-                onPressed: () {
-                  context.goNamed(RouteNames.liveRecording);
-                },
+                onPressed: () => context.goNamed(RouteNames.liveRecording),
               ),
               if (isTeaser) ...[
                 SizedBox(height: AppSpacing.relaxed.h),
-                _buildTeaserCard(context),
+                _buildTeaserCard(context, l10n),
               ],
               if (!isTeaser) ...[
                 SizedBox(height: AppSpacing.relaxed.h),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: AppSpacing.base.w),
                   child: Text(
-                    '*Perhatian: Hasil analisis ini bersifat indikatif dan tidak menggantikan penilaian profesional.',
+                    l10n.disclaimer,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontSize: 9.sp,
                       fontWeight: FontWeight.w600,
@@ -108,7 +106,8 @@ class AnalysisResultPage extends StatelessWidget {
   }
 
   Widget _buildHeroBanner(
-    BuildContext context, {
+    BuildContext context,
+    AppLocalizations l10n, {
     required EmotionLabelType dominant,
     required double confidence,
     required String summaryText,
@@ -124,7 +123,7 @@ class AnalysisResultPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Analysis Result',
+            l10n.analysisResult,
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
               fontSize: 24.sp,
               fontWeight: FontWeight.w800,
@@ -134,7 +133,7 @@ class AnalysisResultPage extends StatelessWidget {
           ),
           SizedBox(height: AppSpacing.sm.h),
           Text(
-            'Ringkasan hasil analisis rekaman terbaru Anda.',
+            l10n.resultSummaryDesc,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontSize: 14.sp,
               color: AppColors.textPrimaryInverse.withValues(alpha: 0.85),
@@ -165,7 +164,7 @@ class AnalysisResultPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Confidence',
+                    l10n.confidence,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontSize: 9.sp,
                       fontWeight: FontWeight.w700,
@@ -181,7 +180,7 @@ class AnalysisResultPage extends StatelessWidget {
           ),
           SizedBox(height: AppSpacing.base.h),
           Text(
-            'Emosi Dominan ${dominant.displayName}',
+            l10n.dominantEmotionLabel(dominant.displayName),
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontSize: 18.sp,
               fontWeight: FontWeight.w700,
@@ -214,7 +213,7 @@ class AnalysisResultPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTeaserCard(BuildContext context) {
+  Widget _buildTeaserCard(BuildContext context, AppLocalizations l10n) {
     return Container(
       padding: EdgeInsets.all(AppSpacing.relaxed.w),
       decoration: BoxDecoration(
@@ -226,7 +225,7 @@ class AnalysisResultPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Ingin melihat hasil lengkap?',
+            l10n.wantFullResults,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontSize: 16.sp,
               fontWeight: FontWeight.w700,
@@ -234,7 +233,7 @@ class AnalysisResultPage extends StatelessWidget {
           ),
           SizedBox(height: AppSpacing.sm.h),
           Text(
-            'Login / Register untuk melihat penuh.',
+            l10n.loginRegisterForFull,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               fontSize: 13.sp,
               color: AppColors.textSecondary,
@@ -243,17 +242,14 @@ class AnalysisResultPage extends StatelessWidget {
           ),
           SizedBox(height: AppSpacing.base.h),
           SecondaryButton(
-            text: 'Login / Register',
+            text: l10n.loginRegister,
             icon: Icons.lock_rounded,
             backgroundColor: AppColors.secondaryFixed,
             textColor: AppColors.onSecondaryFixed,
-            onPressed: () {
-              // pass desired post-auth route to restore full result
-              context.goNamed(
-                RouteNames.login,
-                extra: RouteNames.analysisResult,
-              );
-            },
+            onPressed: () => context.goNamed(
+              RouteNames.login,
+              extra: RouteNames.analysisResult,
+            ),
           ),
         ],
       ),

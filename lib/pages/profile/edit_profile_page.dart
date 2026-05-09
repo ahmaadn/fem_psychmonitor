@@ -5,6 +5,7 @@ import 'package:fem_psychmonitor/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -29,6 +30,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     await Future.delayed(const Duration(seconds: 1));
     setState(() => _isSaving = false);
     if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
@@ -38,10 +40,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
           content: Row(
             children: [
-              const Icon(Icons.check_circle_outline_rounded, color: Colors.white, size: 18),
+              const Icon(
+                Icons.check_circle_outline_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
               SizedBox(width: AppSpacing.sm.w),
-              Text('Profil berhasil disimpan!',
-                  style: AppTypography.bodyMd.copyWith(color: Colors.white)),
+              Text(
+                l10n.profileSaved,
+                style: AppTypography.bodyMd.copyWith(color: Colors.white),
+              ),
             ],
           ),
         ),
@@ -51,16 +59,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(
-        title: 'Ubah Profil',
-        showBackButton: true,
-      ),
+      appBar: CustomAppBar(title: l10n.editProfileTitle, showBackButton: true),
       body: SafeArea(
         child: Column(
           children: [
-
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg.w),
@@ -70,8 +75,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: AppSpacing.lg.h),
-
-                      // ── Avatar Section ──────────────────────────────────
                       Center(
                         child: Stack(
                           children: [
@@ -82,7 +85,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 shape: BoxShape.circle,
                                 color: AppColors.surfaceContainerHighest,
                                 border: Border.all(
-                                  color: AppColors.primary.withValues(alpha: 0.2),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   width: 3,
                                 ),
                               ),
@@ -105,7 +110,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   decoration: BoxDecoration(
                                     color: AppColors.primary,
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: AppColors.surface, width: 2),
+                                    border: Border.all(
+                                      color: AppColors.surface,
+                                      width: 2,
+                                    ),
                                   ),
                                   child: Icon(
                                     Icons.camera_alt_rounded,
@@ -118,65 +126,51 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           ],
                         ),
                       ),
-
                       SizedBox(height: AppSpacing.xs.h),
                       Center(
                         child: Text(
-                          'Ketuk untuk ganti foto',
+                          l10n.tapToChangePhoto,
                           style: AppTypography.bodySm.copyWith(
-                            color: AppColors.textSecondary.withValues(alpha: 0.6),
+                            color: AppColors.textSecondary.withValues(
+                              alpha: 0.6,
+                            ),
                           ),
                         ),
                       ),
-
                       SizedBox(height: AppSpacing.xl.h),
-
-                      // ── Section Label ────────────────────────────────────
-                      _SectionLabel(label: 'Informasi Pribadi'),
+                      _SectionLabel(label: l10n.personalInfo),
                       SizedBox(height: AppSpacing.md.h),
-
-                      // ── Form Fields ──────────────────────────────────────
                       CustomTextField(
-                        label: 'Nama Lengkap',
-                        hintText: 'Masukkan nama lengkap',
+                        label: l10n.fullName,
+                        hintText: l10n.enterFullName,
                         prefixIcon: Icons.person_outline_rounded,
                       ),
                       SizedBox(height: AppSpacing.md.h),
-
                       CustomTextField(
-                        label: 'Email',
-                        hintText: 'Masukkan alamat email',
+                        label: l10n.email,
+                        hintText: l10n.enterEmail,
                         prefixIcon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
                       ),
                       SizedBox(height: AppSpacing.md.h),
-
                       CustomTextField(
-                        label: 'Nomor Telepon',
-                        hintText: 'Masukkan nomor telepon',
+                        label: l10n.phoneNumber,
+                        hintText: l10n.enterPhoneNumber,
                         prefixIcon: Icons.phone_outlined,
                         keyboardType: TextInputType.phone,
                       ),
                       SizedBox(height: AppSpacing.md.h),
-
-                      // Date of birth (read-only tap)
                       _DateField(
-                        label: 'Tanggal Lahir',
-                        value: '15 Maret 1998',
-                        onTap: () {
-                          // TODO: show date picker
-                        },
+                        label: l10n.dateOfBirth,
+                        value: l10n.dateOfBirthValue,
+                        onTap: () {},
                       ),
-
                       SizedBox(height: AppSpacing.xl.h),
-
-                      // ── Save Button ──────────────────────────────────────
                       PrimaryButton(
-                        text: 'Simpan Profil',
+                        text: l10n.saveProfile,
                         onPressed: _saveProfile,
                         isLoading: _isSaving,
                       ),
-
                       SizedBox(height: AppSpacing.xl.h),
                     ],
                   ),
@@ -190,10 +184,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 }
 
-// ── Reusable Section Label ───────────────────────────────────────────────────
 class _SectionLabel extends StatelessWidget {
   final String label;
-
   const _SectionLabel({required this.label});
 
   @override
@@ -209,21 +201,16 @@ class _SectionLabel extends StatelessWidget {
           ),
         ),
         SizedBox(width: AppSpacing.sm.w),
-        Text(
-          label,
-          style: AppTypography.h2.copyWith(fontSize: 14.sp),
-        ),
+        Text(label, style: AppTypography.h2.copyWith(fontSize: 14.sp)),
       ],
     );
   }
 }
 
-// ── Date Picker Field ────────────────────────────────────────────────────────
 class _DateField extends StatelessWidget {
   final String label;
   final String value;
   final VoidCallback onTap;
-
   const _DateField({
     required this.label,
     required this.value,
@@ -238,9 +225,9 @@ class _DateField extends StatelessWidget {
         Text(
           label,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         SizedBox(height: 8.h),
         GestureDetector(
@@ -264,12 +251,7 @@ class _DateField extends StatelessWidget {
                   color: AppColors.textSecondary.withValues(alpha: 0.6),
                 ),
                 SizedBox(width: AppSpacing.sm.w),
-                Expanded(
-                  child: Text(
-                    value,
-                    style: AppTypography.bodyMd,
-                  ),
-                ),
+                Expanded(child: Text(value, style: AppTypography.bodyMd)),
                 Icon(
                   Icons.chevron_right_rounded,
                   size: 20.sp,

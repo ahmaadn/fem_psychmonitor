@@ -14,6 +14,7 @@ import 'package:fem_psychmonitor/widgets/info_card.dart';
 import 'package:fem_psychmonitor/widgets/page_header.dart';
 import 'package:fem_psychmonitor/widgets/timeline_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +29,7 @@ class LiveRecordingPage extends StatefulWidget {
 class _LiveRecordingPageState extends State<LiveRecordingPage> {
   Timer? _ticker;
   Duration _elapsed = Duration.zero;
+
   @override
   void initState() {
     super.initState();
@@ -35,11 +37,8 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
 
   Future<void> _startSession() async {
     final detector = context.read<EmotionDetector>();
-
     if (detector.isDetecting) return;
-
     await detector.startDetection(saveToFile: true);
-
     if (!mounted) return;
     if (detector.error != null) {
       ScaffoldMessenger.of(
@@ -47,22 +46,18 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
       ).showSnackBar(SnackBar(content: Text(detector.error!)));
       return;
     }
-
     _ticker?.cancel();
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
       final currentDetector = context.read<EmotionDetector>();
       if (currentDetector.isPaused) return;
-      setState(() {
-        _elapsed += const Duration(seconds: 1);
-      });
+      setState(() => _elapsed += const Duration(seconds: 1));
     });
   }
 
   Future<void> _discardSession() async {
+    final l10n = AppLocalizations.of(context)!;
     final detector = context.read<EmotionDetector>();
-
-    // Tampilkan konfirmasi jika rekaman sudah berjalan atau ada data
     if (detector.isDetecting ||
         detector.isPaused ||
         _elapsed > Duration.zero ||
@@ -73,23 +68,21 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
-          title: const Text('Buang Rekaman?'),
-          content: const Text(
-            'Semua data suara dan analisis emosi pada sesi ini akan dihapus secara permanen.',
-          ),
+          title: Text(l10n.discardRecordingTitle),
+          content: Text(l10n.discardRecordingMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(
-                'Batal',
+                l10n.cancel,
                 style: TextStyle(color: AppColors.textSecondary),
               ),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text(
-                'Buang',
-                style: TextStyle(
+              child: Text(
+                l10n.discard,
+                style: const TextStyle(
                   color: Colors.red,
                   fontWeight: FontWeight.bold,
                 ),
@@ -98,12 +91,8 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
           ],
         ),
       );
-
-      if (confirm != true) {
-        return; // Batal membuang
-      }
+      if (confirm != true) return;
     }
-
     _ticker?.cancel();
     if (detector.isDetecting || detector.isPaused) {
       await detector.stopDetection();
@@ -133,6 +122,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final detector = context.watch<EmotionDetector>();
 
     return PopScope(
@@ -144,7 +134,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: CustomAppBar(
-          title: 'RECORDING',
+          title: l10n.recording,
           showBackButton: false,
           isScrollable: false,
           leading: IconButton(
@@ -165,12 +155,10 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       PageHeader(
-                        title: 'Speak your mind',
-                        subtitle:
-                            'Capture your thoughts. This recording will be processed into private insights within your digital sanctuary.',
+                        title: l10n.speakYourMind,
+                        subtitle: l10n.captureThoughts,
                       ),
                       SizedBox(height: 24.h),
-
                       Container(
                         padding: EdgeInsets.all(24.w),
                         decoration: BoxDecoration(
@@ -185,7 +173,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 CustomBadge(
-                                  text: 'LIVE SESSION',
+                                  text: l10n.liveSession,
                                   backgroundColor: const Color(0xFFFFE5E5),
                                   textColor: const Color(0xFFFF4D4D),
                                   icon: Icons.circle,
@@ -205,7 +193,6 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                               ],
                             ),
                             SizedBox(height: 32.h),
-
                             AnimatedSize(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
@@ -215,7 +202,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                                       height: 32.h,
                                       child: Center(
                                         child: Text(
-                                          'Mulai rekam untuk melihat emosi',
+                                          l10n.startRecordToSee,
                                           style: TextStyle(
                                             color: AppColors.textSecondary
                                                 .withAlpha(128),
@@ -227,16 +214,13 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                                     ),
                             ),
                             SizedBox(height: 32.h),
-
                             RealtimeWaveVisualizer(
                               amplitudeStream: detector.onAmplitudeChanged,
                               waveColor: AppColors.primary,
                               width: MediaQuery.of(context).size.width,
                               height: 100.h,
                             ),
-
                             SizedBox(height: 48.h),
-
                             Center(
                               child: GestureDetector(
                                 onTap: () {
@@ -283,15 +267,13 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                                 ),
                               ),
                             ),
-
                             SizedBox(height: 32.h),
-
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 ControlAction(
                                   icon: Icons.delete_outline_rounded,
-                                  label: 'Discard',
+                                  label: l10n.discardLabel,
                                   bgColor: const Color(0xFFF1F5F9),
                                   iconColor: AppColors.primary.withAlpha(153),
                                   onTap: _discardSession,
@@ -301,8 +283,8 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                                       ? Icons.check_rounded
                                       : Icons.play_arrow_rounded,
                                   label: detector.isDetecting
-                                      ? 'Selesai'
-                                      : 'Mulai',
+                                      ? l10n.doneLabel
+                                      : l10n.startLabel,
                                   bgColor: AppColors.primary.withAlpha(25),
                                   iconColor: AppColors.primary,
                                   onTap: detector.isDetecting
@@ -325,7 +307,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                               SizedBox(height: 24.h),
                               ComponentTimeline(
                                 timeline: detector.timeline,
-                                title: 'Distribusi Emosi Keseluruhan',
+                                title: l10n.overallEmotionDistribution,
                                 animateFromLastPercent: true,
                                 sortByFrequency: false,
                                 showAllEmotions: true,
@@ -336,9 +318,8 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                       ),
                       SizedBox(height: 48.h),
                       InfoCard(
-                        title: 'PRIVACY CHECK',
-                        message:
-                            'Your voice is encrypted. Only your insights are shared with your future self.',
+                        title: l10n.privacyCheck,
+                        message: l10n.privacyCheckMessage,
                         icon: Icons.light_mode_outlined,
                       ),
                       SizedBox(height: 32.h),

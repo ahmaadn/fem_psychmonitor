@@ -6,6 +6,7 @@ import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_text_field.dart';
 import 'package:fem_psychmonitor/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,10 +15,11 @@ class ForgotPasswordPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: CustomAppBar(
-        title: 'Lupa Kata Sandi',
+        title: l10n.forgotPasswordTitle,
         backgroundColor: Colors.transparent,
         showBackButton: true,
       ),
@@ -44,13 +46,13 @@ class ForgotPasswordPage extends StatelessWidget {
               ),
               SizedBox(height: AppSpacing.lg.h),
               Text(
-                'Atur ulang kata sandi',
+                l10n.resetPassword,
                 style: Theme.of(context).textTheme.headlineLarge,
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: AppSpacing.sm.h),
               Text(
-                'Masukkan email untuk menerima tautan pemulihan.',
+                l10n.enterEmailForRecovery,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -62,15 +64,15 @@ class ForgotPasswordPage extends StatelessWidget {
                 child: Form(
                   child: Column(
                     children: [
-                      const CustomTextField(
-                        label: 'Email',
-                        hintText: 'nama@contoh.com',
+                      CustomTextField(
+                        label: l10n.email,
+                        hintText: l10n.emailHint,
                         prefixIcon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
                       ),
                       SizedBox(height: AppSpacing.lg.h),
                       PrimaryButton(
-                        text: 'Kirim tautan',
+                        text: l10n.sendLink,
                         suffixIcon: Icons.arrow_forward_rounded,
                         onPressed: () {
                           context.goNamed(RouteNames.login);
@@ -83,8 +85,8 @@ class ForgotPasswordPage extends StatelessWidget {
               SizedBox(height: AppSpacing.xl.h),
               Center(
                 child: AuthFooterPrompt(
-                  text: 'Ingat kata sandi? ',
-                  linkText: 'Masuk di sini',
+                  text: l10n.rememberPassword,
+                  linkText: l10n.signInHere,
                   onTap: () {
                     if (context.canPop()) {
                       context.pop();

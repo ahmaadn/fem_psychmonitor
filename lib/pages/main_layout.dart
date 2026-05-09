@@ -1,5 +1,6 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,6 +18,7 @@ class MainLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       extendBody: true,
@@ -39,15 +41,15 @@ class MainLayout extends StatelessWidget {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_rounded),
-            label: 'Home',
+            label: l10n.home,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today_rounded),
-            label: 'History',
+            label: l10n.history,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline_rounded),
-            label: 'Profile',
+            label: l10n.profile,
           ),
         ],
       ),

@@ -5,6 +5,7 @@ import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/widgets/mood_overview_card.dart';
 import 'package:fem_psychmonitor/widgets/upload_audio_button.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:fem_psychmonitor/widgets/pulsing_mic_button.dart";
 import 'package:go_router/go_router.dart';
@@ -30,7 +31,9 @@ class _HomePageState extends State<HomePage> {
     final path = picked.files.single.path;
     if (path == null || path.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gagal membaca path file audio.')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.failedToReadAudioPath),
+        ),
       );
       return;
     }
@@ -40,6 +43,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -49,9 +53,8 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // SizedBox(height: 32.h),
               Text(
-                'Selamat malam, Elena',
+                l10n.goodEvening,
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.w800,
@@ -61,22 +64,21 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 8.h),
               Text(
-                'Bagaimana perasaan hatimu saat ini?',
+                l10n.howAreYouFeeling,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontSize: 15.sp,
                   color: AppColors.onSurface.withAlpha(153),
                 ),
               ),
               SizedBox(height: 24.h),
-              
+
               _buildDailyTracker(context),
 
               SizedBox(height: 32.h),
               MoodOverviewCard(
-                mood: 'Tenang',
+                mood: l10n.calm,
                 percentage: 76,
-                description:
-                    'Hatimu terasa tenang dan seimbang. Jaga terus ketenangan ini dengan aktivitas relaksasi dan self-care.',
+                description: l10n.moodDescription,
               ),
 
               SizedBox(height: 48.h),
@@ -99,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(height: 24.h),
                     Text(
-                      'Rekam Suaramu',
+                      l10n.recordYourVoice,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w800,
@@ -107,7 +109,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(height: 4.h),
                     Text(
-                      'Biarkan AI mengenali emosi aslimu',
+                      l10n.letAiRecognize,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontSize: 13.sp,
                         color: AppColors.onSurface.withAlpha(153),
@@ -126,8 +128,8 @@ class _HomePageState extends State<HomePage> {
                       context,
                       color: AppColors.info,
                       icon: Icons.sentiment_satisfied_alt_rounded,
-                      title: 'Tenang',
-                      subtitle: 'MOOD SAAT INI',
+                      title: l10n.calm,
+                      subtitle: l10n.currentMood,
                     ),
                   ),
                   SizedBox(width: 16.w),
@@ -137,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                       color: AppColors.secondary,
                       icon: Icons.history_rounded,
                       title: '24',
-                      subtitle: 'TOTAL REKAMAN',
+                      subtitle: l10n.totalRecordings,
                     ),
                   ),
                 ],
@@ -201,10 +203,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildDailyTracker(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     // For mock, let's say Monday to Thursday are checked.
     final checkedDays = [true, true, true, true, false, false, false];
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -212,7 +215,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Runtutan Check-in Anda',
+              l10n.checkInStreak,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -220,17 +223,21 @@ class _HomePageState extends State<HomePage> {
             ),
             Row(
               children: [
-                Icon(Icons.local_fire_department_rounded, color: const Color(0xFFF59E0B), size: 18.sp),
+                Icon(
+                  Icons.local_fire_department_rounded,
+                  color: const Color(0xFFF59E0B),
+                  size: 18.sp,
+                ),
                 SizedBox(width: 4.w),
                 Text(
-                  '4 Hari',
+                  l10n.daysCount(4),
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFFF59E0B),
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
         SizedBox(height: 16.h),
@@ -239,18 +246,18 @@ class _HomePageState extends State<HomePage> {
           children: List.generate(7, (index) {
             final isChecked = checkedDays[index];
             final isToday = index == 4; // Let's say Friday is today
-            
+
             return Container(
               width: 40.w,
               height: 52.h,
               decoration: BoxDecoration(
-                color: isChecked 
-                    ? AppColors.primary.withAlpha(20) 
+                color: isChecked
+                    ? AppColors.primary.withAlpha(20)
                     : (isToday ? AppColors.surface : Colors.transparent),
                 borderRadius: BorderRadius.circular(AppRadius.md),
                 border: Border.all(
-                  color: isChecked 
-                      ? AppColors.primary 
+                  color: isChecked
+                      ? AppColors.primary
                       : (isToday ? const Color(0xFFF59E0B) : AppColors.outline),
                   width: isToday ? 2 : 1,
                 ),
@@ -261,16 +268,24 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     days[index],
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: isChecked 
-                          ? AppColors.primary 
-                          : (isToday ? AppColors.textPrimary : AppColors.textSecondary),
-                      fontWeight: isToday || isChecked ? FontWeight.w700 : FontWeight.w500,
+                      color: isChecked
+                          ? AppColors.primary
+                          : (isToday
+                                ? AppColors.textPrimary
+                                : AppColors.textSecondary),
+                      fontWeight: isToday || isChecked
+                          ? FontWeight.w700
+                          : FontWeight.w500,
                     ),
                   ),
                   if (isChecked) ...[
                     SizedBox(height: 4.h),
-                    Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 14.sp),
-                  ]
+                    Icon(
+                      Icons.check_circle_rounded,
+                      color: AppColors.primary,
+                      size: 14.sp,
+                    ),
+                  ],
                 ],
               ),
             );

@@ -4,6 +4,7 @@ import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/widgets/page_header.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,13 +20,6 @@ class _InitialQuestionnairePageState extends State<InitialQuestionnairePage> {
   String? selectedMood;
   final TextEditingController noteController = TextEditingController();
 
-  final List<Map<String, String>> moods = [
-    {'id': 'happy', 'label': 'Senang'},
-    {'id': 'sad', 'label': 'Sedih'},
-    {'id': 'neutral', 'label': 'Netral'},
-    {'id': 'angry', 'label': 'Marah'},
-  ];
-
   @override
   void dispose() {
     noteController.dispose();
@@ -34,9 +28,18 @@ class _InitialQuestionnairePageState extends State<InitialQuestionnairePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    final List<Map<String, String>> moods = [
+      {'id': 'happy', 'label': l10n.happy},
+      {'id': 'sad', 'label': l10n.sad},
+      {'id': 'neutral', 'label': l10n.neutral},
+      {'id': 'angry', 'label': l10n.angry},
+    ];
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: CustomAppBar(title: 'Welcome', showBackButton: true),
+      appBar: CustomAppBar(title: l10n.welcome, showBackButton: true),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -45,13 +48,12 @@ class _InitialQuestionnairePageState extends State<InitialQuestionnairePage> {
             children: [
               SizedBox(height: 16.h),
               PageHeader(
-                title: 'Pertanyaan Singkat',
-                subtitle:
-                    'Pilih suasana hati Anda saat ini untuk membantu analisis',
+                title: l10n.quickQuestions,
+                subtitle: l10n.selectMoodToHelp,
               ),
               SizedBox(height: 24.h),
               Text(
-                'Pilih Emosi Dominan',
+                l10n.selectDominantEmotion,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               SizedBox(height: 12.h),
@@ -82,7 +84,7 @@ class _InitialQuestionnairePageState extends State<InitialQuestionnairePage> {
               ),
               SizedBox(height: 20.h),
               Text(
-                'Catatan Singkat',
+                l10n.briefNote,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               SizedBox(height: 8.h),
@@ -92,17 +94,16 @@ class _InitialQuestionnairePageState extends State<InitialQuestionnairePage> {
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
-                  // border: InputBorder.none,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.r),
                     borderSide: BorderSide(color: AppColors.outline),
                   ),
-                  hintText: 'Tuliskan apa yang ingin Anda catat...',
+                  hintText: l10n.writeWhatYouWant,
                 ),
               ),
               SizedBox(height: 24.h),
               PrimaryButton(
-                text: 'Mulai Demo Rekaman',
+                text: l10n.startDemoRecording,
                 onPressed: () {
                   if (selectedMood == null) return;
                   // pass initial answers via extra or state management later

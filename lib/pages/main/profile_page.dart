@@ -7,8 +7,11 @@ import 'package:fem_psychmonitor/widgets/profile_menu_group.dart';
 import 'package:fem_psychmonitor/widgets/profile_menu_item.dart';
 import 'package:fem_psychmonitor/widgets/sheets/app_guide_sheet.dart';
 import 'package:fem_psychmonitor/widgets/sheets/terms_sheet.dart';
+import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -18,14 +21,15 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // State untuk switch Bahasa
-  bool _isEnglish = false;
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final localeProvider = context.watch<LocaleProvider>();
+    final isEnglish = localeProvider.isEnglish;
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'Profil Saya', showBackButton: false),
+      appBar: CustomAppBar(title: l10n.myProfile, showBackButton: false),
       body: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
@@ -50,7 +54,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Avatar + Status Dot
                               Stack(
                                 children: [
                                   Container(
@@ -86,8 +89,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ],
                               ),
-
-                              // Edit Profile Button
                               Container(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 16.w,
@@ -100,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   border: Border.all(color: AppColors.outline),
                                 ),
                                 child: Text(
-                                  'Edit Image',
+                                  l10n.editImage,
                                   style: Theme.of(context).textTheme.labelLarge
                                       ?.copyWith(
                                         fontSize: 12.sp,
@@ -112,8 +113,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             ],
                           ),
                           SizedBox(height: 20.h),
-
-                          // Time / Join Date
                           Row(
                             children: [
                               Icon(
@@ -125,7 +124,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               SizedBox(width: 6.w),
                               Text(
-                                'Bergabung sejak Januari 2024',
+                                l10n.joinedSince,
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(
                                       fontSize: 12.sp,
@@ -138,8 +137,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             ],
                           ),
                           SizedBox(height: 8.h),
-
-                          // Name
                           Text(
                             'Adinda Larasati',
                             style: Theme.of(context).textTheme.headlineMedium
@@ -151,8 +148,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                           ),
                           SizedBox(height: 8.h),
-
-                          // Subtitle / Email
                           Row(
                             children: [
                               Container(
@@ -178,17 +173,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                     ),
-
                     SizedBox(height: 32.h),
-
-                    // ==========================================
-                    // MENU: PROFIL & KEAMANAN
-                    // ==========================================
                     ProfileMenuGroup(
                       items: [
                         ProfileMenuItem(
                           icon: Icons.person_outline_rounded,
-                          title: 'Ubah Profil',
+                          title: l10n.editProfile,
                           iconColor: AppColors.primary,
                           iconBackgroundColor: AppColors.primary.withValues(
                             alpha: 0.1,
@@ -202,7 +192,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         ProfileMenuItem(
                           icon: Icons.lock_outline_rounded,
-                          title: 'Ganti Password',
+                          title: l10n.changePassword,
                           iconColor: const Color(0xFF2563EB),
                           iconBackgroundColor: const Color(0xFFDBEAFE),
                           onTap: () => Navigator.of(context).push(
@@ -214,15 +204,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
-
-                    // ==========================================
-                    // MENU: PENGATURAN APLIKASI
-                    // ==========================================
                     ProfileMenuGroup(
                       items: [
                         ProfileMenuItem(
                           icon: Icons.language_rounded,
-                          title: 'Bahasa',
+                          title: l10n.language,
                           iconColor: const Color(0xFF059669),
                           iconBackgroundColor: const Color(0xFFD1FAE5),
                           trailing: Container(
@@ -236,76 +222,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _isEnglish = false;
-                                    });
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12.w,
-                                      vertical: 4.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: !_isEnglish
-                                          ? AppColors.primary
-                                          : Colors.transparent,
-                                      borderRadius: BorderRadius.circular(
-                                        AppRadius.sm - 1,
-                                      ),
-                                    ),
-                                    child: Text(
-                                      'ID',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelMedium
-                                          ?.copyWith(
-                                            color: !_isEnglish
-                                                ? Colors.white
-                                                : AppColors.primary.withValues(
-                                                    alpha: 0.6,
-                                                  ),
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _isEnglish = true;
-                                    });
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12.w,
-                                      vertical: 4.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: _isEnglish
-                                          ? AppColors.primary
-                                          : Colors.transparent,
-                                      borderRadius: BorderRadius.circular(
-                                        AppRadius.sm - 1,
-                                      ),
-                                    ),
-                                    child: Text(
-                                      'EN',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelMedium
-                                          ?.copyWith(
-                                            color: _isEnglish
-                                                ? Colors.white
-                                                : AppColors.primary.withValues(
-                                                    alpha: 0.6,
-                                                  ),
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                  ),
-                                ),
+                                _langTab(context, 'ID', !isEnglish, () {
+                                  context.read<LocaleProvider>().switchToIndonesian();
+                                }),
+                                _langTab(context, 'EN', isEnglish, () {
+                                  context.read<LocaleProvider>().switchToEnglish();
+                                }),
                               ],
                             ),
                           ),
@@ -313,15 +235,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
-
-                    // ==========================================
-                    // MENU: BANTUAN & INFORMASI
-                    // ==========================================
                     ProfileMenuGroup(
                       items: [
                         ProfileMenuItem(
                           icon: Icons.menu_book_rounded,
-                          title: 'Panduan Aplikasi',
+                          title: l10n.appGuide,
                           iconColor: AppColors.tertiary,
                           iconBackgroundColor: AppColors.tertiary.withValues(
                             alpha: 0.1,
@@ -331,7 +249,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         ProfileMenuItem(
                           icon: Icons.description_outlined,
-                          title: 'Syarat dan Ketentuan',
+                          title: l10n.termsAndConditions,
                           iconColor: const Color(0xFFEA580C),
                           iconBackgroundColor: const Color(0xFFFFEDD5),
                           onTap: () => TermsSheet.show(context),
@@ -339,21 +257,20 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         ProfileMenuItem(
                           icon: Icons.verified_user_outlined,
-                          title: 'Lisensi',
+                          title: l10n.licenses,
                           iconColor: const Color(0xFF475569),
                           iconBackgroundColor: const Color(0xFFF1F5F9),
                           onTap: () => showLicensePage(
                             context: context,
                             applicationName: 'FemPsychMonitor',
                             applicationVersion: '1.0.0',
-                            applicationLegalese:
-                                '© 2024 FemPsychMonitor. Hak cipta dilindungi undang-undang.',
+                            applicationLegalese: l10n.licenseLegalese,
                           ),
                           showBorder: true,
                         ),
                         ProfileMenuItem(
                           icon: Icons.rocket_launch_outlined,
-                          title: 'Go On Boarding',
+                          title: l10n.goOnBoarding,
                           iconColor: const Color(0xFF4F46E5),
                           iconBackgroundColor: const Color(0xFFE0E7FF),
                           onTap: () {},
@@ -361,15 +278,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
-
-                    // ==========================================
-                    // MENU: LOGOUT
-                    // ==========================================
                     ProfileMenuGroup(
                       items: [
                         ProfileMenuItem(
                           icon: Icons.logout_rounded,
-                          title: 'Keluar',
+                          title: l10n.logout,
                           iconColor: const Color(0xFFDC2626),
                           iconBackgroundColor: const Color(0xFFFEE2E2),
                           isDestructive: true,
@@ -378,12 +291,38 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
-
                     SizedBox(height: 120.h),
                   ],
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _langTab(
+    BuildContext ctx,
+    String label,
+    bool active,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: active ? AppColors.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppRadius.sm - 1),
+        ),
+        child: Text(
+          label,
+          style: Theme.of(ctx).textTheme.labelMedium?.copyWith(
+            color: active
+                ? Colors.white
+                : AppColors.primary.withValues(alpha: 0.6),
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

@@ -6,6 +6,7 @@ import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_text_field.dart';
 import 'package:fem_psychmonitor/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,10 +17,11 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: CustomAppBar(
-        title: 'Daftar',
+        title: l10n.registerTitle,
         backgroundColor: Colors.transparent,
         showBackButton: true,
       ),
@@ -47,7 +49,7 @@ class RegisterPage extends StatelessWidget {
               SizedBox(height: AppSpacing.lg.h),
               Center(
                 child: Text(
-                  'Mulai perjalananmu',
+                  l10n.startYourJourney,
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
               ),
@@ -56,7 +58,7 @@ class RegisterPage extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
                   child: Text(
-                    'Buat akun untuk mencatat emosi harian\ndan memahami siklusmu dengan lebih baik.',
+                    l10n.createAccountDesc,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
@@ -71,25 +73,25 @@ class RegisterPage extends StatelessWidget {
                 child: Form(
                   child: Column(
                     children: [
-                      const CustomTextField(
-                        label: 'Nama Lengkap',
-                        hintText: 'Evelyn Thorne',
+                      CustomTextField(
+                        label: l10n.fullName,
+                        hintText: l10n.fullNameHint,
                       ),
                       SizedBox(height: AppSpacing.md.h),
-                      const CustomTextField(
-                        label: 'Email',
-                        hintText: 'nama@contoh.com',
+                      CustomTextField(
+                        label: l10n.email,
+                        hintText: l10n.emailHint,
                         keyboardType: TextInputType.emailAddress,
                       ),
                       SizedBox(height: AppSpacing.md.h),
-                      const CustomTextField(
-                        label: 'Kata Sandi',
-                        hintText: '••••••••',
+                      CustomTextField(
+                        label: l10n.password,
+                        hintText: l10n.passwordHint,
                         isPassword: true,
                       ),
                       SizedBox(height: AppSpacing.lg.h),
                       PrimaryButton(
-                        text: 'Buat Akun',
+                        text: l10n.createAccount,
                         onPressed: () {
                           if (returnTo != null && returnTo!.isNotEmpty) {
                             context.goNamed(returnTo!);
@@ -105,8 +107,8 @@ class RegisterPage extends StatelessWidget {
               SizedBox(height: AppSpacing.lg.h),
               Center(
                 child: AuthFooterPrompt(
-                  text: 'Sudah punya akun? ',
-                  linkText: 'Masuk',
+                  text: l10n.alreadyHaveAccount,
+                  linkText: l10n.signInLink,
                   onTap: () {
                     context.goNamed(RouteNames.login);
                   },
@@ -118,7 +120,7 @@ class RegisterPage extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
                   child: Text(
-                    'Dengan mendaftar, kamu setuju dengan Kebijakan Privasi dan Syarat Perawatan kami.',
+                    l10n.termsAgreement,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary.withAlpha(140),

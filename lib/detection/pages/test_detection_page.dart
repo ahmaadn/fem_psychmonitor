@@ -3,6 +3,7 @@ import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
 import 'package:fem_psychmonitor/detection/widgets/emotion_badge.dart';
 import 'package:fem_psychmonitor/detection/widgets/timeline_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 class TestDetectionPage extends StatelessWidget {
@@ -14,12 +15,12 @@ class TestDetectionPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Deteksi Emosi Suara'),
+        title: Text(AppLocalizations.of(context)!.voiceEmotionDetection),
         actions: [
           if (detector.timeline.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_outline),
-              tooltip: 'Hapus timeline',
+              tooltip: AppLocalizations.of(context)!.clearTimeline,
               onPressed: detector.clearTimeline,
             ),
         ],
@@ -69,11 +70,11 @@ class TestDetectionPage extends StatelessWidget {
         // ── Timeline chart ───────────────────────────────────────────────
         Expanded(
           child: d.timeline.isEmpty
-              ? const Center(
+              ? Center(
                   child: Text(
-                    'Mulai rekam untuk melihat timeline emosi',
+                    AppLocalizations.of(context)!.startRecordToSeeTimeline,
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey),
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 )
               : TimelineChart(timeline: d.timeline),

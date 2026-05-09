@@ -3,6 +3,7 @@ import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -44,11 +45,12 @@ class _PermissionsPageState extends State<PermissionsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final allGranted = micGranted && storageGranted;
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: CustomAppBar(title: 'Permissions', showBackButton: true),
+      appBar: CustomAppBar(title: l10n.permissionsTitle, showBackButton: true),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
@@ -57,20 +59,20 @@ class _PermissionsPageState extends State<PermissionsPage> {
             children: [
               SizedBox(height: 8.h),
               Text(
-                'Izin Mikrofon & Privasi',
+                l10n.microphonePrivacy,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               SizedBox(height: 12.h),
               Text(
-                'Aplikasi membutuhkan akses mikrofon untuk merekam suara Anda dan menyimpan data rekaman secara lokal. Data digunakan hanya untuk analisis emosi.',
+                l10n.appNeedsMicAccess,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 24.h),
 
               _permissionTile(
                 icon: Icons.mic_rounded,
-                title: 'Mikrofon',
-                subtitle: micGranted ? 'Diizinkan' : 'Tidak Diizinkan',
+                title: l10n.microphone,
+                subtitle: micGranted ? l10n.granted : l10n.notGranted,
                 granted: micGranted,
                 onTap: () async {
                   final res = await Permission.microphone.request();
@@ -80,8 +82,8 @@ class _PermissionsPageState extends State<PermissionsPage> {
               SizedBox(height: 12.h),
               _permissionTile(
                 icon: Icons.folder_rounded,
-                title: 'Penyimpanan',
-                subtitle: storageGranted ? 'Diizinkan' : 'Tidak Diizinkan',
+                title: l10n.storage,
+                subtitle: storageGranted ? l10n.granted : l10n.notGranted,
                 granted: storageGranted,
                 onTap: () async {
                   final res = await Permission.storage.request();
@@ -91,7 +93,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
 
               SizedBox(height: 24.h),
               PrimaryButton(
-                text: allGranted ? 'Mulai Rekaman' : 'Minta Izin',
+                text: allGranted ? l10n.startRecording : l10n.requestPermission,
                 onPressed: allGranted
                     ? () {
                         context.goNamed(RouteNames.liveRecording);
@@ -100,7 +102,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
               ),
               SizedBox(height: 12.h),
               SecondaryButton(
-                text: 'Lewati Sementara',
+                text: l10n.skipForNow,
                 icon: Icons.skip_next,
                 onPressed: () {
                   context.goNamed(RouteNames.liveRecording);

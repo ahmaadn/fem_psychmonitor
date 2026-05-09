@@ -1,0 +1,244 @@
+{
+  "@@locale": "en",
+
+  "appName": "FemMonitor",
+  "appTagline": "Your daily companion to gently understand\nyour emotions and cycle.",
+  "swipeUpToStart": "Swipe up to start",
+
+  "welcomeToApp": "Welcome to FemMonitor",
+  "chooseSignInMethod": "Choose how to sign in and start monitoring your emotions and cycle.",
+  "register": "Register",
+  "signIn": "Sign In",
+  "continueAsGuest": "Continue as guest",
+
+  "permissionsTitle": "Permissions",
+  "microphonePrivacy": "Microphone & Privacy",
+  "appNeedsMicAccess": "The app needs microphone access to record your voice and store recordings locally. Data is used only for emotion analysis.",
+  "microphone": "Microphone",
+  "storage": "Storage",
+  "granted": "Granted",
+  "notGranted": "Not Granted",
+  "startRecording": "Start Recording",
+  "requestPermission": "Request Permission",
+  "skipForNow": "Skip for Now",
+
+  "welcome": "Welcome",
+  "quickQuestions": "Quick Questions",
+  "selectMoodToHelp": "Select your current mood to help with analysis",
+  "selectDominantEmotion": "Select Dominant Emotion",
+  "happy": "Happy",
+  "sad": "Sad",
+  "neutral": "Neutral",
+  "angry": "Angry",
+  "briefNote": "Brief Note",
+  "writeWhatYouWant": "Write what you'd like to note...",
+  "startDemoRecording": "Start Demo Recording",
+
+  "home": "Home",
+  "history": "History",
+  "profile": "Profile",
+
+  "loginTitle": "Sign In",
+  "welcomeBack": "Welcome back",
+  "continueCheckin": "Continue your daily check-in to maintain emotional balance.",
+  "email": "Email",
+  "emailHint": "name@example.com",
+  "password": "Password",
+  "passwordHint": "••••••••",
+  "forgotPasswordQ": "Forgot password?",
+  "noAccountYet": "Don't have an account? ",
+  "registerLink": "Register",
+
+  "registerTitle": "Register",
+  "startYourJourney": "Start your journey",
+  "createAccountDesc": "Create an account to record daily emotions\nand understand your cycle better.",
+  "fullName": "Full Name",
+  "fullNameHint": "Evelyn Thorne",
+  "createAccount": "Create Account",
+  "alreadyHaveAccount": "Already have an account? ",
+  "signInLink": "Sign In",
+  "termsAgreement": "By registering, you agree to our Privacy Policy and Terms of Service.",
+
+  "forgotPasswordTitle": "Forgot Password",
+  "resetPassword": "Reset password",
+  "enterEmailForRecovery": "Enter your email to receive a recovery link.",
+  "sendLink": "Send link",
+  "rememberPassword": "Remember your password? ",
+  "signInHere": "Sign in here",
+
+  "goodEvening": "Good evening, Elena",
+  "howAreYouFeeling": "How are you feeling right now?",
+  "calm": "Calm",
+  "moodDescription": "You're feeling calm and balanced. Keep this peace going with relaxation and self-care activities.",
+  "recordYourVoice": "Record Your Voice",
+  "letAiRecognize": "Let AI recognize your true emotions",
+  "uploadAudio": "Upload Audio",
+  "currentMood": "CURRENT MOOD",
+  "totalRecordings": "TOTAL RECORDINGS",
+  "checkInStreak": "Your Check-in Streak",
+  "daysCount": "{count} Days",
+  "@daysCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "todaysSummary": "TODAY'S SUMMARY",
+  "failedToReadAudioPath": "Failed to read audio file path.",
+
+  "historyTitle": "History",
+  "monthlyReflection": "Monthly Reflection",
+  "monthDominatedBy": "This month is dominated by ",
+  "calmEmotion": "Calm",
+  "monthEndNote": " emotions, with small energy spikes on weekends.",
+  "recentRecordings": "Recent Recordings",
+  "liveRecordingHistory": "Live\nRecording History",
+  "liveRecordingSubtitle": "Review your real-time\nemotion recordings",
+  "uploadedAudioHistory": "Uploaded\nAudio History",
+  "uploadedAudioSubtitle": "Explore your uploaded\naudio journals",
+
+  "myProfile": "My Profile",
+  "editImage": "Edit Image",
+  "joinedSince": "Joined since January 2024",
+  "editProfile": "Edit Profile",
+  "changePassword": "Change Password",
+  "language": "Language",
+  "appGuide": "App Guide",
+  "termsAndConditions": "Terms & Conditions",
+  "licenses": "Licenses",
+  "licenseLegalese": "© 2024 FemPsychMonitor. All rights reserved.",
+  "goOnBoarding": "Go On Boarding",
+  "logout": "Logout",
+
+  "editProfileTitle": "Edit Profile",
+  "tapToChangePhoto": "Tap to change photo",
+  "personalInfo": "Personal Information",
+  "enterFullName": "Enter full name",
+  "enterEmail": "Enter email address",
+  "phoneNumber": "Phone Number",
+  "enterPhoneNumber": "Enter phone number",
+  "dateOfBirth": "Date of Birth",
+  "dateOfBirthValue": "March 15, 1998",
+  "saveProfile": "Save Profile",
+  "profileSaved": "Profile saved successfully!",
+
+  "changePasswordTitle": "Change Password",
+  "changeAccountPassword": "Change your account password",
+  "currentPassword": "Current Password",
+  "enterOldPassword": "Enter old password",
+  "newPassword": "New Password",
+  "minCharacters": "Minimum 8 characters",
+  "confirmNewPassword": "Confirm New Password",
+  "repeatNewPassword": "Repeat new password",
+  "passwordRequired": "Password is required",
+  "minCharsRequired": "Minimum 8 characters",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "veryWeak": "Very Weak",
+  "weak": "Weak",
+  "medium": "Medium",
+  "strong": "Strong",
+  "securityTips": "Security Tips",
+  "securityTipsMessage": "• Use at least 8 characters\n• Combine uppercase and lowercase letters\n• Add numbers and symbols (!@#$)",
+  "savePassword": "Save Password",
+  "passwordChanged": "Password changed successfully!",
+
+  "recording": "RECORDING",
+  "speakYourMind": "Speak your mind",
+  "captureThoughts": "Capture your thoughts. This recording will be processed into private insights within your digital sanctuary.",
+  "liveSession": "LIVE SESSION",
+  "startRecordToSee": "Start recording to see emotions",
+  "discardLabel": "Discard",
+  "doneLabel": "Done",
+  "startLabel": "Start",
+  "discardRecordingTitle": "Discard Recording?",
+  "discardRecordingMessage": "All voice data and emotion analysis from this session will be permanently deleted.",
+  "cancel": "Cancel",
+  "discard": "Discard",
+  "overallEmotionDistribution": "Overall Emotion Distribution",
+  "privacyCheck": "PRIVACY CHECK",
+  "privacyCheckMessage": "Your voice is encrypted. Only your insights are shared with your future self.",
+
+  "analysis": "Analysis",
+  "analyzingEmotions": "Analyzing Emotions",
+  "compilingInsights": "Compiling your personal insights...",
+
+  "analysisResult": "Analysis Result",
+  "resultSummaryDesc": "Summary of your latest recording analysis results.",
+  "resultSummaryDefault": "Summary generated from your recording detection timeline.",
+  "confidence": "Confidence",
+  "dominantEmotionLabel": "Dominant Emotion {emotion}",
+  "@dominantEmotionLabel": {
+    "placeholders": {
+      "emotion": {
+        "type": "String"
+      }
+    }
+  },
+  "emotionComponent": "Emotion Components",
+  "backToDashboard": "Back to Dashboard",
+  "retakeRecording": "Retake Recording",
+  "retakeRecordingSub": "(Redo Recording)",
+  "disclaimer": "*Note: This analysis is indicative and does not replace professional assessment.",
+  "wantFullResults": "Want to see full results?",
+  "loginRegisterForFull": "Login / Register to view in full.",
+  "loginRegister": "Login / Register",
+
+  "recordingTimeline": "Recording Timeline",
+  "startTimeLabel": "Start",
+  "endTimeLabel": "End",
+  "noEmotionComponents": "No emotion components yet. Record or upload audio first.",
+
+  "appGuideTitle": "App Guide",
+  "stepsToStart": "{count} steps to start your journey",
+  "@stepsToStart": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stepOf": "Step {current} of {total}",
+  "@stepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordVoiceGuide": "Record Voice",
+  "recordVoiceGuideDesc": "Use the voice recording feature to express your feelings verbally. Our AI will analyze your tone and sentiment.",
+  "viewEmotionInsights": "View Emotion Insights",
+  "viewInsightsDesc": "In the \"Insight\" tab, view your weekly emotion patterns and personalized self-care recommendations based on your tracking data.",
+  "monitorCycle": "Monitor Cycle",
+  "monitorCycleDesc": "Connect your emotions with your menstrual cycle. FemPsychMonitor helps recognize emotional patterns related to cycle phases so you can better understand yourself.",
+  "previous": "Previous",
+  "next": "Next",
+  "finished": "Finished",
+
+  "termsSheetTitle": "Terms & Conditions",
+  "termsUpdatedDate": "Updated January 1, 2024",
+  "termsReadCarefully": "Please read carefully before using this app.",
+  "termsAcceptance": "1. Acceptance of Terms",
+  "termsAcceptanceContent": "By using the FemPsychMonitor application (\"App\"), you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use the App.",
+  "termsUsage": "2. App Usage",
+  "termsUsageContent": "This app is designed as a supportive emotional health monitoring tool, not a substitute for professional medical advice. Users must be at least 17 years old or have parental/guardian consent.",
+  "termsPrivacy": "3. Privacy and Data",
+  "termsPrivacyContent": "We collect emotion data, voice recordings (optional), and cycle data that you input. This data is processed locally and/or on our servers with AES-256 encryption. We do not sell your data to third parties.",
+  "termsAccountSecurity": "4. Account Security",
+  "termsAccountSecurityContent": "You are responsible for maintaining the confidentiality of your account credentials. Please notify us immediately if you suspect unauthorized access to your account.",
+  "termsServiceLimitations": "5. Service Limitations",
+  "termsServiceLimitationsContent": "FemPsychMonitor is not an emergency service. If you experience a mental crisis or thoughts of self-harm, please contact mental health services or hotline 119 ext 8 immediately.",
+  "termsUpdates": "6. Terms Updates",
+  "termsUpdatesContent": "We reserve the right to update these Terms and Conditions at any time. Significant changes will be notified through app notifications. Continued use after changes means you agree to the updated terms.",
+  "contactUs": "Contact Us",
+  "contactUsMessage": "If you have questions about these terms and conditions, contact us at:\nsupport@fempsychmonitor.id",
+  "iUnderstand": "I Understand",
+
+  "voiceEmotionDetection": "Voice Emotion Detection",
+  "clearTimeline": "Clear timeline",
+  "startRecordToSeeTimeline": "Start recording to see emotion timeline"
+}

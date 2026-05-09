@@ -6,6 +6,7 @@ import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_text_field.dart';
 import 'package:fem_psychmonitor/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,10 +17,11 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: CustomAppBar(
-        title: 'Masuk',
+        title: l10n.loginTitle,
         backgroundColor: Colors.transparent,
         showBackButton: true,
       ),
@@ -46,13 +48,13 @@ class LoginPage extends StatelessWidget {
               ),
               SizedBox(height: AppSpacing.lg.h),
               Text(
-                'Selamat datang kembali',
+                l10n.welcomeBack,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineLarge,
               ),
               SizedBox(height: AppSpacing.sm.h),
               Text(
-                'Lanjutkan check-in harianmu untuk menjaga keseimbangan emosi.',
+                l10n.continueCheckin,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
@@ -65,22 +67,22 @@ class LoginPage extends StatelessWidget {
                 child: Form(
                   child: Column(
                     children: [
-                      const CustomTextField(
-                        label: 'Email',
-                        hintText: 'nama@contoh.com',
+                      CustomTextField(
+                        label: l10n.email,
+                        hintText: l10n.emailHint,
                         keyboardType: TextInputType.emailAddress,
                       ),
                       SizedBox(height: AppSpacing.md.h),
                       CustomTextField(
-                        label: 'Kata Sandi',
-                        hintText: '••••••••',
+                        label: l10n.password,
+                        hintText: l10n.passwordHint,
                         isPassword: true,
                         trailingLabel: GestureDetector(
                           onTap: () {
                             context.goNamed(RouteNames.forgotPassword);
                           },
                           child: Text(
-                            'Lupa kata sandi?',
+                            l10n.forgotPasswordQ,
                             style: Theme.of(context).textTheme.labelLarge
                                 ?.copyWith(
                                   color: AppColors.primary,
@@ -91,7 +93,7 @@ class LoginPage extends StatelessWidget {
                       ),
                       SizedBox(height: AppSpacing.lg.h),
                       PrimaryButton(
-                        text: 'Masuk',
+                        text: l10n.signIn,
                         onPressed: () {
                           if (returnTo != null && returnTo!.isNotEmpty) {
                             context.goNamed(returnTo!);
@@ -107,8 +109,8 @@ class LoginPage extends StatelessWidget {
               SizedBox(height: AppSpacing.lg.h),
               Center(
                 child: AuthFooterPrompt(
-                  text: 'Belum punya akun? ',
-                  linkText: 'Daftar',
+                  text: l10n.noAccountYet,
+                  linkText: l10n.registerLink,
                   onTap: () {
                     context.goNamed(RouteNames.register);
                   },

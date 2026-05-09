@@ -2,6 +2,7 @@ import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/widgets/custom_badge.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MoodOverviewCard extends StatelessWidget {
@@ -39,7 +40,7 @@ class MoodOverviewCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CustomBadge(
-                text: "TODAY'S SUMMARY",
+                text: AppLocalizations.of(context)!.todaysSummary,
                 backgroundColor: Colors.white.withAlpha(51),
                 textColor: Colors.white,
               ),

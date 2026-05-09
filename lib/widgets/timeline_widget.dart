@@ -2,6 +2,7 @@ import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
@@ -108,7 +109,7 @@ class RecordingTimeline extends StatelessWidget {
                 ),
                 SizedBox(width: 8.w),
                 Text(
-                  'Timeline Rekaman',
+                  AppLocalizations.of(context)!.recordingTimeline,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w700,
@@ -139,7 +140,7 @@ class RecordingTimeline extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Awal',
+              AppLocalizations.of(context)!.startTimeLabel,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontSize: 10.sp,
                 color: AppColors.primary.withValues(alpha: 0.5),
@@ -147,7 +148,7 @@ class RecordingTimeline extends StatelessWidget {
               ),
             ),
             Text(
-              'Selesai',
+              AppLocalizations.of(context)!.endTimeLabel,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontSize: 10.sp,
                 color: AppColors.primary.withValues(alpha: 0.5),
@@ -223,7 +224,7 @@ class ComponentTimeline extends StatelessWidget {
 
           if (emotionEntries.isEmpty)
             Text(
-              'Belum ada komponen emosi. Lakukan rekaman atau upload audio dahulu.',
+              AppLocalizations.of(context)!.noEmotionComponents,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           for (var i = 0; i < emotionEntries.length; i++) ...[

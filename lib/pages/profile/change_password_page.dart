@@ -6,6 +6,7 @@ import 'package:fem_psychmonitor/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/widgets/custom_text_field.dart';
 import 'package:fem_psychmonitor/widgets/info_card.dart';
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -23,7 +24,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   final _confirmPassController = TextEditingController();
 
   bool _isSaving = false;
-  int _strengthLevel = 0; // 0-4
+  int _strengthLevel = 0;
 
   @override
   void initState() {
@@ -55,6 +56,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     await Future.delayed(const Duration(seconds: 1));
     setState(() => _isSaving = false);
     if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
@@ -64,10 +66,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           ),
           content: Row(
             children: [
-              const Icon(Icons.check_circle_outline_rounded, color: Colors.white, size: 18),
+              const Icon(
+                Icons.check_circle_outline_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
               SizedBox(width: AppSpacing.sm.w),
               Text(
-                'Password berhasil diubah!',
+                l10n.passwordChanged,
                 style: AppTypography.bodyMd.copyWith(color: Colors.white),
               ),
             ],
@@ -78,35 +84,35 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     }
   }
 
-  // Returns label + color for current strength
   ({String label, Color color}) get _strengthInfo {
+    final l10n = AppLocalizations.of(context)!;
     switch (_strengthLevel) {
       case 0:
       case 1:
-        return (label: 'Sangat Lemah', color: AppColors.warning);
+        return (label: l10n.veryWeak, color: AppColors.warning);
       case 2:
-        return (label: 'Lemah', color: const Color(0xFFEA580C));
+        return (label: l10n.weak, color: const Color(0xFFEA580C));
       case 3:
-        return (label: 'Sedang', color: AppColors.secondary);
+        return (label: l10n.medium, color: AppColors.secondary);
       default:
-        return (label: 'Kuat', color: AppColors.success);
+        return (label: l10n.strong, color: AppColors.success);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final info = _strengthInfo;
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(
-        title: 'Ganti Password',
+      appBar: CustomAppBar(
+        title: l10n.changePasswordTitle,
         showBackButton: true,
       ),
       body: SafeArea(
         child: Column(
           children: [
-
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg.w),
@@ -116,8 +122,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: AppSpacing.lg.h),
-
-                      // ── Security Icon Banner ─────────────────────────────
                       Center(
                         child: Container(
                           width: 72.w,
@@ -136,42 +140,39 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       SizedBox(height: AppSpacing.md.h),
                       Center(
                         child: Text(
-                          'Ubah kata sandi akun Anda',
+                          l10n.changeAccountPassword,
                           style: AppTypography.bodySm.copyWith(
-                            color: AppColors.textSecondary.withValues(alpha: 0.7),
+                            color: AppColors.textSecondary.withValues(
+                              alpha: 0.7,
+                            ),
                           ),
                         ),
                       ),
-
                       SizedBox(height: AppSpacing.xl.h),
-
-                      // ── Current Password ─────────────────────────────────
                       CustomTextField(
-                        label: 'Password Saat Ini',
-                        hintText: 'Masukkan password lama',
+                        label: l10n.currentPassword,
+                        hintText: l10n.enterOldPassword,
                         prefixIcon: Icons.lock_outline_rounded,
                         isPassword: true,
                         controller: _currentPassController,
-                        validator: (v) =>
-                            (v == null || v.isEmpty) ? 'Password tidak boleh kosong' : null,
+                        validator: (v) => (v == null || v.isEmpty)
+                            ? l10n.passwordRequired
+                            : null,
                       ),
                       SizedBox(height: AppSpacing.md.h),
-
-                      // ── New Password ─────────────────────────────────────
                       CustomTextField(
-                        label: 'Password Baru',
-                        hintText: 'Minimal 8 karakter',
+                        label: l10n.newPassword,
+                        hintText: l10n.minCharacters,
                         prefixIcon: Icons.lock_outline_rounded,
                         isPassword: true,
                         controller: _newPassController,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Password tidak boleh kosong';
-                          if (v.length < 8) return 'Minimal 8 karakter';
+                          if (v == null || v.isEmpty)
+                            return l10n.passwordRequired;
+                          if (v.length < 8) return l10n.minCharsRequired;
                           return null;
                         },
                       ),
-
-                      // Strength Indicator
                       if (_newPassController.text.isNotEmpty) ...[
                         SizedBox(height: AppSpacing.sm.h),
                         Row(
@@ -180,11 +181,17 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               final active = i < _strengthLevel;
                               return Expanded(
                                 child: Container(
-                                  margin: EdgeInsets.only(right: i < 3 ? 4.w : 0),
+                                  margin: EdgeInsets.only(
+                                    right: i < 3 ? 4.w : 0,
+                                  ),
                                   height: 4.h,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(AppRadius.full),
-                                    color: active ? info.color : AppColors.outline,
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.full,
+                                    ),
+                                    color: active
+                                        ? info.color
+                                        : AppColors.outline,
                                   ),
                                 ),
                               );
@@ -200,44 +207,33 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           ],
                         ),
                       ],
-
                       SizedBox(height: AppSpacing.md.h),
-
-                      // ── Confirm Password ─────────────────────────────────
                       CustomTextField(
-                        label: 'Konfirmasi Password Baru',
-                        hintText: 'Ulangi password baru',
+                        label: l10n.confirmNewPassword,
+                        hintText: l10n.repeatNewPassword,
                         prefixIcon: Icons.lock_outline_rounded,
                         isPassword: true,
                         controller: _confirmPassController,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Password tidak boleh kosong';
-                          if (v != _newPassController.text) return 'Password tidak cocok';
+                          if (v == null || v.isEmpty)
+                            return l10n.passwordRequired;
+                          if (v != _newPassController.text)
+                            return l10n.passwordsDoNotMatch;
                           return null;
                         },
                       ),
-
                       SizedBox(height: AppSpacing.lg.h),
-
-                      // ── Password Tips ────────────────────────────────────
                       InfoCard(
                         icon: Icons.info_outline_rounded,
-                        title: 'Tips Keamanan',
-                        message:
-                            '• Gunakan minimal 8 karakter\n'
-                            '• Kombinasikan huruf besar dan kecil\n'
-                            '• Tambahkan angka dan simbol (!@#\$)',
+                        title: l10n.securityTips,
+                        message: l10n.securityTipsMessage,
                       ),
-
                       SizedBox(height: AppSpacing.xl.h),
-
-                      // ── Save Button ──────────────────────────────────────
                       PrimaryButton(
-                        text: 'Simpan Password',
+                        text: l10n.savePassword,
                         onPressed: _save,
                         isLoading: _isSaving,
                       ),
-
                       SizedBox(height: AppSpacing.xl.h),
                     ],
                   ),
