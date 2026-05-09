@@ -63,7 +63,6 @@ Future<void> _inferenceWorker(_WorkerConfig initMsg) async {
       'dtype=${outTensor.type}',
     );
   } catch (e) {
-    print('ERROR loading model: $e');
     config.replyPort.send('ERROR: Gagal load model: $e');
     return;
   }
