@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:waveform_flutter/waveform_flutter.dart';
 
 class RealtimeWaveVisualizer extends StatefulWidget {
   final Stream<double> amplitudeStream;
@@ -21,32 +22,48 @@ class RealtimeWaveVisualizer extends StatefulWidget {
 }
 
 class _RealtimeWaveVisualizerState extends State<RealtimeWaveVisualizer> {
-  final List<double> _amplitudes = [];
+  late Stream<Amplitude> _waveformStream;
+  StreamController<Amplitude>? _streamController;
   StreamSubscription<double>? _sub;
-  final int _maxBars = 50; // Jumlah maksimum batang gelombang yang ditampilkan
 
   @override
   void initState() {
     super.initState();
-    // Mengisi array awal dengan 0 agar gelombang mulai dari kanan (kosong)
-    for (int i = 0; i < _maxBars; i++) {
-      _amplitudes.add(0.0);
+    _initStream();
+  }
+
+  @override
+  void didUpdateWidget(RealtimeWaveVisualizer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.amplitudeStream != widget.amplitudeStream) {
+      _sub?.cancel();
+      _initStream();
     }
+  }
+
+  void _initStream() {
+    _streamController ??= StreamController<Amplitude>.broadcast();
     
     _sub = widget.amplitudeStream.listen((amp) {
       if (!mounted) return;
-      setState(() {
-        _amplitudes.add(amp);
-        if (_amplitudes.length > _maxBars) {
-          _amplitudes.removeAt(0);
-        }
-      });
+      // Amplifikasi nilai agar terlihat lebih dinamis
+      // Menggunakan square root untuk mengangkat nilai amplitudo kecil
+      double visualAmp = sqrt(amp) * 3.5; 
+
+      // Berikan nilai minimum saat hening agar tetap ada animasi riak kecil
+      visualAmp = max(0.05, visualAmp.clamp(0.0, 1.0));
+      
+      // Mengubah ke format Amplitude dari waveform_flutter
+      _streamController?.add(Amplitude(current: visualAmp, max: 1.0));
     });
+    
+    _waveformStream = _streamController!.stream;
   }
 
   @override
   void dispose() {
     _sub?.cancel();
+    _streamController?.close();
     super.dispose();
   }
 
@@ -55,61 +72,33 @@ class _RealtimeWaveVisualizerState extends State<RealtimeWaveVisualizer> {
     return SizedBox(
       width: widget.width,
       height: widget.height,
-      child: CustomPaint(
-        painter: _WavePainter(
-          amplitudes: _amplitudes,
-          waveColor: widget.waveColor,
-          maxBars: _maxBars,
+      child: Center(
+        child: AnimatedWaveList(
+          stream: _waveformStream,
+          barBuilder: (animation, amplitude) {
+            // Hitung tinggi berdasarkan amplitude (0.05 - 1.0) dikalikan dengan tinggi maksimum container
+            final barHeight = max(4.0, amplitude.current * widget.height);
+            
+            return SizeTransition(
+              sizeFactor: animation,
+              axis: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                child: Center(
+                  child: Container(
+                    width: 4.0,
+                    height: barHeight,
+                    decoration: BoxDecoration(
+                      color: widget.waveColor,
+                      borderRadius: BorderRadius.circular(4.0), // Rounded corners sesuai desain
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
-  }
-}
-
-class _WavePainter extends CustomPainter {
-  final List<double> amplitudes;
-  final Color waveColor;
-  final int maxBars;
-
-  _WavePainter({
-    required this.amplitudes,
-    required this.waveColor,
-    required this.maxBars,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = waveColor
-      ..style = PaintingStyle.fill;
-
-    // Menghitung lebar setiap batang berdasarkan lebar layar dan jumlah bar
-    final barWidth = size.width / maxBars;
-    final spacing = barWidth * 0.3; // Jarak antar batang (30%)
-    final actualBarWidth = barWidth - spacing;
-
-    for (int i = 0; i < amplitudes.length; i++) {
-      // Amplifikasi nilai agar terlihat lebih dinamis (dengan batasan max 1.0)
-      double amp = amplitudes[i] * 3.5; 
-      amp = amp.clamp(0.0, 1.0);
-
-      // Ketinggian minimum batang saat hening adalah 4.0
-      final barHeight = max(4.0, amp * size.height);
-      
-      // Menggambar dari kiri ke kanan (amplitudo terakhir ada di paling kanan)
-      final x = i * barWidth;
-      final y = (size.height - barHeight) / 2; // Memusatkan secara vertikal
-
-      final rect = RRect.fromRectAndRadius(
-        Rect.fromLTWH(x, y, actualBarWidth, barHeight),
-        Radius.circular(actualBarWidth / 2),
-      );
-      canvas.drawRRect(rect, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _WavePainter oldDelegate) {
-    return true; // Selalu gambar ulang ketika ada data baru
   }
 }

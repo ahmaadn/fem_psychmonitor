@@ -52,6 +52,7 @@ dependencies:
   file_picker: ^10.3.2
   intl: any
   shared_preferences: ^2.3.0
+  waveform_flutter: ^1.2.0
 
 dev_dependencies:
   flutter_test:
