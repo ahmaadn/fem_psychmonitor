@@ -119,10 +119,7 @@ class DocumentsStorageService {
       ),
     );
 
-    await outFile.writeAsString(
-      finalJsonStr,
-      flush: true,
-    );
+    await outFile.writeAsString(finalJsonStr, flush: true);
 
     return outFile.path;
   }
@@ -135,15 +132,15 @@ class DocumentsStorageService {
     return sanitized.isEmpty ? createSessionId() : sanitized;
   }
 
-  String _normalizeAesKey(String key) {
-    if (key.length == 16 || key.length == 24 || key.length == 32) {
-      return key;
-    }
-    if (key.length > 32) {
-      return key.substring(0, 32);
-    }
-    return key.padRight(32, '0');
-  }
+  // String _normalizeAesKey(String key) {
+  //   if (key.length == 16 || key.length == 24 || key.length == 32) {
+  //     return key;
+  //   }
+  //   if (key.length > 32) {
+  //     return key.substring(0, 32);
+  //   }
+  //   return key.padRight(32, '0');
+  // }
 
   Future<Directory> _getRecordingDir() async {
     final appDir = await _getAppDocumentsDir();
