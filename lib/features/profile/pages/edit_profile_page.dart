@@ -1,12 +1,14 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -17,19 +19,52 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  bool _isSaving = false;
+  final _fullNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  DateTime? _dateOfBirth;
+  bool _isInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      final user = context.read<ProfileViewModel>().user;
+      if (user != null) {
+        _fullNameController.text = user.fullName;
+        _emailController.text = user.email;
+        _phoneController.text = user.phone ?? '';
+        _dateOfBirth = user.dateOfBirth;
+      }
+      _isInitialized = true;
+    }
+  }
 
   @override
   void dispose() {
+    _fullNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _isSaving = true);
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isSaving = false);
-    if (mounted) {
+
+    final profileVm = context.read<ProfileViewModel>();
+    final currentUser = profileVm.user;
+    if (currentUser == null) return;
+
+    final updatedUser = currentUser.copyWith(
+      fullName: _fullNameController.text.trim(),
+      email: _emailController.text.trim(),
+      phone: _phoneController.text.trim(),
+      dateOfBirth: _dateOfBirth,
+    );
+
+    final success = await profileVm.updateProfile(updatedUser);
+
+    if (mounted && success) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -60,6 +95,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final profileVm = context.watch<ProfileViewModel>();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: CustomAppBar(title: l10n.editProfileTitle, showBackButton: true),
@@ -144,6 +181,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         label: l10n.fullName,
                         hintText: l10n.enterFullName,
                         prefixIcon: Icons.person_outline_rounded,
+                        controller: _fullNameController,
                       ),
                       SizedBox(height: AppSpacing.md.h),
                       CustomTextField(
@@ -151,6 +189,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         hintText: l10n.enterEmail,
                         prefixIcon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
+                        controller: _emailController,
                       ),
                       SizedBox(height: AppSpacing.md.h),
                       CustomTextField(
@@ -158,18 +197,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         hintText: l10n.enterPhoneNumber,
                         prefixIcon: Icons.phone_outlined,
                         keyboardType: TextInputType.phone,
+                        controller: _phoneController,
                       ),
                       SizedBox(height: AppSpacing.md.h),
                       _DateField(
                         label: l10n.dateOfBirth,
-                        value: l10n.dateOfBirthValue,
+                        value: _dateOfBirth != null
+                            ? '${_dateOfBirth!.day}/${_dateOfBirth!.month}/${_dateOfBirth!.year}'
+                            : l10n.dateOfBirthValue,
                         onTap: () {},
                       ),
                       SizedBox(height: AppSpacing.xl.h),
                       PrimaryButton(
                         text: l10n.saveProfile,
                         onPressed: _saveProfile,
-                        isLoading: _isSaving,
+                        isLoading: profileVm.isSaving,
                       ),
                       SizedBox(height: AppSpacing.xl.h),
                     ],

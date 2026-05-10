@@ -1,6 +1,7 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/features/auth/widgets/auth_footer_prompt.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_text_field.dart';
@@ -9,15 +10,62 @@ import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
   final String? returnTo;
 
   const RegisterPage({super.key, this.returnTo});
 
   @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final _fullNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleRegister() async {
+    final authVm = context.read<AuthViewModel>();
+    final success = await authVm.register(
+      _fullNameController.text.trim(),
+      _emailController.text.trim(),
+      _passwordController.text,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      if (widget.returnTo != null && widget.returnTo!.isNotEmpty) {
+        context.goNamed(widget.returnTo!);
+      } else {
+        context.goNamed(RouteNames.home);
+      }
+    } else if (authVm.error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authVm.error!),
+          backgroundColor: Colors.red,
+        ),
+      );
+      authVm.clearError();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final authVm = context.watch<AuthViewModel>();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: CustomAppBar(
@@ -76,29 +124,27 @@ class RegisterPage extends StatelessWidget {
                       CustomTextField(
                         label: l10n.fullName,
                         hintText: l10n.fullNameHint,
+                        controller: _fullNameController,
                       ),
                       SizedBox(height: AppSpacing.md.h),
                       CustomTextField(
                         label: l10n.email,
                         hintText: l10n.emailHint,
                         keyboardType: TextInputType.emailAddress,
+                        controller: _emailController,
                       ),
                       SizedBox(height: AppSpacing.md.h),
                       CustomTextField(
                         label: l10n.password,
                         hintText: l10n.passwordHint,
                         isPassword: true,
+                        controller: _passwordController,
                       ),
                       SizedBox(height: AppSpacing.lg.h),
                       PrimaryButton(
                         text: l10n.createAccount,
-                        onPressed: () {
-                          if (returnTo != null && returnTo!.isNotEmpty) {
-                            context.goNamed(returnTo!);
-                          } else {
-                            context.goNamed(RouteNames.home);
-                          }
-                        },
+                        onPressed: _handleRegister,
+                        isLoading: authVm.isLoading,
                       ),
                     ],
                   ),

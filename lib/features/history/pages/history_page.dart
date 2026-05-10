@@ -2,6 +2,8 @@ import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/utils/intl_format.dart';
+import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
+import 'package:fem_psychmonitor/data/viewmodels/history_viewmodel.dart';
 import 'package:fem_psychmonitor/features/history/widgets/calender_card.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
@@ -9,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -23,14 +26,14 @@ class _HistoryPageState extends State<HistoryPage> {
       DateRangePickerController();
   String _currentMonthText = '';
 
-  final Map<DateTime, EmotionLabelType> _emotionData = {};
-
   @override
   void initState() {
     super.initState();
-    _generateMockData();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateMonthText(DateTime.now());
+      // Load data from viewmodel
+      final historyVm = context.read<HistoryViewModel>();
+      historyVm.loadAll();
     });
   }
 
@@ -40,27 +43,22 @@ class _HistoryPageState extends State<HistoryPage> {
     super.dispose();
   }
 
-  void _generateMockData() {
-    final now = DateTime.now();
-    _emotionData[DateTime(now.year, now.month, 1)] = EmotionLabelType.anger;
-    _emotionData[DateTime(now.year, now.month, 3)] = EmotionLabelType.sad;
-    _emotionData[DateTime(now.year, now.month, 5)] = EmotionLabelType.happy;
-    _emotionData[DateTime(now.year, now.month, 8)] = EmotionLabelType.disgust;
-    _emotionData[DateTime(now.year, now.month, 12)] = EmotionLabelType.fearful;
-    _emotionData[DateTime(now.year, now.month, 15)] = EmotionLabelType.neutral;
-    _emotionData[DateTime(now.year, now.month, 18)] = EmotionLabelType.happy;
-  }
-
   void _updateMonthText(DateTime date) {
     setState(() {
       _currentMonthText =
           '${MonthEnumType.values[date.month - 1].displayName} ${date.year}';
     });
+    // Also refresh calendar data for the new month
+    context.read<HistoryViewModel>().loadCalendarData(date.year, date.month);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final historyVm = context.watch<HistoryViewModel>();
+    final sessions = historyVm.sessions;
+    final dominantEmotion = historyVm.monthlyDominantEmotion;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: CustomAppBar(
@@ -99,9 +97,10 @@ class _HistoryPageState extends State<HistoryPage> {
                         children: [
                           TextSpan(text: l10n.monthDominatedBy),
                           TextSpan(
-                            text: l10n.calmEmotion,
+                            text: dominantEmotion?.label ?? l10n.calmEmotion,
                             style: TextStyle(
-                              color: Color(0xFF6C5A00),
+                              color: dominantEmotion?.color ??
+                                  const Color(0xFF6C5A00),
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -112,7 +111,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     SizedBox(height: 32.h),
                     CalendarCard(
                       datePickerController: _datePickerController,
-                      emotionData: _emotionData,
+                      emotionData: historyVm.calendarData,
                       currentMonthText: _currentMonthText,
                       updateMonthText: _updateMonthText,
                     ),
@@ -132,27 +131,46 @@ class _HistoryPageState extends State<HistoryPage> {
                       ],
                     ),
                     SizedBox(height: 16.h),
-                    _buildRecordingCard(
-                      context,
-                      title: l10n.liveRecordingHistory,
-                      subtitle: l10n.liveRecordingSubtitle,
-                      icon: Icons.mic_none_rounded,
-                      iconBgColor: AppColors.primary,
-                      iconColor: Colors.white,
-                      badgeColor: AppColors.secondary,
-                      onTap: () => context.pushNamed(RouteNames.analysisResult),
-                    ),
-                    SizedBox(height: 16.h),
-                    _buildRecordingCard(
-                      context,
-                      title: l10n.uploadedAudioHistory,
-                      subtitle: l10n.uploadedAudioSubtitle,
-                      icon: Icons.cloud_upload_outlined,
-                      iconBgColor: const Color(0xFFE2E8F0),
-                      iconColor: AppColors.primary,
-                      badgeColor: AppColors.tertiary,
-                      onTap: () => context.pushNamed(RouteNames.analysisResult),
-                    ),
+                    // Dynamic session cards from viewmodel
+                    if (sessions.isEmpty && !historyVm.isLoading)
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 32.h),
+                          child: Text(
+                            'Belum ada rekaman',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppColors.textSecondary),
+                          ),
+                        ),
+                      )
+                    else
+                      ...sessions.take(5).map((session) {
+                        final isUpload =
+                            session.sourceType == DetectionSourceType.upload;
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 16.h),
+                          child: _buildRecordingCard(
+                            context,
+                            title: isUpload
+                                ? l10n.uploadedAudioHistory
+                                : l10n.liveRecordingHistory,
+                            subtitle: _formatSessionSubtitle(session),
+                            icon: isUpload
+                                ? Icons.cloud_upload_outlined
+                                : Icons.mic_none_rounded,
+                            iconBgColor: isUpload
+                                ? const Color(0xFFE2E8F0)
+                                : AppColors.primary,
+                            iconColor:
+                                isUpload ? AppColors.primary : Colors.white,
+                            badgeColor: session.dominantEmotion.color,
+                            onTap: () =>
+                                context.pushNamed(RouteNames.analysisResult),
+                          ),
+                        );
+                      }),
                     SizedBox(height: 120.h),
                   ],
                 ),
@@ -162,6 +180,14 @@ class _HistoryPageState extends State<HistoryPage> {
         ),
       ),
     );
+  }
+
+  String _formatSessionSubtitle(DetectionSessionModel session) {
+    final date = session.startedAt;
+    final duration = session.duration;
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds % 60;
+    return '${date.day}/${date.month}/${date.year} · ${minutes}m ${seconds}s · ${session.dominantEmotion.displayName} (${(session.dominantConfidence * 100).round()}%)';
   }
 }
 

@@ -1,6 +1,11 @@
 import 'dart:math' as math;
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/data/models/detection_result_model.dart';
+import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
+import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
+import 'package:fem_psychmonitor/data/viewmodels/detection_viewmodel.dart';
+import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -49,8 +54,28 @@ class _AiProcessingPageState extends State<AiProcessingPage>
         setState(() => _processingError = detector.error);
         return;
       }
+
       final bool isAuthenticated = await _isAuthenticated();
-      if (isAuthenticated) {
+      final authVm = context.read<AuthViewModel>();
+      final detectionVm = context.read<DetectionViewModel>();
+
+      if (isAuthenticated && authVm.currentUser != null) {
+        // Build and save session
+        final session = DetectionSessionModel(
+          id: 'sess_${DateTime.now().millisecondsSinceEpoch}',
+          userId: authVm.currentUser!.id,
+          startedAt: startedAt,
+          stoppedAt: DateTime.now(),
+          sourceType: widget.uploadedAudioPath != null
+              ? DetectionSourceType.upload
+              : DetectionSourceType.live,
+          audioFilePath: widget.uploadedAudioPath,
+          dominantEmotion: detector.latest?.label ?? EmotionLabelType.neutral,
+          dominantConfidence: detector.latest?.confidence ?? 0.0,
+          results: detector.timeline.toList() as List<DetectionResultModel>,
+        );
+
+        await detectionVm.saveCurrentSession(session);
         context.goNamed(RouteNames.analysisResult);
       } else {
         context.goNamed(RouteNames.analysisResultTeaser);
@@ -73,7 +98,9 @@ class _AiProcessingPageState extends State<AiProcessingPage>
     super.dispose();
   }
 
-  Future<bool> _isAuthenticated() async => false;
+  Future<bool> _isAuthenticated() async {
+    return context.read<AuthViewModel>().isAuthenticated;
+  }
 
   @override
   Widget build(BuildContext context) {

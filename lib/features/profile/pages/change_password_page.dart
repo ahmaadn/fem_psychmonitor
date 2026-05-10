@@ -1,6 +1,7 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_text_field.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -23,7 +25,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   final _newPassController = TextEditingController();
   final _confirmPassController = TextEditingController();
 
-  bool _isSaving = false;
   int _strengthLevel = 0;
 
   @override
@@ -52,10 +53,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _isSaving = true);
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isSaving = false);
-    if (mounted) {
+
+    final profileVm = context.read<ProfileViewModel>();
+    final success = await profileVm.changePassword(
+      _currentPassController.text,
+      _newPassController.text,
+    );
+
+    if (mounted && success) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -103,6 +108,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final info = _strengthInfo;
+    final profileVm = context.watch<ProfileViewModel>();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -235,7 +241,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       PrimaryButton(
                         text: l10n.savePassword,
                         onPressed: _save,
-                        isLoading: _isSaving,
+                        isLoading: profileVm.isSaving,
                       ),
                       SizedBox(height: AppSpacing.xl.h),
                     ],

@@ -1,10 +1,12 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -26,19 +28,29 @@ class _SplashPageState extends State<SplashPage>
         AnimationController(vsync: this, duration: const Duration(seconds: 5))
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
-              _goToOnboarding();
+              _navigateBasedOnAuth();
             }
           })
           ..forward();
   }
 
-  void _goToOnboarding() {
-    // Pastikan hanya navigasi sekali, baik dari progress selesai atau swipe up
-    if (!mounted || _hasNavigated) {
-      return;
-    }
+  /// Check auth state and navigate accordingly:
+  /// - Authenticated → Home
+  /// - Not authenticated → Onboarding
+  Future<void> _navigateBasedOnAuth() async {
+    if (!mounted || _hasNavigated) return;
+
+    final authVm = context.read<AuthViewModel>();
+    await authVm.checkAuth();
+
+    if (!mounted || _hasNavigated) return;
     _hasNavigated = true;
-    context.goNamed(RouteNames.onboarding);
+
+    if (authVm.isAuthenticated) {
+      context.goNamed(RouteNames.home);
+    } else {
+      context.goNamed(RouteNames.onboarding);
+    }
   }
 
   @override
@@ -57,7 +69,7 @@ class _SplashPageState extends State<SplashPage>
         onVerticalDragEnd: (details) {
           // Jika primaryVelocity bernilai negatif, artinya pengguna menggeser ke atas
           if ((details.primaryVelocity ?? 0) < 0) {
-            _goToOnboarding();
+            _navigateBasedOnAuth();
           }
         },
         child: SafeArea(

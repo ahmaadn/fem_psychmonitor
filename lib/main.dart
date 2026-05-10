@@ -1,5 +1,16 @@
 import 'package:fem_psychmonitor/app/config/app_theme.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
+import 'package:fem_psychmonitor/data/repositories/auth_repository.dart';
+import 'package:fem_psychmonitor/data/repositories/detection_repository.dart';
+import 'package:fem_psychmonitor/data/repositories/user_repository.dart';
+import 'package:fem_psychmonitor/data/repositories/dummy/dummy_auth_repository.dart';
+import 'package:fem_psychmonitor/data/repositories/dummy/dummy_detection_repository.dart';
+import 'package:fem_psychmonitor/data/repositories/dummy/dummy_user_repository.dart';
+import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
+import 'package:fem_psychmonitor/data/viewmodels/detection_viewmodel.dart';
+import 'package:fem_psychmonitor/data/viewmodels/history_viewmodel.dart';
+import 'package:fem_psychmonitor/data/viewmodels/home_viewmodel.dart';
+import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:fem_psychmonitor/app/routes/app_routes.dart';
@@ -16,12 +27,40 @@ void main() async {
   final localeProvider = LocaleProvider();
   await localeProvider.loadSavedLocale();
 
+  // ── Repository Setup ────────────────────────────────────────────────────
+  // Swap these with real implementations (SQLite / API) when ready.
+  final authRepo = DummyAuthRepository();
+  final detectionRepo = DummyDetectionRepository();
+  final userRepo = DummyUserRepository();
+
+  // ── ViewModel Setup ─────────────────────────────────────────────────────
+  final authViewModel = AuthViewModel(authRepo: authRepo);
+  final homeViewModel = HomeViewModel(detectionRepo: detectionRepo);
+  final historyViewModel = HistoryViewModel(detectionRepo: detectionRepo);
+  final profileViewModel = ProfileViewModel(userRepo: userRepo);
+  final detectionViewModel = DetectionViewModel(detectionRepo: detectionRepo);
+
   runApp(
     MultiProvider(
       providers: [
+        // ── Existing Providers ──
         ChangeNotifierProvider(create: (_) => EmotionDetector()..init()),
-        ChangeNotifierProvider(create: (_) => QuestionnaireViewModel()..initData()),
+        ChangeNotifierProvider(
+          create: (_) => QuestionnaireViewModel()..initData(),
+        ),
         ChangeNotifierProvider.value(value: localeProvider),
+
+        // ── Repository Providers (for direct access if needed) ──
+        Provider<AuthRepository>.value(value: authRepo),
+        Provider<DetectionRepository>.value(value: detectionRepo),
+        Provider<UserRepository>.value(value: userRepo),
+
+        // ── ViewModel Providers ──
+        ChangeNotifierProvider.value(value: authViewModel),
+        ChangeNotifierProvider.value(value: homeViewModel),
+        ChangeNotifierProvider.value(value: historyViewModel),
+        ChangeNotifierProvider.value(value: profileViewModel),
+        ChangeNotifierProvider.value(value: detectionViewModel),
       ],
       child: const MyApp(),
     ),

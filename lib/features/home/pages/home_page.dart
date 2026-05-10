@@ -2,6 +2,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/data/viewmodels/home_viewmodel.dart';
 import 'package:fem_psychmonitor/features/home/widgets/mood_overview_card.dart';
 import 'package:fem_psychmonitor/features/recording/widgets/upload_audio_button.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:fem_psychmonitor/features/recording/widgets/pulsing_mic_button.dart";
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,6 +21,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Load stats from repository on first build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HomeViewModel>().loadStats();
+    });
+  }
+
   Future<void> _handleUploadAudio() async {
     final picked = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -44,6 +56,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final homeVm = context.watch<HomeViewModel>();
+    final stats = homeVm.stats;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -72,13 +87,14 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 24.h),
 
-              _buildDailyTracker(context),
+              _buildDailyTracker(context, stats),
 
               SizedBox(height: 32.h),
               MoodOverviewCard(
-                mood: l10n.calm,
-                percentage: 76,
-                description: l10n.moodDescription,
+                mood: stats?.currentMood.displayName ?? l10n.calm,
+                percentage: stats?.currentMoodPercentage ?? 0,
+                description:
+                    stats?.moodDescription ?? l10n.moodDescription,
               ),
 
               SizedBox(height: 48.h),
@@ -128,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                       context,
                       color: AppColors.info,
                       icon: Icons.sentiment_satisfied_alt_rounded,
-                      title: l10n.calm,
+                      title: stats?.currentMood.displayName ?? l10n.calm,
                       subtitle: l10n.currentMood,
                     ),
                   ),
@@ -138,7 +154,7 @@ class _HomePageState extends State<HomePage> {
                       context,
                       color: AppColors.secondary,
                       icon: Icons.history_rounded,
-                      title: '24',
+                      title: '${stats?.totalRecordings ?? 0}',
                       subtitle: l10n.totalRecordings,
                     ),
                   ),
@@ -202,11 +218,20 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildDailyTracker(BuildContext context) {
+  Widget _buildDailyTracker(BuildContext context, dynamic stats) {
     final l10n = AppLocalizations.of(context)!;
     final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    // For mock, let's say Monday to Thursday are checked.
-    final checkedDays = [true, true, true, true, false, false, false];
+
+    // Use data from viewmodel if available, fallback to defaults
+    final int streakDays = stats?.streakDays ?? 0;
+    final checkedDays = stats != null
+        ? (stats.weeklyCheckins as List)
+            .map((c) => c.isCheckedIn as bool)
+            .toList()
+        : List.filled(7, false);
+
+    // Determine today's index in the week (Monday = 0)
+    final todayIndex = DateTime.now().weekday - 1;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,7 +255,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(width: 4.w),
                 Text(
-                  l10n.daysCount(4),
+                  l10n.daysCount(streakDays),
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFFF59E0B),
@@ -244,8 +269,9 @@ class _HomePageState extends State<HomePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(7, (index) {
-            final isChecked = checkedDays[index];
-            final isToday = index == 4; // Let's say Friday is today
+            final isChecked =
+                index < checkedDays.length ? checkedDays[index] : false;
+            final isToday = index == todayIndex;
 
             return Container(
               width: 40.w,
@@ -258,7 +284,9 @@ class _HomePageState extends State<HomePage> {
                 border: Border.all(
                   color: isChecked
                       ? AppColors.primary
-                      : (isToday ? const Color(0xFFF59E0B) : AppColors.outline),
+                      : (isToday
+                            ? const Color(0xFFF59E0B)
+                            : AppColors.outline),
                   width: isToday ? 2 : 1,
                 ),
               ),

@@ -2,6 +2,7 @@ import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/data/viewmodels/detection_viewmodel.dart';
 import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
@@ -21,10 +22,20 @@ class AnalysisResultPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final detector = context.watch<EmotionDetector>();
-    final timeline = detector.timeline;
-    final dominant = detector.latest?.label ?? EmotionLabelType.neutral;
-    final dominantConfidence = detector.latest?.confidence ?? 0.0;
-    final summaryText = detector.error ?? l10n.resultSummaryDefault;
+    final detectionVm = context.watch<DetectionViewModel>();
+
+    final session = isTeaser ? null : detectionVm.currentSession;
+
+    final timeline = session?.results ?? detector.timeline;
+    final dominant =
+        session?.dominantEmotion ??
+        detector.latest?.label ??
+        EmotionLabelType.neutral;
+    final dominantConfidence =
+        session?.dominantConfidence ?? detector.latest?.confidence ?? 0.0;
+    final summaryText = session != null
+        ? l10n.resultSummaryDefault
+        : (detector.error ?? l10n.resultSummaryDefault);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -57,7 +68,11 @@ class AnalysisResultPage extends StatelessWidget {
                 summaryText: summaryText,
               ),
               SizedBox(height: AppSpacing.extraSpacious.h),
-              _buildSectionCard(child: RecordingTimeline(timeline: timeline)),
+              _buildSectionCard(
+                child: RecordingTimeline(
+                  timeline: timeline as List<EmotionResult>,
+                ),
+              ),
               SizedBox(height: AppSpacing.relaxed.h),
               ComponentTimeline(
                 timeline: timeline,

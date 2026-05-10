@@ -5,13 +5,42 @@ import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/features/onboarding/viewmodels/questionnaire_viewmodel.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
+import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-class PsychResultPage extends StatelessWidget {
+class PsychResultPage extends StatefulWidget {
   const PsychResultPage({super.key});
+
+  @override
+  State<PsychResultPage> createState() => _PsychResultPageState();
+}
+
+class _PsychResultPageState extends State<PsychResultPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _saveOnboardingResults();
+    });
+  }
+
+  Future<void> _saveOnboardingResults() async {
+    final profileVm = context.read<ProfileViewModel>();
+    final questionnaireVm = context.read<QuestionnaireViewModel>();
+    
+    // Only save if user is logged in
+    if (profileVm.user != null) {
+      final updatedUser = profileVm.user!.copyWith(
+        mbtiResult: questionnaireVm.finalMbti,
+        psychScore: questionnaireVm.psychScore,
+        psychClass: questionnaireVm.psychClass?.className.get(true), // Just saving internal name
+      );
+      await profileVm.updateProfile(updatedUser);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,8 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
+import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:fem_psychmonitor/features/profile/pages/change_password_page.dart';
 import 'package:fem_psychmonitor/features/profile/pages/edit_profile_page.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
@@ -11,6 +14,7 @@ import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -22,10 +26,59 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProfileViewModel>().loadProfile();
+    });
+  }
+
+  Future<void> _handleLogout() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+        ),
+        title: Text(l10n.logout),
+        content: const Text('Apakah Anda yakin ingin keluar?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              l10n.cancel,
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text(
+              'Keluar',
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true || !mounted) return;
+
+    await context.read<AuthViewModel>().logout();
+    if (!mounted) return;
+    context.goNamed(RouteNames.login);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final localeProvider = context.watch<LocaleProvider>();
     final isEnglish = localeProvider.isEnglish;
+    final profileVm = context.watch<ProfileViewModel>();
+    final user = profileVm.user;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -78,7 +131,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                       width: 14.w,
                                       height: 14.w,
                                       decoration: BoxDecoration(
-                                        color: Colors.grey.shade500,
+                                        color: user != null
+                                            ? Colors.green
+                                            : Colors.grey.shade500,
                                         shape: BoxShape.circle,
                                         border: Border.all(
                                           color: AppColors.surface,
@@ -124,7 +179,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               SizedBox(width: 6.w),
                               Text(
-                                l10n.joinedSince,
+                                user != null
+                                    ? '${l10n.joinedSince} ${user.createdAt.day}/${user.createdAt.month}/${user.createdAt.year}'
+                                    : l10n.joinedSince,
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(
                                       fontSize: 12.sp,
@@ -138,7 +195,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           SizedBox(height: 8.h),
                           Text(
-                            'Adinda Larasati',
+                            user?.fullName ?? '...',
                             style: Theme.of(context).textTheme.headlineMedium
                                 ?.copyWith(
                                   fontSize: 22.sp,
@@ -160,7 +217,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               SizedBox(width: 8.w),
                               Text(
-                                'adinda.larasati@email.com',
+                                user?.email ?? '...',
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(
                                       fontSize: 13.sp,
@@ -183,11 +240,17 @@ class _ProfilePageState extends State<ProfilePage> {
                           iconBackgroundColor: AppColors.primary.withValues(
                             alpha: 0.1,
                           ),
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const EditProfilePage(),
-                            ),
-                          ),
+                          onTap: () async {
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const EditProfilePage(),
+                              ),
+                            );
+                            // Reload profile after editing
+                            if (mounted) {
+                              context.read<ProfileViewModel>().loadProfile();
+                            }
+                          },
                           showBorder: true,
                         ),
                         ProfileMenuItem(
@@ -286,7 +349,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           iconColor: const Color(0xFFDC2626),
                           iconBackgroundColor: const Color(0xFFFEE2E2),
                           isDestructive: true,
-                          onTap: () {},
+                          onTap: _handleLogout,
                           showBorder: false,
                         ),
                       ],

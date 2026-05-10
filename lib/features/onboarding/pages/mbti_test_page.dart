@@ -57,7 +57,10 @@ class MbtiTestPage extends StatelessWidget {
                   ),
                   SizedBox(height: 16.h),
                   Text(
-                    l10n.questionXOfY(currentIndex + 1, data.questionnaire.length),
+                    l10n.questionXOfY(
+                      currentIndex + 1,
+                      data.questionnaire.length,
+                    ),
                     style: TextStyle(
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500,
@@ -135,7 +138,7 @@ class MbtiTestPage extends StatelessWidget {
                         ),
                       ),
                     );
-                  }).toList(),
+                  }),
                   const Spacer(),
                   Row(
                     children: [
@@ -162,7 +165,9 @@ class MbtiTestPage extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: PrimaryButton(
-                          text: isLast ? l10n.finishAndContinue : l10n.nextQuestion,
+                          text: isLast
+                              ? l10n.finishAndContinue
+                              : l10n.nextQuestion,
                           isDisabled: selectedOption == null,
                           onPressed: () {
                             if (isLast) {
