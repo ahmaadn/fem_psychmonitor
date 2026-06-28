@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:io';
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/data/models/detection_result_model.dart';
@@ -60,9 +61,22 @@ class _AiProcessingPageState extends State<AiProcessingPage>
       final detectionVm = context.read<DetectionViewModel>();
 
       if (isAuthenticated && authVm.currentUser != null) {
-        // Build and save session
+        // Build and save session. Convert the live EmotionResult timeline
+        // into persistable DetectionResultModel rows (US-09/US-15).
+        final sessionId = 'sess_${DateTime.now().millisecondsSinceEpoch}';
+        final results = <DetectionResultModel>[];
+        final timeline = detector.timeline;
+        for (int i = 0; i < timeline.length; i++) {
+          final r = timeline[i];
+          results.add(DetectionResultModel.fromEmotionResult(
+            r,
+            id: '${sessionId}_result_$i',
+            sessionId: sessionId,
+          ));
+        }
+
         final session = DetectionSessionModel(
-          id: 'sess_${DateTime.now().millisecondsSinceEpoch}',
+          id: sessionId,
           userId: authVm.currentUser!.id,
           startedAt: startedAt,
           stoppedAt: DateTime.now(),
@@ -72,10 +86,15 @@ class _AiProcessingPageState extends State<AiProcessingPage>
           audioFilePath: widget.uploadedAudioPath,
           dominantEmotion: detector.latest?.label ?? EmotionLabelType.neutral,
           dominantConfidence: detector.latest?.confidence ?? 0.0,
-          results: detector.timeline.toList() as List<DetectionResultModel>,
+          results: results,
         );
 
         await detectionVm.saveCurrentSession(session);
+
+        // US-16: delete the temporary uploaded audio file now that the session
+        // is persisted (filesystem op, not DB).
+        await _cleanupTempAudio(widget.uploadedAudioPath);
+
         context.goNamed(RouteNames.analysisResult);
       } else {
         context.goNamed(RouteNames.analysisResultTeaser);
@@ -100,6 +119,22 @@ class _AiProcessingPageState extends State<AiProcessingPage>
 
   Future<bool> _isAuthenticated() async {
     return context.read<AuthViewModel>().isAuthenticated;
+  }
+
+  /// US-16: remove the temporary uploaded audio file now that the session has
+  /// been persisted and the result is about to be shown. Only cleans up files
+  /// that live outside the app's managed documents storage (i.e. picked temp
+  /// files). Missing files are treated as already cleaned up.
+  Future<void> _cleanupTempAudio(String? path) async {
+    if (path == null || path.trim().isEmpty) return;
+    try {
+      final file = File(path);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (_) {
+      // Best-effort cleanup; must not block the result navigation.
+    }
   }
 
   @override

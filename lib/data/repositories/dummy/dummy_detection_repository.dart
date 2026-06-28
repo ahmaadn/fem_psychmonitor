@@ -17,10 +17,15 @@ class DummyDetectionRepository implements DetectionRepository {
   Future<List<DetectionSessionModel>> getSessionHistory({
     int limit = 20,
     int offset = 0,
+    int? filterDays,
   }) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    final sorted = List<DetectionSessionModel>.from(_sessions)
-      ..sort((a, b) => b.startedAt.compareTo(a.startedAt));
+    var filtered = List<DetectionSessionModel>.from(_sessions);
+    if (filterDays != null) {
+      final cutoff = DateTime.now().subtract(Duration(days: filterDays));
+      filtered = filtered.where((s) => s.startedAt.isAfter(cutoff)).toList();
+    }
+    final sorted = filtered..sort((a, b) => b.startedAt.compareTo(a.startedAt));
     final end = (offset + limit).clamp(0, sorted.length);
     if (offset >= sorted.length) return [];
     return sorted.sublist(offset, end);
@@ -91,12 +96,12 @@ class DummyDetectionRepository implements DetectionRepository {
     // Find dominant mood from recent sessions
     EmotionLabelType currentMood = EmotionLabelType.neutral;
     int currentMoodPercentage = 76;
-    if (_sessions.isNotEmpty) {
-      final recentSessions = _sessions.toList()
-        ..sort((a, b) => b.startedAt.compareTo(a.startedAt));
-      currentMood = recentSessions.first.dominantEmotion;
+    final sorted = List<DetectionSessionModel>.from(_sessions)
+      ..sort((a, b) => b.startedAt.compareTo(a.startedAt));
+    if (sorted.isNotEmpty) {
+      currentMood = sorted.first.displayEmotion;
       currentMoodPercentage =
-          (recentSessions.first.dominantConfidence * 100).round();
+          (sorted.first.dominantConfidence * 100).round();
     }
 
     return HomeStats(
@@ -108,6 +113,58 @@ class DummyDetectionRepository implements DetectionRepository {
       streakDays: streakDays,
       weeklyCheckins: weeklyCheckins,
     );
+  }
+
+  @override
+  Future<DetectionSessionModel> correctEmotion(
+    String sessionId,
+    EmotionLabelType newLabel,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final idx = _sessions.indexWhere((s) => s.id == sessionId);
+    if (idx < 0) {
+      throw Exception('Sesi tidak ditemukan: $sessionId');
+    }
+    final updated = _sessions[idx].copyWith(correctedEmotion: newLabel);
+    _sessions[idx] = updated;
+    return updated;
+  }
+
+  @override
+  Future<Map<EmotionLabelType, int>> getWeeklyChart() async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final cutoff = DateTime.now().subtract(const Duration(days: 7));
+    final counts = <EmotionLabelType, int>{
+      for (final e in EmotionLabelType.values) e: 0,
+    };
+    for (final s in _sessions) {
+      if (s.startedAt.isAfter(cutoff)) {
+        counts[s.displayEmotion] = (counts[s.displayEmotion] ?? 0) + 1;
+      }
+    }
+    return counts;
+  }
+
+  @override
+  Future<List<EmotionSeriesPoint>> getChartSeries({int days = 7}) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final points = <EmotionSeriesPoint>[];
+    for (int i = days - 1; i >= 0; i--) {
+      final day = today.subtract(Duration(days: i));
+      final next = day.add(const Duration(days: 1));
+      final counts = <EmotionLabelType, int>{
+        for (final e in EmotionLabelType.values) e: 0,
+      };
+      for (final s in _sessions) {
+        if (s.startedAt.isAfter(day) && s.startedAt.isBefore(next)) {
+          counts[s.displayEmotion] = (counts[s.displayEmotion] ?? 0) + 1;
+        }
+      }
+      points.add(EmotionSeriesPoint(date: day, counts: counts));
+    }
+    return points;
   }
 
   // ── Mock Data Generator ────────────────────────────────────────────────

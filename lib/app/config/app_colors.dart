@@ -3,22 +3,24 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // --- Brand Colors ---
-  static const Color primary = Color(0xFF1B6B51);
+  // --- Brand Colors (US-21 pastel: mint green / peach / light blue) ---
+  // Primary is a deep mint — readable with light text while keeping a soft,
+  // pastel character (replaces the previous bold dark green #1B6B51).
+  static const Color primary = Color(0xFF3FA37F);
   static const Color onPrimary = Color(0xFFFFFFFF);
-  static const Color primaryContainer = Color(0xFF78C2A4);
-  static const Color primaryFixed = Color(0xFFA6F2D2);
+  static const Color primaryContainer = Color(0xFF9FD9C2);
+  static const Color primaryFixed = Color(0xFFC6EEDD);
 
-  // Chips / Selection
-  static const Color tertiary = Color(0xFF6D5096);
-  static const Color tertiaryFixed = Color(0xFFEDDCFF);
-  static const Color tertiaryContainer = Color(0xFFC5A5F1);
+  // Chips / Selection (pastel light blue)
+  static const Color tertiary = Color(0xFF7BA7D6);
+  static const Color tertiaryFixed = Color(0xFFDCE9F7);
+  static const Color tertiaryContainer = Color(0xFFA9C6E6);
 
-  // Secondary / Actions
-  static const Color secondary = Color(0xFFFED172);
-  static const Color secondaryContainer = Color(0xFFFED172);
-  static const Color secondaryFixed = Color(0xFFFFDF9F);
-  static const Color onSecondaryFixed = Color(0xFF261A00);
+  // Secondary / Actions (peach)
+  static const Color secondary = Color(0xFFF4A68A);
+  static const Color secondaryContainer = Color(0xFFF4A68A);
+  static const Color secondaryFixed = Color(0xFFFFD8C8);
+  static const Color onSecondaryFixed = Color(0xFF5C2A1A);
 
   // --- Background & Surface (Stacked Silk / Sanctuary Vibe) ---
   /// Base Layer

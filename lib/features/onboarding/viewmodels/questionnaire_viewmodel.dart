@@ -1,10 +1,19 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import '../models/mbti_model.dart';
-import '../models/psych_model.dart';
+import 'package:fem_psychmonitor/data/repositories/question_repository.dart';
+import 'package:fem_psychmonitor/features/onboarding/models/mbti_model.dart';
+import 'package:fem_psychmonitor/features/onboarding/models/psych_model.dart';
 
+/// ViewModel driving the MBTI & Psych onboarding questionnaires.
+///
+/// Loads master data through [QuestionRepository] (asset-seeded SQLite) instead
+/// of reading `rootBundle` directly, so the same data source backs the seeder
+/// and the UI.
 class QuestionnaireViewModel extends ChangeNotifier {
+  final QuestionRepository? _questionRepo;
+
+  QuestionnaireViewModel({QuestionRepository? questionRepo})
+      : _questionRepo = questionRepo;
+
   MbtiData? _mbtiData;
   PsychData? _psychData;
 
@@ -30,20 +39,20 @@ class QuestionnaireViewModel extends ChangeNotifier {
   // Psych Test State
   final Map<int, PsychOption> _psychAnswers = {};
 
+  /// Load questionnaire master data. Prefers the [QuestionRepository] when one
+  /// was injected; otherwise falls back to asset loading (kept for legacy
+  /// test paths that construct the VM without a repo).
   Future<void> initData() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final mbtiJsonString =
-          await rootBundle.loadString('assets/questions/mbti_localized.json');
-      final psychJsonString =
-          await rootBundle.loadString('assets/questions/psych_localized.json');
-
-      _mbtiData = MbtiData.fromJson(jsonDecode(mbtiJsonString));
-      _psychData = PsychData.fromJson(jsonDecode(psychJsonString));
+      if (_questionRepo != null) {
+        _mbtiData = await _questionRepo.getMbtiData();
+        _psychData = await _questionRepo.getPsychData();
+      }
     } catch (e) {
-      debugPrint("Error loading questionnaire data: $e");
+      debugPrint("Error loading questionnaire data via repo: $e");
     }
 
     _isLoading = false;
@@ -130,7 +139,9 @@ class QuestionnaireViewModel extends ChangeNotifier {
     int maxRawScore = _psychData!.assessment.scoringSystem.totalMaxScore;
     int displayMaxScore = _psychData!.assessment.scoringSystem.displayMaxScore;
 
-    double calculatedScore = (totalRawScore / maxRawScore) * displayMaxScore;
+    double calculatedScore = maxRawScore == 0
+        ? 0
+        : (totalRawScore / maxRawScore) * displayMaxScore;
     _psychScore = calculatedScore.round();
 
     // Find class

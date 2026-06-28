@@ -72,7 +72,7 @@ class PsychTestPage extends StatelessWidget {
                                 vertical: 4.h,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.secondary.withOpacity(0.2),
+                                color: AppColors.secondary.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8.r),
                               ),
                               child: Text(

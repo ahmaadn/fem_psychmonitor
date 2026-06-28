@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _handleUploadAudio() async {
-    final picked = await FilePicker.platform.pickFiles(
+    final picked = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: const ['wav', 'pcm'],
     );
@@ -93,8 +93,7 @@ class _HomePageState extends State<HomePage> {
               MoodOverviewCard(
                 mood: stats?.currentMood.displayName ?? l10n.calm,
                 percentage: stats?.currentMoodPercentage ?? 0,
-                description:
-                    stats?.moodDescription ?? l10n.moodDescription,
+                description: stats?.moodDescription ?? l10n.moodDescription,
               ),
 
               SizedBox(height: 48.h),
@@ -226,8 +225,8 @@ class _HomePageState extends State<HomePage> {
     final int streakDays = stats?.streakDays ?? 0;
     final checkedDays = stats != null
         ? (stats.weeklyCheckins as List)
-            .map((c) => c.isCheckedIn as bool)
-            .toList()
+              .map((c) => c.isCheckedIn as bool)
+              .toList()
         : List.filled(7, false);
 
     // Determine today's index in the week (Monday = 0)
@@ -269,8 +268,9 @@ class _HomePageState extends State<HomePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(7, (index) {
-            final isChecked =
-                index < checkedDays.length ? checkedDays[index] : false;
+            final isChecked = index < checkedDays.length
+                ? checkedDays[index]
+                : false;
             final isToday = index == todayIndex;
 
             return Container(
@@ -284,9 +284,7 @@ class _HomePageState extends State<HomePage> {
                 border: Border.all(
                   color: isChecked
                       ? AppColors.primary
-                      : (isToday
-                            ? const Color(0xFFF59E0B)
-                            : AppColors.outline),
+                      : (isToday ? const Color(0xFFF59E0B) : AppColors.outline),
                   width: isToday ? 2 : 1,
                 ),
               ),

@@ -5,6 +5,7 @@ import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/features/onboarding/viewmodels/questionnaire_viewmodel.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
+import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,13 +31,24 @@ class _PsychResultPageState extends State<PsychResultPage> {
   Future<void> _saveOnboardingResults() async {
     final profileVm = context.read<ProfileViewModel>();
     final questionnaireVm = context.read<QuestionnaireViewModel>();
-    
-    // Only save if user is logged in
-    if (profileVm.user != null) {
-      final updatedUser = profileVm.user!.copyWith(
+
+    // Ensure we have a profile to update (loadProfile isn't called during
+    // onboarding, so fall back to the auth user).
+    var user = profileVm.user;
+    if (user == null) {
+      await profileVm.loadProfile();
+      user = profileVm.user;
+    }
+    if (user == null) {
+      user = context.read<AuthViewModel>().currentUser;
+    }
+
+    // Persist MBTI + psych results to the user profile (US-07).
+    if (user != null) {
+      final updatedUser = user.copyWith(
         mbtiResult: questionnaireVm.finalMbti,
         psychScore: questionnaireVm.psychScore,
-        psychClass: questionnaireVm.psychClass?.className.get(true), // Just saving internal name
+        psychClass: questionnaireVm.psychClass?.className.get(true),
       );
       await profileVm.updateProfile(updatedUser);
     }

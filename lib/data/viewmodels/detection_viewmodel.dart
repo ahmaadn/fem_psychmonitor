@@ -1,3 +1,4 @@
+import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
 import 'package:fem_psychmonitor/data/repositories/detection_repository.dart';
 import 'package:flutter/foundation.dart';
@@ -50,6 +51,42 @@ class DetectionViewModel extends ChangeNotifier {
       _error = 'Gagal memuat sesi: $e';
       notifyListeners();
       return null;
+    }
+  }
+
+  /// US-17: correct a session's dominant emotion label.
+  Future<void> correctSession(
+    String sessionId,
+    EmotionLabelType newLabel,
+  ) async {
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final updated = await _detectionRepo.correctEmotion(sessionId, newLabel);
+      if (_currentSession?.id == sessionId) {
+        _currentSession = updated;
+      }
+      if (_viewedSession?.id == sessionId) {
+        _viewedSession = updated;
+      }
+    } catch (e) {
+      _error = 'Gagal mengoreksi emosi: $e';
+    }
+
+    _isSaving = false;
+    notifyListeners();
+  }
+
+  /// US-18: weekly emotion distribution for the hotline/chart card.
+  Future<Map<EmotionLabelType, int>> loadWeeklyChart() async {
+    try {
+      return await _detectionRepo.getWeeklyChart();
+    } catch (e) {
+      _error = 'Gagal memuat chart mingguan: $e';
+      notifyListeners();
+      return {};
     }
   }
 

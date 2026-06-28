@@ -1,9 +1,9 @@
 --- 
 name: FemMonitor (Adapted Reference)
 colors:
-  primary: "#1B6B51"        # Merah tegas/Crimson dari tombol utama ("Klaim", "Simpan Profil")
-  secondary: "#FED172"      # Emas/Coklat muda dari elemen VIP, poin, dan border sekunder
-  tertiary: "#6D5096"       # Hijau terang dari tombol aksi alternatif (seperti tombol WhatsApp)
+  primary: "#3FA37F"        # Mint green (US-21 pastel) — CTA utama, soft & readable
+  secondary: "#F4A68A"      # Peach (US-21 pastel) — aksi/apresiasi sekunder
+  tertiary: "#7BA7D6"       # Light blue (US-21 pastel) — tombol alternatif & chips
   surface: "#FFFFFF"        # Putih bersih untuk latar belakang card utama
   background: "#F7F8FA"     # Abu-abu sangat terang untuk latar belakang dasar aplikasi
   text-primary: "#eaeaea"   # Abu-abu gelap/Hitam untuk teks utama yang mudah dibaca

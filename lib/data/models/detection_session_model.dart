@@ -13,6 +13,13 @@ class DetectionSessionModel {
   final double dominantConfidence;
   final List<DetectionResultModel> results;
 
+  /// Optional free-text note attached to the session (US-09).
+  final String? note;
+
+  /// Optional user-corrected emotion label (US-17). When non-null, the UI and
+  /// history list should display this value instead of [dominantEmotion].
+  final EmotionLabelType? correctedEmotion;
+
   const DetectionSessionModel({
     required this.id,
     required this.userId,
@@ -23,9 +30,15 @@ class DetectionSessionModel {
     required this.dominantEmotion,
     required this.dominantConfidence,
     required this.results,
+    this.note,
+    this.correctedEmotion,
   });
 
   Duration get duration => stoppedAt.difference(startedAt);
+
+  /// The emotion label that should be presented to the user: the corrected
+  /// value when present, otherwise the model's dominant prediction.
+  EmotionLabelType get displayEmotion => correctedEmotion ?? dominantEmotion;
 
   Map<String, dynamic> toJson() {
     return {
@@ -38,6 +51,8 @@ class DetectionSessionModel {
       'dominantEmotion': dominantEmotion.name,
       'dominantConfidence': dominantConfidence,
       'results': results.map((r) => r.toJson()).toList(),
+      'note': note,
+      'correctedEmotion': correctedEmotion?.name,
     };
   }
 
@@ -62,6 +77,41 @@ class DetectionSessionModel {
                   DetectionResultModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      note: json['note'] as String?,
+      correctedEmotion: json['correctedEmotion'] == null
+          ? null
+          : EmotionLabelType.values.firstWhere(
+              (e) => e.name == json['correctedEmotion'],
+              orElse: () => EmotionLabelType.neutral,
+            ),
+    );
+  }
+
+  DetectionSessionModel copyWith({
+    String? id,
+    String? userId,
+    DateTime? startedAt,
+    DateTime? stoppedAt,
+    DetectionSourceType? sourceType,
+    String? audioFilePath,
+    EmotionLabelType? dominantEmotion,
+    double? dominantConfidence,
+    List<DetectionResultModel>? results,
+    String? note,
+    EmotionLabelType? correctedEmotion,
+  }) {
+    return DetectionSessionModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      startedAt: startedAt ?? this.startedAt,
+      stoppedAt: stoppedAt ?? this.stoppedAt,
+      sourceType: sourceType ?? this.sourceType,
+      audioFilePath: audioFilePath ?? this.audioFilePath,
+      dominantEmotion: dominantEmotion ?? this.dominantEmotion,
+      dominantConfidence: dominantConfidence ?? this.dominantConfidence,
+      results: results ?? this.results,
+      note: note ?? this.note,
+      correctedEmotion: correctedEmotion ?? this.correctedEmotion,
     );
   }
 }

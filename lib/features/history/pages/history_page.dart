@@ -5,6 +5,7 @@ import 'package:fem_psychmonitor/app/utils/intl_format.dart';
 import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
 import 'package:fem_psychmonitor/data/viewmodels/history_viewmodel.dart';
 import 'package:fem_psychmonitor/features/history/widgets/calender_card.dart';
+import 'package:fem_psychmonitor/features/history/widgets/emotion_history_chart.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:go_router/go_router.dart';
@@ -116,6 +117,34 @@ class _HistoryPageState extends State<HistoryPage> {
                       updateMonthText: _updateMonthText,
                     ),
                     SizedBox(height: 40.h),
+                    // US-19: weekly emotion trend chart.
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(20.w),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(AppRadius.xl),
+                        border: Border.all(color: AppColors.outline),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Tren Emosi 7 Hari',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                          ),
+                          SizedBox(height: 16.h),
+                          EmotionHistoryChart(series: historyVm.chartSeries),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 40.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -127,6 +156,25 @@ class _HistoryPageState extends State<HistoryPage> {
                                 fontSize: 18.sp,
                                 fontWeight: FontWeight.w800,
                               ),
+                        ),
+                        // US-11: 7-day filter toggle.
+                        FilterChip(
+                          label: Text(
+                            '7 Hari',
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w700,
+                              color: historyVm.isFilteredTo7Days
+                                  ? Colors.white
+                                  : AppColors.primary,
+                            ),
+                          ),
+                          selected: historyVm.isFilteredTo7Days,
+                          onSelected: (_) => historyVm.toggle7DayFilter(),
+                          selectedColor: AppColors.primary,
+                          backgroundColor: AppColors.surface,
+                          side: BorderSide(color: AppColors.outline),
+                          visualDensity: VisualDensity.compact,
                         ),
                       ],
                     ),
@@ -165,9 +213,11 @@ class _HistoryPageState extends State<HistoryPage> {
                                 : AppColors.primary,
                             iconColor:
                                 isUpload ? AppColors.primary : Colors.white,
-                            badgeColor: session.dominantEmotion.color,
-                            onTap: () =>
-                                context.pushNamed(RouteNames.analysisResult),
+                            badgeColor: session.displayEmotion.color,
+                            onTap: () => context.pushNamed(
+                              RouteNames.analysisResult,
+                              extra: session.id,
+                            ),
                           ),
                         );
                       }),
@@ -187,7 +237,7 @@ class _HistoryPageState extends State<HistoryPage> {
     final duration = session.duration;
     final minutes = duration.inMinutes;
     final seconds = duration.inSeconds % 60;
-    return '${date.day}/${date.month}/${date.year} · ${minutes}m ${seconds}s · ${session.dominantEmotion.displayName} (${(session.dominantConfidence * 100).round()}%)';
+    return '${date.day}/${date.month}/${date.year} · ${minutes}m ${seconds}s · ${session.displayEmotion.displayName} (${(session.dominantConfidence * 100).round()}%)';
   }
 }
 
