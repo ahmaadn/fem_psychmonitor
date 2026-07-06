@@ -1,9 +1,10 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
-import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/features/auth/widgets/auth_footer_prompt.dart';
-import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
+import 'package:fem_psychmonitor/features/onboarding/utils/onboarding_result_persistence.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_text_field.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
   final String? returnTo;
-
   const RegisterPage({super.key, this.returnTo});
 
   @override
@@ -22,9 +22,13 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  static final RegExp _emailRegex = RegExp(
+    r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',
+  );
 
   @override
   void dispose() {
@@ -35,16 +39,17 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _handleRegister() async {
+    if (!_formKey.currentState!.validate()) return;
     final authVm = context.read<AuthViewModel>();
     final success = await authVm.register(
       _fullNameController.text.trim(),
       _emailController.text.trim(),
       _passwordController.text,
     );
-
     if (!mounted) return;
-
     if (success) {
+      await savePendingOnboardingResults(context);
+      if (!mounted) return;
       if (widget.returnTo != null && widget.returnTo!.isNotEmpty) {
         context.goNamed(widget.returnTo!);
       } else {
@@ -54,10 +59,18 @@ class _RegisterPageState extends State<RegisterPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(authVm.error!),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.warning,
         ),
       );
       authVm.clearError();
+    }
+  }
+
+  void _goBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(RouteNames.onboarding);
     }
   }
 
@@ -65,117 +78,123 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final authVm = context.watch<AuthViewModel>();
-
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: CustomAppBar(
-        title: l10n.registerTitle,
+      appBar: AppBar(
         backgroundColor: Colors.transparent,
-        showBackButton: true,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.textSecondary,
+            size: 22.sp,
+          ),
+          onPressed: _goBack,
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg.w),
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: AppSpacing.xl.h),
-              Container(
-                width: 72.w,
-                height: 72.w,
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.outline),
-                ),
-                child: Icon(
-                  Icons.person_add_alt_rounded,
-                  color: AppColors.primary,
-                  size: 32.sp,
-                ),
+              SizedBox(height: 8.h),
+              const VoiceprintOrb(mode: VoiceprintMode.idle, size: 140),
+              SizedBox(height: 24.h),
+              Text(
+                l10n.startYourJourney,
+                textAlign: TextAlign.center,
+                style: AppTypography.fraunces(size: 28),
               ),
-              SizedBox(height: AppSpacing.lg.h),
-              Center(
-                child: Text(
-                  l10n.startYourJourney,
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-              ),
-              SizedBox(height: AppSpacing.sm.h),
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
-                  child: Text(
-                    l10n.createAccountDesc,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                      height: 1.5,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: AppSpacing.xl.h),
+              SizedBox(height: 8.h),
               SizedBox(
-                width: double.infinity,
-                child: Form(
-                  child: Column(
-                    children: [
-                      CustomTextField(
-                        label: l10n.fullName,
-                        hintText: l10n.fullNameHint,
-                        controller: _fullNameController,
-                      ),
-                      SizedBox(height: AppSpacing.md.h),
-                      CustomTextField(
-                        label: l10n.email,
-                        hintText: l10n.emailHint,
-                        keyboardType: TextInputType.emailAddress,
-                        controller: _emailController,
-                      ),
-                      SizedBox(height: AppSpacing.md.h),
-                      CustomTextField(
-                        label: l10n.password,
-                        hintText: l10n.passwordHint,
-                        isPassword: true,
-                        controller: _passwordController,
-                      ),
-                      SizedBox(height: AppSpacing.lg.h),
-                      PrimaryButton(
-                        text: l10n.createAccount,
-                        onPressed: _handleRegister,
-                        isLoading: authVm.isLoading,
-                      ),
-                    ],
+                width: 280.w,
+                child: Text(
+                  l10n.createAccountDesc,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    height: 1.55,
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ),
-              SizedBox(height: AppSpacing.lg.h),
+              SizedBox(height: 28.h),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    CustomTextField(
+                      label: l10n.fullName,
+                      hintText: l10n.fullNameHint,
+                      controller: _fullNameController,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? l10n.fieldRequired
+                          : null,
+                    ),
+                    SizedBox(height: 14.h),
+                    CustomTextField(
+                      label: l10n.email,
+                      hintText: l10n.emailHint,
+                      keyboardType: TextInputType.emailAddress,
+                      controller: _emailController,
+                      validator: (v) {
+                        final value = v?.trim() ?? '';
+                        if (value.isEmpty) return l10n.fieldRequired;
+                        if (!_emailRegex.hasMatch(value)) {
+                          return l10n.emailInvalid;
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 14.h),
+                    CustomTextField(
+                      label: l10n.password,
+                      hintText: l10n.passwordHint,
+                      isPassword: true,
+                      controller: _passwordController,
+                      validator: (v) {
+                        final value = v ?? '';
+                        if (value.isEmpty) return l10n.fieldRequired;
+                        if (value.length < 8 ||
+                            !RegExp(r'[A-Za-z]').hasMatch(value) ||
+                            !RegExp(r'[0-9]').hasMatch(value)) {
+                          return l10n.passwordTooWeak;
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 24.h),
+                    PrimaryButton(
+                      text: l10n.createAccount,
+                      onPressed: _handleRegister,
+                      isLoading: authVm.isLoading,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 24.h),
               Center(
                 child: AuthFooterPrompt(
                   text: l10n.alreadyHaveAccount,
                   linkText: l10n.signInLink,
-                  onTap: () {
-                    context.goNamed(RouteNames.login);
-                  },
+                  onTap: () => context.pushNamed(RouteNames.login),
                 ),
               ),
-              SizedBox(height: AppSpacing.xl.h),
-              // Teks: Terms & Conditions
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
-                  child: Text(
-                    l10n.termsAgreement,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary.withAlpha(140),
-                      height: 1.5,
-                    ),
+              SizedBox(height: 16.h),
+              SizedBox(
+                width: 280.w,
+                child: Text(
+                  l10n.termsAgreement,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    height: 1.5,
+                    color: AppColors.textSecondary.withValues(alpha: 0.85),
                   ),
                 ),
               ),
-              SizedBox(height: AppSpacing.lg.h),
+              SizedBox(height: 24.h),
             ],
           ),
         ),

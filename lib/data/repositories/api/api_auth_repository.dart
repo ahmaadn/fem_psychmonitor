@@ -9,9 +9,8 @@ import 'package:http/http.dart' as http;
 ///
 /// When a real server is stood up, set [baseUrl] and these stubs become live.
 class ApiAuthRepository extends AuthRepository {
-  ApiAuthRepository({String? baseUrl, http.Client? client})
-      : baseUrl = baseUrl,
-        _client = client ?? http.Client();
+  ApiAuthRepository({this.baseUrl, http.Client? client})
+      : _client = client ?? http.Client();
 
   /// When null, the API layer is disabled (offline-only mode).
   final String? baseUrl;

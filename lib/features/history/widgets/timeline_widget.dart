@@ -1,10 +1,10 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/app/widgets/linear_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class TimelineSegment {
   final double startSec;
@@ -274,17 +274,17 @@ class ComponentTimeline extends StatelessWidget {
           ],
         ),
         SizedBox(height: 12.h),
-        // Linear Progress Bar (Menggunakan Package)
-        LinearPercentIndicator(
+        // Batang progres horizontal (custom, tanpa package percent_indicator).
+        LinearProgressBar(
           lineHeight: 8.h,
           percent: percentage / 100,
-          animation: true,
+          duration: Duration(
+            milliseconds: animateFromLastPercent ? 500 : 1000,
+          ),
           animateFromLastPercent: animateFromLastPercent,
-          animationDuration: animateFromLastPercent ? 500 : 1000,
           backgroundColor: AppColors.outline.withValues(alpha: 0.6),
           progressColor: emotion.color,
           barRadius: const Radius.circular(AppRadius.full),
-          padding: EdgeInsets.zero, // Penting agar sejajar ujung ke ujung
         ),
       ],
     );

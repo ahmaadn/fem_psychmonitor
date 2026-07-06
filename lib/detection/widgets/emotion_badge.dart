@@ -1,7 +1,12 @@
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+/// Compact realtime status strip. It keeps the current emotion visible without
+/// turning the live detection area into another large card.
 class EmotionBadge extends StatelessWidget {
+  /// Hasil deteksi emosi yang akan ditampilkan.
   final EmotionResult result;
 
   const EmotionBadge({super.key, required this.result});
@@ -10,39 +15,40 @@ class EmotionBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final r = result;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
       decoration: BoxDecoration(
-        color: r.label.color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: r.label.color.withValues(alpha: 0.4)),
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(9999.r),
+        border: Border.all(color: r.label.color.withValues(alpha: 0.34)),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(r.label.emoji, style: const TextStyle(fontSize: 48)),
-          const SizedBox(width: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                r.label.displayName,
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: r.label.color,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${(r.confidence * 100).toStringAsFixed(1)}% akurasi',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: r.label.color.withValues(alpha: 0.8),
-                ),
-              ),
-            ],
+          Container(
+            width: 8.w,
+            height: 8.w,
+            decoration: BoxDecoration(
+              color: r.label.color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          SizedBox(width: 8.w),
+          Text(
+            r.label.displayName,
+            style: TextStyle(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          SizedBox(width: 8.w),
+          Text(
+            '${(r.confidence * 100).round()}%',
+            style: TextStyle(
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w700,
+              color: r.label.color,
+            ),
           ),
         ],
       ),

@@ -6,9 +6,8 @@ import 'package:http/http.dart' as http;
 
 /// HTTP-backed [DetectionRepository] scaffold. No-op until a [baseUrl] is set.
 class ApiDetectionRepository extends DetectionRepository {
-  ApiDetectionRepository({String? baseUrl, http.Client? client})
-      : baseUrl = baseUrl,
-        _client = client ?? http.Client();
+  ApiDetectionRepository({this.baseUrl, http.Client? client})
+    : _client = client ?? http.Client();
 
   final String? baseUrl;
   final http.Client _client;
@@ -20,6 +19,7 @@ class ApiDetectionRepository extends DetectionRepository {
     int limit = 20,
     int offset = 0,
     int? filterDays,
+    DateTime? startedOnDate,
   }) async {
     if (!_isEnabled) return [];
     // TODO(server): GET {baseUrl}/sessions?limit=&offset=&days=
@@ -53,7 +53,9 @@ class ApiDetectionRepository extends DetectionRepository {
   @override
   Future<HomeStats> getHomeStats() async {
     if (!_isEnabled) {
-      throw StateError('ApiDetectionRepository disabled — no base URL configured');
+      throw StateError(
+        'ApiDetectionRepository disabled — no base URL configured',
+      );
     }
     throw UnimplementedError('ApiDetectionRepository requires a live server');
   }
@@ -64,9 +66,25 @@ class ApiDetectionRepository extends DetectionRepository {
     EmotionLabelType newLabel,
   ) async {
     if (!_isEnabled) {
-      throw StateError('ApiDetectionRepository disabled — no base URL configured');
+      throw StateError(
+        'ApiDetectionRepository disabled — no base URL configured',
+      );
     }
     // TODO(server): PATCH {baseUrl}/sessions/{id} {corrected_emotion}
+    throw UnimplementedError('ApiDetectionRepository requires a live server');
+  }
+
+  @override
+  Future<DetectionSessionModel> updateNote(
+    String sessionId,
+    String? note,
+  ) async {
+    if (!_isEnabled) {
+      throw StateError(
+        'ApiDetectionRepository disabled — no base URL configured',
+      );
+    }
+    // TODO(server): PATCH {baseUrl}/sessions/{id} {note}
     throw UnimplementedError('ApiDetectionRepository requires a live server');
   }
 

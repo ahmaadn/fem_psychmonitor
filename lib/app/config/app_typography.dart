@@ -2,102 +2,83 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
+/// Aura Echo typography.
+///
+/// The personality carrier is **Fraunces** — a characterful modern serif with
+/// optical sizing and a soft, slightly-oldstyle feel. It turns the headlines
+/// into a "journal you speak into" rather than a neutral UI delivery vehicle,
+/// and it never goes to a heavier weight than the face carries at 600 — the
+/// warmth comes from the letterforms, not the weight.
+///
+/// Body, UI, buttons, and labels run on **Inter** — neutral, high-function
+/// grotesk that lets the serif carry the personality.
 class AppTypography {
-  /// **Display (32px, Bold)**
-  ///
-  /// Gunakan untuk:
-  /// * Judul pada Splash Screen.
-  /// * Metrik hero/utama (misal: skor emosional berukuran besar).
-  /// * Ringkasan status emosional utama.
-  static TextStyle get display => GoogleFonts.plusJakartaSans(
-    fontSize: 32,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.64, // -2% Tracking
-    color: AppColors.textPrimary,
-  );
+  /// **Display (32px, SemiBold, Fraunces)** — hero metrics, splash titles.
+  static TextStyle get display => GoogleFonts.fraunces(
+        fontSize: 32,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.6,
+        height: 1.05,
+        color: AppColors.textPrimary,
+      );
 
-  /// **H1 (32px, Bold)**
-  ///
-  /// Gunakan untuk:
-  /// * Header layar utama (Misal: Judul halaman "Dashboard" atau "Profile").
-  static TextStyle get h1 => GoogleFonts.plusJakartaSans(
-    fontSize: 32,
-    fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
-  );
+  /// **H1 (32px, SemiBold, Fraunces)** — screen-level headlines.
+  static TextStyle get h1 => GoogleFonts.fraunces(
+        fontSize: 32,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.6,
+        height: 1.1,
+        color: AppColors.textPrimary,
+      );
 
-  /// **H2 (18px, Semi-bold)**
-  ///
-  /// Gunakan untuk:
-  /// * Header/Judul dari sebuah section (bagian).
-  /// * Judul di dalam Card (Card titles).
-  static TextStyle get h2 => GoogleFonts.plusJakartaSans(
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-  );
+  /// **H2 (18px, SemiBold, Inter)** — section / card titles.
+  static TextStyle get h2 => GoogleFonts.inter(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.2,
+        color: AppColors.textPrimary,
+      );
 
-  /// **Body Large (16px, Regular)**
-  ///
-  /// Gunakan untuk:
-  /// * Teks body utama.
-  /// * Paragraf pengantar (Intro paragraphs).
-  /// * **Pesan "Companion"**: Nasihat langsung atau *insight* psikologis yang diberikan kepada pengguna.
-  static TextStyle get bodyLg => GoogleFonts.beVietnamPro(
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
-    color: AppColors.textPrimary,
-  );
+  /// **Body Large (16px, Regular, Inter)** — intro paragraphs, companion voice.
+  static TextStyle get bodyLg => GoogleFonts.inter(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        height: 1.55,
+        color: AppColors.textPrimary,
+      );
 
-  /// **Body Medium (14px, Regular)**
-  ///
-  /// Gunakan untuk:
-  /// * Teks body standar.
-  /// * Label pada form input.
-  static TextStyle get bodyMd => GoogleFonts.beVietnamPro(
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: AppColors.textPrimary,
-  );
+  /// **Body Medium (14px, Regular, Inter)** — default running text, labels.
+  static TextStyle get bodyMd => GoogleFonts.inter(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        height: 1.55,
+        color: AppColors.textPrimary,
+      );
 
-  /// **Body Small (12px, Regular)**
-  ///
-  /// Gunakan untuk:
-  /// * Deskripsi sekunder/tambahan.
-  /// * *Captions* di bawah gambar atau grafik.
-  /// * Metadata untuk item di dalam *list* (daftar).
-  static TextStyle get bodySm => GoogleFonts.beVietnamPro(
-    fontSize: 12,
-    fontWeight: FontWeight.w400,
-    color: AppColors.textSecondary,
-  );
+  /// **Body Small (12px, Regular, Inter)** — captions, metadata.
+  static TextStyle get bodySm => GoogleFonts.inter(
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        height: 1.5,
+        color: AppColors.textSecondary,
+      );
 
-  /// **Label (12px, Semi-bold)**
-  ///
-  /// Gunakan untuk:
-  /// * Teks di dalam tombol (Button text).
-  /// * *Tags* atau *Chips* kategori.
-  /// * *Micro-copy* (teks instruksi singkat).
-  static TextStyle get label => GoogleFonts.beVietnamPro(
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
-  );
+  /// **Label (12px, SemiBold, Inter)** — chips, micro-copy.
+  static TextStyle get label => GoogleFonts.inter(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+      );
 
-  /// **Extra Small / XS (10px, Semi-bold)**
-  ///
-  /// Gunakan untuk:
-  /// * Label data berukuran sangat kecil (misal: angka pada sumbu grafik).
-  /// * Metadata minor.
-  /// * Label pada *Bottom Navigation Bar*.
-  static TextStyle get xs => GoogleFonts.beVietnamPro(
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
-  );
+  /// **Extra Small (10px, SemiBold, Inter)** — axis labels, bottom nav.
+  static TextStyle get xs => GoogleFonts.inter(
+        fontSize: 10,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.4,
+        color: AppColors.textSecondary,
+      );
 
-  /// Menggabungkan semua style di atas ke dalam [TextTheme] Material Design.
-  /// Ini memungkinkan komponen bawaan Flutter mengenali tipografi desain Anda.
+  /// Material TextTheme mapping so legacy Material components pick the tokens.
   static TextTheme get textTheme {
     return TextTheme(
       displayLarge: display,
@@ -110,4 +91,21 @@ class AppTypography {
       labelSmall: xs,
     );
   }
+
+  // ── Fraunces convenience helpers (used by the new UI) ────────────────
+  /// Large serif display reused for big hero scores / result emotions.
+  static TextStyle fraunces({
+    double size = 32,
+    FontWeight weight = FontWeight.w600,
+    Color? color,
+    double spacing = -0.6,
+    double height = 1.05,
+  }) =>
+      GoogleFonts.fraunces(
+        fontSize: size,
+        fontWeight: weight,
+        letterSpacing: spacing,
+        height: height,
+        color: color ?? AppColors.textPrimary,
+      );
 }

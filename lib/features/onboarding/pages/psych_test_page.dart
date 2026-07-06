@@ -1,7 +1,7 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
-import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/features/onboarding/viewmodels/questionnaire_viewmodel.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
@@ -18,12 +18,18 @@ class PsychTestPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final localeProvider = context.watch<LocaleProvider>();
     final isEnglish = localeProvider.isEnglish;
-    
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: CustomAppBar(
-        title: l10n.mentalHealthAssessment,
-        showBackButton: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_rounded, color: AppColors.textSecondary, size: 22.sp),
+          onPressed: () => context.pop(),
+        ),
+        title: Text(l10n.mentalHealthAssessment, style: AppTypography.fraunces(size: 18)),
+        centerTitle: true,
       ),
       body: SafeArea(
         child: Consumer<QuestionnaireViewModel>(
@@ -44,86 +50,66 @@ class PsychTestPage extends StatelessWidget {
               children: [
                 Expanded(
                   child: ListView.builder(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24.w,
-                      vertical: 16.h,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
                     itemCount: questions.length,
                     itemBuilder: (context, index) {
                       final question = questions[index];
-                      final selectedOption = viewModel.getSelectedPsychOption(
-                        index,
-                      );
+                      final selectedOption = viewModel.getSelectedPsychOption(index);
 
                       return Container(
-                        margin: EdgeInsets.only(bottom: 24.h),
+                        margin: EdgeInsets.only(bottom: 16.h),
                         padding: EdgeInsets.all(20.w),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16.r),
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(20.r),
                           border: Border.all(color: AppColors.outline),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10.w,
-                                vertical: 4.h,
-                              ),
+                              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
                               decoration: BoxDecoration(
-                                color: AppColors.secondary.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(8.r),
+                                color: AppColors.secondary.withValues(alpha: 0.16),
+                                borderRadius: BorderRadius.circular(10.r),
                               ),
                               child: Text(
                                 question.category.get(isEnglish),
                                 style: TextStyle(
                                   color: AppColors.secondary,
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11.sp,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
                             SizedBox(height: 12.h),
                             Text(
                               "${index + 1}. ${question.question.get(isEnglish)}",
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    height: 1.4,
-                                  ),
+                              style: AppTypography.fraunces(size: 15, weight: FontWeight.w500, height: 1.5),
                             ),
                             SizedBox(height: 16.h),
                             ...question.options.map((option) {
                               final isSelected = selectedOption == option;
                               return Padding(
-                                padding: EdgeInsets.only(bottom: 12.h),
-                                child: InkWell(
-                                  onTap: () {
-                                    viewModel.answerPsychQuestion(
-                                      index,
-                                      option,
-                                    );
-                                  },
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  child: Container(
+                                padding: EdgeInsets.only(bottom: 10.h),
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      viewModel.answerPsychQuestion(index, option),
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
                                     width: double.infinity,
                                     padding: EdgeInsets.symmetric(
-                                      horizontal: 16.w,
-                                      vertical: 12.h,
-                                    ),
+                                        horizontal: 16.w, vertical: 14.h),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? AppColors.primary.withValues(
-                                              alpha: 0.1,
-                                            )
-                                          : AppColors.background,
-                                      borderRadius: BorderRadius.circular(12.r),
+                                          ? AppColors.primary.withValues(alpha: 0.08)
+                                          : AppColors.inputFill,
+                                      borderRadius: BorderRadius.circular(14.r),
                                       border: Border.all(
                                         color: isSelected
                                             ? AppColors.primary
                                             : AppColors.outline,
-                                        width: isSelected ? 2 : 1,
+                                        width: isSelected ? 1.5 : 1,
                                       ),
                                     ),
                                     child: Row(
@@ -144,7 +130,7 @@ class PsychTestPage extends StatelessWidget {
                                             style: TextStyle(
                                               color: isSelected
                                                   ? AppColors.primary
-                                                  : AppColors.textSecondary,
+                                                  : AppColors.textPrimary,
                                               fontWeight: isSelected
                                                   ? FontWeight.w600
                                                   : FontWeight.w400,
@@ -164,12 +150,9 @@ class PsychTestPage extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 24.w,
-                    vertical: 16.h,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.surface,
                     border: Border.all(color: AppColors.outline),
                   ),
                   child: PrimaryButton(
@@ -177,7 +160,6 @@ class PsychTestPage extends StatelessWidget {
                     isDisabled: !isComplete,
                     onPressed: () {
                       viewModel.calculatePsychResult();
-                      // Redirect to Result Page
                       context.pushNamed(RouteNames.psychResult);
                     },
                   ),

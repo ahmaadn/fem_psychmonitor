@@ -69,7 +69,8 @@ class AppRouter {
           path: '/onboarding',
           name: RouteNames.onboarding,
           builder: (BuildContext context, GoRouterState state) {
-            return const OnboardingPage();
+            final fromProfile = state.extra == true;
+            return OnboardingPage(fromProfile: fromProfile);
           },
         ),
         GoRoute(
@@ -118,7 +119,9 @@ class AppRouter {
           path: '/auth/register',
           name: RouteNames.register,
           builder: (BuildContext context, GoRouterState state) {
-            final returnTo = state.extra is String ? state.extra as String : null;
+            final returnTo = state.extra is String
+                ? state.extra as String
+                : null;
             return RegisterPage(returnTo: returnTo);
           },
         ),
@@ -126,7 +129,9 @@ class AppRouter {
           path: '/auth/login',
           name: RouteNames.login,
           builder: (BuildContext context, GoRouterState state) {
-            final returnTo = state.extra is String ? state.extra as String : null;
+            final returnTo = state.extra is String
+                ? state.extra as String
+                : null;
             return LoginPage(returnTo: returnTo);
           },
         ),

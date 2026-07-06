@@ -440,11 +440,23 @@ abstract class AppLocalizations {
   /// **'Sign in here'**
   String get signInHere;
 
+  /// No description provided for @goodMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning, {name}'**
+  String goodMorning(String name);
+
+  /// No description provided for @goodAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon, {name}'**
+  String goodAfternoon(String name);
+
   /// No description provided for @goodEvening.
   ///
   /// In en, this message translates to:
-  /// **'Good evening, Elena'**
-  String get goodEvening;
+  /// **'Good evening, {name}'**
+  String goodEvening(String name);
 
   /// No description provided for @howAreYouFeeling.
   ///
@@ -715,6 +727,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile saved successfully!'**
   String get profileSaved;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
 
   /// No description provided for @changePasswordTitle.
   ///
@@ -1393,6 +1417,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start'**
   String get mulai;
+
+  /// No description provided for @sessionNoteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Note'**
+  String get sessionNoteTitle;
+
+  /// No description provided for @sessionNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'How did this session feel? Write it here...'**
+  String get sessionNoteHint;
+
+  /// No description provided for @saveNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Note'**
+  String get saveNote;
+
+  /// No description provided for @noteSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Note saved'**
+  String get noteSaved;
+
+  /// No description provided for @emailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get emailInvalid;
+
+  /// No description provided for @passwordTooWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 8 characters with letters and numbers'**
+  String get passwordTooWeak;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get fieldRequired;
+
+  /// No description provided for @noDetectionYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No detections yet'**
+  String get noDetectionYet;
+
+  /// No description provided for @noDetectionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Record your voice to start understanding your emotions.'**
+  String get noDetectionDesc;
+
+  /// No description provided for @startRecordingCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Recording'**
+  String get startRecordingCta;
+
+  /// No description provided for @mbtiDimensionScores.
+  ///
+  /// In en, this message translates to:
+  /// **'Dimension Scores'**
+  String get mbtiDimensionScores;
+
+  /// No description provided for @currentAssessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Assessment'**
+  String get currentAssessment;
+
+  /// No description provided for @mentalHealthScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Mental Health Score'**
+  String get mentalHealthScore;
+
+  /// No description provided for @noAssessmentYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete onboarding to see your assessment.'**
+  String get noAssessmentYet;
+
+  /// No description provided for @noRecordingsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No recordings yet'**
+  String get noRecordingsYet;
+
+  /// No description provided for @unsupportedAudioFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported audio format. Please choose wav, pcm, mp3, m4a, or aac.'**
+  String get unsupportedAudioFormat;
+
+  /// No description provided for @audioDecodeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to decode this audio file.'**
+  String get audioDecodeFailed;
+
+  /// No description provided for @needHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Need help?'**
+  String get needHelp;
+
+  /// No description provided for @hotlineDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The detected emotion is quite heavy. If you feel overwhelmed, don\'t hesitate to contact a nearby crisis service.'**
+  String get hotlineDesc;
+
+  /// No description provided for @emergencyHealthService.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Health'**
+  String get emergencyHealthService;
+
+  /// No description provided for @mentalHealthService.
+  ///
+  /// In en, this message translates to:
+  /// **'Mental Health'**
+  String get mentalHealthService;
+
+  /// No description provided for @weeklyEmotionDistribution.
+  ///
+  /// In en, this message translates to:
+  /// **'7-Day Emotion Distribution'**
+  String get weeklyEmotionDistribution;
+
+  /// No description provided for @noDataThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'No data this week.'**
+  String get noDataThisWeek;
+
+  /// No description provided for @tipsForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Tips for you'**
+  String get tipsForYou;
+
+  /// No description provided for @logoutConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get logoutConfirmMessage;
+
+  /// No description provided for @confirmLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get confirmLogout;
+
+  /// No description provided for @profileLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load profile'**
+  String get profileLoadFailed;
+
+  /// No description provided for @profileSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save profile'**
+  String get profileSaveFailed;
+
+  /// No description provided for @passwordChangeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to change password'**
+  String get passwordChangeFailed;
+
+  /// No description provided for @profileSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile saved'**
+  String get profileSaveSuccess;
+
+  /// No description provided for @passwordChangeSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed'**
+  String get passwordChangeSuccess;
+
+  /// No description provided for @hotlineLaunchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the phone dialer.'**
+  String get hotlineLaunchFailed;
+
+  /// No description provided for @vadListening.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening…'**
+  String get vadListening;
+
+  /// No description provided for @vadSpeechDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech detected'**
+  String get vadSpeechDetected;
+
+  /// No description provided for @noSpeechDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'No speech detected'**
+  String get noSpeechDetected;
+
+  /// No description provided for @noSpeechDetectedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t hear any voice in your recording. Try again in a quieter place and speak clearly.'**
+  String get noSpeechDetectedHint;
+
+  /// No description provided for @tryRecordAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try recording again'**
+  String get tryRecordAgain;
 }
 
 class _AppLocalizationsDelegate

@@ -1,6 +1,7 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
-import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
@@ -17,7 +18,6 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
-  // AnimationController untuk mengontrol progress bar dan navigasi otomatis
   late final AnimationController _progressController;
   bool _hasNavigated = false;
 
@@ -27,25 +27,17 @@ class _SplashPageState extends State<SplashPage>
     _progressController =
         AnimationController(vsync: this, duration: const Duration(seconds: 5))
           ..addStatusListener((status) {
-            if (status == AnimationStatus.completed) {
-              _navigateBasedOnAuth();
-            }
+            if (status == AnimationStatus.completed) _navigateBasedOnAuth();
           })
           ..forward();
   }
 
-  /// Check auth state and navigate accordingly:
-  /// - Authenticated → Home
-  /// - Not authenticated → Onboarding
   Future<void> _navigateBasedOnAuth() async {
     if (!mounted || _hasNavigated) return;
-
     final authVm = context.read<AuthViewModel>();
     await authVm.checkAuth();
-
     if (!mounted || _hasNavigated) return;
     _hasNavigated = true;
-
     if (authVm.isAuthenticated) {
       context.goNamed(RouteNames.home);
     } else {
@@ -64,117 +56,83 @@ class _SplashPageState extends State<SplashPage>
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
-      // Menggunakan GestureDetector untuk menangkap aksi "Swipe Up"
       body: GestureDetector(
-        onVerticalDragEnd: (details) {
-          // Jika primaryVelocity bernilai negatif, artinya pengguna menggeser ke atas
-          if ((details.primaryVelocity ?? 0) < 0) {
-            _navigateBasedOnAuth();
-          }
+        onVerticalDragEnd: (d) {
+          if ((d.primaryVelocity ?? 0) < 0) _navigateBasedOnAuth();
         },
         child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg.w,
-                      vertical: AppSpacing.lg.h,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(height: AppSpacing.md.h),
-                        Column(
-                          children: [
-                            Center(
-                              child: Image.asset(
-                                'assets/logo.png',
-                                width: 160.w,
-                                height: 160.w,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                            SizedBox(height: AppSpacing.lg.h),
-                            Text(
-                              l10n.appName,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headlineLarge,
-                            ),
-                            SizedBox(height: AppSpacing.sm.h),
-                            Text(
-                              l10n.appTagline,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: AppColors.textSecondary,
-                                    height: 1.5,
-                                  ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: AppSpacing.lg.h),
-                          child: Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.symmetric(
-                              vertical: AppSpacing.md.h,
-                              horizontal: AppSpacing.lg.w,
-                            ),
-                            child: Column(
-                              children: [
-                                AnimatedBuilder(
-                                  animation: _progressController,
-                                  builder: (context, child) {
-                                    final progress = _progressController.value;
-
-                                    return SizedBox(
-                                      width: 220.w,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          AppRadius.full,
-                                        ),
-                                        child: LinearProgressIndicator(
-                                          value: progress,
-                                          minHeight: 6.h,
-                                          backgroundColor:
-                                              AppColors.surfaceContainerLow,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                AppColors.primary,
-                                              ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                SizedBox(height: AppSpacing.sm.h),
-                                Icon(
-                                  Icons.keyboard_arrow_up_rounded,
-                                  color: AppColors.textSecondary,
-                                  size: 24.sp,
-                                ),
-                                SizedBox(height: 4.h),
-                                Text(
-                                  l10n.swipeUpToStart,
-                                  style: Theme.of(context).textTheme.labelLarge
-                                      ?.copyWith(
-                                        letterSpacing: 0.5,
-                                        color: AppColors.textSecondary,
-                                      ),
-                                ),
-                              ],
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 24.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Spacer(),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: 320.w,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const VoiceprintOrb(
+                          mode: VoiceprintMode.idle, size: 220),
+                      SizedBox(height: 32.h),
+                      Text(l10n.appName,
+                          textAlign: TextAlign.center,
+                          style: AppTypography.fraunces(size: 36)),
+                      SizedBox(height: 10.h),
+                      Text(
+                        l10n.appTagline,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 13.sp,
+                            height: 1.6,
+                            color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: 320.w,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      AnimatedBuilder(
+                        animation: _progressController,
+                        builder: (context, _) => SizedBox(
+                          width: 220.w,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(9999.r),
+                            child: LinearProgressIndicator(
+                              value: _progressController.value,
+                              minHeight: 5.h,
+                              backgroundColor:
+                                  AppColors.surfaceContainerHighest,
+                              valueColor: const AlwaysStoppedAnimation(
+                                  AppColors.primary),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: 12.h),
+                      Icon(Icons.keyboard_arrow_up_rounded,
+                          color: AppColors.textSecondary, size: 22.sp),
+                      SizedBox(height: 2.h),
+                      Text(l10n.swipeUpToStart,
+                          style: TextStyle(
+                              fontSize: 12.sp,
+                              letterSpacing: 0.4,
+                              color: AppColors.textSecondary)),
+                    ],
                   ),
                 ),
-              );
-            },
+              ],
+            ),
           ),
         ),
       ),

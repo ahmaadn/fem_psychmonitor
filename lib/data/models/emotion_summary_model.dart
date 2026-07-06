@@ -37,6 +37,10 @@ class HomeStats {
   final int streakDays;
   final List<DailyCheckIn> weeklyCheckins;
 
+  /// US-03: true when the user has at least one recorded session. Drives the
+  /// home empty-state CTA instead of the "0% Netral" headline.
+  final bool hasDetection;
+
   const HomeStats({
     required this.currentMood,
     required this.currentMoodPercentage,
@@ -44,5 +48,6 @@ class HomeStats {
     required this.totalRecordings,
     required this.streakDays,
     required this.weeklyCheckins,
+    this.hasDetection = false,
   });
 }

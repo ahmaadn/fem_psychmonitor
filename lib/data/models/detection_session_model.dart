@@ -40,6 +40,30 @@ class DetectionSessionModel {
   /// value when present, otherwise the model's dominant prediction.
   EmotionLabelType get displayEmotion => correctedEmotion ?? dominantEmotion;
 
+  /// Confidence for the emotion currently shown to the user. If the user has
+  /// corrected the label, use the model probability for that corrected label so
+  /// score updates do not keep relying on the original dominant confidence.
+  double get displayConfidence => confidenceForEmotion(displayEmotion);
+
+  double confidenceForEmotion(EmotionLabelType emotion) {
+    if (emotion == dominantEmotion && correctedEmotion == null) {
+      return dominantConfidence;
+    }
+
+    final index = emotion.index;
+    final values = results
+        .where((result) => result.allProbs.length > index)
+        .map((result) => result.allProbs[index])
+        .toList();
+
+    if (values.isEmpty) {
+      return emotion == dominantEmotion ? dominantConfidence : 0;
+    }
+
+    final total = values.fold<double>(0, (sum, value) => sum + value);
+    return total / values.length;
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -72,9 +96,11 @@ class DetectionSessionModel {
         orElse: () => EmotionLabelType.neutral,
       ),
       dominantConfidence: (json['dominantConfidence'] as num).toDouble(),
-      results: (json['results'] as List<dynamic>?)
-              ?.map((e) =>
-                  DetectionResultModel.fromJson(e as Map<String, dynamic>))
+      results:
+          (json['results'] as List<dynamic>?)
+              ?.map(
+                (e) => DetectionResultModel.fromJson(e as Map<String, dynamic>),
+              )
               .toList() ??
           [],
       note: json['note'] as String?,

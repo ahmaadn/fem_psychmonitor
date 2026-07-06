@@ -1,17 +1,14 @@
 import 'dart:async';
 
-import 'package:fem_psychmonitor/features/recording/widgets/realtime_wave_visualizer.dart';
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
-import 'package:fem_psychmonitor/app/config/app_spacing.dart';
-import 'package:fem_psychmonitor/app/utils/formater_utils.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/app/utils/formatter_utils.dart';
+import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
 import 'package:fem_psychmonitor/detection/widgets/emotion_badge.dart';
-import 'package:fem_psychmonitor/features/recording/widgets/control_action.dart';
-import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
-import 'package:fem_psychmonitor/app/widgets/custom_badge.dart';
 import 'package:fem_psychmonitor/features/home/widgets/info_card.dart';
-import 'package:fem_psychmonitor/app/widgets/page_header.dart';
 import 'package:fem_psychmonitor/features/history/widgets/timeline_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
@@ -33,6 +30,10 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final detector = context.read<EmotionDetector>();
+      if (!detector.isDetecting) detector.clearTimeline();
+    });
   }
 
   Future<void> _startSession() async {
@@ -41,9 +42,8 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
     await detector.startDetection(saveToFile: true);
     if (!mounted) return;
     if (detector.error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(detector.error!)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(detector.error!)));
       return;
     }
     _ticker?.cancel();
@@ -66,27 +66,21 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
         context: context,
         builder: (context) => AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.lg),
+            borderRadius: BorderRadius.circular(20.r),
           ),
           title: Text(l10n.discardRecordingTitle),
           content: Text(l10n.discardRecordingMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text(
-                l10n.cancel,
-                style: TextStyle(color: AppColors.textSecondary),
-              ),
+              child: Text(l10n.cancel,
+                  style: const TextStyle(color: AppColors.textSecondary)),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: Text(
-                l10n.discard,
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              child: Text(l10n.discard,
+                  style: const TextStyle(
+                      color: AppColors.warning, fontWeight: FontWeight.w600)),
             ),
           ],
         ),
@@ -125,6 +119,8 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
     final l10n = AppLocalizations.of(context)!;
     final detector = context.watch<EmotionDetector>();
 
+    final orbColor = detector.latest?.label.color ?? AppColors.primary;
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -133,16 +129,35 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
       },
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: CustomAppBar(
-          title: l10n.recording,
-          showBackButton: false,
-          isScrollable: false,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
           leading: IconButton(
-            icon: Icon(
-              Icons.close_rounded,
-              color: AppColors.primary.withAlpha(153),
-            ),
+            icon: Icon(Icons.close_rounded,
+                color: AppColors.textSecondary, size: 22.sp),
             onPressed: _discardSession,
+          ),
+          title: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: detector.isDetecting
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    key: const ValueKey('live'),
+                    children: [
+                      Icon(Icons.circle, size: 8.sp, color: AppColors.warning),
+                      SizedBox(width: 6.w),
+                      Text(l10n.liveSession,
+                          style: TextStyle(
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.0,
+                              color: AppColors.warning)),
+                    ],
+                  )
+                : Text(l10n.recordYourVoice,
+                    key: const ValueKey('idle'),
+                    style: AppTypography.fraunces(size: 18)),
           ),
         ),
         body: SafeArea(
@@ -152,175 +167,110 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      PageHeader(
-                        title: l10n.speakYourMind,
-                        subtitle: l10n.captureThoughts,
+                      SizedBox(height: 8.h),
+                      Text(
+                        formatDuration(_elapsed),
+                        style: AppTypography.fraunces(
+                          size: 40,
+                          weight: FontWeight.w500,
+                          color: AppColors.textPrimary,
+                          spacing: -1.0,
+                        ),
+                      ),
+                      SizedBox(height: 6.h),
+                      Text(
+                        l10n.captureThoughts,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          height: 1.5,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      SizedBox(height: 28.h),
+                      VoiceprintOrb(
+                        mode: VoiceprintMode.live,
+                        color: orbColor,
+                        size: 280,
+                        amplitudeStream: detector.onAmplitudeChanged,
                       ),
                       SizedBox(height: 24.h),
-                      Container(
-                        padding: EdgeInsets.all(24.w),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(AppRadius.xl),
-                          border: Border.all(color: AppColors.outline),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                CustomBadge(
-                                  text: l10n.liveSession,
-                                  backgroundColor: const Color(0xFFFFE5E5),
-                                  textColor: const Color(0xFFFF4D4D),
-                                  icon: Icons.circle,
-                                  iconColor: const Color(0xFFFF4D4D),
-                                ),
-                                Text(
-                                  formatDuration(_elapsed),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium
-                                      ?.copyWith(
-                                        fontSize: 28.sp,
-                                        fontWeight: FontWeight.w800,
-                                        color: AppColors.primary,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 32.h),
-                            AnimatedSize(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                              child: detector.latest != null
-                                  ? EmotionBadge(result: detector.latest!)
-                                  : SizedBox(
-                                      height: 32.h,
-                                      child: Center(
-                                        child: Text(
-                                          l10n.startRecordToSee,
-                                          style: TextStyle(
-                                            color: AppColors.textSecondary
-                                                .withAlpha(128),
-                                            fontSize: 12.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                            ),
-                            SizedBox(height: 32.h),
-                            RealtimeWaveVisualizer(
-                              amplitudeStream: detector.onAmplitudeChanged,
-                              waveColor: AppColors.primary,
-                              width: MediaQuery.of(context).size.width,
-                              height: 100.h,
-                            ),
-                            SizedBox(height: 48.h),
-                            Center(
-                              child: GestureDetector(
-                                onTap: () {
-                                  if (!detector.isDetecting) {
-                                    _startSession();
-                                  } else if (detector.isPaused) {
-                                    detector.resumeDetection();
-                                  } else {
-                                    detector.pauseDetection();
-                                  }
-                                },
-                                child: Container(
-                                  width: 80.w,
-                                  height: 80.w,
-                                  decoration: BoxDecoration(
-                                    color: detector.isDetecting
-                                        ? (detector.isPaused
-                                              ? AppColors.warning
-                                              : AppColors.primary)
-                                        : AppColors.primary,
-                                    borderRadius: BorderRadius.circular(
-                                      AppRadius.full,
-                                    ),
-                                    border: Border.all(
-                                      color:
-                                          (detector.isDetecting
-                                                  ? (detector.isPaused
-                                                        ? AppColors.warning
-                                                        : AppColors.primary)
-                                                  : AppColors.primary)
-                                              .withAlpha(51),
-                                      width: 8,
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    !detector.isDetecting
-                                        ? Icons.mic_rounded
-                                        : detector.isPaused
-                                        ? Icons.play_arrow_rounded
-                                        : Icons.pause_rounded,
-                                    color: Colors.white,
-                                    size: 32.sp,
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        child: detector.latest != null
+                            ? EmotionBadge(result: detector.latest!)
+                            : SizedBox(
+                                key: const ValueKey('hint'),
+                                height: 24.h,
+                                child: Text(
+                                  l10n.startRecordToSee,
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary
+                                        .withValues(alpha: 0.7),
+                                    fontSize: 12.sp,
                                   ),
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 32.h),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ControlAction(
-                                  icon: Icons.delete_outline_rounded,
-                                  label: l10n.discardLabel,
-                                  bgColor: const Color(0xFFF1F5F9),
-                                  iconColor: AppColors.primary.withAlpha(153),
-                                  onTap: _discardSession,
-                                ),
-                                ControlAction(
-                                  icon: detector.isDetecting
-                                      ? Icons.check_rounded
-                                      : Icons.play_arrow_rounded,
-                                  label: detector.isDetecting
-                                      ? l10n.doneLabel
-                                      : l10n.startLabel,
-                                  bgColor: AppColors.primary.withAlpha(25),
-                                  iconColor: AppColors.primary,
-                                  onTap: detector.isDetecting
-                                      ? _finishSession
-                                      : _startSession,
-                                ),
-                              ],
-                            ),
-                            if (detector.error != null) ...[
-                              SizedBox(height: 16.h),
-                              Text(
-                                detector.error!,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(color: Colors.red),
-                              ),
-                            ],
-                            if (detector.timeline.isNotEmpty) ...[
-                              SizedBox(height: 32.h),
-                              const Divider(color: Color(0xFFE2E8F0)),
-                              SizedBox(height: 24.h),
-                              ComponentTimeline(
-                                timeline: detector.timeline,
-                                title: l10n.overallEmotionDistribution,
-                                animateFromLastPercent: true,
-                                sortByFrequency: false,
-                                showAllEmotions: true,
-                              ),
-                            ],
-                          ],
-                        ),
                       ),
-                      SizedBox(height: 48.h),
+                      SizedBox(height: 16.h),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        child: detector.isDetecting
+                            ? _VadPill(
+                                key: ValueKey(detector.isSpeaking),
+                                speaking: detector.isSpeaking,
+                                listeningLabel: l10n.vadListening,
+                                speechLabel: l10n.vadSpeechDetected,
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                      SizedBox(height: 28.h),
+                      _buildPrimaryControl(context, detector),
+                      SizedBox(height: 20.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _GhostAction(
+                            label: l10n.discardLabel,
+                            icon: Icons.delete_outline_rounded,
+                            onTap: _discardSession,
+                          ),
+                          if (detector.isDetecting) ...[
+                            SizedBox(width: 16.w),
+                            _GhostAction(
+                              label: l10n.doneLabel,
+                              icon: Icons.check_rounded,
+                              filled: true,
+                              onTap: _finishSession,
+                            ),
+                          ],
+                        ],
+                      ),
+                      if (detector.error != null) ...[
+                        SizedBox(height: 16.h),
+                        Text(detector.error!,
+                            style: TextStyle(
+                                fontSize: 12.sp, color: AppColors.warning)),
+                      ],
+                      if (detector.timeline.isNotEmpty) ...[
+                        SizedBox(height: 28.h),
+                        const Divider(color: AppColors.outline, height: 1),
+                        SizedBox(height: 20.h),
+                        ComponentTimeline(
+                          timeline: detector.timeline,
+                          title: l10n.overallEmotionDistribution,
+                          animateFromLastPercent: true,
+                          sortByFrequency: false,
+                          showAllEmotions: true,
+                        ),
+                      ],
+                      SizedBox(height: 24.h),
                       InfoCard(
                         title: l10n.privacyCheck,
                         message: l10n.privacyCheckMessage,
-                        icon: Icons.light_mode_outlined,
+                        icon: Icons.shield_outlined,
                       ),
                       SizedBox(height: 32.h),
                     ],
@@ -330,6 +280,133 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPrimaryControl(BuildContext context, EmotionDetector detector) {
+    final bool recording = detector.isDetecting && !detector.isPaused;
+    final Color color = recording ? AppColors.warning : AppColors.primary;
+    final IconData icon = !detector.isDetecting
+        ? Icons.mic_rounded
+        : detector.isPaused
+            ? Icons.play_arrow_rounded
+            : Icons.pause_rounded;
+    return GestureDetector(
+      onTap: () {
+        if (!detector.isDetecting) {
+          _startSession();
+        } else if (detector.isPaused) {
+          detector.resumeDetection();
+        } else {
+          detector.pauseDetection();
+        }
+      },
+      child: Container(
+        width: 88.w,
+        height: 88.w,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.30),
+              blurRadius: 22,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Icon(icon, color: Colors.white, size: 36.sp),
+      ),
+    );
+  }
+}
+
+class _GhostAction extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool filled;
+  final VoidCallback onTap;
+  const _GhostAction({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+    this.filled = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = filled ? AppColors.primary : AppColors.textSecondary;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          color: filled
+              ? AppColors.primary.withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(9999.r),
+          border: Border.all(
+            color: filled
+                ? AppColors.primary.withValues(alpha: 0.4)
+                : AppColors.outline,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 16.sp),
+            SizedBox(width: 6.w),
+            Text(label,
+                style: TextStyle(
+                    fontSize: 12.sp, fontWeight: FontWeight.w600, color: color)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _VadPill extends StatelessWidget {
+  const _VadPill({
+    super.key,
+    required this.speaking,
+    required this.listeningLabel,
+    required this.speechLabel,
+  });
+
+  final bool speaking;
+  final String listeningLabel;
+  final String speechLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = speaking ? speechLabel : listeningLabel;
+    final color = speaking ? AppColors.primary : AppColors.textSecondary;
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: speaking ? 0.14 : 0.08),
+        borderRadius: BorderRadius.circular(9999.r),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            speaking
+                ? Icons.record_voice_over_rounded
+                : Icons.hearing_rounded,
+            size: 12.sp,
+            color: color,
+          ),
+          SizedBox(width: 6.w),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 10.sp,
+                  color: color,
+                  letterSpacing: 0.8,
+                  fontWeight: FontWeight.w600)),
+        ],
       ),
     );
   }

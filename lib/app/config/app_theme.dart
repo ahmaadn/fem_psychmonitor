@@ -11,7 +11,7 @@ class AppTheme {
     scaffoldBackgroundColor: AppColors.background,
     colorScheme: AppColors.colorScheme,
     textTheme: AppTypography.textTheme,
-    fontFamily: 'BeVietnamPro',
+    fontFamily: 'Inter',
 
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.transparent,

@@ -1,7 +1,12 @@
-// lib/services/emotion_detector.dart
+// lib/detection/services/emotion_detector.dart
 //
-// Top-level controller exposed to the UI via ChangeNotifier.
-// Owns InferenceIsolateManager + AudioService, wires them together.
+// Controller tingkat atas yang diekspos ke UI melalui ChangeNotifier.
+// Memiliki InferenceIsolateManager + AudioService dan menghubungkan keduanya.
+//
+// Mendukung dua mode deteksi:
+//   1. Real-time — merekam dari mikrofon secara langsung.
+//   2. Upload file — mendekode file audio (WAV/PCM/MP3/M4A/dll) lalu
+//      memproses per-chunk. Format terkompresi ditranskode ke WAV via FFmpeg.
 
 import 'dart:async';
 import 'dart:io';
@@ -10,8 +15,18 @@ import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/detection/services/audio_service.dart';
 import 'package:fem_psychmonitor/detection/services/documents_storage_service.dart';
 import 'package:fem_psychmonitor/detection/services/inference_isolate.dart';
+import 'package:fem_psychmonitor/detection/services/vad_detector.dart';
+import 'package:ffmpeg_kit_flutter_new_min/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_new_min/return_code.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
+/// Controller utama deteksi emosi yang diekspos ke UI via [ChangeNotifier].
+///
+// Menyatukan [InferenceIsolateManager] (inferensi TFLite di background isolate)
+// dan [AudioService] (perekaman + VAD), serta mengekspos state hasil deteksi,
+// timeline, amplitudo, dan status berbicara agar dapat diobservasi UI.
 class EmotionDetector extends ChangeNotifier {
   static const int _sampleRate = 16000;
   static const int _chunkSamples = 48000;
@@ -30,6 +45,7 @@ class EmotionDetector extends ChangeNotifier {
   DateTime? _sessionStartedAt;
   int _sessionStartIndex = 0;
   final List<EmotionResult> _timeline = [];
+  bool _isSpeaking = false;
 
   bool get isReady => _ready;
   bool get isDetecting => _detecting;
@@ -42,15 +58,21 @@ class EmotionDetector extends ChangeNotifier {
   List<EmotionResult> get timeline => List.unmodifiable(_timeline);
   Stream<double> get onAmplitudeChanged => _ready ? _audio.onAmplitudeChanged : const Stream.empty();
   bool get isPaused => _ready ? _audio.isPaused : false;
+  bool get isSpeaking => _ready ? _isSpeaking : false;
 
   // ── Internals ──────────────────────────────────────────────────────────────
   late final InferenceIsolateManager _isolate;
   late final DocumentsStorageService _documentsStorage;
   late final AudioService _audio;
+  final VadDetector _vad = VadDetector();
   StreamSubscription<EmotionResult>? _resultSub;
   StreamSubscription<String>? _errorSub;
+  StreamSubscription<bool>? _vadSub;
 
-  // ── Initialize: extract model from assets, boot isolate
+  // ── Inisialisasi: ekstrak model dari assets, boot isolate
+
+  /// Menginisialisasi detector: memuat model TFLite ke background isolate dan
+  /// menyiapkan layanan audio. Aman dipanggil berulang (idempoten).
   Future<void> init() async {
     if (_ready) return;
     try {
@@ -61,11 +83,18 @@ class EmotionDetector extends ChangeNotifier {
       _audio = AudioService(
         inferenceManager: _isolate,
         storageService: _documentsStorage,
+        vad: _vad,
       );
 
       // Wire results from isolate → UI
       _resultSub = _isolate.results.listen(_onResult);
       _errorSub = _isolate.errors.listen(_onError);
+
+      // Wire live VAD state → UI pill ("Listening…" / "Speech detected").
+      _vadSub = _audio.onVadStateChanged.listen((speaking) {
+        _isSpeaking = speaking;
+        notifyListeners();
+      });
 
       _ready = true;
       notifyListeners();
@@ -75,6 +104,10 @@ class EmotionDetector extends ChangeNotifier {
     }
   }
 
+  /// Memulai deteksi real-time dari mikrofon.
+  ///
+  /// Bila [saveToFile] true, rekaman PCM/WAV disimpan ke storage. Membuat
+  /// session id baru dan menandai awal timeline sesi.
   Future<void> startDetection({bool saveToFile = true}) async {
     if (!_ready || _detecting) return;
     _error = null;
@@ -88,6 +121,8 @@ class EmotionDetector extends ChangeNotifier {
     await _audio.start(saveToFile: saveToFile, sessionId: _sessionId);
   }
 
+  /// Menghentikan deteksi real-time, menyimpan timeline terenkripsi, dan
+  /// mengembalikan path file rekaman WAV.
   Future<String?> stopDetection() async {
     if (!_detecting) {
       return null;
@@ -108,22 +143,31 @@ class EmotionDetector extends ChangeNotifier {
 
     _sessionId = null;
     _detecting = false;
+    _isSpeaking = false;
     notifyListeners();
     return _lastRecordingPath;
   }
 
+  /// Menjeda deteksi real-time (perekaman & inferensi dihentikan sementara).
   Future<void> pauseDetection() async {
     if (!_detecting || isPaused) return;
     await _audio.pause();
     notifyListeners();
   }
 
+  /// Melanjutkan deteksi real-time setelah [pauseDetection].
   Future<void> resumeDetection() async {
     if (!_detecting || !isPaused) return;
     await _audio.resume();
     notifyListeners();
   }
 
+  /// Mendeteksi emosi dari file audio yang diunggah.
+  ///
+  /// Mendekode [filePath] (WAV/PCM16 atau format terkompresi via FFmpeg),
+  /// memecah menjadi chunk 3 detik dengan stride 1,5 detik, melakukan gate VAD
+  /// pada tiap chunk, lalu menjalankan inferensi dan menyimpan timeline
+  /// terenkripsi. Mengembalikan path timeline, atau null bila gagal.
   Future<String?> detectFromAudioFile(String filePath) async {
     if (!_ready) {
       await init();
@@ -131,6 +175,8 @@ class EmotionDetector extends ChangeNotifier {
     if (_detecting) {
       await stopDetection();
     }
+
+    clearTimeline();
 
     _error = null;
     _processingUpload = true;
@@ -169,6 +215,12 @@ class EmotionDetector extends ChangeNotifier {
       for (int i = 0; i < chunks.length; i++) {
         final startSample = i * _strideSamples;
         final startSec = startSample / _sampleRate;
+        // VAD gate: skip silent chunks so they neither queue inference nor
+        // pollute the timeline. pendingIds only contains speech chunks, so
+        // the existing completion logic stays correct; an all-silence file
+        // leaves pendingIds empty and yields an empty timeline (handled in
+        // ai_processing_page).
+        if (!_vad.isSpeech(chunks[i], sampleRate: _sampleRate)) continue;
         final reqId = _isolate.infer(chunks[i], startSec);
         pendingIds.add(reqId);
       }
@@ -211,6 +263,7 @@ class EmotionDetector extends ChangeNotifier {
     }
   }
 
+  /// Mengosongkan timeline dan state sesi (rekaman/path terakhir di-reset).
   void clearTimeline() {
     _timeline.clear();
     _latest = null;
@@ -221,6 +274,10 @@ class EmotionDetector extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Mendekode [filePath] menjadi list sample float32 mono 16 kHz.
+  ///
+  /// Mendukung WAV PCM16, raw PCM16, serta format terkompresi (mp3, m4a, aac,
+  /// mp4, ogg, opus, flac) yang ditranskode ke WAV sementara via FFmpeg.
   Future<List<double>> _decodeAudioFile(String filePath) async {
     final file = File(filePath);
     if (!await file.exists()) {
@@ -236,7 +293,59 @@ class EmotionDetector extends ChangeNotifier {
       return _decodeWavPcm16Mono(bytes);
     }
 
-    return _decodeRawPcm16(bytes);
+    final ext = p.extension(filePath).toLowerCase().replaceFirst('.', '');
+
+    // Raw PCM16 (no header) — assume mono 16kHz.
+    if (ext == 'pcm') {
+      return _decodeRawPcm16(bytes);
+    }
+
+    // US-15: compressed formats (mp3, m4a, aac, …) — transcode to a temporary
+    // WAV (PCM16, mono, 16kHz) via FFmpeg, then reuse the WAV decoder. The
+    // temp file is removed afterwards.
+    if ({'mp3', 'm4a', 'aac', 'mp4', 'ogg', 'opus', 'flac'}.contains(ext)) {
+      final tempWav = await _convertToWavPcm16(filePath);
+      try {
+        final wavBytes = await File(tempWav).readAsBytes();
+        return _decodeWavPcm16Mono(wavBytes);
+      } finally {
+        await _safeDelete(tempWav);
+      }
+    }
+
+    throw Exception('Format audio tidak didukung: .$ext');
+  }
+
+  /// US-15: mentranskode [inputPath] menjadi WAV sementara (PCM16, mono,
+  /// 16 kHz) memakai FFmpeg. Mengembalikan path file WAV sementara.
+  Future<String> _convertToWavPcm16(String inputPath) async {
+    final tempDir = await getTemporaryDirectory();
+    final outPath = p.join(
+      tempDir.path,
+      'fem_dec_${DateTime.now().microsecondsSinceEpoch}.wav',
+    );
+
+    // -y overwrite, -i input, -ac 1 mono, -ar 16000, -sample_fmt s16, wav.
+    final cmd = '-y -i "$inputPath" -ac 1 -ar 16000 -sample_fmt s16 -f wav "$outPath"';
+    final session = await FFmpegKit.execute(cmd);
+    final rc = await session.getReturnCode();
+
+    if (!ReturnCode.isSuccess(rc)) {
+      await _safeDelete(outPath);
+      throw Exception('Konversi audio gagal (kode ${rc?.getValue()})');
+    }
+
+    return outPath;
+  }
+
+  Future<void> _safeDelete(String? path) async {
+    if (path == null || path.isEmpty) return;
+    try {
+      final f = File(path);
+      if (await f.exists()) await f.delete();
+    } catch (_) {
+      // Best-effort cleanup.
+    }
   }
 
   bool _isWav(Uint8List bytes) {
@@ -322,6 +431,8 @@ class EmotionDetector extends ChangeNotifier {
     return out;
   }
 
+  /// Memecah [samples] menjadi chunk berukuran tetap (48.000 sample = 3 detik)
+  /// dengan stride 1,5 detik. Chunk terakhir di-pad bila audio lebih pendek.
   List<List<double>> _buildChunks(List<double> samples) {
     if (samples.isEmpty) {
       throw Exception('Audio tidak memiliki sample');
@@ -370,6 +481,7 @@ class EmotionDetector extends ChangeNotifier {
   void dispose() {
     _resultSub?.cancel();
     _errorSub?.cancel();
+    _vadSub?.cancel();
     _audio.dispose();
     _isolate.dispose();
     super.dispose();

@@ -1,8 +1,8 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
-import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
-import 'package:fem_psychmonitor/app/widgets/page_header.dart';
+import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,8 +12,7 @@ class InitialQuestionnairePage extends StatefulWidget {
   const InitialQuestionnairePage({super.key});
 
   @override
-  State<InitialQuestionnairePage> createState() =>
-      _InitialQuestionnairePageState();
+  State<InitialQuestionnairePage> createState() => _InitialQuestionnairePageState();
 }
 
 class _InitialQuestionnairePageState extends State<InitialQuestionnairePage> {
@@ -29,17 +28,25 @@ class _InitialQuestionnairePageState extends State<InitialQuestionnairePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
-    final List<Map<String, String>> moods = [
-      {'id': 'happy', 'label': l10n.happy},
-      {'id': 'sad', 'label': l10n.sad},
-      {'id': 'neutral', 'label': l10n.neutral},
-      {'id': 'angry', 'label': l10n.angry},
+    final moods = [
+      {'id': 'happy', 'label': l10n.happy, 'emoji': '😄'},
+      {'id': 'sad', 'label': l10n.sad, 'emoji': '😢'},
+      {'id': 'neutral', 'label': l10n.neutral, 'emoji': '😐'},
+      {'id': 'angry', 'label': l10n.angry, 'emoji': '😠'},
     ];
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: CustomAppBar(title: l10n.welcome, showBackButton: true),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_rounded, color: AppColors.textSecondary, size: 22.sp),
+          onPressed: () => context.pop(),
+        ),
+        title: Text(l10n.quickQuestions, style: AppTypography.fraunces(size: 18)),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -47,58 +54,64 @@ class _InitialQuestionnairePageState extends State<InitialQuestionnairePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 16.h),
-              PageHeader(
-                title: l10n.quickQuestions,
-                subtitle: l10n.selectMoodToHelp,
-              ),
+              const VoiceprintOrb(mode: VoiceprintMode.idle, size: 160),
               SizedBox(height: 24.h),
-              Text(
-                l10n.selectDominantEmotion,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text(l10n.selectDominantEmotion, style: AppTypography.fraunces(size: 20)),
               SizedBox(height: 12.h),
               Wrap(
-                spacing: 8.w,
-                runSpacing: 8.h,
+                spacing: 10.w,
+                runSpacing: 10.h,
                 children: moods.map((m) {
                   final selected = selectedMood == m['id'];
-                  return ChoiceChip(
-                    label: Text(m['label']!),
-                    selected: selected,
-                    onSelected: (_) {
-                      setState(() {
-                        selectedMood = m['id'];
-                      });
-                    },
-                    selectedColor: AppColors.secondary,
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                      side: BorderSide(color: AppColors.outline),
-                    ),
-                    labelStyle: TextStyle(
-                      color: selected ? Colors.black : AppColors.textSecondary,
+                  return GestureDetector(
+                    onTap: () => setState(() => selectedMood = m['id']),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                      decoration: BoxDecoration(
+                        color: selected ? AppColors.primary : AppColors.surface,
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(color: selected ? AppColors.primary : AppColors.outline),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(m['emoji']!, style: TextStyle(fontSize: 18.sp)),
+                          SizedBox(width: 6.w),
+                          Text(m['label']!,
+                              style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: selected ? Colors.white : AppColors.textPrimary)),
+                        ],
+                      ),
                     ),
                   );
                 }).toList(),
               ),
-              SizedBox(height: 20.h),
-              Text(
-                l10n.briefNote,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 28.h),
+              Text(l10n.briefNote, style: AppTypography.fraunces(size: 16)),
+              SizedBox(height: 10.h),
               TextField(
                 controller: noteController,
                 maxLines: 4,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: AppColors.inputFill,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                    borderSide: BorderSide(color: AppColors.outline),
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: const BorderSide(color: AppColors.outline),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: const BorderSide(color: AppColors.outline),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.5), width: 2),
                   ),
                   hintText: l10n.writeWhatYouWant,
+                  hintStyle: TextStyle(fontSize: 13.sp, color: AppColors.textSecondary.withValues(alpha: 0.7)),
                 ),
               ),
               SizedBox(height: 24.h),
@@ -106,7 +119,6 @@ class _InitialQuestionnairePageState extends State<InitialQuestionnairePage> {
                 text: l10n.startDemoRecording,
                 onPressed: () {
                   if (selectedMood == null) return;
-                  // pass initial answers via extra or state management later
                   context.goNamed(RouteNames.liveRecording);
                 },
                 isDisabled: selectedMood == null,

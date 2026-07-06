@@ -13,6 +13,7 @@ abstract class DetectionRepository {
     int limit = 20,
     int offset = 0,
     int? filterDays,
+    DateTime? startedOnDate,
   });
 
   /// Get a single session by its ID (with its result timeline loaded).
@@ -39,6 +40,11 @@ abstract class DetectionRepository {
     String sessionId,
     EmotionLabelType newLabel,
   );
+
+  /// ── US-09: Catatan teks pribadi per sesi ──────────────────────────────
+  /// Update the free-text [note] attached to a session. Returns the updated
+  /// session. Persisting an empty/null note clears the field.
+  Future<DetectionSessionModel> updateNote(String sessionId, String? note);
 
   /// ── US-18: weekly summary for the analysis-result hotline card ────────
   /// Returns a short week-long emotion distribution (counts per label, for

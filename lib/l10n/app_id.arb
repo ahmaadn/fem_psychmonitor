@@ -66,7 +66,24 @@
   "rememberPassword": "Ingat kata sandi? ",
   "signInHere": "Masuk di sini",
 
-  "goodEvening": "Selamat malam, Elena",
+  "goodMorning": "Selamat pagi, {name}",
+  "@goodMorning": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "goodAfternoon": "Selamat siang, {name}",
+  "@goodAfternoon": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "goodEvening": "Selamat malam, {name}",
+  "@goodEvening": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
   "howAreYouFeeling": "Bagaimana perasaan hatimu saat ini?",
   "calm": "Tenang",
   "moodDescription": "Hatimu terasa tenang dan seimbang. Jaga terus ketenangan ini dengan aktivitas relaksasi dan self-care.",
@@ -115,6 +132,8 @@
   "dateOfBirthValue": "15 Maret 1998",
   "saveProfile": "Simpan Profil",
   "profileSaved": "Profil berhasil disimpan!",
+  "gallery": "Galeri",
+  "camera": "Kamera",
 
   "changePasswordTitle": "Ganti Password",
   "changeAccountPassword": "Ubah kata sandi akun Anda",
@@ -247,5 +266,50 @@
   "tryVoiceTestQuestion": "Apakah Anda ingin mencoba tes suara (rekaman) untuk mendeteksi emosi saat ini?",
   "tryVoiceTest": "Coba Tes Suara",
   "goToDashboard": "Ke Dashboard",
-  "mulai": "Mulai"
+  "mulai": "Mulai",
+
+  "sessionNoteTitle": "Catatan Pribadi",
+  "sessionNoteHint": "Bagaimana perasaanmu sesi ini? Tuliskan di sini...",
+  "saveNote": "Simpan Catatan",
+  "noteSaved": "Catatan tersimpan",
+
+  "emailInvalid": "Masukkan alamat email yang valid",
+  "passwordTooWeak": "Gunakan minimal 8 karakter dengan huruf dan angka",
+  "fieldRequired": "Kolom ini wajib diisi",
+
+  "noDetectionYet": "Belum ada deteksi",
+  "noDetectionDesc": "Rekam suaramu untuk mulai memahami emosimu.",
+  "startRecordingCta": "Mulai Rekam",
+
+  "mbtiDimensionScores": "Skor Dimensi",
+
+  "currentAssessment": "Asesmen Terkini",
+  "mentalHealthScore": "Skor Kesehatan Mental",
+  "noAssessmentYet": "Selesaikan onboarding untuk melihat asesmenmu.",
+  "noRecordingsYet": "Belum ada rekaman",
+
+  "unsupportedAudioFormat": "Format audio tidak didukung. Pilih wav, pcm, mp3, m4a, atau aac.",
+  "audioDecodeFailed": "Gagal mendekode file audio ini.",
+
+  "needHelp": "Butuh bantuan?",
+  "hotlineDesc": "Emosi yang terdeteksi cukup berat. Jika kamu merasa tertekan, jangan ragu menghubungi layanan krisis terdekat.",
+  "emergencyHealthService": "Layanan Kesehatan",
+  "mentalHealthService": "Sehat Jiwa",
+  "weeklyEmotionDistribution": "Distribusi Emosi 7 Hari",
+  "noDataThisWeek": "Belum ada data minggu ini.",
+  "tipsForYou": "Saran untukmu",
+  "logoutConfirmMessage": "Apakah Anda yakin ingin keluar?",
+  "confirmLogout": "Keluar",
+  "profileLoadFailed": "Gagal memuat profil",
+  "profileSaveFailed": "Gagal menyimpan profil",
+  "passwordChangeFailed": "Gagal mengubah password",
+  "profileSaveSuccess": "Profil berhasil disimpan",
+  "passwordChangeSuccess": "Password berhasil diubah",
+  "hotlineLaunchFailed": "Tidak dapat membuka panggilan telepon.",
+
+  "vadListening": "Mendengarkan…",
+  "vadSpeechDetected": "Suara terdeteksi",
+  "noSpeechDetected": "Tidak ada suara terdeteksi",
+  "noSpeechDetectedHint": "Kami tidak mendengar suara pada rekamanmu. Coba lagi di tempat yang lebih tenang dan bicara dengan jelas.",
+  "tryRecordAgain": "Coba rekam lagi"
 }

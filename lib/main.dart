@@ -27,6 +27,7 @@ import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:fem_psychmonitor/app/routes/app_routes.dart';
 import 'package:fem_psychmonitor/features/onboarding/viewmodels/questionnaire_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -96,8 +97,21 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    _router = AppRouter.build(context.read<AuthViewModel>());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,12 +122,11 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        final authVm = context.read<AuthViewModel>();
         return MaterialApp.router(
           title: 'Aura Echo',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
-          routerConfig: AppRouter.build(authVm),
+          routerConfig: _router,
           // LOCALIZATION SETUP
           locale: localeProvider.locale,
           localizationsDelegates: const [

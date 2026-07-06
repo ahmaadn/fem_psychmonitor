@@ -82,6 +82,7 @@ class SqliteDetectionRepository extends DetectionRepository
     int limit = 20,
     int offset = 0,
     int? filterDays,
+    DateTime? startedOnDate,
   }) async {
     final db = await DatabaseHelper.instance.database;
     final userId = await _currentUserId(db);
@@ -93,6 +94,18 @@ class SqliteDetectionRepository extends DetectionRepository
       final cutoff = DateTime.now().subtract(Duration(days: filterDays));
       where.write(' AND ${DetectionSessionRow.colStartedAt} >= ?');
       args.add(cutoff.millisecondsSinceEpoch);
+    }
+    if (startedOnDate != null) {
+      final dayStart = DateTime(
+        startedOnDate.year,
+        startedOnDate.month,
+        startedOnDate.day,
+      );
+      final nextDay = dayStart.add(const Duration(days: 1));
+      where.write(' AND ${DetectionSessionRow.colStartedAt} >= ?');
+      where.write(' AND ${DetectionSessionRow.colStartedAt} < ?');
+      args.add(dayStart.millisecondsSinceEpoch);
+      args.add(nextDay.millisecondsSinceEpoch);
     }
 
     final rows = await db.query(
@@ -106,7 +119,10 @@ class SqliteDetectionRepository extends DetectionRepository
 
     final sessions = <DetectionSessionModel>[];
     for (final row in rows) {
-      final results = await _loadResults(db, row[DetectionSessionRow.colId] as String);
+      final results = await _loadResults(
+        db,
+        row[DetectionSessionRow.colId] as String,
+      );
       sessions.add(DetectionSessionRow.toModel(row, results: results));
     }
     return sessions;
@@ -121,6 +137,9 @@ class SqliteDetectionRepository extends DetectionRepository
     final userId = await _currentUserId(db);
     if (userId == null) return {};
 
+    final monthStart = DateTime(year, month);
+    final nextMonth = DateTime(year, month + 1);
+
     final rows = await db.query(
       AppTables.detectionSessions,
       columns: [
@@ -128,12 +147,16 @@ class SqliteDetectionRepository extends DetectionRepository
         DetectionSessionRow.colDominantEmotion,
         DetectionSessionRow.colCorrectedEmotion,
       ],
-      where: '${DetectionSessionRow.colUserId} = ? '
-          "AND strftime('%Y-%m', ${DetectionSessionRow.colStartedAt} / 1000, 'unixepoch') = ?",
+      where:
+          '${DetectionSessionRow.colUserId} = ? '
+          'AND ${DetectionSessionRow.colStartedAt} >= ? '
+          'AND ${DetectionSessionRow.colStartedAt} < ?',
       whereArgs: [
         userId,
-        '$year-${month.toString().padLeft(2, '0')}',
+        monthStart.millisecondsSinceEpoch,
+        nextMonth.millisecondsSinceEpoch,
       ],
+      orderBy: '${DetectionSessionRow.colStartedAt} ASC',
     );
 
     final data = <DateTime, EmotionLabelType>{};
@@ -141,10 +164,12 @@ class SqliteDetectionRepository extends DetectionRepository
       final startedAt = DateTime.fromMillisecondsSinceEpoch(
         row[DetectionSessionRow.colStartedAt] as int,
       );
-      final dateKey = DateTime(year, month, startedAt.day);
+      final dateKey = DateTime(startedAt.year, startedAt.month, startedAt.day);
       final corrected = row[DetectionSessionRow.colCorrectedEmotion] as String?;
       final emotion = EmotionLabelType.values.firstWhere(
-        (e) => e.name == (corrected ?? row[DetectionSessionRow.colDominantEmotion]),
+        (e) =>
+            e.name ==
+            (corrected ?? row[DetectionSessionRow.colDominantEmotion]),
         orElse: () => EmotionLabelType.neutral,
       );
       // Keep the most recent session's emotion per day.
@@ -163,13 +188,13 @@ class SqliteDetectionRepository extends DetectionRepository
     final weekStart = now.subtract(Duration(days: now.weekday - 1));
     final weeklyCheckins = <DailyCheckIn>[];
     for (int i = 0; i < 7; i++) {
-      final day = DateTime(weekStart.year, weekStart.month, weekStart.day)
-          .add(Duration(days: i));
+      final day = DateTime(
+        weekStart.year,
+        weekStart.month,
+        weekStart.day,
+      ).add(Duration(days: i));
       final next = day.add(const Duration(days: 1));
-      DailyCheckIn checkin = DailyCheckIn(
-        date: day,
-        isCheckedIn: false,
-      );
+      DailyCheckIn checkin = DailyCheckIn(date: day, isCheckedIn: false);
       if (userId != null) {
         final rows = await db.query(
           AppTables.detectionSessions,
@@ -177,7 +202,8 @@ class SqliteDetectionRepository extends DetectionRepository
             DetectionSessionRow.colDominantEmotion,
             DetectionSessionRow.colCorrectedEmotion,
           ],
-          where: '${DetectionSessionRow.colUserId} = ? '
+          where:
+              '${DetectionSessionRow.colUserId} = ? '
               'AND ${DetectionSessionRow.colStartedAt} >= ? '
               'AND ${DetectionSessionRow.colStartedAt} < ?',
           whereArgs: [
@@ -192,7 +218,8 @@ class SqliteDetectionRepository extends DetectionRepository
           final corrected =
               rows.first[DetectionSessionRow.colCorrectedEmotion] as String?;
           final emotion = EmotionLabelType.values.firstWhere(
-            (e) => e.name ==
+            (e) =>
+                e.name ==
                 (corrected ??
                     rows.first[DetectionSessionRow.colDominantEmotion]),
             orElse: () => EmotionLabelType.neutral,
@@ -215,7 +242,8 @@ class SqliteDetectionRepository extends DetectionRepository
     String moodDescription = 'Belum ada deteksi. Mulai rekam suara pertamamu!';
 
     if (userId != null) {
-      totalRecordings = Sqflite.firstIntValue(
+      totalRecordings =
+          Sqflite.firstIntValue(
             await db.rawQuery(
               'SELECT COUNT(*) FROM ${AppTables.detectionSessions} '
               'WHERE ${DetectionSessionRow.colUserId} = ?',
@@ -232,19 +260,13 @@ class SqliteDetectionRepository extends DetectionRepository
         limit: 1,
       );
       if (recent.isNotEmpty) {
-        final corrected =
-            recent.first[DetectionSessionRow.colCorrectedEmotion] as String?;
-        currentMood = EmotionLabelType.values.firstWhere(
-          (e) => e.name ==
-              (corrected ??
-                  recent.first[DetectionSessionRow.colDominantEmotion]),
-          orElse: () => EmotionLabelType.neutral,
+        final recentId = recent.first[DetectionSessionRow.colId] as String;
+        final recentSession = DetectionSessionRow.toModel(
+          recent.first,
+          results: await _loadResults(db, recentId),
         );
-        currentMoodPercentage =
-            ((recent.first[DetectionSessionRow.colDominantConfidence] as num)
-                    .toDouble() *
-                100)
-                .round();
+        currentMood = recentSession.displayEmotion;
+        currentMoodPercentage = (recentSession.displayConfidence * 100).round();
         moodDescription =
             'Berdasarkan analisis suara terakhir, kondisi emosionalmu terdeteksi.';
       } else {
@@ -260,6 +282,7 @@ class SqliteDetectionRepository extends DetectionRepository
       totalRecordings: totalRecordings,
       streakDays: streakDays,
       weeklyCheckins: weeklyCheckins,
+      hasDetection: totalRecordings > 0,
     );
   }
 
@@ -304,6 +327,49 @@ class SqliteDetectionRepository extends DetectionRepository
   }
 
   @override
+  Future<DetectionSessionModel> updateNote(
+    String sessionId,
+    String? note,
+  ) async {
+    final db = await DatabaseHelper.instance.database;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final trimmed = note?.trim();
+    await db.update(
+      AppTables.detectionSessions,
+      {
+        DetectionSessionRow.colNote: (trimmed == null || trimmed.isEmpty)
+            ? null
+            : trimmed,
+        DetectionSessionRow.colUpdatedAt: now,
+        DetectionSessionRow.colIsDirty: 1,
+      },
+      where: '${DetectionSessionRow.colId} = ?',
+      whereArgs: [sessionId],
+    );
+
+    final rows = await db.query(
+      AppTables.detectionSessions,
+      where: '${DetectionSessionRow.colId} = ?',
+      whereArgs: [sessionId],
+      limit: 1,
+    );
+    if (rows.isEmpty) {
+      throw Exception('Sesi tidak ditemukan: $sessionId');
+    }
+    final results = await _loadResults(db, sessionId);
+    final updated = DetectionSessionRow.toModel(rows.first, results: results);
+
+    await enqueue(
+      entityType: SyncEntity.detectionSession,
+      entityId: sessionId,
+      operation: SyncOperation.update,
+      payloadJson: syncPayloadJson(updated.toJson()),
+    );
+
+    return updated;
+  }
+
+  @override
   Future<Map<EmotionLabelType, int>> getWeeklyChart() async {
     final db = await DatabaseHelper.instance.database;
     final userId = await _currentUserId(db);
@@ -312,23 +378,25 @@ class SqliteDetectionRepository extends DetectionRepository
     };
     if (userId == null) return counts;
 
-    final cutoff =
-        DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch;
+    final cutoff = DateTime.now()
+        .subtract(const Duration(days: 7))
+        .millisecondsSinceEpoch;
     final rows = await db.query(
       AppTables.detectionSessions,
       columns: [
         DetectionSessionRow.colDominantEmotion,
         DetectionSessionRow.colCorrectedEmotion,
       ],
-      where: '${DetectionSessionRow.colUserId} = ? '
+      where:
+          '${DetectionSessionRow.colUserId} = ? '
           'AND ${DetectionSessionRow.colStartedAt} >= ?',
       whereArgs: [userId, cutoff],
     );
     for (final row in rows) {
-      final corrected =
-          row[DetectionSessionRow.colCorrectedEmotion] as String?;
+      final corrected = row[DetectionSessionRow.colCorrectedEmotion] as String?;
       final emotion = EmotionLabelType.values.firstWhere(
-        (e) => e.name ==
+        (e) =>
+            e.name ==
             (corrected ?? row[DetectionSessionRow.colDominantEmotion]),
         orElse: () => EmotionLabelType.neutral,
       );
@@ -358,7 +426,8 @@ class SqliteDetectionRepository extends DetectionRepository
             DetectionSessionRow.colDominantEmotion,
             DetectionSessionRow.colCorrectedEmotion,
           ],
-          where: '${DetectionSessionRow.colUserId} = ? '
+          where:
+              '${DetectionSessionRow.colUserId} = ? '
               'AND ${DetectionSessionRow.colStartedAt} >= ? '
               'AND ${DetectionSessionRow.colStartedAt} < ?',
           whereArgs: [
@@ -371,7 +440,8 @@ class SqliteDetectionRepository extends DetectionRepository
           final corrected =
               row[DetectionSessionRow.colCorrectedEmotion] as String?;
           final emotion = EmotionLabelType.values.firstWhere(
-            (e) => e.name ==
+            (e) =>
+                e.name ==
                 (corrected ?? row[DetectionSessionRow.colDominantEmotion]),
             orElse: () => EmotionLabelType.neutral,
           );

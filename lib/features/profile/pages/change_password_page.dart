@@ -55,9 +55,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final profileVm = context.read<ProfileViewModel>();
+    final l10n = AppLocalizations.of(context)!;
     final success = await profileVm.changePassword(
       _currentPassController.text,
       _newPassController.text,
+      l10n,
     );
 
     if (mounted && success) {

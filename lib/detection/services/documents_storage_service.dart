@@ -1,3 +1,10 @@
+// DocumentsStorageService — penyimpanan rekaman & timeline deteksi terenkripsi.
+//
+// Menangani: (1) penulisan stream PCM rekaman dan finalisasi ke file WAV,
+// (2) penyimpanan timeline hasil deteksi sebagai JSON terenkripsi AES-256-CBC,
+// serta (3) resolusi direktori Documents (publik di Android, app-documents di
+// platform lain) termasuk permintaan izin storage bila perlu.
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,6 +14,11 @@ import 'package:flutter/foundation.dart' hide Key;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+/// Layanan penyimpanan file rekaman dan timeline deteksi emosi.
+///
+/// File rekaman disimpan sebagai WAV (PCM16, mono, 16 kHz), sedangkan timeline
+/// deteksi disimpan sebagai JSON yang dienkripsi dengan AES-256-CBC. Pada
+/// Android, file disimpan ke folder Documents publik agar mudah diakses pengguna.
 class DocumentsStorageService {
   static const String appName = 'fem_psychmonitor';
 
@@ -17,6 +29,7 @@ class DocumentsStorageService {
   static const String _documentsFolderName = 'documents';
   static const String _encryptionKey = 'fem_psychmonitor_docs_key_32bytes';
 
+  /// Membuat id sesi unik berbasis waktu UTC (YYYYMMDD_HHMMSS_mmm).
   String createSessionId() {
     final now = DateTime.now().toUtc();
     return '${now.year.toString().padLeft(4, '0')}'
@@ -28,6 +41,10 @@ class DocumentsStorageService {
         '${now.millisecond.toString().padLeft(3, '0')}';
   }
 
+  /// Membuka sink penulisan PCM untuk sesi [sessionId].
+  ///
+  /// Mengembalikan record berisi file PCM dan [IOSink]-nya. File lama dengan
+  /// nama yang sama akan dihapus terlebih dahulu.
   Future<({File pcmFile, IOSink sink})> openRecordingSink({
     required String sessionId,
   }) async {
@@ -43,6 +60,9 @@ class DocumentsStorageService {
     return (pcmFile: pcmFile, sink: sink);
   }
 
+  /// Memfinalisasi rekaman: menambahkan header WAV ke file PCM lalu
+  /// menghapus file PCM asli. Mengembalikan path file WAV, atau null bila
+  /// [pcmFile] tidak ada.
   Future<String?> finalizeRecording(
     File? pcmFile, {
     required String sessionId,
@@ -67,6 +87,9 @@ class DocumentsStorageService {
     return wavFile.path;
   }
 
+  /// Menyimpan [timeline] hasil deteksi sebagai file JSON terenkripsi
+  /// AES-256-CBC beserta metadata sesi. Enkripsi dijalankan di background
+  /// isolate via [compute]. Mengembalikan path file hasil.
   Future<String> saveEncryptedDetectionTimeline({
     required List<EmotionResult> timeline,
     required String? recordingPath,
@@ -282,6 +305,10 @@ class DocumentsStorageService {
   }
 }
 
+/// Data yang dikirim ke background isolate untuk enkripsi timeline.
+///
+/// Dipisah sebagai class agar dapat dilewatkan melalui [compute] (harus
+/// bisa di-serialize antar isolate).
 class EncryptionIsolateData {
   final Map<String, dynamic> metadata;
   final List<Map<String, dynamic>> timelineJson;
@@ -294,6 +321,11 @@ class EncryptionIsolateData {
   });
 }
 
+/// Mengenkripsi payload (metadata + timeline) dengan AES-256-CBC dan IV acak.
+///
+/// Dijalankan pada background isolate agar tidak memblokir UI. Mengembalikan
+/// string JSON berisi metadata, info enkripsi (algoritma/encoding/iv), dan
+/// ciphertext dalam base64.
 String _performHeavyEncryption(EncryptionIsolateData data) {
   final plaintextPayload = jsonEncode({
     'metadata': data.metadata,

@@ -5,11 +5,7 @@ class PsychOption {
   final LocalizedString answer;
   final int score;
 
-  PsychOption({
-    required this.code,
-    required this.answer,
-    required this.score,
-  });
+  PsychOption({required this.code, required this.answer, required this.score});
 
   factory PsychOption.fromJson(Map<String, dynamic> json) {
     return PsychOption(
@@ -37,13 +33,18 @@ class PsychQuestion {
 
   factory PsychQuestion.fromJson(Map<String, dynamic> json) {
     var optionsList = json['options'] as List;
-    List<PsychOption> options =
-        optionsList.map((i) => PsychOption.fromJson(i)).toList();
+    List<PsychOption> options = optionsList
+        .map((i) => PsychOption.fromJson(i))
+        .toList();
     return PsychQuestion(
       id: json['id'] as int,
       code: json['code'] as String? ?? '',
-      category: LocalizedString.fromJson(json['category'] as Map<String, dynamic>),
-      question: LocalizedString.fromJson(json['question'] as Map<String, dynamic>),
+      category: LocalizedString.fromJson(
+        json['category'] as Map<String, dynamic>,
+      ),
+      question: LocalizedString.fromJson(
+        json['question'] as Map<String, dynamic>,
+      ),
       options: options,
     );
   }
@@ -69,11 +70,17 @@ class PsychClass {
   factory PsychClass.fromJson(Map<String, dynamic> json) {
     return PsychClass(
       classLevel: json['class_level'] as int,
-      className: LocalizedString.fromJson(json['class_name'] as Map<String, dynamic>),
+      className: LocalizedString.fromJson(
+        json['class_name'] as Map<String, dynamic>,
+      ),
       displayRange: json['display_range'] as String,
       scoreRange: json['score_range'] as String,
-      description: LocalizedString.fromJson(json['description'] as Map<String, dynamic>),
-      recommendation: LocalizedString.fromJson(json['recommendation'] as Map<String, dynamic>),
+      description: LocalizedString.fromJson(
+        json['description'] as Map<String, dynamic>,
+      ),
+      recommendation: LocalizedString.fromJson(
+        json['recommendation'] as Map<String, dynamic>,
+      ),
     );
   }
 }
@@ -93,8 +100,9 @@ class PsychScoringSystem {
 
   factory PsychScoringSystem.fromJson(Map<String, dynamic> json) {
     var classesList = json['classes'] as List;
-    List<PsychClass> classes =
-        classesList.map((i) => PsychClass.fromJson(i)).toList();
+    List<PsychClass> classes = classesList
+        .map((i) => PsychClass.fromJson(i))
+        .toList();
     return PsychScoringSystem(
       totalMaxScore: json['total_max_score'] as int,
       displayMaxScore: json['display_max_score'] as int,
@@ -119,11 +127,14 @@ class PsychAssessment {
 
   factory PsychAssessment.fromJson(Map<String, dynamic> json) {
     var qList = json['questions'] as List;
-    List<PsychQuestion> questions =
-        qList.map((i) => PsychQuestion.fromJson(i)).toList();
+    List<PsychQuestion> questions = qList
+        .map((i) => PsychQuestion.fromJson(i))
+        .toList();
     return PsychAssessment(
       title: LocalizedString.fromJson(json['title'] as Map<String, dynamic>),
-      description: LocalizedString.fromJson(json['description'] as Map<String, dynamic>),
+      description: LocalizedString.fromJson(
+        json['description'] as Map<String, dynamic>,
+      ),
       questions: questions,
       scoringSystem: PsychScoringSystem.fromJson(json['scoring_system']),
     );
@@ -142,4 +153,50 @@ class PsychData {
       ),
     );
   }
+}
+
+/// US-07: resolve a stored [UserModel.psychClass] stable key back to a
+/// localized class name for display.
+///
+/// The persisted value is the stable `classLevel` (as a string) rather than a
+/// locale-specific label, so the same stored value resolves correctly under
+/// any locale. Legacy values (pre-migration EN labels) are returned as-is.
+String? resolveLocalizedPsychClass(
+  String? storedKey,
+  PsychData? data,
+  bool isEnglish,
+) {
+  if (storedKey == null || storedKey.isEmpty) return null;
+  if (data == null) return storedKey;
+
+  final level = int.tryParse(storedKey);
+  if (level == null) {
+    // Legacy stored label (pre-migration) — return verbatim.
+    return storedKey;
+  }
+
+  for (final c in data.assessment.scoringSystem.classes) {
+    if (c.classLevel == level) {
+      return c.className.get(isEnglish);
+    }
+  }
+  return storedKey;
+}
+
+PsychClass? resolvePsychClassForDisplayScore(int score, PsychData? data) {
+  if (data == null) return null;
+
+  for (final pClass in data.assessment.scoringSystem.classes) {
+    final rangeParts = pClass.displayRange.split('-');
+    if (rangeParts.length != 2) continue;
+
+    final minRange = int.tryParse(rangeParts[0].trim());
+    final maxRange = int.tryParse(rangeParts[1].trim());
+    if (minRange == null || maxRange == null) continue;
+
+    if (score >= minRange && score <= maxRange) {
+      return pClass;
+    }
+  }
+  return null;
 }

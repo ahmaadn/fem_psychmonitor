@@ -66,7 +66,24 @@
   "rememberPassword": "Remember your password? ",
   "signInHere": "Sign in here",
 
-  "goodEvening": "Good evening, Elena",
+  "goodMorning": "Good morning, {name}",
+  "@goodMorning": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "goodAfternoon": "Good afternoon, {name}",
+  "@goodAfternoon": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "goodEvening": "Good evening, {name}",
+  "@goodEvening": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
   "howAreYouFeeling": "How are you feeling right now?",
   "calm": "Calm",
   "moodDescription": "You're feeling calm and balanced. Keep this peace going with relaxation and self-care activities.",
@@ -122,6 +139,8 @@
   "dateOfBirthValue": "March 15, 1998",
   "saveProfile": "Save Profile",
   "profileSaved": "Profile saved successfully!",
+  "gallery": "Gallery",
+  "camera": "Camera",
 
   "changePasswordTitle": "Change Password",
   "changeAccountPassword": "Change your account password",
@@ -278,5 +297,55 @@
   "tryVoiceTestQuestion": "Would you like to try a voice test (recording) to detect your current emotions?",
   "tryVoiceTest": "Try Voice Test",
   "goToDashboard": "Go to Dashboard",
-  "mulai": "Start"
+  "mulai": "Start",
+
+  "sessionNoteTitle": "Personal Note",
+  "sessionNoteHint": "How did this session feel? Write it here...",
+  "saveNote": "Save Note",
+  "noteSaved": "Note saved",
+
+  "emailInvalid": "Enter a valid email address",
+  "passwordTooWeak": "Use at least 8 characters with letters and numbers",
+  "fieldRequired": "This field is required",
+
+  "noDetectionYet": "No detections yet",
+  "noDetectionDesc": "Record your voice to start understanding your emotions.",
+  "startRecordingCta": "Start Recording",
+
+  "mbtiDimensionScores": "Dimension Scores",
+
+  "currentAssessment": "Current Assessment",
+  "mentalHealthScore": "Mental Health Score",
+  "noAssessmentYet": "Complete onboarding to see your assessment.",
+  "noRecordingsYet": "No recordings yet",
+
+  "unsupportedAudioFormat": "Unsupported audio format. Please choose wav, pcm, mp3, m4a, or aac.",
+  "audioDecodeFailed": "Failed to decode this audio file.",
+
+  "needHelp": "Need help?",
+  "hotlineDesc": "The detected emotion is quite heavy. If you feel overwhelmed, don't hesitate to contact a nearby crisis service.",
+  "emergencyHealthService": "Emergency Health",
+  "mentalHealthService": "Mental Health",
+  "weeklyEmotionDistribution": "7-Day Emotion Distribution",
+  "noDataThisWeek": "No data this week.",
+  "tipsForYou": "Tips for you",
+  "logoutConfirmMessage": "Are you sure you want to log out?",
+  "confirmLogout": "Logout",
+  "profileLoadFailed": "Failed to load profile",
+  "profileSaveFailed": "Failed to save profile",
+  "passwordChangeFailed": "Failed to change password",
+  "profileSaveSuccess": "Profile saved",
+  "passwordChangeSuccess": "Password changed",
+  "hotlineLaunchFailed": "Could not open the phone dialer.",
+
+  "vadListening": "Listening…",
+  "@vadListening": {},
+  "vadSpeechDetected": "Speech detected",
+  "@vadSpeechDetected": {},
+  "noSpeechDetected": "No speech detected",
+  "@noSpeechDetected": {},
+  "noSpeechDetectedHint": "We couldn't hear any voice in your recording. Try again in a quieter place and speak clearly.",
+  "@noSpeechDetectedHint": {},
+  "tryRecordAgain": "Try recording again",
+  "@tryRecordAgain": {}
 }

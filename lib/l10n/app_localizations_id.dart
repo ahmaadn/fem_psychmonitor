@@ -188,7 +188,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get signInHere => 'Masuk di sini';
 
   @override
-  String get goodEvening => 'Selamat malam, Elena';
+  String goodMorning(String name) {
+    return 'Selamat pagi, $name';
+  }
+
+  @override
+  String goodAfternoon(String name) {
+    return 'Selamat siang, $name';
+  }
+
+  @override
+  String goodEvening(String name) {
+    return 'Selamat malam, $name';
+  }
 
   @override
   String get howAreYouFeeling => 'Bagaimana perasaan hatimu saat ini?';
@@ -329,6 +341,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get profileSaved => 'Profil berhasil disimpan!';
+
+  @override
+  String get gallery => 'Galeri';
+
+  @override
+  String get camera => 'Kamera';
 
   @override
   String get changePasswordTitle => 'Ganti Password';
@@ -700,4 +718,121 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get mulai => 'Mulai';
+
+  @override
+  String get sessionNoteTitle => 'Catatan Pribadi';
+
+  @override
+  String get sessionNoteHint =>
+      'Bagaimana perasaanmu sesi ini? Tuliskan di sini...';
+
+  @override
+  String get saveNote => 'Simpan Catatan';
+
+  @override
+  String get noteSaved => 'Catatan tersimpan';
+
+  @override
+  String get emailInvalid => 'Masukkan alamat email yang valid';
+
+  @override
+  String get passwordTooWeak =>
+      'Gunakan minimal 8 karakter dengan huruf dan angka';
+
+  @override
+  String get fieldRequired => 'Kolom ini wajib diisi';
+
+  @override
+  String get noDetectionYet => 'Belum ada deteksi';
+
+  @override
+  String get noDetectionDesc => 'Rekam suaramu untuk mulai memahami emosimu.';
+
+  @override
+  String get startRecordingCta => 'Mulai Rekam';
+
+  @override
+  String get mbtiDimensionScores => 'Skor Dimensi';
+
+  @override
+  String get currentAssessment => 'Asesmen Terkini';
+
+  @override
+  String get mentalHealthScore => 'Skor Kesehatan Mental';
+
+  @override
+  String get noAssessmentYet =>
+      'Selesaikan onboarding untuk melihat asesmenmu.';
+
+  @override
+  String get noRecordingsYet => 'Belum ada rekaman';
+
+  @override
+  String get unsupportedAudioFormat =>
+      'Format audio tidak didukung. Pilih wav, pcm, mp3, m4a, atau aac.';
+
+  @override
+  String get audioDecodeFailed => 'Gagal mendekode file audio ini.';
+
+  @override
+  String get needHelp => 'Butuh bantuan?';
+
+  @override
+  String get hotlineDesc =>
+      'Emosi yang terdeteksi cukup berat. Jika kamu merasa tertekan, jangan ragu menghubungi layanan krisis terdekat.';
+
+  @override
+  String get emergencyHealthService => 'Layanan Kesehatan';
+
+  @override
+  String get mentalHealthService => 'Sehat Jiwa';
+
+  @override
+  String get weeklyEmotionDistribution => 'Distribusi Emosi 7 Hari';
+
+  @override
+  String get noDataThisWeek => 'Belum ada data minggu ini.';
+
+  @override
+  String get tipsForYou => 'Saran untukmu';
+
+  @override
+  String get logoutConfirmMessage => 'Apakah Anda yakin ingin keluar?';
+
+  @override
+  String get confirmLogout => 'Keluar';
+
+  @override
+  String get profileLoadFailed => 'Gagal memuat profil';
+
+  @override
+  String get profileSaveFailed => 'Gagal menyimpan profil';
+
+  @override
+  String get passwordChangeFailed => 'Gagal mengubah password';
+
+  @override
+  String get profileSaveSuccess => 'Profil berhasil disimpan';
+
+  @override
+  String get passwordChangeSuccess => 'Password berhasil diubah';
+
+  @override
+  String get hotlineLaunchFailed => 'Tidak dapat membuka panggilan telepon.';
+
+  @override
+  String get vadListening => 'Mendengarkan…';
+
+  @override
+  String get vadSpeechDetected => 'Suara terdeteksi';
+
+  @override
+  String get noSpeechDetected => 'Tidak ada suara terdeteksi';
+
+  @override
+  String get noSpeechDetectedHint =>
+      'Kami tidak mendengar suara pada rekamanmu. Coba lagi di tempat yang lebih tenang dan bicara dengan jelas.';
+
+  @override
+  String get tryRecordAgain => 'Coba rekam lagi';
 }

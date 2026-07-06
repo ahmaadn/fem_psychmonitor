@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
@@ -8,6 +10,9 @@ import 'package:fem_psychmonitor/app/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -23,7 +28,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   DateTime? _dateOfBirth;
+  // US-04: avatar path. May be an asset path (default) or a copied file path.
+  String? _avatarUrl;
   bool _isInitialized = false;
+  bool _isPickingAvatar = false;
 
   @override
   void didChangeDependencies() {
@@ -35,6 +43,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _emailController.text = user.email;
         _phoneController.text = user.phone ?? '';
         _dateOfBirth = user.dateOfBirth;
+        _avatarUrl = user.avatarUrl;
       }
       _isInitialized = true;
     }
@@ -46,6 +55,127 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _emailController.dispose();
     _phoneController.dispose();
     super.dispose();
+  }
+
+  /// US-04: pick an avatar image from gallery or camera, copy it into the app
+  /// documents directory, and stage the resulting path for saving.
+  Future<void> _pickAvatar(ImageSource source) async {
+    if (_isPickingAvatar) return;
+    setState(() => _isPickingAvatar = true);
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: source,
+        imageQuality: 85,
+        maxWidth: 512,
+        maxHeight: 512,
+      );
+      if (picked == null) return;
+
+      final appDir = await getApplicationDocumentsDirectory();
+      final avatarsDir = Directory('${appDir.path}/avatars');
+      if (!await avatarsDir.exists()) {
+        await avatarsDir.create(recursive: true);
+      }
+      final ext = p.extension(picked.path);
+      final destPath =
+          '${avatarsDir.path}/avatar_${DateTime.now().millisecondsSinceEpoch}$ext';
+      final destFile = await File(picked.path).copy(destPath);
+
+      if (mounted) {
+        setState(() => _avatarUrl = destFile.path);
+      }
+    } catch (_) {
+      // Best-effort: silently ignore so the user can retry.
+    } finally {
+      if (mounted) setState(() => _isPickingAvatar = false);
+    }
+  }
+
+  /// US-04: bottom sheet offering gallery / camera source selection.
+  Future<void> _showAvatarSourceSheet() async {
+    final l10n = AppLocalizations.of(context)!;
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.md.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.relaxed.w,
+                  ),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      l10n.tapToChangePhoto,
+                      style: AppTypography.h2.copyWith(fontSize: 15.sp),
+                    ),
+                  ),
+                ),
+                SizedBox(height: AppSpacing.sm.h),
+                ListTile(
+                  leading: const Icon(Icons.photo_outlined),
+                  title: Text(l10n.gallery),
+                  onTap: () => Navigator.of(sheetContext)
+                      .pop(ImageSource.gallery),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.camera_alt_outlined),
+                  title: Text(l10n.camera),
+                  onTap: () =>
+                      Navigator.of(sheetContext).pop(ImageSource.camera),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (source != null) {
+      await _pickAvatar(source);
+    }
+  }
+
+  /// US-04: present the system date picker and stage the picked DOB.
+  Future<void> _pickDateOfBirth() async {
+    final now = DateTime.now();
+    final initial = _dateOfBirth ??
+        DateTime(now.year - 20, now.month, now.day);
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(1900),
+      lastDate: now,
+    );
+    if (picked != null && mounted) {
+      setState(() => _dateOfBirth = picked);
+    }
+  }
+
+  /// US-04: render the staged avatar — either a copied image file, an asset
+  /// (default), or a placeholder icon.
+  Widget _avatarAvatarContent() {
+    final url = _avatarUrl;
+    if (url == null || url.isEmpty) {
+      return Icon(
+        Icons.person_rounded,
+        color: AppColors.outline,
+        size: 52.sp,
+      );
+    }
+    // Asset paths (default avatar) start with 'assets/'.
+    if (url.startsWith('assets/')) {
+      return Image.asset(url, fit: BoxFit.cover);
+    }
+    return Image.file(File(url), fit: BoxFit.cover);
   }
 
   Future<void> _saveProfile() async {
@@ -60,12 +190,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
       email: _emailController.text.trim(),
       phone: _phoneController.text.trim(),
       dateOfBirth: _dateOfBirth,
+      avatarUrl: _avatarUrl,
     );
 
-    final success = await profileVm.updateProfile(updatedUser);
+    final l10n = AppLocalizations.of(context)!;
+    final success = await profileVm.updateProfile(updatedUser, l10n);
 
     if (mounted && success) {
-      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
@@ -128,19 +259,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   width: 3,
                                 ),
                               ),
-                              child: Center(
-                                child: Icon(
-                                  Icons.person_rounded,
-                                  color: AppColors.outline,
-                                  size: 52.sp,
-                                ),
+                              child: ClipOval(
+                                child: _avatarAvatarContent(),
                               ),
                             ),
                             Positioned(
                               bottom: 0,
                               right: 0,
                               child: GestureDetector(
-                                onTap: () {},
+                                onTap: _isPickingAvatar
+                                    ? null
+                                    : _showAvatarSourceSheet,
                                 child: Container(
                                   width: 30.w,
                                   height: 30.w,
@@ -152,11 +281,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       width: 2,
                                     ),
                                   ),
-                                  child: Icon(
-                                    Icons.camera_alt_rounded,
-                                    color: Colors.white,
-                                    size: 14.sp,
-                                  ),
+                                  child: _isPickingAvatar
+                                      ? Padding(
+                                          padding: EdgeInsets.all(7.w),
+                                          child: const CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : Icon(
+                                          Icons.camera_alt_rounded,
+                                          color: Colors.white,
+                                          size: 14.sp,
+                                        ),
                                 ),
                               ),
                             ),
@@ -205,7 +342,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         value: _dateOfBirth != null
                             ? '${_dateOfBirth!.day}/${_dateOfBirth!.month}/${_dateOfBirth!.year}'
                             : l10n.dateOfBirthValue,
-                        onTap: () {},
+                        onTap: _pickDateOfBirth,
                       ),
                       SizedBox(height: AppSpacing.xl.h),
                       PrimaryButton(

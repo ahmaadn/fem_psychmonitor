@@ -11,6 +11,7 @@ class CalendarCard extends StatelessWidget {
   final String currentMonthText;
   final VoidCallback? onMonthChanged;
   final Function(DateTime)? updateMonthText;
+  final ValueChanged<DateTime>? onDateSelected;
 
   const CalendarCard({
     super.key,
@@ -19,10 +20,18 @@ class CalendarCard extends StatelessWidget {
     required this.currentMonthText,
     this.onMonthChanged,
     this.updateMonthText,
+    this.onDateSelected,
   });
 
   @override
   Widget build(BuildContext context) {
+    final dataVersion = Object.hashAll(
+      emotionData.entries.map(
+        (entry) =>
+            Object.hash(entry.key.millisecondsSinceEpoch, entry.value.name),
+      ),
+    );
+
     return Container(
       padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
@@ -61,6 +70,7 @@ class CalendarCard extends StatelessWidget {
           SizedBox(
             height: 280.h,
             child: SfDateRangePicker(
+              key: ValueKey(dataVersion),
               backgroundColor: Colors.transparent,
               controller: datePickerController,
               view: DateRangePickerView.month,
@@ -70,6 +80,12 @@ class CalendarCard extends StatelessWidget {
               monthViewSettings: const DateRangePickerMonthViewSettings(
                 showTrailingAndLeadingDates: true,
               ),
+              onSelectionChanged: (args) {
+                final value = args.value;
+                if (value is DateTime) {
+                  onDateSelected?.call(value);
+                }
+              },
               onViewChanged: (DateRangePickerViewChangedArgs args) {
                 final midDate = args.visibleDateRange.startDate!.add(
                   Duration(
@@ -131,7 +147,7 @@ class CalendarCard extends StatelessWidget {
     if (isOutDate) {
       textColor = Colors.grey.shade400;
       fontWeight = FontWeight.w500;
-    } else if (date == selectedDate) {
+    } else if (_isSameDate(date, selectedDate)) {
       bgColor = Colors.transparent;
       textColor = AppColors.onPrimary;
     }
@@ -154,6 +170,10 @@ class CalendarCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool _isSameDate(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   // Tombol navigasi arah panah (Bulan sebelumnya/selanjutnya)

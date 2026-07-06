@@ -1,15 +1,15 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
-import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/data/viewmodels/home_viewmodel.dart';
-import 'package:fem_psychmonitor/features/home/widgets/mood_overview_card.dart';
-import 'package:fem_psychmonitor/features/recording/widgets/upload_audio_button.dart';
+import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
+import 'package:fem_psychmonitor/features/assessment/widgets/current_assessment_card.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import "package:fem_psychmonitor/features/recording/widgets/pulsing_mic_button.dart";
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -24,32 +24,26 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Load stats from repository on first build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HomeViewModel>().loadStats();
+      context.read<ProfileViewModel>().loadProfile();
     });
   }
 
   Future<void> _handleUploadAudio() async {
-    final picked = await FilePicker.pickFiles(
+    final l10n = AppLocalizations.of(context)!;
+    final picked = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: const ['wav', 'pcm'],
+      allowedExtensions: const ['wav', 'pcm', 'mp3', 'm4a', 'aac'],
     );
-
-    if (!mounted || picked == null || picked.files.isEmpty) {
-      return;
-    }
-
+    if (!mounted || picked == null || picked.files.isEmpty) return;
     final path = picked.files.single.path;
     if (path == null || path.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.failedToReadAudioPath),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.failedToReadAudioPath)));
       return;
     }
-
     context.goNamed(RouteNames.recordingProcessing, extra: path);
   }
 
@@ -57,7 +51,23 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final homeVm = context.watch<HomeViewModel>();
+    final profileVm = context.watch<ProfileViewModel>();
     final stats = homeVm.stats;
+
+    final Color orbColor = stats != null && stats.hasDetection
+        ? stats.currentMood.color
+        : AppColors.primary;
+
+    final hour = DateTime.now().hour;
+    final String greeting;
+    final String userName = (profileVm.user?.fullName ?? '').trim();
+    if (hour >= 5 && hour < 12) {
+      greeting = l10n.goodMorning(userName);
+    } else if (hour >= 12 && hour < 17) {
+      greeting = l10n.goodAfternoon(userName);
+    } else {
+      greeting = l10n.goodEvening(userName);
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -68,98 +78,99 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                l10n.goodEvening,
-                style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  fontSize: 26.sp,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.onSurface,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 12.h),
+              Text(greeting, style: AppTypography.fraunces(size: 30)),
+              SizedBox(height: 4.h),
               Text(
                 l10n.howAreYouFeeling,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: 15.sp,
-                  color: AppColors.onSurface.withAlpha(153),
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
+                  color: AppColors.textSecondary,
                 ),
+              ),
+              SizedBox(height: 28.h),
+              Center(
+                child: VoiceprintOrb(
+                  mode: VoiceprintMode.idle,
+                  color: orbColor,
+                  size: 240,
+                  centerTop: stats != null && stats.hasDetection
+                      ? '${stats.currentMoodPercentage}%'
+                      : null,
+                  centerBottom: stats != null && stats.hasDetection
+                      ? stats.currentMood.displayName
+                      : null,
+                ),
+              ),
+              if (stats != null && !stats.hasDetection) ...[
+                SizedBox(height: 12.h),
+                Center(
+                  child: Text(
+                    l10n.noDetectionYet,
+                    style: AppTypography.fraunces(size: 20),
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Center(
+                  child: SizedBox(
+                    width: 260.w,
+                    child: Text(
+                      l10n.noDetectionDesc,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        height: 1.5,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+              ] else if (stats != null) ...[
+                SizedBox(height: 12.h),
+                Center(
+                  child: Text(
+                    stats.moodDescription,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      height: 1.5,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
+              SizedBox(height: 32.h),
+              _StreakStrip(stats: stats),
+              SizedBox(height: 32.h),
+              const CurrentAssessmentCard(),
+              SizedBox(height: 24.h),
+              _RecordCard(
+                onRecord: () => context.goNamed(RouteNames.liveRecording),
+                onUpload: _handleUploadAudio,
               ),
               SizedBox(height: 24.h),
-
-              _buildDailyTracker(context, stats),
-
-              SizedBox(height: 32.h),
-              MoodOverviewCard(
-                mood: stats?.currentMood.displayName ?? l10n.calm,
-                percentage: stats?.currentMoodPercentage ?? 0,
-                description: stats?.moodDescription ?? l10n.moodDescription,
-              ),
-
-              SizedBox(height: 48.h),
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 24.w),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(AppRadius.xl),
-                  border: Border.all(color: AppColors.outline),
-                ),
-                child: Column(
-                  children: [
-                    Center(
-                      child: PulsingMicButton(
-                        onTap: () {
-                          context.goNamed(RouteNames.liveRecording);
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 24.h),
-                    Text(
-                      l10n.recordYourVoice,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      l10n.letAiRecognize,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontSize: 13.sp,
-                        color: AppColors.onSurface.withAlpha(153),
-                      ),
-                    ),
-                    SizedBox(height: 24.h),
-                    UploadAudioButton(onTap: _handleUploadAudio),
-                  ],
-                ),
-              ),
-              SizedBox(height: 48.h),
               Row(
                 children: [
                   Expanded(
-                    child: _buildStatCard(
-                      context,
-                      color: AppColors.info,
-                      icon: Icons.sentiment_satisfied_alt_rounded,
+                    child: _StatCard(
+                      icon: Icons.graphic_eq_rounded,
                       title: stats?.currentMood.displayName ?? l10n.calm,
                       subtitle: l10n.currentMood,
                     ),
                   ),
-                  SizedBox(width: 16.w),
+                  SizedBox(width: 12.w),
                   Expanded(
-                    child: _buildStatCard(
-                      context,
-                      color: AppColors.secondary,
+                    child: _StatCard(
                       icon: Icons.history_rounded,
                       title: '${stats?.totalRecordings ?? 0}',
                       subtitle: l10n.totalRecordings,
+                      accent: AppColors.secondary,
                     ),
                   ),
                 ],
               ),
-
               SizedBox(height: 120.h),
             ],
           ),
@@ -167,70 +178,25 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
 
-  Widget _buildStatCard(
-    BuildContext context, {
-    required Color color,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: AppColors.outline),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: color.withAlpha(25),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 24.sp),
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.displayLarge?.copyWith(
-              fontSize: 24.sp,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-              letterSpacing: -0.5,
-            ),
-          ),
-          SizedBox(height: 4.h),
-          Text(
-            subtitle,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontSize: 10.sp,
-              color: AppColors.textSecondary,
-              letterSpacing: 1.0,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+/// 7-day check-in strip. Order is meaningful (a real weekly sequence), so the
+/// day markers are appropriate here — the only place the page uses ordering.
+class _StreakStrip extends StatelessWidget {
+  final dynamic stats;
+  const _StreakStrip({required this.stats});
 
-  Widget _buildDailyTracker(BuildContext context, dynamic stats) {
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
-    // Use data from viewmodel if available, fallback to defaults
-    final int streakDays = stats?.streakDays ?? 0;
-    final checkedDays = stats != null
+    final days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    final streakDays = stats?.streakDays ?? 0;
+    final checked = stats != null
         ? (stats.weeklyCheckins as List)
               .map((c) => c.isCheckedIn as bool)
               .toList()
         : List.filled(7, false);
-
-    // Determine today's index in the week (Monday = 0)
-    final todayIndex = DateTime.now().weekday - 1;
+    final todayIndex = DateTime.now().weekday % 7;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,8 +206,9 @@ class _HomePageState extends State<HomePage> {
           children: [
             Text(
               l10n.checkInStreak,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
+              style: TextStyle(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
               ),
             ),
@@ -249,68 +216,61 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Icon(
                   Icons.local_fire_department_rounded,
-                  color: const Color(0xFFF59E0B),
-                  size: 18.sp,
+                  color: AppColors.emotionHappiness,
+                  size: 16.sp,
                 ),
                 SizedBox(width: 4.w),
                 Text(
                   l10n.daysCount(streakDays),
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFFF59E0B),
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.emotionHappiness,
                   ),
                 ),
               ],
             ),
           ],
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: 12.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(7, (index) {
-            final isChecked = index < checkedDays.length
-                ? checkedDays[index]
-                : false;
-            final isToday = index == todayIndex;
-
+          children: List.generate(7, (i) {
+            final isChecked = i < checked.length ? checked[i] : false;
+            final isToday = i == todayIndex;
+            final color = isChecked
+                ? AppColors.primary
+                : isToday
+                ? AppColors.emotionHappiness
+                : AppColors.outline;
             return Container(
-              width: 40.w,
-              height: 52.h,
+              width: 38.w,
+              height: 44.h,
               decoration: BoxDecoration(
                 color: isChecked
-                    ? AppColors.primary.withAlpha(20)
-                    : (isToday ? AppColors.surface : Colors.transparent),
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                border: Border.all(
-                  color: isChecked
-                      ? AppColors.primary
-                      : (isToday ? const Color(0xFFF59E0B) : AppColors.outline),
-                  width: isToday ? 2 : 1,
-                ),
+                    ? AppColors.primary.withValues(alpha: 0.12)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: color, width: isToday ? 1.5 : 1),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    days[index],
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    days[i],
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w600,
                       color: isChecked
                           ? AppColors.primary
-                          : (isToday
-                                ? AppColors.textPrimary
-                                : AppColors.textSecondary),
-                      fontWeight: isToday || isChecked
-                          ? FontWeight.w700
-                          : FontWeight.w500,
+                          : isToday
+                          ? AppColors.textPrimary
+                          : AppColors.textSecondary,
                     ),
                   ),
                   if (isChecked) ...[
-                    SizedBox(height: 4.h),
-                    Icon(
-                      Icons.check_circle_rounded,
-                      color: AppColors.primary,
-                      size: 14.sp,
-                    ),
+                    SizedBox(height: 2.h),
+                    Icon(Icons.circle, size: 4.sp, color: AppColors.primary),
                   ],
                 ],
               ),
@@ -318,6 +278,157 @@ class _HomePageState extends State<HomePage> {
           }),
         ),
       ],
+    );
+  }
+}
+
+class _RecordCard extends StatelessWidget {
+  final VoidCallback onRecord;
+  final VoidCallback onUpload;
+  const _RecordCard({required this.onRecord, required this.onUpload});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 28.h, horizontal: 20.w),
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(24.r),
+      ),
+      child: Column(
+        children: [
+          Text(
+            l10n.recordYourVoice,
+            style: AppTypography.fraunces(
+              size: 22,
+              weight: FontWeight.w600,
+              color: AppColors.onPrimary,
+            ),
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            l10n.letAiRecognize,
+            style: TextStyle(
+              fontSize: 12.sp,
+              height: 1.4,
+              color: AppColors.onPrimary.withValues(alpha: 0.82),
+            ),
+          ),
+          SizedBox(height: 20.h),
+          GestureDetector(
+            onTap: onRecord,
+            child: Container(
+              width: 76.w,
+              height: 76.w,
+              decoration: BoxDecoration(
+                color: AppColors.onPrimary,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.onPrimary.withValues(alpha: 0.35),
+                    blurRadius: 18,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.mic_rounded,
+                color: AppColors.primary,
+                size: 30.sp,
+              ),
+            ),
+          ),
+          SizedBox(height: 18.h),
+          GestureDetector(
+            onTap: onUpload,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              decoration: BoxDecoration(
+                color: AppColors.onPrimary.withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(9999.r),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.upload_file_rounded,
+                    size: 14.sp,
+                    color: AppColors.onPrimary,
+                  ),
+                  SizedBox(width: 6.w),
+                  Text(
+                    l10n.uploadAudio,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.onPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color accent;
+  const _StatCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    this.accent = AppColors.primary,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: AppColors.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: accent, size: 18.sp),
+          ),
+          SizedBox(height: 12.h),
+          Text(
+            title,
+            style: AppTypography.fraunces(
+              size: 22,
+              weight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: 2.h),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 10.sp,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.8,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

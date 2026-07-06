@@ -1,8 +1,8 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
-import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/features/auth/widgets/auth_footer_prompt.dart';
-import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_text_field.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
@@ -13,76 +13,72 @@ import 'package:go_router/go_router.dart';
 class ForgotPasswordPage extends StatelessWidget {
   const ForgotPasswordPage({super.key});
 
+  void _goBack(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(RouteNames.login);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: CustomAppBar(
-        title: l10n.forgotPasswordTitle,
+      appBar: AppBar(
         backgroundColor: Colors.transparent,
-        showBackButton: true,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.textSecondary,
+            size: 22.sp,
+          ),
+          onPressed: () => _goBack(context),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg.w),
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: AppSpacing.xl.h),
-              Container(
-                width: 72.w,
-                height: 72.w,
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.outline),
-                ),
-                child: Icon(
-                  Icons.lock_reset_rounded,
-                  color: AppColors.primary,
-                  size: 32.sp,
-                ),
-              ),
-              SizedBox(height: AppSpacing.lg.h),
+              SizedBox(height: 8.h),
+              const VoiceprintOrb(mode: VoiceprintMode.idle, size: 140),
+              SizedBox(height: 24.h),
               Text(
                 l10n.resetPassword,
-                style: Theme.of(context).textTheme.headlineLarge,
                 textAlign: TextAlign.center,
+                style: AppTypography.fraunces(size: 28),
               ),
-              SizedBox(height: AppSpacing.sm.h),
-              Text(
-                l10n.enterEmailForRecovery,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: AppSpacing.xl.h),
+              SizedBox(height: 8.h),
               SizedBox(
-                width: double.infinity,
-                child: Form(
-                  child: Column(
-                    children: [
-                      CustomTextField(
-                        label: l10n.email,
-                        hintText: l10n.emailHint,
-                        prefixIcon: Icons.email_outlined,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      SizedBox(height: AppSpacing.lg.h),
-                      PrimaryButton(
-                        text: l10n.sendLink,
-                        suffixIcon: Icons.arrow_forward_rounded,
-                        onPressed: () {
-                          context.goNamed(RouteNames.login);
-                        },
-                      ),
-                    ],
+                width: 280.w,
+                child: Text(
+                  l10n.enterEmailForRecovery,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    height: 1.55,
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ),
-              SizedBox(height: AppSpacing.xl.h),
+              SizedBox(height: 28.h),
+              CustomTextField(
+                label: l10n.email,
+                hintText: l10n.emailHint,
+                prefixIcon: Icons.email_outlined,
+                keyboardType: TextInputType.emailAddress,
+              ),
+              SizedBox(height: 24.h),
+              PrimaryButton(
+                text: l10n.sendLink,
+                suffixIcon: Icons.arrow_forward_rounded,
+                onPressed: () => context.goNamed(RouteNames.login),
+              ),
+              SizedBox(height: 24.h),
               Center(
                 child: AuthFooterPrompt(
                   text: l10n.rememberPassword,
@@ -96,6 +92,7 @@ class ForgotPasswordPage extends StatelessWidget {
                   },
                 ),
               ),
+              SizedBox(height: 24.h),
             ],
           ),
         ),

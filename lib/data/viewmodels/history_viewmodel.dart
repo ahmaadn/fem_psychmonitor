@@ -14,12 +14,13 @@ class HistoryViewModel extends ChangeNotifier {
   String? _error;
   int _currentYear = DateTime.now().year;
   int _currentMonth = DateTime.now().month;
+  DateTime _selectedDate = _dateOnly(DateTime.now());
 
   /// US-11: null = all time, 7 = last 7 days.
   int? _filterDays;
 
   HistoryViewModel({required DetectionRepository detectionRepo})
-      : _detectionRepo = detectionRepo;
+    : _detectionRepo = detectionRepo;
 
   // ── Getters ────────────────────────────────────────────────────────────
 
@@ -30,6 +31,7 @@ class HistoryViewModel extends ChangeNotifier {
   String? get error => _error;
   int? get filterDays => _filterDays;
   bool get isFilteredTo7Days => _filterDays == 7;
+  DateTime get selectedDate => _selectedDate;
 
   // ── Actions ────────────────────────────────────────────────────────────
 
@@ -41,7 +43,13 @@ class HistoryViewModel extends ChangeNotifier {
     await loadChartSeries();
   }
 
-  /// Load recent sessions for the list, honouring the active [filterDays].
+  Future<void> selectDate(DateTime date) async {
+    _selectedDate = _dateOnly(date);
+    notifyListeners();
+    await loadSessions();
+  }
+
+  /// Load sessions for the selected calendar date.
   Future<void> loadSessions({int limit = 20, int offset = 0}) async {
     _isLoading = true;
     _error = null;
@@ -51,7 +59,7 @@ class HistoryViewModel extends ChangeNotifier {
       _sessions = await _detectionRepo.getSessionHistory(
         limit: limit,
         offset: offset,
-        filterDays: _filterDays,
+        startedOnDate: _selectedDate,
       );
     } catch (e) {
       _error = 'Gagal memuat riwayat: $e';
@@ -107,5 +115,9 @@ class HistoryViewModel extends ChangeNotifier {
       counts[emotion] = (counts[emotion] ?? 0) + 1;
     }
     return counts.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
+  }
+
+  static DateTime _dateOnly(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
   }
 }

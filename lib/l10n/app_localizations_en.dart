@@ -188,7 +188,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signInHere => 'Sign in here';
 
   @override
-  String get goodEvening => 'Good evening, Elena';
+  String goodMorning(String name) {
+    return 'Good morning, $name';
+  }
+
+  @override
+  String goodAfternoon(String name) {
+    return 'Good afternoon, $name';
+  }
+
+  @override
+  String goodEvening(String name) {
+    return 'Good evening, $name';
+  }
 
   @override
   String get howAreYouFeeling => 'How are you feeling right now?';
@@ -328,6 +340,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSaved => 'Profile saved successfully!';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get camera => 'Camera';
 
   @override
   String get changePasswordTitle => 'Change Password';
@@ -699,4 +717,120 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mulai => 'Start';
+
+  @override
+  String get sessionNoteTitle => 'Personal Note';
+
+  @override
+  String get sessionNoteHint => 'How did this session feel? Write it here...';
+
+  @override
+  String get saveNote => 'Save Note';
+
+  @override
+  String get noteSaved => 'Note saved';
+
+  @override
+  String get emailInvalid => 'Enter a valid email address';
+
+  @override
+  String get passwordTooWeak =>
+      'Use at least 8 characters with letters and numbers';
+
+  @override
+  String get fieldRequired => 'This field is required';
+
+  @override
+  String get noDetectionYet => 'No detections yet';
+
+  @override
+  String get noDetectionDesc =>
+      'Record your voice to start understanding your emotions.';
+
+  @override
+  String get startRecordingCta => 'Start Recording';
+
+  @override
+  String get mbtiDimensionScores => 'Dimension Scores';
+
+  @override
+  String get currentAssessment => 'Current Assessment';
+
+  @override
+  String get mentalHealthScore => 'Mental Health Score';
+
+  @override
+  String get noAssessmentYet => 'Complete onboarding to see your assessment.';
+
+  @override
+  String get noRecordingsYet => 'No recordings yet';
+
+  @override
+  String get unsupportedAudioFormat =>
+      'Unsupported audio format. Please choose wav, pcm, mp3, m4a, or aac.';
+
+  @override
+  String get audioDecodeFailed => 'Failed to decode this audio file.';
+
+  @override
+  String get needHelp => 'Need help?';
+
+  @override
+  String get hotlineDesc =>
+      'The detected emotion is quite heavy. If you feel overwhelmed, don\'t hesitate to contact a nearby crisis service.';
+
+  @override
+  String get emergencyHealthService => 'Emergency Health';
+
+  @override
+  String get mentalHealthService => 'Mental Health';
+
+  @override
+  String get weeklyEmotionDistribution => '7-Day Emotion Distribution';
+
+  @override
+  String get noDataThisWeek => 'No data this week.';
+
+  @override
+  String get tipsForYou => 'Tips for you';
+
+  @override
+  String get logoutConfirmMessage => 'Are you sure you want to log out?';
+
+  @override
+  String get confirmLogout => 'Logout';
+
+  @override
+  String get profileLoadFailed => 'Failed to load profile';
+
+  @override
+  String get profileSaveFailed => 'Failed to save profile';
+
+  @override
+  String get passwordChangeFailed => 'Failed to change password';
+
+  @override
+  String get profileSaveSuccess => 'Profile saved';
+
+  @override
+  String get passwordChangeSuccess => 'Password changed';
+
+  @override
+  String get hotlineLaunchFailed => 'Could not open the phone dialer.';
+
+  @override
+  String get vadListening => 'Listening…';
+
+  @override
+  String get vadSpeechDetected => 'Speech detected';
+
+  @override
+  String get noSpeechDetected => 'No speech detected';
+
+  @override
+  String get noSpeechDetectedHint =>
+      'We couldn\'t hear any voice in your recording. Try again in a quieter place and speak clearly.';
+
+  @override
+  String get tryRecordAgain => 'Try recording again';
 }

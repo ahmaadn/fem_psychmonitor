@@ -8,6 +8,7 @@
 import 'dart:io';
 import 'dart:isolate';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
@@ -32,6 +33,8 @@ class _WorkerConfig {
 
 // ─── Worker (background isolate)
 
+/// Entry point background isolate: memuat model TFLite, lalu mendengarkan
+/// permintaan inferensi dari UI isolate dan membalas dengan [EmotionResult].
 Future<void> _inferenceWorker(_WorkerConfig initMsg) async {
   final config = initMsg;
   final receivePort = ReceivePort();
@@ -143,8 +146,14 @@ int _argmax(List<double> v) {
   return best;
 }
 
-// ─── Public manager ───────────────────────────────────────────────────────────
+// ─── Manager publik ───────────────────────────────────────────────────────────
 
+/// Manager yang menjalankan inferensi TFLite pada background isolate.
+///
+/// Mengisolasi beban berat (ekstraksi MFCC via FFI + inferensi model) dari UI
+/// isolate agar antarmuka tetap responsif. Komunikasi dua arah via [SendPort]:
+/// UI mengirim [_InferenceRequest], worker membalas [EmotionResult] atau
+/// pesan teks (READY/ERROR/INFERENCE_ERROR).
 class InferenceIsolateManager {
   SendPort? _workerPort;
   int _reqId = 0;
@@ -183,11 +192,11 @@ class InferenceIsolateManager {
     _workerPort =
         await _messages.firstWhere((msg) => msg is SendPort) as SendPort;
 
-    // Print tensor shape info saat READY
+    // Log info shape tensor saat READY (debugPrint, bukan print produksi).
     logs
         .where((s) => s.startsWith('READY'))
         .first
-        .then((msg) => print('[InferenceIsolate] $msg'));
+        .then((msg) => debugPrint('[InferenceIsolate] $msg'));
   }
 
   Future<String> _resolveModelPath(String modelPath) async {

@@ -4,9 +4,8 @@ import 'package:http/http.dart' as http;
 
 /// HTTP-backed [UserRepository] scaffold. No-op until a [baseUrl] is set.
 class ApiUserRepository extends UserRepository {
-  ApiUserRepository({String? baseUrl, http.Client? client})
-      : baseUrl = baseUrl,
-        _client = client ?? http.Client();
+  ApiUserRepository({this.baseUrl, http.Client? client})
+      : _client = client ?? http.Client();
 
   final String? baseUrl;
   final http.Client _client;

@@ -124,3 +124,44 @@ class EmotionResult {
       '[${startSec.toStringAsFixed(1)}-${endSec.toStringAsFixed(1)}s] '
       '${label.displayName} (${(confidence * 100).toStringAsFixed(1)}%)';
 }
+
+/// Dominant emotion = most frequent label (mode); confidence = average of
+/// that label's per-chunk confidences. Tie-break: higher avg confidence,
+/// then enum index. Empty -> (neutral, 0.0).
+({EmotionLabelType emotion, double confidence}) dominantFromResults(
+  Iterable<EmotionResult> results,
+) {
+  final count = <EmotionLabelType, int>{};
+  final sumConfidence = <EmotionLabelType, double>{};
+
+  for (final r in results) {
+    count[r.label] = (count[r.label] ?? 0) + 1;
+    sumConfidence[r.label] = (sumConfidence[r.label] ?? 0.0) + r.confidence;
+  }
+
+  if (count.isEmpty) {
+    return (emotion: EmotionLabelType.neutral, confidence: 0.0);
+  }
+
+  EmotionLabelType best = EmotionLabelType.neutral;
+  int bestCount = -1;
+  double bestAvg = -1.0;
+
+  for (final label in EmotionLabelType.values) {
+    final c = count[label];
+    if (c == null) continue;
+    final avg = sumConfidence[label]! / c;
+
+    final isBetter = c > bestCount ||
+        (c == bestCount && avg > bestAvg) ||
+        (c == bestCount && avg == bestAvg && label.index > best.index);
+
+    if (isBetter) {
+      best = label;
+      bestCount = c;
+      bestAvg = avg;
+    }
+  }
+
+  return (emotion: best, confidence: bestAvg);
+}

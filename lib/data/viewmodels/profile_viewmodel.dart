@@ -1,5 +1,6 @@
 import 'package:fem_psychmonitor/data/models/user_model.dart';
 import 'package:fem_psychmonitor/data/repositories/user_repository.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 
 /// ViewModel for Profile, Edit Profile, and Change Password screens.
@@ -25,7 +26,10 @@ class ProfileViewModel extends ChangeNotifier {
   // ── Actions ────────────────────────────────────────────────────────────
 
   /// Load user profile data.
-  Future<void> loadProfile() async {
+  ///
+  /// [l10n] is optional so callers without a BuildContext can still load. When
+  /// provided, the error message is localized (US-18).
+  Future<void> loadProfile({AppLocalizations? l10n}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -33,7 +37,8 @@ class ProfileViewModel extends ChangeNotifier {
     try {
       _user = await _userRepo.getProfile();
     } catch (e) {
-      _error = 'Gagal memuat profil: $e';
+      final prefix = l10n?.profileLoadFailed ?? 'Failed to load profile';
+      _error = '$prefix: $e';
     }
 
     _isLoading = false;
@@ -41,7 +46,13 @@ class ProfileViewModel extends ChangeNotifier {
   }
 
   /// Update user profile.
-  Future<bool> updateProfile(UserModel updatedUser) async {
+  ///
+  /// [l10n] is required so success/error messages are localized at the
+  /// presentation layer instead of hard-coded Indonesian (US-18).
+  Future<bool> updateProfile(
+    UserModel updatedUser,
+    AppLocalizations l10n,
+  ) async {
     _isSaving = true;
     _error = null;
     _successMessage = null;
@@ -49,12 +60,12 @@ class ProfileViewModel extends ChangeNotifier {
 
     try {
       _user = await _userRepo.updateProfile(updatedUser);
-      _successMessage = 'Profil berhasil disimpan';
+      _successMessage = l10n.profileSaveSuccess;
       _isSaving = false;
       notifyListeners();
       return true;
     } catch (e) {
-      _error = 'Gagal menyimpan profil: $e';
+      _error = '${l10n.profileSaveFailed}: $e';
       _isSaving = false;
       notifyListeners();
       return false;
@@ -62,9 +73,12 @@ class ProfileViewModel extends ChangeNotifier {
   }
 
   /// Change password.
+  ///
+  /// [l10n] is required so success/error messages are localized (US-18).
   Future<bool> changePassword(
     String oldPassword,
     String newPassword,
+    AppLocalizations l10n,
   ) async {
     _isSaving = true;
     _error = null;
@@ -73,12 +87,12 @@ class ProfileViewModel extends ChangeNotifier {
 
     try {
       await _userRepo.changePassword(oldPassword, newPassword);
-      _successMessage = 'Password berhasil diubah';
+      _successMessage = l10n.passwordChangeSuccess;
       _isSaving = false;
       notifyListeners();
       return true;
     } catch (e) {
-      _error = 'Gagal mengubah password: $e';
+      _error = '${l10n.passwordChangeFailed}: $e';
       _isSaving = false;
       notifyListeners();
       return false;

@@ -12,7 +12,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
   final QuestionRepository? _questionRepo;
 
   QuestionnaireViewModel({QuestionRepository? questionRepo})
-      : _questionRepo = questionRepo;
+    : _questionRepo = questionRepo;
 
   MbtiData? _mbtiData;
   PsychData? _psychData;
@@ -26,10 +26,53 @@ class QuestionnaireViewModel extends ChangeNotifier {
   String? _finalMbti;
   String? get finalMbti => _finalMbti;
 
+  /// US-07: per-trait answer counts for the four MBTI dimensions. Populated
+  /// by [calculateMbtiResult] and exposed so the result page can render
+  /// dimension-strength bars (E/I, S/N, T/F, J/P).
+  final Map<String, int> _mbtiDimensionCounts = {
+    'E': 0,
+    'I': 0,
+    'S': 0,
+    'N': 0,
+    'T': 0,
+    'F': 0,
+    'J': 0,
+    'P': 0,
+  };
+  Map<String, int> get mbtiDimensionCounts =>
+      Map.unmodifiable(_mbtiDimensionCounts);
+
+  /// US-07: true when the dimension counts were populated from a real test
+  /// (not the known-MBTI shortcut, which has no per-trait breakdown).
+  bool get hasDimensionCounts =>
+      _mbtiDimensionCounts.values.fold<int>(0, (a, b) => a + b) > 0;
+
+  /// Returns the four MBTI dimension pairs with their percentage split, where
+  /// each pair maps to `(leftTrait, leftPercent, rightTrait, rightPercent)`.
+  /// Percentages are rounded and sum to 100 (ties favour the left trait at 50).
+  List<({String left, int leftPct, String right, int rightPct})>
+  get mbtiDimensionPercentages {
+    int pct(int a, int b) {
+      final total = a + b;
+      if (total == 0) return 50;
+      return ((a / total) * 100).round();
+    }
+
+    final pairs = [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')];
+    return pairs.map((p) {
+      final left = _mbtiDimensionCounts[p.$1] ?? 0;
+      final right = _mbtiDimensionCounts[p.$2] ?? 0;
+      final lp = pct(left, right);
+      return (left: p.$1, leftPct: lp, right: p.$2, rightPct: 100 - lp);
+    }).toList();
+  }
+
   int? _psychScore;
   int? get psychScore => _psychScore;
   PsychClass? _psychClass;
   PsychClass? get psychClass => _psychClass;
+  bool _hasUnsavedOnboardingResults = false;
+  bool get hasUnsavedOnboardingResults => _hasUnsavedOnboardingResults;
 
   // MBTI Test State
   int _currentMbtiIndex = 0;
@@ -61,6 +104,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   void setKnownMbti(String mbti) {
     _finalMbti = mbti;
+    _hasUnsavedOnboardingResults = true;
     notifyListeners();
   }
 
@@ -93,15 +137,24 @@ class QuestionnaireViewModel extends ChangeNotifier {
     if (_mbtiData == null) return;
 
     Map<String, int> counts = {
-      'E': 0, 'I': 0,
-      'S': 0, 'N': 0,
-      'T': 0, 'F': 0,
-      'J': 0, 'P': 0,
+      'E': 0,
+      'I': 0,
+      'S': 0,
+      'N': 0,
+      'T': 0,
+      'F': 0,
+      'J': 0,
+      'P': 0,
     };
 
     for (var option in _mbtiAnswers.values) {
       counts[option.type] = (counts[option.type] ?? 0) + 1;
     }
+
+    // US-07: persist the per-trait counts for the dimension bars.
+    _mbtiDimensionCounts
+      ..clear()
+      ..addAll(counts);
 
     String result = "";
     result += (counts['E']! >= counts['I']!) ? 'E' : 'I';
@@ -110,6 +163,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
     result += (counts['J']! >= counts['P']!) ? 'J' : 'P';
 
     _finalMbti = result;
+    _hasUnsavedOnboardingResults = true;
     notifyListeners();
   }
 
@@ -139,12 +193,16 @@ class QuestionnaireViewModel extends ChangeNotifier {
     int maxRawScore = _psychData!.assessment.scoringSystem.totalMaxScore;
     int displayMaxScore = _psychData!.assessment.scoringSystem.displayMaxScore;
 
-    double calculatedScore = maxRawScore == 0
+    double calculatedRiskScore = maxRawScore == 0
         ? 0
         : (totalRawScore / maxRawScore) * displayMaxScore;
-    _psychScore = calculatedScore.round();
+    _psychScore = (displayMaxScore - calculatedRiskScore).round().clamp(
+      0,
+      displayMaxScore,
+    );
 
-    // Find class
+    // Class ranges in the JSON use raw distress score; display score is the
+    // inverse wellness scale shown to users.
     for (var pClass in _psychData!.assessment.scoringSystem.classes) {
       var rangeParts = pClass.scoreRange.split('-');
       if (rangeParts.length == 2) {
@@ -157,6 +215,13 @@ class QuestionnaireViewModel extends ChangeNotifier {
       }
     }
 
+    _hasUnsavedOnboardingResults = true;
+    notifyListeners();
+  }
+
+  void markOnboardingResultsSaved() {
+    if (!_hasUnsavedOnboardingResults) return;
+    _hasUnsavedOnboardingResults = false;
     notifyListeners();
   }
 }

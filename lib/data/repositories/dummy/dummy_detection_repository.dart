@@ -18,12 +18,20 @@ class DummyDetectionRepository implements DetectionRepository {
     int limit = 20,
     int offset = 0,
     int? filterDays,
+    DateTime? startedOnDate,
   }) async {
     await Future.delayed(const Duration(milliseconds: 300));
     var filtered = List<DetectionSessionModel>.from(_sessions);
     if (filterDays != null) {
       final cutoff = DateTime.now().subtract(Duration(days: filterDays));
       filtered = filtered.where((s) => s.startedAt.isAfter(cutoff)).toList();
+    }
+    if (startedOnDate != null) {
+      filtered = filtered.where((s) {
+        return s.startedAt.year == startedOnDate.year &&
+            s.startedAt.month == startedOnDate.month &&
+            s.startedAt.day == startedOnDate.day;
+      }).toList();
     }
     final sorted = filtered..sort((a, b) => b.startedAt.compareTo(a.startedAt));
     final end = (offset + limit).clamp(0, sorted.length);
@@ -62,7 +70,7 @@ class DummyDetectionRepository implements DetectionRepository {
     for (final session in _sessions) {
       if (session.startedAt.year == year && session.startedAt.month == month) {
         final dateKey = DateTime(year, month, session.startedAt.day);
-        data[dateKey] = session.dominantEmotion;
+        data[dateKey] = session.displayEmotion;
       }
     }
     return data;
@@ -78,20 +86,22 @@ class DummyDetectionRepository implements DetectionRepository {
     final weeklyCheckins = List.generate(7, (i) {
       final day = weekStart.add(Duration(days: i));
       final dayKey = DateTime(day.year, day.month, day.day);
-      final sessionOnDay = _sessions.where((s) =>
-          s.startedAt.year == dayKey.year &&
-          s.startedAt.month == dayKey.month &&
-          s.startedAt.day == dayKey.day);
+      final sessionOnDay = _sessions.where(
+        (s) =>
+            s.startedAt.year == dayKey.year &&
+            s.startedAt.month == dayKey.month &&
+            s.startedAt.day == dayKey.day,
+      );
       return DailyCheckIn(
         date: dayKey,
         isCheckedIn: sessionOnDay.isNotEmpty,
-        dominantEmotion:
-            sessionOnDay.isNotEmpty ? sessionOnDay.first.dominantEmotion : null,
+        dominantEmotion: sessionOnDay.isNotEmpty
+            ? sessionOnDay.first.displayEmotion
+            : null,
       );
     });
 
-    final streakDays =
-        weeklyCheckins.where((c) => c.isCheckedIn).length;
+    final streakDays = weeklyCheckins.where((c) => c.isCheckedIn).length;
 
     // Find dominant mood from recent sessions
     EmotionLabelType currentMood = EmotionLabelType.neutral;
@@ -100,8 +110,7 @@ class DummyDetectionRepository implements DetectionRepository {
       ..sort((a, b) => b.startedAt.compareTo(a.startedAt));
     if (sorted.isNotEmpty) {
       currentMood = sorted.first.displayEmotion;
-      currentMoodPercentage =
-          (sorted.first.dominantConfidence * 100).round();
+      currentMoodPercentage = (sorted.first.displayConfidence * 100).round();
     }
 
     return HomeStats(
@@ -126,6 +135,24 @@ class DummyDetectionRepository implements DetectionRepository {
       throw Exception('Sesi tidak ditemukan: $sessionId');
     }
     final updated = _sessions[idx].copyWith(correctedEmotion: newLabel);
+    _sessions[idx] = updated;
+    return updated;
+  }
+
+  @override
+  Future<DetectionSessionModel> updateNote(
+    String sessionId,
+    String? note,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final idx = _sessions.indexWhere((s) => s.id == sessionId);
+    if (idx < 0) {
+      throw Exception('Sesi tidak ditemukan: $sessionId');
+    }
+    final trimmed = note?.trim();
+    final updated = _sessions[idx].copyWith(
+      note: (trimmed == null || trimmed.isEmpty) ? null : trimmed,
+    );
     _sessions[idx] = updated;
     return updated;
   }
@@ -183,8 +210,9 @@ class DummyDetectionRepository implements DetectionRepository {
         userId: 'usr_001',
         startedAt: date,
         stoppedAt: date.add(Duration(minutes: 2 + i, seconds: 30)),
-        sourceType:
-            i % 3 == 0 ? DetectionSourceType.upload : DetectionSourceType.live,
+        sourceType: i % 3 == 0
+            ? DetectionSourceType.upload
+            : DetectionSourceType.live,
         dominantEmotion: emotion,
         dominantConfidence: 0.65 + (i % 4) * 0.08,
         results: _generateMockResults(sessionId, emotion, date),

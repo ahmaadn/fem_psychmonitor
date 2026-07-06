@@ -90,6 +90,30 @@ class DetectionViewModel extends ChangeNotifier {
     }
   }
 
+  /// US-09: persist a free-text note attached to a session. Keeps the
+  /// current/viewed session references in sync so the UI reflects the new
+  /// note immediately without a full reload.
+  Future<void> updateNote(String sessionId, String? note) async {
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final updated = await _detectionRepo.updateNote(sessionId, note);
+      if (_currentSession?.id == sessionId) {
+        _currentSession = updated;
+      }
+      if (_viewedSession?.id == sessionId) {
+        _viewedSession = updated;
+      }
+    } catch (e) {
+      _error = 'Gagal menyimpan catatan: $e';
+    }
+
+    _isSaving = false;
+    notifyListeners();
+  }
+
   /// Clear the current session reference.
   void clearCurrentSession() {
     _currentSession = null;
