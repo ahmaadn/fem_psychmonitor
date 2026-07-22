@@ -1,5 +1,7 @@
 import 'package:fem_psychmonitor/app/config/app_theme.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
+import 'package:fem_psychmonitor/app/providers/privacy_provider.dart';
+import 'package:fem_psychmonitor/app/providers/theme_provider.dart';
 import 'package:fem_psychmonitor/data/local/database_helper.dart';
 import 'package:fem_psychmonitor/data/local/seed/question_seeder.dart';
 import 'package:fem_psychmonitor/data/repositories/auth_repository.dart';
@@ -35,57 +37,52 @@ import 'package:provider/provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load saved locale before app starts
   final localeProvider = LocaleProvider();
   await localeProvider.loadSavedLocale();
+  final themeProvider = ThemeProvider();
+  await themeProvider.loadSavedTheme();
+  final privacyProvider = PrivacyProvider();
+  await privacyProvider.load();
 
-  // ── Offline-first SQLite bootstrap ────────────────────────────────────
-  // Initialise the platform-appropriate DB factory (FFI on desktop) and open
-  // the database, then seed master data from assets on first run.
   DatabaseHelper.initPlatform();
   await DatabaseHelper.instance.database;
   await QuestionSeeder.instance.seedIfEmpty();
 
-  // ── Repository Setup (Sqlite = active layer; offline-first) ───────────
   final authRepo = SqliteAuthRepository();
   final detectionRepo = SqliteDetectionRepository();
   final userRepo = SqliteUserRepository();
   final questionRepo = SqliteQuestionRepository();
   final recommendationRepo = SqliteRecommendationRepository();
 
-  // SyncService: API stubs are constructed but baseUrl is null, so push/pull
-  // are guarded no-ops until a live server is configured.
   final syncService = SqliteSyncService(
     apiAuth: ApiAuthRepository(),
     apiUser: ApiUserRepository(),
     apiDetection: ApiDetectionRepository(),
   );
 
-  // ── ViewModel Setup ─────────────────────────────────────────────────────
   final authViewModel = AuthViewModel(authRepo: authRepo);
   final homeViewModel = HomeViewModel(detectionRepo: detectionRepo);
   final historyViewModel = HistoryViewModel(detectionRepo: detectionRepo);
   final profileViewModel = ProfileViewModel(userRepo: userRepo);
   final detectionViewModel = DetectionViewModel(detectionRepo: detectionRepo);
-  final questionnaireViewModel =
-      QuestionnaireViewModel(questionRepo: questionRepo);
+  final questionnaireViewModel = QuestionnaireViewModel(
+    questionRepo: questionRepo,
+  );
 
   runApp(
     MultiProvider(
       providers: [
-        // ── Existing Providers ──
         ChangeNotifierProvider(create: (_) => EmotionDetector()..init()),
         ChangeNotifierProvider.value(value: questionnaireViewModel..initData()),
         ChangeNotifierProvider.value(value: localeProvider),
-        // ── Repository Providers (for direct access if needed) ──
+        ChangeNotifierProvider.value(value: themeProvider),
+        ChangeNotifierProvider.value(value: privacyProvider),
         Provider<AuthRepository>.value(value: authRepo),
         Provider<DetectionRepository>.value(value: detectionRepo),
         Provider<UserRepository>.value(value: userRepo),
         Provider<QuestionRepository>.value(value: questionRepo),
         Provider<RecommendationRepository>.value(value: recommendationRepo),
         Provider<SyncService>.value(value: syncService),
-
-        // ── ViewModel Providers ──
         ChangeNotifierProvider.value(value: authViewModel),
         ChangeNotifierProvider.value(value: homeViewModel),
         ChangeNotifierProvider.value(value: historyViewModel),
@@ -116,6 +113,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final localeProvider = context.watch<LocaleProvider>();
+    final themeProvider = context.watch<ThemeProvider>();
 
     return ScreenUtilInit(
       designSize: const Size(390, 844),
@@ -123,11 +121,12 @@ class _MyAppState extends State<MyApp> {
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp.router(
-          title: 'Aura Echo',
+          title: 'Fem-Psychmonitor',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeProvider.mode,
           routerConfig: _router,
-          // LOCALIZATION SETUP
           locale: localeProvider.locale,
           localizationsDelegates: const [
             AppLocalizations.delegate,

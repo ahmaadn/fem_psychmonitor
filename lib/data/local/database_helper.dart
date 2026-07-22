@@ -5,25 +5,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:fem_psychmonitor/data/local/tables/app_tables.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-/// Singleton wrapping the SQLite database used as the offline-first store.
-///
-/// On Windows / Linux / macOS desktop builds, [sqflite_common_ffi] is initialised
-/// so the same code path works during desktop testing. Mobile builds use the
-/// native `sqflite` implementation.
 class DatabaseHelper {
   DatabaseHelper._();
   static final DatabaseHelper instance = DatabaseHelper._();
 
-  static const int _dbVersion = 1;
+  static const int _dbVersion = 2;
   static const String _dbName = 'fem_psychmonitor.db';
 
   Database? _db;
-
-  /// Whether desktop FFI has been initialised. Guarded so it only runs once.
   static bool _ffiInitialised = false;
 
-  /// Initialise the platform-appropriate database factory.
-  /// Must be called before any [database] access (i.e. early in `main`).
   static void initPlatform() {
     if (_ffiInitialised) return;
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
@@ -33,7 +24,6 @@ class DatabaseHelper {
     _ffiInitialised = true;
   }
 
-  /// Open (or create) the database, lazily cached.
   Future<Database> get database async {
     if (_db != null && _db!.isOpen) return _db!;
     _db = await _open();
@@ -43,7 +33,6 @@ class DatabaseHelper {
   Future<Database> _open() async {
     final docsDir = await getApplicationDocumentsDirectory();
     final path = p.join(docsDir.path, _dbName);
-
     return openDatabase(
       path,
       version: _dbVersion,
@@ -54,14 +43,12 @@ class DatabaseHelper {
   }
 
   Future<void> _onConfigure(Database db) async {
-    // Enable foreign-key enforcement (off by default in SQLite).
     await db.execute('PRAGMA foreign_keys = ON;');
   }
 
   Future<void> _onCreate(Database db, int version) async {
     final batch = db.batch();
 
-    // ── Transactional ──────────────────────────────────────────────────
     batch.execute('''
       CREATE TABLE ${AppTables.users} (
         id              TEXT PRIMARY KEY,
@@ -74,7 +61,13 @@ class DatabaseHelper {
         updated_at      INTEGER NOT NULL,
         is_dirty        INTEGER NOT NULL DEFAULT 0,
         password_hash   TEXT NOT NULL,
-        mbti_result     TEXT,
+        is_guest        INTEGER NOT NULL DEFAULT 0,
+        ocean_o         REAL,
+        ocean_c         REAL,
+        ocean_e         REAL,
+        ocean_a         REAL,
+        ocean_n         REAL,
+        ocean_completed_at INTEGER,
         psych_score     INTEGER,
         psych_class     TEXT
       )
@@ -92,6 +85,7 @@ class DatabaseHelper {
         dominant_confidence REAL NOT NULL,
         note                TEXT,
         corrected_emotion   TEXT,
+        self_report_emotion TEXT,
         created_at          INTEGER NOT NULL,
         updated_at          INTEGER NOT NULL,
         is_dirty            INTEGER NOT NULL DEFAULT 0,
@@ -122,7 +116,6 @@ class DatabaseHelper {
       )
     ''');
 
-    // ── Sync queue ──────────────────────────────────────────────────────
     batch.execute('''
       CREATE TABLE ${AppTables.syncQueue} (
         id            INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -135,26 +128,13 @@ class DatabaseHelper {
       )
     ''');
 
-    // ── Master / reference data ─────────────────────────────────────────
     batch.execute('''
-      CREATE TABLE ${AppTables.mbtiQuestions} (
+      CREATE TABLE ${AppTables.oceanQuestions} (
         id            INTEGER PRIMARY KEY,
-        code          TEXT NOT NULL,
-        dimension     TEXT NOT NULL,
-        question_en   TEXT NOT NULL,
-        question_id   TEXT NOT NULL
-      )
-    ''');
-
-    batch.execute('''
-      CREATE TABLE ${AppTables.mbtiOptions} (
-        id            INTEGER PRIMARY KEY AUTOINCREMENT,
-        question_id   INTEGER NOT NULL,
-        code          TEXT NOT NULL,
-        answer_en     TEXT NOT NULL,
-        answer_id     TEXT NOT NULL,
-        type          TEXT NOT NULL,
-        FOREIGN KEY (question_id) REFERENCES ${AppTables.mbtiQuestions}(id) ON DELETE CASCADE
+        trait         TEXT NOT NULL,
+        positive_keyed INTEGER NOT NULL,
+        statement_en  TEXT NOT NULL,
+        statement_id  TEXT NOT NULL
       )
     ''');
 
@@ -203,15 +183,49 @@ class DatabaseHelper {
     ''');
 
     batch.execute('''
-      CREATE TABLE ${AppTables.saranRecommendations} (
-        mbti_type      TEXT PRIMARY KEY,
-        alias          TEXT NOT NULL,
-        group_name     TEXT NOT NULL,
-        emotions_json  TEXT NOT NULL
+      CREATE TABLE ${AppTables.saranOcean} (
+        id            INTEGER PRIMARY KEY,
+        trait         TEXT NOT NULL,
+        level         TEXT NOT NULL,
+        emotion       TEXT NOT NULL,
+        sort_order    INTEGER NOT NULL,
+        text_id       TEXT NOT NULL,
+        text_en       TEXT NOT NULL
       )
     ''');
 
-    // ── Indexes for read-heavy queries ───────────────────────────────────
+    batch.execute('''
+      CREATE TABLE ${AppTables.saranDefaultNeutral} (
+        id            INTEGER PRIMARY KEY,
+        sort_order    INTEGER NOT NULL,
+        text_id       TEXT NOT NULL,
+        text_en       TEXT NOT NULL
+      )
+    ''');
+
+    batch.execute('''
+      CREATE TABLE ${AppTables.dailyMoods} (
+        user_id       TEXT NOT NULL,
+        date          TEXT NOT NULL,
+        emotion       TEXT NOT NULL,
+        created_at    INTEGER NOT NULL,
+        updated_at    INTEGER NOT NULL,
+        PRIMARY KEY (user_id, date),
+        FOREIGN KEY (user_id) REFERENCES ${AppTables.users}(id) ON DELETE CASCADE
+      )
+    ''');
+
+    batch.execute('''
+      CREATE TABLE ${AppTables.mentalScoreLog} (
+        id            INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id       TEXT NOT NULL,
+        at_ms         INTEGER NOT NULL,
+        score         INTEGER NOT NULL,
+        reason        TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES ${AppTables.users}(id) ON DELETE CASCADE
+      )
+    ''');
+
     batch.execute(
       'CREATE INDEX idx_sessions_user ON ${AppTables.detectionSessions}(user_id, started_at DESC)',
     );
@@ -221,15 +235,100 @@ class DatabaseHelper {
     batch.execute(
       'CREATE INDEX idx_sync_pending ON ${AppTables.syncQueue}(synced_at) WHERE synced_at IS NULL',
     );
+    batch.execute(
+      'CREATE INDEX idx_score_log_user ON ${AppTables.mentalScoreLog}(user_id, at_ms DESC)',
+    );
 
     await batch.commit(noResult: true);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Future migrations go here. For v1 there is nothing to migrate.
+    if (oldVersion < 2) {
+      // Destructive master migration for pre-launch: rebuild OCEAN schema.
+      await db.execute('DROP TABLE IF EXISTS ${AppTables.mbtiOptions}');
+      await db.execute('DROP TABLE IF EXISTS ${AppTables.mbtiQuestions}');
+      await db.execute('DROP TABLE IF EXISTS ${AppTables.saranRecommendations}');
+
+      final cols = await db.rawQuery('PRAGMA table_info(${AppTables.users})');
+      final names = cols.map((c) => c['name'] as String).toSet();
+      if (!names.contains('is_guest')) {
+        await db.execute(
+          'ALTER TABLE ${AppTables.users} ADD COLUMN is_guest INTEGER NOT NULL DEFAULT 0',
+        );
+      }
+      for (final c in [
+        'ocean_o REAL',
+        'ocean_c REAL',
+        'ocean_e REAL',
+        'ocean_a REAL',
+        'ocean_n REAL',
+        'ocean_completed_at INTEGER',
+      ]) {
+        final name = c.split(' ').first;
+        if (!names.contains(name)) {
+          await db.execute('ALTER TABLE ${AppTables.users} ADD COLUMN $c');
+        }
+      }
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${AppTables.oceanQuestions} (
+          id            INTEGER PRIMARY KEY,
+          trait         TEXT NOT NULL,
+          positive_keyed INTEGER NOT NULL,
+          statement_en  TEXT NOT NULL,
+          statement_id  TEXT NOT NULL
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${AppTables.saranOcean} (
+          id            INTEGER PRIMARY KEY,
+          trait         TEXT NOT NULL,
+          level         TEXT NOT NULL,
+          emotion       TEXT NOT NULL,
+          sort_order    INTEGER NOT NULL,
+          text_id       TEXT NOT NULL,
+          text_en       TEXT NOT NULL
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${AppTables.saranDefaultNeutral} (
+          id            INTEGER PRIMARY KEY,
+          sort_order    INTEGER NOT NULL,
+          text_id       TEXT NOT NULL,
+          text_en       TEXT NOT NULL
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${AppTables.dailyMoods} (
+          user_id       TEXT NOT NULL,
+          date          TEXT NOT NULL,
+          emotion       TEXT NOT NULL,
+          created_at    INTEGER NOT NULL,
+          updated_at    INTEGER NOT NULL,
+          PRIMARY KEY (user_id, date)
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS ${AppTables.mentalScoreLog} (
+          id            INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id       TEXT NOT NULL,
+          at_ms         INTEGER NOT NULL,
+          score         INTEGER NOT NULL,
+          reason        TEXT NOT NULL
+        )
+      ''');
+
+      final sessCols =
+          await db.rawQuery('PRAGMA table_info(${AppTables.detectionSessions})');
+      final sessNames = sessCols.map((c) => c['name'] as String).toSet();
+      if (!sessNames.contains('self_report_emotion')) {
+        await db.execute(
+          'ALTER TABLE ${AppTables.detectionSessions} ADD COLUMN self_report_emotion TEXT',
+        );
+      }
+    }
   }
 
-  /// Close the database (used in tests / hot-restart scenarios).
   Future<void> close() async {
     if (_db != null && _db!.isOpen) {
       await _db!.close();

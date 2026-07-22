@@ -2,8 +2,6 @@ import 'package:fem_psychmonitor/data/models/auth_state.dart';
 import 'package:fem_psychmonitor/data/models/user_model.dart';
 import 'package:fem_psychmonitor/data/repositories/auth_repository.dart';
 
-/// Dummy implementation that always succeeds with in-memory state.
-/// Replace with real API/SQLite implementation later.
 class DummyAuthRepository implements AuthRepository {
   AuthState _currentState = AuthState.initial();
 
@@ -18,15 +16,11 @@ class DummyAuthRepository implements AuthRepository {
 
   @override
   Future<AuthState> login(String email, String password) async {
-    // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 800));
-
     if (email.isEmpty || password.isEmpty) {
       _currentState = AuthState.error('Email dan password harus diisi');
       return _currentState;
     }
-
-    // Always succeed with dummy user
     _currentState = AuthState.authenticated(
       user: _dummyUser.copyWith(email: email),
       token: 'dummy_token_${DateTime.now().millisecondsSinceEpoch}',
@@ -41,20 +35,16 @@ class DummyAuthRepository implements AuthRepository {
     String password,
   ) async {
     await Future.delayed(const Duration(milliseconds: 800));
-
     if (fullName.isEmpty || email.isEmpty || password.isEmpty) {
       _currentState = AuthState.error('Semua field harus diisi');
       return _currentState;
     }
-
-    // Create new user from input
     final newUser = UserModel(
       id: 'usr_${DateTime.now().millisecondsSinceEpoch}',
       fullName: fullName,
       email: email,
       createdAt: DateTime.now(),
     );
-
     _currentState = AuthState.authenticated(
       user: newUser,
       token: 'dummy_token_${DateTime.now().millisecondsSinceEpoch}',
@@ -63,20 +53,50 @@ class DummyAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> logout() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    _currentState = AuthState.initial();
-  }
-
-  @override
-  Future<AuthState> getCurrentAuth() async {
-    await Future.delayed(const Duration(milliseconds: 200));
+  Future<AuthState> continueAsGuest() async {
+    final guest = UserModel(
+      id: 'guest_local',
+      fullName: 'Tamu',
+      email: 'guest@local',
+      createdAt: DateTime.now(),
+      isGuest: true,
+    );
+    _currentState = AuthState.authenticated(user: guest, token: 'guest_token');
     return _currentState;
   }
 
   @override
-  Future<void> forgotPassword(String email) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    // Always succeed in dummy
+  Future<void> logout() async {
+    _currentState = AuthState.initial();
+  }
+
+  @override
+  Future<AuthState> getCurrentAuth() async => _currentState;
+
+  @override
+  Future<void> forgotPassword(String email) async {}
+
+  @override
+  Future<UserModel?> updateUserAssessment(UserModel user) async {
+    _currentState = AuthState.authenticated(
+      user: user,
+      token: _currentState.token,
+    );
+    return user;
+  }
+
+  @override
+  Future<void> deleteAccount(String userId) async {
+    _currentState = AuthState.initial();
+  }
+
+  @override
+  Future<void> resetUserData(String userId) async {
+    final u = _currentState.user;
+    if (u == null) return;
+    _currentState = AuthState.authenticated(
+      user: u.copyWith(clearOcean: true, clearPsych: true),
+      token: _currentState.token,
+    );
   }
 }

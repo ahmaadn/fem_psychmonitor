@@ -55,6 +55,9 @@ abstract class DetectionRepository {
   /// Returns one [EmotionSeriesPoint] per day over [days] days (default 7),
   /// each carrying the count of sessions whose display emotion matches.
   Future<List<EmotionSeriesPoint>> getChartSeries({int days = 7});
+
+  /// Delete a session and its results. Does **not** reverse mental score.
+  Future<void> deleteSession(String sessionId);
 }
 
 /// A single bucket in a history chart series (US-19).

@@ -639,22 +639,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get personalityType => 'Tipe Kepribadian';
 
   @override
-  String get knowMbtiQuestion => 'Apakah Anda sudah mengetahui tipe MBTI Anda?';
-
-  @override
   String get yesIKnow => 'Ya, saya tahu';
 
   @override
   String get notSure => 'Belum tahu';
 
   @override
-  String get selectYourMbti => 'Pilih tipe MBTI Anda:';
-
-  @override
   String get continueButton => 'Lanjutkan';
-
-  @override
-  String get mbtiTest => 'Tes MBTI';
 
   @override
   String get failedToLoadQuestionnaire => 'Gagal memuat kuesioner.';
@@ -674,17 +665,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get nextQuestion => 'Selanjutnya';
 
   @override
-  String get mbtiResultTitle => 'Hasil MBTI';
-
-  @override
   String get yourPersonalityType => 'Tipe Kepribadian Anda';
 
   @override
   String get unknown => 'Tidak diketahui';
-
-  @override
-  String get mbtiResultDesc =>
-      'Kami akan menggunakan informasi ini untuk menyesuaikan rekomendasi saran dalam aplikasi.';
 
   @override
   String get continueToMentalHealth => 'Lanjut ke Instrumen Kesehatan Mental';
@@ -750,9 +734,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get startRecordingCta => 'Mulai Rekam';
-
-  @override
-  String get mbtiDimensionScores => 'Skor Dimensi';
 
   @override
   String get currentAssessment => 'Asesmen Terkini';

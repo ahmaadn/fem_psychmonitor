@@ -125,6 +125,12 @@ class DummyDetectionRepository implements DetectionRepository {
   }
 
   @override
+  Future<void> deleteSession(String sessionId) async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    _sessions.removeWhere((s) => s.id == sessionId);
+  }
+
+  @override
   Future<DetectionSessionModel> correctEmotion(
     String sessionId,
     EmotionLabelType newLabel,

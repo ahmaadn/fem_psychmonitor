@@ -89,7 +89,10 @@ flutter:
   assets:
     - assets/
     - assets/questions/
+    - assets/questions/ocean.json
+    - assets/questions/saran_ocean.json
     - assets/models/female_model.tflite
+    - assets/models/norm_female_model.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

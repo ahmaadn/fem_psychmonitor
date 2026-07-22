@@ -1,18 +1,12 @@
 import 'package:fem_psychmonitor/data/models/auth_state.dart';
+import 'package:fem_psychmonitor/data/models/user_model.dart';
 import 'package:fem_psychmonitor/data/repositories/auth_repository.dart';
 import 'package:http/http.dart' as http;
 
-/// HTTP-backed [AuthRepository] scaffold. Calls are guarded by [baseUrl]: when
-/// no live base URL is configured (current state — no server running), every
-/// method is a no-op / returns an unauthenticated state, so the offline-first
-/// SQLite layer remains the source of truth.
-///
-/// When a real server is stood up, set [baseUrl] and these stubs become live.
 class ApiAuthRepository extends AuthRepository {
   ApiAuthRepository({this.baseUrl, http.Client? client})
       : _client = client ?? http.Client();
 
-  /// When null, the API layer is disabled (offline-only mode).
   final String? baseUrl;
   final http.Client _client;
 
@@ -21,8 +15,6 @@ class ApiAuthRepository extends AuthRepository {
   @override
   Future<AuthState> login(String email, String password) async {
     if (!_isEnabled) return AuthState.initial();
-    // TODO(server): POST {baseUrl}/auth/login with {email,password}; map the
-    // returned token + user payload into an AuthState.
     throw UnimplementedError('ApiAuthRepository.login requires a live server');
   }
 
@@ -33,13 +25,20 @@ class ApiAuthRepository extends AuthRepository {
     String password,
   ) async {
     if (!_isEnabled) return AuthState.initial();
-    throw UnimplementedError('ApiAuthRepository.register requires a live server');
+    throw UnimplementedError(
+        'ApiAuthRepository.register requires a live server');
+  }
+
+  @override
+  Future<AuthState> continueAsGuest() async {
+    if (!_isEnabled) return AuthState.initial();
+    throw UnimplementedError(
+        'ApiAuthRepository.continueAsGuest requires a live server');
   }
 
   @override
   Future<void> logout() async {
     if (!_isEnabled) return;
-    // TODO(server): DELETE {baseUrl}/auth/logout (revoke token).
   }
 
   @override
@@ -51,7 +50,22 @@ class ApiAuthRepository extends AuthRepository {
   @override
   Future<void> forgotPassword(String email) async {
     if (!_isEnabled) return;
-    // TODO(server): POST {baseUrl}/auth/forgot-password {email}.
+  }
+
+  @override
+  Future<UserModel?> updateUserAssessment(UserModel user) async {
+    if (!_isEnabled) return user;
+    return user;
+  }
+
+  @override
+  Future<void> deleteAccount(String userId) async {
+    if (!_isEnabled) return;
+  }
+
+  @override
+  Future<void> resetUserData(String userId) async {
+    if (!_isEnabled) return;
   }
 
   void close() => _client.close();

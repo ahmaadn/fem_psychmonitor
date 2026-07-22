@@ -1,5 +1,7 @@
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -13,17 +15,20 @@ class EmotionBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final r = result;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(9999.r),
+        borderRadius: AppRadius.chip,
         border: Border.all(color: r.label.color.withValues(alpha: 0.34)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Text(r.label.emoji, style: TextStyle(fontSize: 16.sp)),
+          SizedBox(width: 8.w),
           Container(
             width: 8.w,
             height: 8.w,
@@ -38,7 +43,7 @@ class EmotionBadge extends StatelessWidget {
             style: TextStyle(
               fontSize: 13.sp,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: p.ink,
             ),
           ),
           SizedBox(width: 8.w),

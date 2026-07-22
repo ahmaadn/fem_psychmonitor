@@ -1,5 +1,7 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
@@ -19,59 +21,39 @@ class MoodOverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(24.w),
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(AppRadius.xxl),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
+      padding: EdgeInsets.all(AppSpacing.lg.w),
+      decoration: p.panelStrawberry(radius: AppRadius.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomBadge(
-                text: AppLocalizations.of(context)!.todaysSummary,
-                backgroundColor: Colors.white.withAlpha(51),
-                textColor: Colors.white,
+              CustomBadge.strawberry(context, 
+                AppLocalizations.of(context)!.todaysSummary,
               ),
-
               Icon(
                 Icons.auto_awesome_rounded,
-                color: Colors.white,
+                color: p.primary,
                 size: 24.sp,
               ),
             ],
           ),
-
-          SizedBox(height: 24.h),
-
+          SizedBox(height: AppSpacing.lg.h),
           Text(
             '$percentage% $mood',
-            style: Theme.of(context).textTheme.displayLarge?.copyWith(
-              fontSize: 48.sp,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: -1.0,
+            style: AppTypography.heroDisplay.copyWith(
+              color: p.primaryFocus,
             ),
           ),
-
-          SizedBox(height: 12.h),
-
+          SizedBox(height: AppSpacing.sm.h),
           Text(
             description,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontSize: 14.sp,
-              color: Colors.white.withAlpha(230),
+            style: AppTypography.caption.copyWith(
+              color: p.inkMuted,
               height: 1.5,
             ),
           ),

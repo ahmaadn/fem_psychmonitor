@@ -1,4 +1,4 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/widgets/linear_progress_bar.dart';
@@ -36,6 +36,7 @@ class RecordingTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final totalSec = timeline.isEmpty ? 0.0 : timeline.last.endSec;
     final totalLabel =
         '${(totalSec ~/ 60).toString().padLeft(2, '0')}:${(totalSec % 60).toInt().toString().padLeft(2, '0')} Total';
@@ -82,7 +83,7 @@ class RecordingTimeline extends StatelessWidget {
     final segmentWidgets = timeline.isEmpty
         ? [
             Expanded(
-              child: Container(color: AppColors.primary.withValues(alpha: 0.2)),
+              child: Container(color: p.primary.withValues(alpha: 0.2)),
             ),
           ]
         : segments
@@ -105,7 +106,7 @@ class RecordingTimeline extends StatelessWidget {
                 Icon(
                   Icons.schedule_rounded,
                   size: 20.sp,
-                  color: AppColors.primary.withValues(alpha: 0.8),
+                  color: p.primary.withValues(alpha: 0.8),
                 ),
                 SizedBox(width: 8.w),
                 Text(
@@ -121,7 +122,7 @@ class RecordingTimeline extends StatelessWidget {
               totalLabel,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontSize: 14.sp,
-                color: AppColors.primary.withValues(alpha: 0.6),
+                color: p.primary.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -143,7 +144,7 @@ class RecordingTimeline extends StatelessWidget {
               AppLocalizations.of(context)!.startTimeLabel,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontSize: 10.sp,
-                color: AppColors.primary.withValues(alpha: 0.5),
+                color: p.primary.withValues(alpha: 0.5),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -151,7 +152,7 @@ class RecordingTimeline extends StatelessWidget {
               AppLocalizations.of(context)!.endTimeLabel,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontSize: 10.sp,
-                color: AppColors.primary.withValues(alpha: 0.5),
+                color: p.primary.withValues(alpha: 0.5),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -169,6 +170,10 @@ class ComponentTimeline extends StatelessWidget {
   final bool sortByFrequency;
   final bool showAllEmotions;
 
+  /// When true, bars show mean softmax confidence per emotion (overall
+  /// confidence distribution). When false, bars show argmax label frequency.
+  final bool useConfidenceDistribution;
+
   const ComponentTimeline({
     super.key,
     required this.timeline,
@@ -176,25 +181,52 @@ class ComponentTimeline extends StatelessWidget {
     this.animateFromLastPercent = false,
     this.sortByFrequency = true,
     this.showAllEmotions = false,
+    this.useConfidenceDistribution = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final countMap = <EmotionLabelType, int>{};
-    if (showAllEmotions) {
-      for (final label in EmotionLabelType.values) {
-        countMap[label] = 0;
+    final p = context.palette;
+    final Map<EmotionLabelType, int> emotionPercentages;
+
+    if (useConfidenceDistribution) {
+      final n = EmotionLabelType.values.length;
+      final acc = List<double>.filled(n, 0);
+      var count = 0;
+      for (final item in timeline) {
+        if (item.allProbs.length < n) continue;
+        for (var i = 0; i < n; i++) {
+          acc[i] += item.allProbs[i];
+        }
+        count++;
       }
+      emotionPercentages = {
+        for (final label in EmotionLabelType.values)
+          label: count == 0
+              ? 0
+              : ((acc[label.index] / count) * 100).round(),
+      };
+      if (!showAllEmotions) {
+        emotionPercentages.removeWhere((_, v) => v == 0);
+      }
+    } else {
+      final countMap = <EmotionLabelType, int>{};
+      if (showAllEmotions) {
+        for (final label in EmotionLabelType.values) {
+          countMap[label] = 0;
+        }
+      }
+
+      for (final item in timeline) {
+        countMap[item.label] = (countMap[item.label] ?? 0) + 1;
+      }
+
+      final total = timeline.isEmpty ? 1 : timeline.length;
+      emotionPercentages = countMap.map(
+        (key, value) => MapEntry(key, ((value / total) * 100).round()),
+      );
     }
 
-    for (final item in timeline) {
-      countMap[item.label] = (countMap[item.label] ?? 0) + 1;
-    }
-
-    final total = timeline.isEmpty ? 1 : timeline.length;
-    final emotionPercentages = countMap.map(
-      (key, value) => MapEntry(key, ((value / total) * 100).round()),
-    );
     final emotionEntries = emotionPercentages.entries.toList(growable: false);
 
     if (sortByFrequency) {
@@ -206,9 +238,9 @@ class ComponentTimeline extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(AppSpacing.relaxed.w),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: p.surface,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.outline),
+        border: Border.all(color: p.hairline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,6 +277,7 @@ class ComponentTimeline extends StatelessWidget {
     required EmotionLabelType emotion,
     required int percentage,
   }) {
+    final p = context.palette;
     return Column(
       children: [
         Row(
@@ -268,7 +301,7 @@ class ComponentTimeline extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
-                color: AppColors.primary.withValues(alpha: 0.7),
+                color: p.primary.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -282,7 +315,7 @@ class ComponentTimeline extends StatelessWidget {
             milliseconds: animateFromLastPercent ? 500 : 1000,
           ),
           animateFromLastPercent: animateFromLastPercent,
-          backgroundColor: AppColors.outline.withValues(alpha: 0.6),
+          backgroundColor: p.hairline.withValues(alpha: 0.6),
           progressColor: emotion.color,
           barRadius: const Radius.circular(AppRadius.full),
         ),

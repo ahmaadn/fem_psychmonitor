@@ -638,22 +638,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get personalityType => 'Personality Type';
 
   @override
-  String get knowMbtiQuestion => 'Do you already know your MBTI type?';
-
-  @override
   String get yesIKnow => 'Yes, I know';
 
   @override
   String get notSure => 'Not sure';
 
   @override
-  String get selectYourMbti => 'Select your MBTI type:';
-
-  @override
   String get continueButton => 'Continue';
-
-  @override
-  String get mbtiTest => 'MBTI Test';
 
   @override
   String get failedToLoadQuestionnaire => 'Failed to load questionnaire.';
@@ -673,17 +664,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextQuestion => 'Next';
 
   @override
-  String get mbtiResultTitle => 'MBTI Result';
-
-  @override
   String get yourPersonalityType => 'Your Personality Type';
 
   @override
   String get unknown => 'Unknown';
-
-  @override
-  String get mbtiResultDesc =>
-      'We will use this information to customize suggestions in the app.';
 
   @override
   String get continueToMentalHealth => 'Continue to Mental Health Instrument';
@@ -749,9 +733,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startRecordingCta => 'Start Recording';
-
-  @override
-  String get mbtiDimensionScores => 'Dimension Scores';
 
   @override
   String get currentAssessment => 'Current Assessment';

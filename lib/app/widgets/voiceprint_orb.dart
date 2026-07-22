@@ -1,11 +1,9 @@
 import 'dart:math' as math;
 import 'dart:async';
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// VoiceprintOrb — the Aura Echo signature.
-///
 /// A circular, layered "voiceprint" composed of soft radial bars that breathe
 /// at a calm cadence and can tint to any emotion color. It is the visual image
 /// of voice: the recording moment, the result hero, and the processing pulse.
@@ -107,10 +105,10 @@ class _VoiceprintOrbState extends State<VoiceprintOrb>
     super.dispose();
   }
 
-  Color get _accent => widget.color ?? AppColors.primary;
-
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
+    final accent = widget.color ?? p.primary;
     final reduced = MediaQuery.of(context).disableAnimations;
     return SizedBox(
       width: widget.size.w,
@@ -122,7 +120,7 @@ class _VoiceprintOrbState extends State<VoiceprintOrb>
           return CustomPaint(
             painter: _VoiceprintPainter(
               bars: _liveBars(t),
-              accent: _accent,
+              accent: accent,
               bgAlpha: _bgAlpha(),
               amplitude: _amp,
               confidence: widget.confidence ?? 0.65,
@@ -141,7 +139,7 @@ class _VoiceprintOrbState extends State<VoiceprintOrb>
                               fontWeight: FontWeight.w600,
                               height: 1.0,
                               letterSpacing: -1.0,
-                              color: AppColors.textPrimary,
+                              color: p.ink,
                             ),
                           ),
                         if (widget.centerTop != null &&
@@ -154,7 +152,7 @@ class _VoiceprintOrbState extends State<VoiceprintOrb>
                               fontSize: 10.sp,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 1.2,
-                              color: AppColors.textSecondary,
+                              color: p.inkMuted,
                             ),
                           ),
                       ],

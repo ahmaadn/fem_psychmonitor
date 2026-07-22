@@ -1,4 +1,6 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
@@ -15,6 +17,7 @@ class CurrentAssessmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     final profileVm = context.watch<ProfileViewModel>();
     final authVm = context.watch<AuthViewModel>();
@@ -37,14 +40,14 @@ class CurrentAssessmentCard extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: AppColors.outline),
+        color: p.surface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: p.hairline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.currentAssessment, style: AppTypography.fraunces(size: 16)),
+          Text(l10n.currentAssessment, style: AppTypography.bodyStrong.copyWith(fontSize: 16.0)),
           SizedBox(height: 12.h),
           if (!hasPsych)
             Text(
@@ -52,7 +55,7 @@ class CurrentAssessmentCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12.sp,
                 height: 1.5,
-                color: AppColors.textSecondary,
+                color: p.inkMuted,
               ),
             )
           else
@@ -142,14 +145,15 @@ class _MentalHealthTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final score = _scoreFromText(scoreText);
-    final color = status?.color ?? AppColors.primary;
+    final color = status?.color ?? p.primary;
 
     return Container(
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.09),
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(color: color.withValues(alpha: 0.16)),
       ),
       child: Column(
@@ -182,7 +186,7 @@ class _MentalHealthTile extends StatelessWidget {
                         fontSize: 10.sp,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.5,
-                        color: AppColors.textSecondary,
+                        color: p.inkMuted,
                       ),
                     ),
                     Text(
@@ -206,20 +210,16 @@ class _MentalHealthTile extends StatelessWidget {
           SizedBox(height: 10.h),
           Text(
             scoreText,
-            style: AppTypography.fraunces(
-              size: 16,
-              weight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: AppTypography.tagline,
           ),
           if (score != null) ...[
             SizedBox(height: 8.h),
             ClipRRect(
-              borderRadius: BorderRadius.circular(9999.r),
+              borderRadius: AppRadius.chip,
               child: LinearProgressIndicator(
                 value: score / 100,
                 minHeight: 7.h,
-                backgroundColor: AppColors.surfaceContainerHighest,
+                backgroundColor: p.strawberry,
                 valueColor: AlwaysStoppedAnimation<Color>(color),
               ),
             ),
@@ -241,7 +241,7 @@ class _MentalHealthTile extends StatelessWidget {
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.35,
-              color: AppColors.textSecondary,
+              color: p.inkMuted,
             ),
           ),
         ],

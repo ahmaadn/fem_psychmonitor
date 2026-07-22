@@ -1,30 +1,38 @@
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
-import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:fem_psychmonitor/features/onboarding/viewmodels/questionnaire_viewmodel.dart';
-import 'package:fem_psychmonitor/l10n/app_localizations.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-Future<bool> savePendingOnboardingResults(BuildContext context) async {
-  final questionnaireVm = context.read<QuestionnaireViewModel>();
-  if (!questionnaireVm.hasUnsavedOnboardingResults) return false;
-
-  final authVm = context.read<AuthViewModel>();
-  final profileVm = context.read<ProfileViewModel>();
-  final l10n = AppLocalizations.of(context)!;
-  var user = authVm.currentUser ?? profileVm.user;
+Future<bool> persistOnboardingResults({
+  required AuthViewModel authVm,
+  required QuestionnaireViewModel questionnaireVm,
+}) async {
+  final user = authVm.currentUser;
   if (user == null) return false;
+  if (!questionnaireVm.hasUnsavedOnboardingResults &&
+      user.hasCompletedAssessment) {
+    return true;
+  }
 
-  final updatedUser = user.copyWith(
-    mbtiResult: questionnaireVm.finalMbti ?? user.mbtiResult,
+  final updated = user.copyWith(
+    oceanScores: questionnaireVm.oceanScores ?? user.oceanScores,
+    oceanCompletedAt: questionnaireVm.oceanScores != null
+        ? DateTime.now()
+        : user.oceanCompletedAt,
     psychScore: questionnaireVm.psychScore ?? user.psychScore,
-    psychClass:
-        questionnaireVm.psychClass?.classLevel.toString() ?? user.psychClass,
+    psychClass: questionnaireVm.psychClassKey ?? user.psychClass,
   );
 
-  final saved = await profileVm.updateProfile(updatedUser, l10n);
-  if (saved) {
-    questionnaireVm.markOnboardingResultsSaved();
-  }
-  return saved;
+  final ok = await authVm.saveAssessment(updated);
+  if (ok) questionnaireVm.markOnboardingResultsSaved();
+  return ok;
+}
+
+Future<bool> savePendingOnboardingResults(BuildContext context) async {
+  final authVm = context.read<AuthViewModel>();
+  final questionnaireVm = context.read<QuestionnaireViewModel>();
+  return persistOnboardingResults(
+    authVm: authVm,
+    questionnaireVm: questionnaireVm,
+  );
 }

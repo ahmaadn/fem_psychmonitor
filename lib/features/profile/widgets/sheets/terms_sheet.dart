@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
@@ -12,6 +13,7 @@ class TermsSheet extends StatelessWidget {
   const TermsSheet({super.key});
 
   static Future<void> show(BuildContext context) {
+    final p = context.palette;
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -40,6 +42,7 @@ class TermsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     final sections = _buildSections(l10n);
 
@@ -50,7 +53,7 @@ class TermsSheet extends StatelessWidget {
       builder: (_, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: p.surface,
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(AppRadius.lg),
             ),
@@ -63,7 +66,7 @@ class TermsSheet extends StatelessWidget {
                   width: 40.w,
                   height: 4.h,
                   decoration: BoxDecoration(
-                    color: AppColors.outline,
+                    color: p.hairline,
                     borderRadius: BorderRadius.circular(AppRadius.full),
                   ),
                 ),
@@ -81,16 +84,16 @@ class TermsSheet extends StatelessWidget {
                       width: 40.w,
                       height: 40.w,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFEDD5),
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                        color: p.strawberry,
+                        borderRadius: AppRadius.tile,
                       ),
                       child: Icon(
                         Icons.description_outlined,
-                        color: const Color(0xFFEA580C),
+                        color: p.primary,
                         size: 22.sp,
                       ),
                     ),
-                    SizedBox(width: AppSpacing.md.w),
+                    SizedBox(width: AppSpacing.sm.w),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,9 +102,7 @@ class TermsSheet extends StatelessWidget {
                           Text(
                             l10n.termsUpdatedDate,
                             style: AppTypography.bodySm.copyWith(
-                              color: AppColors.textSecondary.withValues(
-                                alpha: 0.6,
-                              ),
+                              color: p.inkMuted,
                             ),
                           ),
                         ],
@@ -111,14 +112,18 @@ class TermsSheet extends StatelessWidget {
                       onPressed: () => Navigator.of(context).pop(),
                       icon: Icon(
                         Icons.close_rounded,
-                        color: AppColors.textSecondary,
+                        color: p.inkMuted,
                         size: 22.sp,
                       ),
                     ),
                   ],
                 ),
               ),
-              Divider(height: 1, thickness: 1, color: AppColors.outline),
+              Divider(
+                height: 1,
+                thickness: AppBorder.thin,
+                color: p.hairline,
+              ),
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
@@ -128,14 +133,9 @@ class TermsSheet extends StatelessWidget {
                     children: [
                       Container(
                         padding: EdgeInsets.all(AppSpacing.md.w),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFEDD5),
-                          borderRadius: BorderRadius.circular(AppRadius.md),
-                          border: Border.all(
-                            color: const Color(
-                              0xFFEA580C,
-                            ).withValues(alpha: 0.2),
-                          ),
+                        decoration: p.card(
+                          color: p.strawberry,
+                          borderColor: p.primary.withValues(alpha: 0.25),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,14 +143,14 @@ class TermsSheet extends StatelessWidget {
                             Icon(
                               Icons.info_outline_rounded,
                               size: 18.sp,
-                              color: const Color(0xFFEA580C),
+                              color: p.primaryFocus,
                             ),
                             SizedBox(width: AppSpacing.sm.w),
                             Expanded(
                               child: Text(
                                 l10n.termsReadCarefully,
                                 style: AppTypography.bodySm.copyWith(
-                                  color: const Color(0xFFEA580C),
+                                  color: p.primaryFocus,
                                   fontWeight: FontWeight.w500,
                                   height: 1.5,
                                 ),
@@ -169,10 +169,10 @@ class TermsSheet extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.all(AppSpacing.md.w),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.05),
+                          color: p.primary.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(AppRadius.md),
                           border: Border.all(
-                            color: AppColors.primary.withValues(alpha: 0.15),
+                            color: p.primary.withValues(alpha: 0.15),
                           ),
                         ),
                         child: Column(
@@ -183,13 +183,13 @@ class TermsSheet extends StatelessWidget {
                                 Icon(
                                   Icons.mail_outline_rounded,
                                   size: 16.sp,
-                                  color: AppColors.primary,
+                                  color: p.primary,
                                 ),
                                 SizedBox(width: AppSpacing.xs.w),
                                 Text(
                                   l10n.contactUs,
                                   style: AppTypography.bodyMd.copyWith(
-                                    color: AppColors.primary,
+                                    color: p.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -199,7 +199,7 @@ class TermsSheet extends StatelessWidget {
                             Text(
                               l10n.contactUsMessage,
                               style: AppTypography.bodySm.copyWith(
-                                color: AppColors.textSecondary,
+                                color: p.inkMuted,
                                 height: 1.5,
                               ),
                             ),
@@ -243,6 +243,7 @@ class _TermsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -254,7 +255,7 @@ class _TermsTile extends StatelessWidget {
         Text(
           section.content,
           style: AppTypography.bodyMd.copyWith(
-            color: AppColors.textSecondary,
+            color: p.inkMuted,
             height: 1.65,
           ),
         ),

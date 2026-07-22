@@ -10,18 +10,15 @@ import 'package:fem_psychmonitor/data/models/user_model.dart';
 import 'package:fem_psychmonitor/data/repositories/auth_repository.dart';
 import 'package:sqflite/sqflite.dart';
 
-/// Offline-first auth repository backed by SQLite.
-///
-/// - Passwords are hashed with SHA-256 + a per-user salt.
-/// - A successful login/register inserts an `auth_tokens` row (local session).
-/// - Profile writes enqueue a sync-queue entry for later remote push.
 class SqliteAuthRepository extends AuthRepository with SyncQueueHelper {
+  static const guestEmail = 'guest@local';
+
   @override
   Future<AuthState> login(String email, String password) async {
     final db = await DatabaseHelper.instance.database;
     final rows = await db.query(
       AppTables.users,
-      where: 'email = ?',
+      where: 'email = ? AND is_guest = 0',
       whereArgs: [email.toLowerCase()],
       limit: 1,
     );
@@ -38,6 +35,7 @@ class SqliteAuthRepository extends AuthRepository with SyncQueueHelper {
 
     final user = UserRow.toModel(row);
     final token = _generateToken(user.id);
+    await db.delete(AppTables.authTokens);
     await db.insert(
       AppTables.authTokens,
       AuthTokenRow.toRow(
@@ -62,7 +60,6 @@ class SqliteAuthRepository extends AuthRepository with SyncQueueHelper {
     }
     final db = await DatabaseHelper.instance.database;
 
-    // Reject duplicate emails.
     final existing = await db.query(
       AppTables.users,
       where: 'email = ?',
@@ -73,16 +70,38 @@ class SqliteAuthRepository extends AuthRepository with SyncQueueHelper {
       return AuthState.error('Email sudah terdaftar');
     }
 
+    // Merge from guest if active
+    final guestRows = await db.query(
+      AppTables.users,
+      where: 'is_guest = 1',
+      limit: 1,
+    );
+
     final now = DateTime.now();
     final userId = 'usr_${now.millisecondsSinceEpoch}';
     final salt = _generateSalt();
     final passwordHash = _hashPassword(password, salt);
-    final user = UserModel(
+
+    UserModel user = UserModel(
       id: userId,
       fullName: fullName,
       email: email,
       createdAt: now,
+      isGuest: false,
     );
+
+    if (guestRows.isNotEmpty) {
+      final guest = UserRow.toModel(guestRows.first);
+      user = user.copyWith(
+        oceanScores: guest.oceanScores,
+        oceanCompletedAt: guest.oceanCompletedAt,
+        psychScore: guest.psychScore,
+        psychClass: guest.psychClass,
+        avatarUrl: guest.avatarUrl,
+        phone: guest.phone,
+        dateOfBirth: guest.dateOfBirth,
+      );
+    }
 
     await db.insert(
       AppTables.users,
@@ -95,14 +114,35 @@ class SqliteAuthRepository extends AuthRepository with SyncQueueHelper {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
+    if (guestRows.isNotEmpty) {
+      final guestId = guestRows.first[UserRow.colId] as String;
+      await db.update(
+        AppTables.detectionSessions,
+        {'user_id': userId},
+        where: 'user_id = ?',
+        whereArgs: [guestId],
+      );
+      await db.update(
+        AppTables.dailyMoods,
+        {'user_id': userId},
+        where: 'user_id = ?',
+        whereArgs: [guestId],
+      );
+      await db.update(
+        AppTables.mentalScoreLog,
+        {'user_id': userId},
+        where: 'user_id = ?',
+        whereArgs: [guestId],
+      );
+      await db.delete(AppTables.authTokens, where: 'user_id = ?', whereArgs: [guestId]);
+      await db.delete(AppTables.users, where: 'id = ?', whereArgs: [guestId]);
+    }
+
     final token = _generateToken(userId);
+    await db.delete(AppTables.authTokens);
     await db.insert(
       AppTables.authTokens,
-      AuthTokenRow.toRow(
-        token: token,
-        userId: userId,
-        issuedAt: now,
-      ),
+      AuthTokenRow.toRow(token: token, userId: userId, issuedAt: now),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
@@ -117,9 +157,56 @@ class SqliteAuthRepository extends AuthRepository with SyncQueueHelper {
   }
 
   @override
+  Future<AuthState> continueAsGuest() async {
+    final db = await DatabaseHelper.instance.database;
+    final existing = await db.query(
+      AppTables.users,
+      where: 'is_guest = 1',
+      limit: 1,
+    );
+
+    late UserModel user;
+    if (existing.isNotEmpty) {
+      user = UserRow.toModel(existing.first);
+    } else {
+      final now = DateTime.now();
+      user = UserModel(
+        id: 'guest_local',
+        fullName: 'Tamu',
+        email: guestEmail,
+        createdAt: now,
+        isGuest: true,
+      );
+      await db.insert(
+        AppTables.users,
+        UserRow.toRow(
+          user,
+          passwordHash: _hashPassword('guest', 'guest_salt_fixed1'),
+          createdAt: now.millisecondsSinceEpoch,
+          updatedAt: now.millisecondsSinceEpoch,
+          isDirty: false,
+        ),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    final token = _generateToken(user.id);
+    await db.delete(AppTables.authTokens);
+    await db.insert(
+      AppTables.authTokens,
+      AuthTokenRow.toRow(
+        token: token,
+        userId: user.id,
+        issuedAt: DateTime.now(),
+      ),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    return AuthState.authenticated(user: user, token: token);
+  }
+
+  @override
   Future<void> logout() async {
     final db = await DatabaseHelper.instance.database;
-    // Clear all local session tokens (single-user device assumption).
     await db.delete(AppTables.authTokens);
   }
 
@@ -131,9 +218,7 @@ class SqliteAuthRepository extends AuthRepository with SyncQueueHelper {
       orderBy: '${AuthTokenRow.colIssuedAt} DESC',
       limit: 1,
     );
-    if (tokenRows.isEmpty) {
-      return AuthState.initial();
-    }
+    if (tokenRows.isEmpty) return AuthState.initial();
     final userId = tokenRows.first[AuthTokenRow.colUserId] as String;
     final userRows = await db.query(
       AppTables.users,
@@ -141,9 +226,7 @@ class SqliteAuthRepository extends AuthRepository with SyncQueueHelper {
       whereArgs: [userId],
       limit: 1,
     );
-    if (userRows.isEmpty) {
-      return AuthState.initial();
-    }
+    if (userRows.isEmpty) return AuthState.initial();
     final user = UserRow.toModel(userRows.first);
     final token = tokenRows.first[AuthTokenRow.colToken] as String;
     return AuthState.authenticated(user: user, token: token);
@@ -151,12 +234,75 @@ class SqliteAuthRepository extends AuthRepository with SyncQueueHelper {
 
   @override
   Future<void> forgotPassword(String email) async {
-    // Offline-first: no email transport available. No-op until API wired.
+    // Offline-first: no email transport.
   }
 
-  // ── Hashing helpers ──────────────────────────────────────────────────
+  @override
+  Future<UserModel?> updateUserAssessment(UserModel user) async {
+    final db = await DatabaseHelper.instance.database;
+    final rows = await db.query(
+      AppTables.users,
+      where: 'id = ?',
+      whereArgs: [user.id],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+    final hash = rows.first[UserRow.colPasswordHash] as String;
+    await db.update(
+      AppTables.users,
+      UserRow.toRow(user, passwordHash: hash, isDirty: !user.isGuest),
+      where: 'id = ?',
+      whereArgs: [user.id],
+    );
+    if (user.psychScore != null) {
+      await db.insert(AppTables.mentalScoreLog, {
+        'user_id': user.id,
+        'at_ms': DateTime.now().millisecondsSinceEpoch,
+        'score': user.psychScore,
+        'reason': 'assessment',
+      });
+    }
+    return user;
+  }
 
-  /// Format: `<salt>$<sha256(salt + password)>`. Salt is 16 hex chars.
+  @override
+  Future<void> deleteAccount(String userId) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.delete(AppTables.authTokens, where: 'user_id = ?', whereArgs: [userId]);
+    await db.delete(AppTables.users, where: 'id = ?', whereArgs: [userId]);
+  }
+
+  @override
+  Future<void> resetUserData(String userId) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.delete(AppTables.detectionResults,
+        where:
+            'session_id IN (SELECT id FROM ${AppTables.detectionSessions} WHERE user_id = ?)',
+        whereArgs: [userId]);
+    await db.delete(AppTables.detectionSessions,
+        where: 'user_id = ?', whereArgs: [userId]);
+    await db.delete(AppTables.dailyMoods,
+        where: 'user_id = ?', whereArgs: [userId]);
+    await db.delete(AppTables.mentalScoreLog,
+        where: 'user_id = ?', whereArgs: [userId]);
+    await db.update(
+      AppTables.users,
+      {
+        'ocean_o': null,
+        'ocean_c': null,
+        'ocean_e': null,
+        'ocean_a': null,
+        'ocean_n': null,
+        'ocean_completed_at': null,
+        'psych_score': null,
+        'psych_class': null,
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      where: 'id = ?',
+      whereArgs: [userId],
+    );
+  }
+
   String _hashPassword(String password, String salt) {
     final bytes = utf8.encode('$salt$password');
     final digest = sha256.convert(bytes);

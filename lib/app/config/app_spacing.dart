@@ -1,73 +1,65 @@
+import 'package:flutter/material.dart';
+
+/// Spacing scale (iOS-on-Android, 4/8 rhythm). Never hardcode gaps in UI.
 class AppSpacing {
   AppSpacing._();
 
-  // Grid dasar menggunakan kelipatan 8px
   static const double none = 0.0;
-
-  // Design aliases (DESIGN.md)
-
-  /// 4px, untuk jarak sangat kecil, seperti antara ikon dan teks dalam tombol.
-  static const double xs = 4.0;
-
-  /// 8px, untuk jarak kecil, seperti antara elemen dalam satu grup (misalnya, antara label dan input).
-  static const double sm = 8.0;
-
-  /// 16px, untuk jarak standar antar elemen utama (misalnya, antara form fields).
+  static const double xxs = 4.0;
+  static const double xs = 8.0;
+  static const double sm = 12.0;
   static const double md = 16.0;
-
-  /// 24px, untuk jarak lebih longgar antar grup elemen (misalnya, antara sections dalam satu page).
   static const double lg = 24.0;
-
-  /// 32px, untuk jarak besar antar section utama (misalnya, antara header dan content).
   static const double xl = 32.0;
+  static const double xxl = 48.0;
+  static const double section = 64.0;
 
-  /// Internal grouping, icon labels.
-  static const double tight = 4.0;
-
-  /// Elemen dalam card, padding input.
-  static const double compact = 8.0;
-
-  /// Gutter standar, jarak antar input.
-  static const double base = 16.0;
-
-  /// Jarak antar grup komponen utama.
-  static const double relaxed = 24.0;
-
-  /// Header section, margin card besar.
-  static const double spacious = 32.0;
-
-  /// Pemisah antar section (Page-level).
-  static const double extraSpacious = 48.0;
-
-  /// Margin aman atas/bawah.
+  static const double tight = xxs;
+  static const double compact = xs;
+  static const double base = md;
+  static const double relaxed = lg;
+  static const double spacious = xl;
+  static const double extraSpacious = xxl;
   static const double safeArea = 64.0;
+
+  static const double pageX = 20.0;
+  static const double card = 16.0;
+  static const double stack = 12.0;
+  static const double buttonY = 14.0;
+  static const double buttonX = 22.0;
+  static const double touch = 48.0;
+  static const double navHeight = 60.0;
 }
 
+/// Border radius scale — iOS soft corners. Never hardcode radii in UI.
 class AppRadius {
   AppRadius._();
 
-  // Pembulatan sudut (Corner Radius) untuk kesan UI yang empatik dan lembut
-  /// Checkboxes, tag kecil.
-  static const double xs = 4.0;
-
-  /// Checkboxes, tag kecil.
-  static const double sm = 8.0;
-
-  /// Tombol standar, input fields.
-  static const double md = 16.0;
-
-  /// Banner besar, modal bawah.
-  static const double lg = 24.0;
-
-  /// Content cards (legacy size).
-  static const double xl = 24.0;
-
-  /// Large feature cards, dashboard summaries.
+  static const double none = 0.0;
+  static const double xs = 6.0;
+  static const double sm = 10.0;
+  static const double md = 14.0;
+  static const double lg = 20.0;
+  static const double xl = 28.0;
+  static const double pill = 9999.0;
+  static const double full = 9999.0;
   static const double xxl = 32.0;
-
-  /// App Bars, elemen Splash Screen.
   static const double xxxl = 48.0;
 
-  /// Avatars, pill-shaped buttons.
-  static const double full = 9999.0;
+  static final BorderRadius card = BorderRadius.circular(lg);
+  static const BorderRadius sheet =
+      BorderRadius.vertical(top: Radius.circular(xl));
+  static final BorderRadius field = BorderRadius.circular(md);
+  static final BorderRadius chip = BorderRadius.circular(pill);
+  static final BorderRadius button = BorderRadius.circular(pill);
+  static final BorderRadius tile = BorderRadius.circular(md);
+}
+
+/// Border widths only. Colors come from [AppPalette] sides.
+class AppBorder {
+  AppBorder._();
+
+  static const double thin = 1.0;
+  static const double medium = 1.5;
+  static const double thick = 2.0;
 }

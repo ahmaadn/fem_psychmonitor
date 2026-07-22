@@ -100,5 +100,11 @@ class ApiDetectionRepository extends DetectionRepository {
     throw UnimplementedError('ApiDetectionRepository requires a live server');
   }
 
+  @override
+  Future<void> deleteSession(String sessionId) async {
+    if (!_isEnabled) return;
+    throw UnimplementedError('ApiDetectionRepository requires a live server');
+  }
+
   void close() => _client.close();
 }

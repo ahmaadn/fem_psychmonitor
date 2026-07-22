@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,6 +22,7 @@ class ControlAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Column(
       children: [
         GestureDetector(
@@ -35,9 +37,9 @@ class ControlAction extends StatelessWidget {
               ), // Rounded square
               boxShadow: [
                 if (bgColor ==
-                    AppColors.primary) // Tambah glow khusus tombol Done
+                    p.primary) // Tambah glow khusus tombol Done
                   BoxShadow(
-                    color: AppColors.primary.withAlpha(76),
+                    color: p.primary.withAlpha(76),
                     blurRadius: 15,
                     offset: const Offset(0, 5),
                   ),
@@ -51,7 +53,7 @@ class ControlAction extends StatelessWidget {
           label,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
             fontSize: 12.sp,
-            color: AppColors.primary.withAlpha(204),
+            color: p.primary.withAlpha(204),
             fontWeight: FontWeight.w600,
           ),
         ),

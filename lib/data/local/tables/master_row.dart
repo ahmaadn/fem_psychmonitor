@@ -1,57 +1,10 @@
-import 'dart:convert';
-
 import 'package:fem_psychmonitor/features/onboarding/models/localized_string_model.dart';
-import 'package:fem_psychmonitor/features/onboarding/models/mbti_model.dart';
 import 'package:fem_psychmonitor/features/onboarding/models/psych_model.dart';
-import 'package:fem_psychmonitor/features/onboarding/models/saran_model.dart';
 
 /// Row ⇄ model mappers for the asset-seeded master tables.
 class MasterRow {
   MasterRow._();
 
-  // ── MBTI ───────────────────────────────────────────────────────────────
-  static Map<String, Object?> mbtiQuestionRow(MbtiQuestion q) => {
-        'id': q.id,
-        'code': q.code,
-        'dimension': q.dimension,
-        'question_en': q.question.en,
-        'question_id': q.question.id,
-      };
-
-  static Map<String, Object?> mbtiOptionRow(int questionId, MbtiOption o) => {
-        'question_id': questionId,
-        'code': o.code,
-        'answer_en': o.answer.en,
-        'answer_id': o.answer.id,
-        'type': o.type,
-      };
-
-  static MbtiQuestion mbtiQuestionFromRow(
-    Map<String, Object?> qRow,
-    List<Map<String, Object?>> optRows,
-  ) {
-    return MbtiQuestion(
-      id: qRow['id'] as int,
-      code: qRow['code'] as String? ?? '',
-      dimension: qRow['dimension'] as String,
-      question: LocalizedString(
-        id: qRow['question_id'] as String,
-        en: qRow['question_en'] as String,
-      ),
-      options: optRows
-          .map((o) => MbtiOption(
-                code: o['code'] as String? ?? '',
-                answer: LocalizedString(
-                  id: o['answer_id'] as String,
-                  en: o['answer_en'] as String,
-                ),
-                type: o['type'] as String,
-              ))
-          .toList(),
-    );
-  }
-
-  // ── Psych ──────────────────────────────────────────────────────────────
   static Map<String, Object?> psychQuestionRow(PsychQuestion q) => {
         'id': q.id,
         'code': q.code,
@@ -128,34 +81,4 @@ class MasterRow {
       ),
     );
   }
-
-  // ── Saran ──────────────────────────────────────────────────────────────
-  static Map<String, Object?> saranRow(SaranRecommendation r) => {
-        'mbti_type': r.mbtiType,
-        'alias': r.alias,
-        'group_name': r.group,
-        'emotions_json': jsonEncode(_emotionsToJson(r.emotions)),
-      };
-
-  static SaranRecommendation saranFromRow(Map<String, Object?> row) {
-    final emotions = SaranEmotions.fromJson(
-      jsonDecode(row['emotions_json'] as String) as Map<String, dynamic>,
-    );
-    return SaranRecommendation(
-      mbtiType: row['mbti_type'] as String,
-      alias: row['alias'] as String,
-      group: row['group_name'] as String,
-      emotions: emotions,
-    );
-  }
-
-  /// The source JSON uses the capitalised keys (Happy/Fear/Angry/...).
-  static Map<String, dynamic> _emotionsToJson(SaranEmotions e) => {
-        'Happy': e.happy,
-        'Fear': e.fear,
-        'Angry': e.angry,
-        'Sad': e.sad,
-        'Disgust': e.disgust,
-        'Neutral': e.neutral,
-      };
 }

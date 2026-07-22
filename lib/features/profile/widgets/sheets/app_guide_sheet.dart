@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
@@ -12,6 +13,7 @@ class AppGuideSheet extends StatefulWidget {
   const AppGuideSheet({super.key});
 
   static Future<void> show(BuildContext context) {
+    final p = context.palette;
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -27,32 +29,36 @@ class AppGuideSheet extends StatefulWidget {
 class _AppGuideSheetState extends State<AppGuideSheet> {
   int _selectedStep = 0;
 
-  List<_GuideStep> _buildSteps(AppLocalizations l10n) => [
+  List<_GuideStep> _buildSteps(AppLocalizations l10n) {
+    final p = context.palette;
+    return [
     _GuideStep(
       icon: Icons.mic_rounded,
-      iconColor: Color(0xFF1B6B51),
-      iconBg: Color(0xFFD1FAE5),
+      iconColor: p.primary,
+      iconBg: p.strawberry,
       title: l10n.recordVoiceGuide,
       description: l10n.recordVoiceGuideDesc,
     ),
     _GuideStep(
       icon: Icons.insights_rounded,
-      iconColor: Color(0xFF6D5096),
-      iconBg: Color(0xFFEDDCFF),
+      iconColor: p.primaryFocus,
+      iconBg: p.strawberrySoft,
       title: l10n.viewEmotionInsights,
       description: l10n.viewInsightsDesc,
     ),
     _GuideStep(
       icon: Icons.calendar_month_rounded,
-      iconColor: Color(0xFF2563EB),
-      iconBg: Color(0xFFDBEAFE),
+      iconColor: p.primary,
+      iconBg: p.strawberry,
       title: l10n.monitorCycle,
       description: l10n.monitorCycleDesc,
     ),
   ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     final steps = _buildSteps(l10n);
 
@@ -63,30 +69,26 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
       builder: (_, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(AppRadius.lg),
-            ),
+            color: p.surface,
+            borderRadius: AppRadius.sheet,
           ),
           child: Column(
             children: [
-              // Drag Handle
               Padding(
-                padding: EdgeInsets.only(top: AppSpacing.md.h),
+                padding: EdgeInsets.only(top: AppSpacing.sm.h),
                 child: Container(
                   width: 40.w,
                   height: 4.h,
                   decoration: BoxDecoration(
-                    color: AppColors.outline,
-                    borderRadius: BorderRadius.circular(AppRadius.full),
+                    color: p.hairline,
+                    borderRadius: AppRadius.chip,
                   ),
                 ),
               ),
-              // Header
               Padding(
                 padding: EdgeInsets.fromLTRB(
                   AppSpacing.lg.w,
-                  AppSpacing.lg.h,
+                  AppSpacing.md.h,
                   AppSpacing.lg.w,
                   AppSpacing.sm.h,
                 ),
@@ -96,16 +98,16 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                       width: 40.w,
                       height: 40.w,
                       decoration: BoxDecoration(
-                        color: AppColors.tertiary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                        color: p.strawberry,
+                        borderRadius: AppRadius.tile,
                       ),
                       child: Icon(
                         Icons.menu_book_rounded,
-                        color: AppColors.tertiary,
+                        color: p.primary,
                         size: 22.sp,
                       ),
                     ),
-                    SizedBox(width: AppSpacing.md.w),
+                    SizedBox(width: AppSpacing.sm.w),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,9 +116,7 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                           Text(
                             l10n.stepsToStart(steps.length),
                             style: AppTypography.bodySm.copyWith(
-                              color: AppColors.textSecondary.withValues(
-                                alpha: 0.7,
-                              ),
+                              color: p.inkMuted,
                             ),
                           ),
                         ],
@@ -126,14 +126,13 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                       onPressed: () => Navigator.of(context).pop(),
                       icon: Icon(
                         Icons.close_rounded,
-                        color: AppColors.textSecondary,
+                        color: p.inkMuted,
                         size: 22.sp,
                       ),
                     ),
                   ],
                 ),
               ),
-              // Step Pills
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg.w),
@@ -146,23 +145,16 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                         duration: const Duration(milliseconds: 200),
                         margin: EdgeInsets.only(right: AppSpacing.sm.w),
                         padding: EdgeInsets.symmetric(
-                          horizontal: 14.w,
-                          vertical: 6.h,
+                          horizontal: AppSpacing.sm.w + 2,
+                          vertical: AppSpacing.xxs.h + 2,
                         ),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.tertiary
-                              : AppColors.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(AppRadius.full),
-                        ),
+                        decoration: p.chip(selected: isSelected),
                         child: Text(
                           '${i + 1}',
                           style: AppTypography.label.copyWith(
                             color: isSelected
-                                ? Colors.white
-                                : AppColors.textSecondary.withValues(
-                                    alpha: 0.5,
-                                  ),
+                                ? p.onPrimary
+                                : p.inkFaint,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -171,8 +163,12 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                   }),
                 ),
               ),
-              SizedBox(height: AppSpacing.md.h),
-              Divider(height: 1, thickness: 1, color: AppColors.outline),
+              SizedBox(height: AppSpacing.sm.h),
+              Divider(
+                height: 1,
+                thickness: AppBorder.thin,
+                color: p.hairline,
+              ),
               // Content
               Expanded(
                 child: SingleChildScrollView(
@@ -204,8 +200,9 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                         child: SecondaryButton(
                           text: l10n.previous,
                           onPressed: () => setState(() => _selectedStep--),
-                          backgroundColor: AppColors.surfaceContainerHighest,
-                          textColor: AppColors.textPrimary,
+                          backgroundColor: p.strawberry,
+                          textColor: p.primaryFocus,
+                          borderColor: p.hairline,
                         ),
                       ),
                       SizedBox(width: AppSpacing.md.w),
@@ -263,22 +260,26 @@ class _StepContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         Container(
           width: 88.w,
           height: 88.w,
-          decoration: BoxDecoration(color: step.iconBg, shape: BoxShape.circle),
+          decoration: p.circle(
+            color: step.iconBg,
+            borderColor: step.iconColor.withValues(alpha: 0.25),
+          ),
           child: Icon(step.icon, color: step.iconColor, size: 44.sp),
         ),
         SizedBox(height: AppSpacing.lg.h),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 4.h),
-          decoration: BoxDecoration(
-            color: step.iconBg,
-            borderRadius: BorderRadius.circular(AppRadius.full),
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm.w + 2,
+            vertical: AppSpacing.xxs.h,
           ),
+          decoration: p.pillFill(step.iconBg),
           child: Text(
             l10n.stepOf(index + 1, totalSteps),
             style: AppTypography.bodySm.copyWith(
@@ -293,7 +294,7 @@ class _StepContent extends StatelessWidget {
         Text(
           step.description,
           style: AppTypography.bodyMd.copyWith(
-            color: AppColors.textSecondary,
+            color: p.inkMuted,
             height: 1.7,
           ),
           textAlign: TextAlign.center,

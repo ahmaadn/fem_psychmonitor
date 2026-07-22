@@ -1,17 +1,12 @@
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-/// Cincin progres melingkar (donut) berbasis [fl_chart].
-///
-/// Menggantikan `CircularPercentIndicator` dari package `percent_indicator`
-/// agar dependency tersebut dapat dihapus. Menampilkan ring melingkar yang
-/// terisi secara animatif dari 0 sampai [percent], dengan widget [center]
-/// berada di tengah ring.
 class CircularProgressRing extends StatefulWidget {
   const CircularProgressRing({
     super.key,
     required this.percent,
-    required this.progressColor,
+    this.progressColor,
     this.backgroundColor,
     this.radius = 72,
     this.lineWidth = 10,
@@ -19,25 +14,12 @@ class CircularProgressRing extends StatefulWidget {
     this.center,
   });
 
-  /// Nilai progres (0.0 - 1.0); akan dijepit ke rentang tersebut.
   final double percent;
-
-  /// Warna busur progres.
-  final Color progressColor;
-
-  /// Warna latar ring (sisa busur yang belum terisi).
+  final Color? progressColor;
   final Color? backgroundColor;
-
-  /// Jari-jari ring.
   final double radius;
-
-  /// Lebar busur ring.
   final double lineWidth;
-
-  /// Durasi animasi pengisian dari 0 ke [percent].
   final Duration duration;
-
-  /// Widget yang ditampilkan di tengah ring.
   final Widget? center;
 
   @override
@@ -76,10 +58,13 @@ class _CircularProgressRingState extends State<CircularProgressRing>
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final clamped = widget.percent.clamp(0.0, 1.0);
     final size = widget.radius * 2;
-    final centerSpace = (widget.radius - widget.lineWidth)
-        .clamp(0.0, widget.radius);
+    final centerSpace =
+        (widget.radius - widget.lineWidth).clamp(0.0, widget.radius);
+    final progress = widget.progressColor ?? p.primary;
+    final track = widget.backgroundColor ?? p.strawberry;
 
     return SizedBox(
       width: size,
@@ -93,20 +78,19 @@ class _CircularProgressRingState extends State<CircularProgressRing>
               final animated = clamped * _curve.value;
               return PieChart(
                 PieChartData(
-                  // Mulai dari atas (jarum jam pukul 12).
                   startDegreeOffset: 270,
                   sectionsSpace: 0,
                   centerSpaceRadius: centerSpace,
                   sections: [
                     PieChartSectionData(
                       value: animated,
-                      color: widget.progressColor,
+                      color: progress,
                       radius: widget.lineWidth,
                       showTitle: false,
                     ),
                     PieChartSectionData(
                       value: 1 - animated,
-                      color: widget.backgroundColor ?? Colors.transparent,
+                      color: track,
                       radius: widget.lineWidth,
                       showTitle: false,
                     ),

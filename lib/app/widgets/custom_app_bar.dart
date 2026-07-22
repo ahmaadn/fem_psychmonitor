@@ -1,4 +1,6 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -25,35 +27,33 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return AppBar(
-      // Jika masuk ke dalam area scroll (yang sudah punya SafeArea), matikan primary padding
-      // agar tidak terjadi double padding di bagian atas layar.
       primary: !isScrollable,
       backgroundColor: backgroundColor ?? Colors.transparent,
       elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
       centerTitle: centerTitle,
-      titleSpacing: centerTitle ? null : 24.w,
-      leading:
-          leading ??
+      titleSpacing: centerTitle ? null : AppSpacing.pageX.w,
+      leading: leading ??
           (showBackButton && context.canPop()
               ? IconButton(
                   icon: Icon(
-                    Icons.arrow_back_rounded,
-                    color: AppColors.textSecondary,
+                    Icons.arrow_back_ios_new_rounded,
+                    size: 18.sp,
+                    color: p.ink,
                   ),
-                  onPressed: () {
-                    context.pop();
-                  },
+                  onPressed: () => context.pop(),
                 )
               : null),
       title: Text(
         title,
-        style: Theme.of(
-          context,
-        ).textTheme.headlineMedium?.copyWith(color: AppColors.textPrimary),
+        style: AppTypography.tagline.copyWith(color: p.ink),
       ),
-
-      actions: actions != null ? [...actions!, SizedBox(width: 8.w)] : null,
+      actions: actions != null
+          ? [...actions!, SizedBox(width: AppSpacing.xs.w)]
+          : null,
     );
   }
 

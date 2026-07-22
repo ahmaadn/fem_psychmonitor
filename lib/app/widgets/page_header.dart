@@ -1,4 +1,6 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -10,25 +12,25 @@ class PageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Column(
       children: [
-        SizedBox(height: 24.h),
+        SizedBox(height: AppSpacing.lg.h),
         Text(
           title,
-          style: Theme.of(context).textTheme.displayLarge?.copyWith(
-            fontSize: 32.sp,
-            fontWeight: FontWeight.w800,
-            color: AppColors.primary,
-            letterSpacing: -0.5,
+          textAlign: TextAlign.center,
+          style: AppTypography.displayLg.copyWith(
+            color: p.primary,
+            fontWeight: FontWeight.w700,
           ),
         ),
-        SizedBox(height: 12.h),
+        SizedBox(height: AppSpacing.sm.h),
         Text(
           subtitle,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontSize: 15.sp,
-            color: AppColors.onSurface,
-            height: 1.5,
+          textAlign: TextAlign.center,
+          style: AppTypography.body.copyWith(
+            color: p.inkMuted,
+            height: 1.45,
           ),
         ),
       ],

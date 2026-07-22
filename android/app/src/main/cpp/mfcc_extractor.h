@@ -150,12 +150,92 @@ void extract_features(
         int          n_samples,  // must be 48000
         float*       output      // [MAX_PAD_LEN * FEATURE_DIM] = [128 * 121]
 ) {
-    // ── 1. Copy & normalize ──────────────────────────────────────────────────
+    // ── 1. Copy, pad/crop ────────────────────────────────────────────────────
     std::vector<double> audio(audio_in, audio_in + n_samples);
-
-    // pad or crop to TARGET_SAMPLES
     audio.resize(TARGET_SAMPLES, 0.0);
 
+    // ── 1b. Stationary spectral gating (approx. noisereduce stationary=True) ─
+    // Estimate noise profile from quietest 10% frames by RMS, then attenuate
+    // bins that are not significantly above the noise floor.
+    {
+        const int nr_hop = HOP_LENGTH;
+        const int nr_fft = N_FFT;
+        const int nr_bins = nr_fft / 2 + 1;
+        const int nr_frames = 1 + (TARGET_SAMPLES - nr_fft) / nr_hop;
+        if (nr_frames > 4) {
+            std::vector<double> frame_rms(nr_frames, 0.0);
+            std::vector<std::vector<double>> power(nr_frames,
+                std::vector<double>(nr_bins, 0.0));
+            std::vector<std::complex<double>> fft_buf(nr_fft);
+            std::vector<double> win(nr_fft);
+            for (int i = 0; i < nr_fft; i++)
+                win[i] = 0.54 - 0.46 * std::cos(2.0 * M_PI * i / (nr_fft - 1));
+
+            for (int t = 0; t < nr_frames; t++) {
+                int start = t * nr_hop;
+                double energy = 0.0;
+                for (int i = 0; i < nr_fft; i++) {
+                    double s = audio[start + i] * win[i];
+                    fft_buf[i] = std::complex<double>(s, 0.0);
+                    energy += s * s;
+                }
+                frame_rms[t] = std::sqrt(energy / nr_fft);
+                fft(fft_buf);
+                for (int k = 0; k < nr_bins; k++)
+                    power[t][k] = std::norm(fft_buf[k]);
+            }
+
+            // Quietest 10% frames → noise profile
+            std::vector<int> order(nr_frames);
+            std::iota(order.begin(), order.end(), 0);
+            std::sort(order.begin(), order.end(),
+                [&](int a, int b) { return frame_rms[a] < frame_rms[b]; });
+            int n_noise = std::max(1, nr_frames / 10);
+            std::vector<double> noise_prof(nr_bins, 0.0);
+            for (int i = 0; i < n_noise; i++) {
+                int t = order[i];
+                for (int k = 0; k < nr_bins; k++)
+                    noise_prof[k] += power[t][k];
+            }
+            for (int k = 0; k < nr_bins; k++)
+                noise_prof[k] = noise_prof[k] / n_noise + 1e-12;
+
+            // Soft mask + OLA reconstruct
+            std::vector<double> out(TARGET_SAMPLES, 0.0);
+            std::vector<double> wsum(TARGET_SAMPLES, 0.0);
+            const double prop_decrease = 0.8;
+            for (int t = 0; t < nr_frames; t++) {
+                int start = t * nr_hop;
+                for (int i = 0; i < nr_fft; i++) {
+                    double s = audio[start + i] * win[i];
+                    fft_buf[i] = std::complex<double>(s, 0.0);
+                }
+                fft(fft_buf);
+                for (int k = 0; k < nr_bins; k++) {
+                    double p = std::norm(fft_buf[k]);
+                    double snr = p / noise_prof[k];
+                    double mask = snr > 2.0 ? 1.0 : std::max(0.05, snr / 2.0);
+                    mask = 1.0 - prop_decrease * (1.0 - mask);
+                    fft_buf[k] *= mask;
+                    if (k > 0 && k < nr_bins - 1)
+                        fft_buf[nr_fft - k] = std::conj(fft_buf[k]);
+                }
+                // inverse FFT via conjugate + forward FFT
+                for (auto& c : fft_buf) c = std::conj(c);
+                fft(fft_buf);
+                for (int i = 0; i < nr_fft; i++) {
+                    double s = std::real(fft_buf[i]) / nr_fft * win[i];
+                    out[start + i] += s;
+                    wsum[start + i] += win[i] * win[i];
+                }
+            }
+            for (int i = 0; i < TARGET_SAMPLES; i++) {
+                if (wsum[i] > 1e-9) audio[i] = out[i] / wsum[i];
+            }
+        }
+    }
+
+    // ── 1c. Peak normalization (after NR, before MFCC) ───────────────────────
     double max_abs = 0.0;
     for (auto v : audio) max_abs = std::max(max_abs, std::abs(v));
     if (max_abs > 0.0)

@@ -5,6 +5,7 @@ import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/utils/formatter_utils.dart';
+import 'package:fem_psychmonitor/app/widgets/emotion_radar_chart.dart';
 import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
 import 'package:fem_psychmonitor/detection/widgets/emotion_badge.dart';
@@ -129,42 +130,22 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
       },
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.close_rounded,
-                color: AppColors.textSecondary, size: 22.sp),
-            onPressed: _discardSession,
+        body: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppColors.background,
+                Color.lerp(AppColors.background, AppColors.lightStrawberryMilk, 0.45)!,
+              ],
+            ),
           ),
-          title: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            child: detector.isDetecting
-                ? Row(
-                    mainAxisSize: MainAxisSize.min,
-                    key: const ValueKey('live'),
-                    children: [
-                      Icon(Icons.circle, size: 8.sp, color: AppColors.warning),
-                      SizedBox(width: 6.w),
-                      Text(l10n.liveSession,
-                          style: TextStyle(
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.0,
-                              color: AppColors.warning)),
-                    ],
-                  )
-                : Text(l10n.recordYourVoice,
-                    key: const ValueKey('idle'),
-                    style: AppTypography.fraunces(size: 18)),
-          ),
-        ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
+          child: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -172,12 +153,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                       SizedBox(height: 8.h),
                       Text(
                         formatDuration(_elapsed),
-                        style: AppTypography.fraunces(
-                          size: 40,
-                          weight: FontWeight.w500,
-                          color: AppColors.textPrimary,
-                          spacing: -1.0,
-                        ),
+                        style: AppTypography.tagline,
                       ),
                       SizedBox(height: 6.h),
                       Text(
@@ -214,6 +190,16 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                                 ),
                               ),
                       ),
+                      if (detector.timeline.isNotEmpty) ...[
+                        SizedBox(height: 20.h),
+                        EmotionRadarChart(
+                          height: 200,
+                          title: 'Distribusi live',
+                          values: EmotionRadarChart.averageProbsFromResults(
+                            detector.timeline.map((e) => e.allProbs),
+                          ),
+                        ),
+                      ],
                       SizedBox(height: 16.h),
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 250),
@@ -273,11 +259,12 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                         icon: Icons.shield_outlined,
                       ),
                       SizedBox(height: 32.h),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

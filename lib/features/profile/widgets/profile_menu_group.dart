@@ -1,5 +1,5 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -13,17 +13,12 @@ class ProfileMenuGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Container(
-      margin: EdgeInsets.only(bottom: 24.h),
+      margin: EdgeInsets.only(bottom: AppSpacing.lg.h),
       clipBehavior: Clip.hardEdge,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.outline, width: 1),
-      ),
-      child: Column(
-        children: items,
-      ),
+      decoration: p.card(),
+      child: Column(children: items),
     );
   }
 }

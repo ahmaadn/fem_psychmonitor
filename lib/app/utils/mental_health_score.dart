@@ -1,7 +1,23 @@
-import 'dart:math' as math;
-
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
+
+/// PLAN §9 base emotion scores.
+double emotionBaseScore(EmotionLabelType emotion) {
+  switch (emotion) {
+    case EmotionLabelType.happy:
+      return 8;
+    case EmotionLabelType.neutral:
+      return 2;
+    case EmotionLabelType.sad:
+      return -6;
+    case EmotionLabelType.anger:
+      return -7;
+    case EmotionLabelType.fearful:
+      return -8;
+    case EmotionLabelType.disgust:
+      return -5;
+  }
+}
 
 int applyDetectionMentalHealthImpact({
   required int currentScore,
@@ -9,13 +25,13 @@ int applyDetectionMentalHealthImpact({
   DetectionSessionModel? previousSession,
 }) {
   final previousDelta = previousSession == null
-      ? 0
+      ? 0.0
       : detectionMentalHealthDelta(previousSession);
   final delta = detectionMentalHealthDelta(session) - previousDelta;
-  return (currentScore + delta).clamp(0, 100).toInt();
+  return (currentScore + delta.round()).clamp(0, 100).toInt();
 }
 
-int detectionMentalHealthDelta(DetectionSessionModel session) {
+double detectionMentalHealthDelta(DetectionSessionModel session) {
   return mentalHealthScoreBreakdown(session).delta;
 }
 
@@ -24,46 +40,25 @@ MentalHealthScoreBreakdown mentalHealthScoreBreakdown(
 ) {
   final emotion = session.displayEmotion;
   final confidence = session.displayConfidence.clamp(0.0, 1.0);
-  final effectiveConfidence = session.correctedEmotion == null
-      ? confidence
-      : math.max(0.65, confidence);
-  final impactWeight = emotionMentalHealthImpact(emotion);
-  final weighted = impactWeight * effectiveConfidence;
-  final rounded = weighted.round();
-
-  final delta = rounded != 0 || effectiveConfidence == 0
-      ? rounded
-      : weighted.isNegative
-      ? -1
-      : 1;
+  final base = emotionBaseScore(emotion);
+  final isCorrected = session.correctedEmotion != null;
+  // PLAN: uncorrected = base * confidence; corrected = 0.6 * base
+  final delta = isCorrected ? 0.6 * base : base * confidence;
 
   return MentalHealthScoreBreakdown(
     emotion: emotion,
     modelConfidence: confidence,
-    effectiveConfidence: effectiveConfidence,
-    impactWeight: impactWeight,
-    weightedImpact: weighted,
+    effectiveConfidence: isCorrected ? 0.6 : confidence,
+    impactWeight: base,
+    weightedImpact: delta,
     delta: delta,
-    isCorrected: session.correctedEmotion != null,
+    isCorrected: isCorrected,
   );
 }
 
-double emotionMentalHealthImpact(EmotionLabelType emotion) {
-  switch (emotion) {
-    case EmotionLabelType.happy:
-      return 3;
-    case EmotionLabelType.neutral:
-      return 1;
-    case EmotionLabelType.sad:
-      return -4;
-    case EmotionLabelType.anger:
-      return -4;
-    case EmotionLabelType.fearful:
-      return -5;
-    case EmotionLabelType.disgust:
-      return -3;
-  }
-}
+/// Legacy name used by some call sites expecting int impact weight.
+double emotionMentalHealthImpact(EmotionLabelType emotion) =>
+    emotionBaseScore(emotion);
 
 class MentalHealthScoreBreakdown {
   const MentalHealthScoreBreakdown({
@@ -81,6 +76,16 @@ class MentalHealthScoreBreakdown {
   final double effectiveConfidence;
   final double impactWeight;
   final double weightedImpact;
-  final int delta;
+  final double delta;
   final bool isCorrected;
 }
+
+/// Psych score class keys (stable, not localized).
+String psychClassKeyForScore(int score) {
+  if (score <= 25) return 'butuh_perhatian';
+  if (score <= 50) return 'rentan';
+  if (score <= 75) return 'cukup_sehat';
+  return 'sehat';
+}
+
+bool isSafetyScore(int? score) => score != null && score <= 25;

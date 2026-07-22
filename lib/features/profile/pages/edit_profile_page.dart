@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
@@ -12,7 +13,7 @@ import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path_util;
 import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -60,6 +61,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   /// US-04: pick an avatar image from gallery or camera, copy it into the app
   /// documents directory, and stage the resulting path for saving.
   Future<void> _pickAvatar(ImageSource source) async {
+    final p = context.palette;
     if (_isPickingAvatar) return;
     setState(() => _isPickingAvatar = true);
     try {
@@ -77,7 +79,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (!await avatarsDir.exists()) {
         await avatarsDir.create(recursive: true);
       }
-      final ext = p.extension(picked.path);
+      final ext = path_util.extension(picked.path);
       final destPath =
           '${avatarsDir.path}/avatar_${DateTime.now().millisecondsSinceEpoch}$ext';
       final destFile = await File(picked.path).copy(destPath);
@@ -94,10 +96,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   /// US-04: bottom sheet offering gallery / camera source selection.
   Future<void> _showAvatarSourceSheet() async {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
-      backgroundColor: AppColors.surface,
+      backgroundColor: p.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -163,11 +166,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
   /// US-04: render the staged avatar — either a copied image file, an asset
   /// (default), or a placeholder icon.
   Widget _avatarAvatarContent() {
+    final p = context.palette;
     final url = _avatarUrl;
     if (url == null || url.isEmpty) {
       return Icon(
         Icons.person_rounded,
-        color: AppColors.outline,
+        color: p.hairline,
         size: 52.sp,
       );
     }
@@ -197,10 +201,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final success = await profileVm.updateProfile(updatedUser, l10n);
 
     if (mounted && success) {
+      final palette = context.palette;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.primary,
+          backgroundColor: palette.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
@@ -225,11 +230,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     final profileVm = context.watch<ProfileViewModel>();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: p.canvas,
       appBar: CustomAppBar(title: l10n.editProfileTitle, showBackButton: true),
       body: SafeArea(
         child: Column(
@@ -251,9 +257,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               height: 96.w,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppColors.surfaceContainerHighest,
+                                color: p.strawberry,
                                 border: Border.all(
-                                  color: AppColors.primary.withValues(
+                                  color: p.primary.withValues(
                                     alpha: 0.2,
                                   ),
                                   width: 3,
@@ -274,10 +280,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   width: 30.w,
                                   height: 30.w,
                                   decoration: BoxDecoration(
-                                    color: AppColors.primary,
+                                    color: p.primary,
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: AppColors.surface,
+                                      color: p.surface,
                                       width: 2,
                                     ),
                                   ),
@@ -305,7 +311,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         child: Text(
                           l10n.tapToChangePhoto,
                           style: AppTypography.bodySm.copyWith(
-                            color: AppColors.textSecondary.withValues(
+                            color: p.inkMuted.withValues(
                               alpha: 0.6,
                             ),
                           ),
@@ -369,13 +375,14 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Row(
       children: [
         Container(
           width: 3.w,
           height: 14.h,
           decoration: BoxDecoration(
-            color: AppColors.primary,
+            color: p.primary,
             borderRadius: BorderRadius.circular(AppRadius.full),
           ),
         ),
@@ -398,13 +405,14 @@ class _DateField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: AppColors.textSecondary,
+            color: p.inkMuted,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -418,23 +426,23 @@ class _DateField extends StatelessWidget {
               vertical: AppSpacing.md.h,
             ),
             decoration: BoxDecoration(
-              color: AppColors.inputFill,
+              color: p.inputFill,
               borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(color: AppColors.outline),
+              border: Border.all(color: p.hairline),
             ),
             child: Row(
               children: [
                 Icon(
                   Icons.calendar_today_outlined,
                   size: 18.sp,
-                  color: AppColors.textSecondary.withValues(alpha: 0.6),
+                  color: p.inkMuted.withValues(alpha: 0.6),
                 ),
                 SizedBox(width: AppSpacing.sm.w),
                 Expanded(child: Text(value, style: AppTypography.bodyMd)),
                 Icon(
                   Icons.chevron_right_rounded,
                   size: 20.sp,
-                  color: AppColors.outline,
+                  color: p.hairline,
                 ),
               ],
             ),

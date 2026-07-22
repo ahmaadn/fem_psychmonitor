@@ -159,7 +159,8 @@ class SqliteDetectionRepository extends DetectionRepository
       orderBy: '${DetectionSessionRow.colStartedAt} ASC',
     );
 
-    final data = <DateTime, EmotionLabelType>{};
+    // Majority emotion per local day (PLAN Discover calendar dots).
+    final counts = <DateTime, Map<EmotionLabelType, int>>{};
     for (final row in rows) {
       final startedAt = DateTime.fromMillisecondsSinceEpoch(
         row[DetectionSessionRow.colStartedAt] as int,
@@ -172,8 +173,23 @@ class SqliteDetectionRepository extends DetectionRepository
             (corrected ?? row[DetectionSessionRow.colDominantEmotion]),
         orElse: () => EmotionLabelType.neutral,
       );
-      // Keep the most recent session's emotion per day.
-      data[dateKey] = emotion;
+      final dayMap = counts.putIfAbsent(dateKey, () => {});
+      dayMap[emotion] = (dayMap[emotion] ?? 0) + 1;
+    }
+
+    final data = <DateTime, EmotionLabelType>{};
+    for (final entry in counts.entries) {
+      EmotionLabelType best = EmotionLabelType.neutral;
+      var bestCount = -1;
+      for (final e in EmotionLabelType.values) {
+        final c = entry.value[e];
+        if (c == null) continue;
+        if (c > bestCount || (c == bestCount && e.index > best.index)) {
+          best = e;
+          bestCount = c;
+        }
+      }
+      data[entry.key] = best;
     }
     return data;
   }
@@ -283,6 +299,29 @@ class SqliteDetectionRepository extends DetectionRepository
       streakDays: streakDays,
       weeklyCheckins: weeklyCheckins,
       hasDetection: totalRecordings > 0,
+    );
+  }
+
+  @override
+  Future<void> deleteSession(String sessionId) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.transaction((txn) async {
+      await txn.delete(
+        AppTables.detectionResults,
+        where: '${DetectionResultRow.colSessionId} = ?',
+        whereArgs: [sessionId],
+      );
+      await txn.delete(
+        AppTables.detectionSessions,
+        where: '${DetectionSessionRow.colId} = ?',
+        whereArgs: [sessionId],
+      );
+    });
+    await enqueue(
+      entityType: SyncEntity.detectionSession,
+      entityId: sessionId,
+      operation: SyncOperation.delete,
+      payloadJson: null,
     );
   }
 

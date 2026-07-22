@@ -1,0 +1,2731 @@
+{
+  "recommendations": [
+    {
+      "id": 1,
+      "trait": "O",
+      "level": "high",
+      "emotion": "happy",
+      "order": 1,
+      "text_id": "Eksplorasi ide kreatif baru yang sudah lama ingin dicoba.",
+      "text_en": "Eksplorasi ide kreatif baru yang sudah lama ingin dicoba."
+    },
+    {
+      "id": 2,
+      "trait": "O",
+      "level": "high",
+      "emotion": "happy",
+      "order": 2,
+      "text_id": "Mulai proyek seni atau menulis untuk menuangkan imajinasi.",
+      "text_en": "Mulai proyek seni atau menulis untuk menuangkan imajinasi."
+    },
+    {
+      "id": 3,
+      "trait": "O",
+      "level": "high",
+      "emotion": "happy",
+      "order": 3,
+      "text_id": "Bagikan penemuan inspiratif dengan komunitas.",
+      "text_en": "Bagikan penemuan inspiratif dengan komunitas."
+    },
+    {
+      "id": 4,
+      "trait": "O",
+      "level": "high",
+      "emotion": "happy",
+      "order": 4,
+      "text_id": "Coba pengalaman baru yang merangsang rasa ingin tahu.",
+      "text_en": "Coba pengalaman baru yang merangsang rasa ingin tahu."
+    },
+    {
+      "id": 5,
+      "trait": "O",
+      "level": "high",
+      "emotion": "happy",
+      "order": 5,
+      "text_id": "Rancang visi jangka panjang yang inovatif.",
+      "text_en": "Rancang visi jangka panjang yang inovatif."
+    },
+    {
+      "id": 6,
+      "trait": "O",
+      "level": "high",
+      "emotion": "sad",
+      "order": 1,
+      "text_id": "Izinkan diri melamun dan menjelajahi dunia imajinasi.",
+      "text_en": "Izinkan diri melamun dan menjelajahi dunia imajinasi."
+    },
+    {
+      "id": 7,
+      "trait": "O",
+      "level": "high",
+      "emotion": "sad",
+      "order": 2,
+      "text_id": "Baca buku fiksi atau puisi sebagai bentuk pelarian yang sehat.",
+      "text_en": "Baca buku fiksi atau puisi sebagai bentuk pelarian yang sehat."
+    },
+    {
+      "id": 8,
+      "trait": "O",
+      "level": "high",
+      "emotion": "sad",
+      "order": 3,
+      "text_id": "Tulis jurnal reflektif tentang perasaan secara mendalam.",
+      "text_en": "Tulis jurnal reflektif tentang perasaan secara mendalam."
+    },
+    {
+      "id": 9,
+      "trait": "O",
+      "level": "high",
+      "emotion": "sad",
+      "order": 4,
+      "text_id": "Dengarkan musik eksperimental yang menenangkan.",
+      "text_en": "Dengarkan musik eksperimental yang menenangkan."
+    },
+    {
+      "id": 10,
+      "trait": "O",
+      "level": "high",
+      "emotion": "sad",
+      "order": 5,
+      "text_id": "Ciptakan karya seni yang mengekspresikan suasana hati.",
+      "text_en": "Ciptakan karya seni yang mengekspresikan suasana hati."
+    },
+    {
+      "id": 11,
+      "trait": "O",
+      "level": "high",
+      "emotion": "angry",
+      "order": 1,
+      "text_id": "Salurkan energi emosi ke dalam aktivitas kreatif.",
+      "text_en": "Salurkan energi emosi ke dalam aktivitas kreatif."
+    },
+    {
+      "id": 12,
+      "trait": "O",
+      "level": "high",
+      "emotion": "angry",
+      "order": 2,
+      "text_id": "Tulis puisi atau prosa singkat tentang apa yang membuat frustrasi.",
+      "text_en": "Tulis puisi atau prosa singkat tentang apa yang membuat frustrasi."
+    },
+    {
+      "id": 13,
+      "trait": "O",
+      "level": "high",
+      "emotion": "angry",
+      "order": 3,
+      "text_id": "Lakukan sesi improvisasi musik atau seni.",
+      "text_en": "Lakukan sesi improvisasi musik atau seni."
+    },
+    {
+      "id": 14,
+      "trait": "O",
+      "level": "high",
+      "emotion": "angry",
+      "order": 4,
+      "text_id": "Ganti suasana dengan menjelajahi tempat baru dan asing.",
+      "text_en": "Ganti suasana dengan menjelajahi tempat baru dan asing."
+    },
+    {
+      "id": 15,
+      "trait": "O",
+      "level": "high",
+      "emotion": "angry",
+      "order": 5,
+      "text_id": "Baca perspektif filosofis untuk melihat situasi dari sudut pandang berbeda.",
+      "text_en": "Baca perspektif filosofis untuk melihat situasi dari sudut pandang berbeda."
+    },
+    {
+      "id": 16,
+      "trait": "O",
+      "level": "high",
+      "emotion": "fear",
+      "order": 1,
+      "text_id": "Gunakan imajinasi untuk memvisualisasikan skenario positif.",
+      "text_en": "Gunakan imajinasi untuk memvisualisasikan skenario positif."
+    },
+    {
+      "id": 17,
+      "trait": "O",
+      "level": "high",
+      "emotion": "fear",
+      "order": 2,
+      "text_id": "Eksplorasi berbagai kemungkinan solusi secara kreatif.",
+      "text_en": "Eksplorasi berbagai kemungkinan solusi secara kreatif."
+    },
+    {
+      "id": 18,
+      "trait": "O",
+      "level": "high",
+      "emotion": "fear",
+      "order": 3,
+      "text_id": "Dengarkan musik ambient atau meditatif.",
+      "text_en": "Dengarkan musik ambient atau meditatif."
+    },
+    {
+      "id": 19,
+      "trait": "O",
+      "level": "high",
+      "emotion": "fear",
+      "order": 4,
+      "text_id": "Arahkan rasa ingin tahu pada mekanisme di balik ketakutan.",
+      "text_en": "Arahkan rasa ingin tahu pada mekanisme di balik ketakutan."
+    },
+    {
+      "id": 20,
+      "trait": "O",
+      "level": "high",
+      "emotion": "fear",
+      "order": 5,
+      "text_id": "Buat jurnal visual berupa sketsa atau kolase tentang kekhawatiran.",
+      "text_en": "Buat jurnal visual berupa sketsa atau kolase tentang kekhawatiran."
+    },
+    {
+      "id": 21,
+      "trait": "O",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 1,
+      "text_id": "Alihkan perhatian dengan mengeksplorasi konten estetik yang indah.",
+      "text_en": "Alihkan perhatian dengan mengeksplorasi konten estetik yang indah."
+    },
+    {
+      "id": 22,
+      "trait": "O",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 2,
+      "text_id": "Ciptakan ulang lingkungan sekitar agar lebih artistik.",
+      "text_en": "Ciptakan ulang lingkungan sekitar agar lebih artistik."
+    },
+    {
+      "id": 23,
+      "trait": "O",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 3,
+      "text_id": "Baca literatur yang memperluas wawasan dan perspektif.",
+      "text_en": "Baca literatur yang memperluas wawasan dan perspektif."
+    },
+    {
+      "id": 24,
+      "trait": "O",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 4,
+      "text_id": "Lakukan eksperimen kecil dalam rutinitas harian.",
+      "text_en": "Lakukan eksperimen kecil dalam rutinitas harian."
+    },
+    {
+      "id": 25,
+      "trait": "O",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 5,
+      "text_id": "Fokus pada hal-hal baru yang menarik minat intelektual.",
+      "text_en": "Fokus pada hal-hal baru yang menarik minat intelektual."
+    },
+    {
+      "id": 26,
+      "trait": "O",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 1,
+      "text_id": "Pelajari keterampilan baru yang menantang kreativitas.",
+      "text_en": "Pelajari keterampilan baru yang menantang kreativitas."
+    },
+    {
+      "id": 27,
+      "trait": "O",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 2,
+      "text_id": "Kunjungi galeri seni atau museum virtual.",
+      "text_en": "Kunjungi galeri seni atau museum virtual."
+    },
+    {
+      "id": 28,
+      "trait": "O",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 3,
+      "text_id": "Baca artikel tentang topik yang belum pernah dijelajahi.",
+      "text_en": "Baca artikel tentang topik yang belum pernah dijelajahi."
+    },
+    {
+      "id": 29,
+      "trait": "O",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 4,
+      "text_id": "Coba resep masakan baru dari budaya berbeda.",
+      "text_en": "Coba resep masakan baru dari budaya berbeda."
+    },
+    {
+      "id": 30,
+      "trait": "O",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 5,
+      "text_id": "Meditasi visualisasi untuk memperluas kesadaran diri.",
+      "text_en": "Meditasi visualisasi untuk memperluas kesadaran diri."
+    },
+    {
+      "id": 31,
+      "trait": "O",
+      "level": "low",
+      "emotion": "happy",
+      "order": 1,
+      "text_id": "Nikmati rutinitas yang sudah dikenal dan memberikan kenyamanan.",
+      "text_en": "Nikmati rutinitas yang sudah dikenal dan memberikan kenyamanan."
+    },
+    {
+      "id": 32,
+      "trait": "O",
+      "level": "low",
+      "emotion": "happy",
+      "order": 2,
+      "text_id": "Lakukan aktivitas yang menghasilkan hasil nyata dan terukur.",
+      "text_en": "Lakukan aktivitas yang menghasilkan hasil nyata dan terukur."
+    },
+    {
+      "id": 33,
+      "trait": "O",
+      "level": "low",
+      "emotion": "happy",
+      "order": 3,
+      "text_id": "Habiskan waktu merawat lingkungan sekitar.",
+      "text_en": "Habiskan waktu merawat lingkungan sekitar."
+    },
+    {
+      "id": 34,
+      "trait": "O",
+      "level": "low",
+      "emotion": "happy",
+      "order": 4,
+      "text_id": "Praktikkan kegiatan yang sudah dikuasai dengan presisi.",
+      "text_en": "Praktikkan kegiatan yang sudah dikuasai dengan presisi."
+    },
+    {
+      "id": 35,
+      "trait": "O",
+      "level": "low",
+      "emotion": "happy",
+      "order": 5,
+      "text_id": "Bagikan kebahagiaan melalui tindakan praktis untuk orang lain.",
+      "text_en": "Bagikan kebahagiaan melalui tindakan praktis untuk orang lain."
+    },
+    {
+      "id": 36,
+      "trait": "O",
+      "level": "low",
+      "emotion": "sad",
+      "order": 1,
+      "text_id": "Lakukan aktivitas rutin yang familier untuk menstabilkan mood.",
+      "text_en": "Lakukan aktivitas rutin yang familier untuk menstabilkan mood."
+    },
+    {
+      "id": 37,
+      "trait": "O",
+      "level": "low",
+      "emotion": "sad",
+      "order": 2,
+      "text_id": "Fokus pada tugas-tugas konkret yang bisa diselesaikan.",
+      "text_en": "Fokus pada tugas-tugas konkret yang bisa diselesaikan."
+    },
+    {
+      "id": 38,
+      "trait": "O",
+      "level": "low",
+      "emotion": "sad",
+      "order": 3,
+      "text_id": "Habiskan waktu di alam terbuka dengan pemandangan yang tenang.",
+      "text_en": "Habiskan waktu di alam terbuka dengan pemandangan yang tenang."
+    },
+    {
+      "id": 39,
+      "trait": "O",
+      "level": "low",
+      "emotion": "sad",
+      "order": 4,
+      "text_id": "Dengarkan musik dengan melodi sederhana dan menenangkan.",
+      "text_en": "Dengarkan musik dengan melodi sederhana dan menenangkan."
+    },
+    {
+      "id": 40,
+      "trait": "O",
+      "level": "low",
+      "emotion": "sad",
+      "order": 5,
+      "text_id": "Berpegang pada jadwal harian untuk menjaga struktur.",
+      "text_en": "Berpegang pada jadwal harian untuk menjaga struktur."
+    },
+    {
+      "id": 41,
+      "trait": "O",
+      "level": "low",
+      "emotion": "angry",
+      "order": 1,
+      "text_id": "Salurkan energi ke aktivitas fisik yang terstruktur.",
+      "text_en": "Salurkan energi ke aktivitas fisik yang terstruktur."
+    },
+    {
+      "id": 42,
+      "trait": "O",
+      "level": "low",
+      "emotion": "angry",
+      "order": 2,
+      "text_id": "Buat daftar langkah konkret untuk mengatasi sumber masalah.",
+      "text_en": "Buat daftar langkah konkret untuk mengatasi sumber masalah."
+    },
+    {
+      "id": 43,
+      "trait": "O",
+      "level": "low",
+      "emotion": "angry",
+      "order": 3,
+      "text_id": "Lakukan pekerjaan manual yang membutuhkan konsentrasi penuh.",
+      "text_en": "Lakukan pekerjaan manual yang membutuhkan konsentrasi penuh."
+    },
+    {
+      "id": 44,
+      "trait": "O",
+      "level": "low",
+      "emotion": "angry",
+      "order": 4,
+      "text_id": "Tenangkan diri dengan melakukan pernapasan teratur.",
+      "text_en": "Tenangkan diri dengan melakukan pernapasan teratur."
+    },
+    {
+      "id": 45,
+      "trait": "O",
+      "level": "low",
+      "emotion": "angry",
+      "order": 5,
+      "text_id": "Fokus pada fakta dan data, bukan pada spekulasi.",
+      "text_en": "Fokus pada fakta dan data, bukan pada spekulasi."
+    },
+    {
+      "id": 46,
+      "trait": "O",
+      "level": "low",
+      "emotion": "fear",
+      "order": 1,
+      "text_id": "Kumpulkan informasi faktual untuk mengurangi ketidakpastian.",
+      "text_en": "Kumpulkan informasi faktual untuk mengurangi ketidakpastian."
+    },
+    {
+      "id": 47,
+      "trait": "O",
+      "level": "low",
+      "emotion": "fear",
+      "order": 2,
+      "text_id": "Buat rencana langkah-demi-langkah yang praktis.",
+      "text_en": "Buat rencana langkah-demi-langkah yang praktis."
+    },
+    {
+      "id": 48,
+      "trait": "O",
+      "level": "low",
+      "emotion": "fear",
+      "order": 3,
+      "text_id": "Pegang teguh pada rutinitas yang sudah terbukti aman.",
+      "text_en": "Pegang teguh pada rutinitas yang sudah terbukti aman."
+    },
+    {
+      "id": 49,
+      "trait": "O",
+      "level": "low",
+      "emotion": "fear",
+      "order": 4,
+      "text_id": "Cari kepastian dari sumber yang terpercaya dan otoritatif.",
+      "text_en": "Cari kepastian dari sumber yang terpercaya dan otoritatif."
+    },
+    {
+      "id": 50,
+      "trait": "O",
+      "level": "low",
+      "emotion": "fear",
+      "order": 5,
+      "text_id": "Fokus pada hal-hal yang bisa dikendalikan secara langsung.",
+      "text_en": "Fokus pada hal-hal yang bisa dikendalikan secara langsung."
+    },
+    {
+      "id": 51,
+      "trait": "O",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 1,
+      "text_id": "Bersihkan dan atur ulang lingkungan sekitar.",
+      "text_en": "Bersihkan dan atur ulang lingkungan sekitar."
+    },
+    {
+      "id": 52,
+      "trait": "O",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 2,
+      "text_id": "Terapkan prosedur standar untuk mengatasi sumber ketidaknyamanan.",
+      "text_en": "Terapkan prosedur standar untuk mengatasi sumber ketidaknyamanan."
+    },
+    {
+      "id": 53,
+      "trait": "O",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 3,
+      "text_id": "Fokus pada tugas-tugas yang sudah dikenal dan dikuasai.",
+      "text_en": "Fokus pada tugas-tugas yang sudah dikenal dan dikuasai."
+    },
+    {
+      "id": 54,
+      "trait": "O",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 4,
+      "text_id": "Hindari hal-hal baru yang berpotensi memicu keengganan.",
+      "text_en": "Hindari hal-hal baru yang berpotensi memicu keengganan."
+    },
+    {
+      "id": 55,
+      "trait": "O",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 5,
+      "text_id": "Kembali pada kebiasaan yang sudah teruji keandalannya.",
+      "text_en": "Kembali pada kebiasaan yang sudah teruji keandalannya."
+    },
+    {
+      "id": 56,
+      "trait": "O",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 1,
+      "text_id": "Kerjakan proyek perbaikan atau perawatan di rumah.",
+      "text_en": "Kerjakan proyek perbaikan atau perawatan di rumah."
+    },
+    {
+      "id": 57,
+      "trait": "O",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 2,
+      "text_id": "Atur ulang sistem penyimpanan atau organisasi barang.",
+      "text_en": "Atur ulang sistem penyimpanan atau organisasi barang."
+    },
+    {
+      "id": 58,
+      "trait": "O",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 3,
+      "text_id": "Baca buku non-fiksi atau artikel informatif.",
+      "text_en": "Baca buku non-fiksi atau artikel informatif."
+    },
+    {
+      "id": 59,
+      "trait": "O",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 4,
+      "text_id": "Lakukan aktivitas outdoor yang sederhana dan terencana.",
+      "text_en": "Lakukan aktivitas outdoor yang sederhana dan terencana."
+    },
+    {
+      "id": 60,
+      "trait": "O",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 5,
+      "text_id": "Praktikkan mindfulness dengan fokus pada sensasi fisik.",
+      "text_en": "Praktikkan mindfulness dengan fokus pada sensasi fisik."
+    },
+    {
+      "id": 61,
+      "trait": "C",
+      "level": "high",
+      "emotion": "happy",
+      "order": 1,
+      "text_id": "Rayakan pencapaian target yang sudah direncanakan.",
+      "text_en": "Rayakan pencapaian target yang sudah direncanakan."
+    },
+    {
+      "id": 62,
+      "trait": "C",
+      "level": "high",
+      "emotion": "happy",
+      "order": 2,
+      "text_id": "Nikmati keteraturan dan kerapian yang sudah diciptakan.",
+      "text_en": "Nikmati keteraturan dan kerapian yang sudah diciptakan."
+    },
+    {
+      "id": 63,
+      "trait": "C",
+      "level": "high",
+      "emotion": "happy",
+      "order": 3,
+      "text_id": "Tinjau daftar prestasi dan progres tujuan jangka panjang.",
+      "text_en": "Tinjau daftar prestasi dan progres tujuan jangka panjang."
+    },
+    {
+      "id": 64,
+      "trait": "C",
+      "level": "high",
+      "emotion": "happy",
+      "order": 4,
+      "text_id": "Rencanakan proyek baru dengan struktur yang detail.",
+      "text_en": "Rencanakan proyek baru dengan struktur yang detail."
+    },
+    {
+      "id": 65,
+      "trait": "C",
+      "level": "high",
+      "emotion": "happy",
+      "order": 5,
+      "text_id": "Bagikan sistem atau metode kerja yang efektif dengan orang lain.",
+      "text_en": "Bagikan sistem atau metode kerja yang efektif dengan orang lain."
+    },
+    {
+      "id": 66,
+      "trait": "C",
+      "level": "high",
+      "emotion": "sad",
+      "order": 1,
+      "text_id": "Buat jadwal harian yang terstruktur untuk menjaga produktivitas.",
+      "text_en": "Buat jadwal harian yang terstruktur untuk menjaga produktivitas."
+    },
+    {
+      "id": 67,
+      "trait": "C",
+      "level": "high",
+      "emotion": "sad",
+      "order": 2,
+      "text_id": "Selesaikan tugas-tugas kecil yang tertunda untuk membangun rasa pencapaian.",
+      "text_en": "Selesaikan tugas-tugas kecil yang tertunda untuk membangun rasa pencapaian."
+    },
+    {
+      "id": 68,
+      "trait": "C",
+      "level": "high",
+      "emotion": "sad",
+      "order": 3,
+      "text_id": "Lakukan aktivitas yang memberikan rasa kontrol dan keteraturan.",
+      "text_en": "Lakukan aktivitas yang memberikan rasa kontrol dan keteraturan."
+    },
+    {
+      "id": 69,
+      "trait": "C",
+      "level": "high",
+      "emotion": "sad",
+      "order": 4,
+      "text_id": "Refleksikan tanggung jawab sebagai pengingat makna hidup.",
+      "text_en": "Refleksikan tanggung jawab sebagai pengingat makna hidup."
+    },
+    {
+      "id": 70,
+      "trait": "C",
+      "level": "high",
+      "emotion": "sad",
+      "order": 5,
+      "text_id": "Istirahat terjadwal untuk memulihkan energi tanpa mengganggu rutinitas.",
+      "text_en": "Istirahat terjadwal untuk memulihkan energi tanpa mengganggu rutinitas."
+    },
+    {
+      "id": 71,
+      "trait": "C",
+      "level": "high",
+      "emotion": "angry",
+      "order": 1,
+      "text_id": "Salurkan frustrasi ke dalam tugas yang membutuhkan ketelitian.",
+      "text_en": "Salurkan frustrasi ke dalam tugas yang membutuhkan ketelitian."
+    },
+    {
+      "id": 72,
+      "trait": "C",
+      "level": "high",
+      "emotion": "angry",
+      "order": 2,
+      "text_id": "Bersihkan dan atur ulang ruang kerja secara metodis.",
+      "text_en": "Bersihkan dan atur ulang ruang kerja secara metodis."
+    },
+    {
+      "id": 73,
+      "trait": "C",
+      "level": "high",
+      "emotion": "angry",
+      "order": 3,
+      "text_id": "Evaluasi ulang ekspektasi dan standar yang mungkin terlalu tinggi.",
+      "text_en": "Evaluasi ulang ekspektasi dan standar yang mungkin terlalu tinggi."
+    },
+    {
+      "id": 74,
+      "trait": "C",
+      "level": "high",
+      "emotion": "angry",
+      "order": 4,
+      "text_id": "Buat daftar prioritas untuk mengatasi sumber kemarahan secara bertahap.",
+      "text_en": "Buat daftar prioritas untuk mengatasi sumber kemarahan secara bertahap."
+    },
+    {
+      "id": 75,
+      "trait": "C",
+      "level": "high",
+      "emotion": "angry",
+      "order": 5,
+      "text_id": "Lakukan aktivitas repetitif yang menenangkan pikiran.",
+      "text_en": "Lakukan aktivitas repetitif yang menenangkan pikiran."
+    },
+    {
+      "id": 76,
+      "trait": "C",
+      "level": "high",
+      "emotion": "fear",
+      "order": 1,
+      "text_id": "Buat rencana kontingensi terperinci untuk mengantisipasi skenario buruk.",
+      "text_en": "Buat rencana kontingensi terperinci untuk mengantisipasi skenario buruk."
+    },
+    {
+      "id": 77,
+      "trait": "C",
+      "level": "high",
+      "emotion": "fear",
+      "order": 2,
+      "text_id": "Kumpulkan data dan fakta untuk mengurangi ketidakpastian.",
+      "text_en": "Kumpulkan data dan fakta untuk mengurangi ketidakpastian."
+    },
+    {
+      "id": 78,
+      "trait": "C",
+      "level": "high",
+      "emotion": "fear",
+      "order": 3,
+      "text_id": "Susun langkah-langkah mitigasi secara sistematis.",
+      "text_en": "Susun langkah-langkah mitigasi secara sistematis."
+    },
+    {
+      "id": 79,
+      "trait": "C",
+      "level": "high",
+      "emotion": "fear",
+      "order": 4,
+      "text_id": "Pecah masalah besar menjadi tugas-tugas kecil yang manageable.",
+      "text_en": "Pecah masalah besar menjadi tugas-tugas kecil yang manageable."
+    },
+    {
+      "id": 80,
+      "trait": "C",
+      "level": "high",
+      "emotion": "fear",
+      "order": 5,
+      "text_id": "Tetap berpegang pada jadwal sebagai jangkar stabilitas.",
+      "text_en": "Tetap berpegang pada jadwal sebagai jangkar stabilitas."
+    },
+    {
+      "id": 81,
+      "trait": "C",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 1,
+      "text_id": "Terapkan sistem organisasi yang lebih ketat.",
+      "text_en": "Terapkan sistem organisasi yang lebih ketat."
+    },
+    {
+      "id": 82,
+      "trait": "C",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 2,
+      "text_id": "Buat standar operasional prosedur untuk mencegah pengulangan.",
+      "text_en": "Buat standar operasional prosedur untuk mencegah pengulangan."
+    },
+    {
+      "id": 83,
+      "trait": "C",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 3,
+      "text_id": "Bersihkan lingkungan secara menyeluruh dan higienis.",
+      "text_en": "Bersihkan lingkungan secara menyeluruh dan higienis."
+    },
+    {
+      "id": 84,
+      "trait": "C",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 4,
+      "text_id": "Dokumentasikan apa yang salah untuk referensi di masa depan.",
+      "text_en": "Dokumentasikan apa yang salah untuk referensi di masa depan."
+    },
+    {
+      "id": 85,
+      "trait": "C",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 5,
+      "text_id": "Fokus pada perbaikan sistem yang terukur.",
+      "text_en": "Fokus pada perbaikan sistem yang terukur."
+    },
+    {
+      "id": 86,
+      "trait": "C",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 1,
+      "text_id": "Tinjau ulang dan optimalkan sistem produktivitas pribadi.",
+      "text_en": "Tinjau ulang dan optimalkan sistem produktivitas pribadi."
+    },
+    {
+      "id": 87,
+      "trait": "C",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 2,
+      "text_id": "Rapikan file digital dan fisik yang berantakan.",
+      "text_en": "Rapikan file digital dan fisik yang berantakan."
+    },
+    {
+      "id": 88,
+      "trait": "C",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 3,
+      "text_id": "Buat perencanaan jangka menengah dan panjang.",
+      "text_en": "Buat perencanaan jangka menengah dan panjang."
+    },
+    {
+      "id": 89,
+      "trait": "C",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 4,
+      "text_id": "Audit pengeluaran dan keuangan pribadi.",
+      "text_en": "Audit pengeluaran dan keuangan pribadi."
+    },
+    {
+      "id": 90,
+      "trait": "C",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 5,
+      "text_id": "Pelajari metode manajemen waktu yang baru.",
+      "text_en": "Pelajari metode manajemen waktu yang baru."
+    },
+    {
+      "id": 91,
+      "trait": "C",
+      "level": "low",
+      "emotion": "happy",
+      "order": 1,
+      "text_id": "Nikmati momen spontan tanpa perlu merencanakan semuanya.",
+      "text_en": "Nikmati momen spontan tanpa perlu merencanakan semuanya."
+    },
+    {
+      "id": 92,
+      "trait": "C",
+      "level": "low",
+      "emotion": "happy",
+      "order": 2,
+      "text_id": "Biarkan diri mengikuti alur tanpa tekanan target.",
+      "text_en": "Biarkan diri mengikuti alur tanpa tekanan target."
+    },
+    {
+      "id": 93,
+      "trait": "C",
+      "level": "low",
+      "emotion": "happy",
+      "order": 3,
+      "text_id": "Rayakan fleksibilitas dan kemampuan beradaptasi.",
+      "text_en": "Rayakan fleksibilitas dan kemampuan beradaptasi."
+    },
+    {
+      "id": 94,
+      "trait": "C",
+      "level": "low",
+      "emotion": "happy",
+      "order": 4,
+      "text_id": "Coba pendekatan baru yang tidak terstruktur dalam berkarya.",
+      "text_en": "Coba pendekatan baru yang tidak terstruktur dalam berkarya."
+    },
+    {
+      "id": 95,
+      "trait": "C",
+      "level": "low",
+      "emotion": "happy",
+      "order": 5,
+      "text_id": "Bersosialisasi dan berbagi tawa tanpa beban jadwal.",
+      "text_en": "Bersosialisasi dan berbagi tawa tanpa beban jadwal."
+    },
+    {
+      "id": 96,
+      "trait": "C",
+      "level": "low",
+      "emotion": "sad",
+      "order": 1,
+      "text_id": "Izinkan diri untuk tidak produktif sesaat tanpa rasa bersalah.",
+      "text_en": "Izinkan diri untuk tidak produktif sesaat tanpa rasa bersalah."
+    },
+    {
+      "id": 97,
+      "trait": "C",
+      "level": "low",
+      "emotion": "sad",
+      "order": 2,
+      "text_id": "Lakukan aktivitas santai yang tidak membutuhkan perencanaan.",
+      "text_en": "Lakukan aktivitas santai yang tidak membutuhkan perencanaan."
+    },
+    {
+      "id": 98,
+      "trait": "C",
+      "level": "low",
+      "emotion": "sad",
+      "order": 3,
+      "text_id": "Cari hiburan ringan seperti menonton film atau acara favorit.",
+      "text_en": "Cari hiburan ringan seperti menonton film atau acara favorit."
+    },
+    {
+      "id": 99,
+      "trait": "C",
+      "level": "low",
+      "emotion": "sad",
+      "order": 4,
+      "text_id": "Buang daftar tugas dan ikuti kata hati sejenak.",
+      "text_en": "Buang daftar tugas dan ikuti kata hati sejenak."
+    },
+    {
+      "id": 100,
+      "trait": "C",
+      "level": "low",
+      "emotion": "sad",
+      "order": 5,
+      "text_id": "Manjakan diri dengan kegiatan impulsif yang menyenangkan.",
+      "text_en": "Manjakan diri dengan kegiatan impulsif yang menyenangkan."
+    },
+    {
+      "id": 101,
+      "trait": "C",
+      "level": "low",
+      "emotion": "angry",
+      "order": 1,
+      "text_id": "Salurkan energi ke aktivitas fisik yang spontan dan intens.",
+      "text_en": "Salurkan energi ke aktivitas fisik yang spontan dan intens."
+    },
+    {
+      "id": 102,
+      "trait": "C",
+      "level": "low",
+      "emotion": "angry",
+      "order": 2,
+      "text_id": "Tulis atau ekspresikan kemarahan tanpa sensor terlebih dahulu.",
+      "text_en": "Tulis atau ekspresikan kemarahan tanpa sensor terlebih dahulu."
+    },
+    {
+      "id": 103,
+      "trait": "C",
+      "level": "low",
+      "emotion": "angry",
+      "order": 3,
+      "text_id": "Lompat ke aktivitas baru untuk mengalihkan pikiran.",
+      "text_en": "Lompat ke aktivitas baru untuk mengalihkan pikiran."
+    },
+    {
+      "id": 104,
+      "trait": "C",
+      "level": "low",
+      "emotion": "angry",
+      "order": 4,
+      "text_id": "Biarkan diri 'ngambek' sesaat sebagai bentuk pelepasan emosi.",
+      "text_en": "Biarkan diri 'ngambek' sesaat sebagai bentuk pelepasan emosi."
+    },
+    {
+      "id": 105,
+      "trait": "C",
+      "level": "low",
+      "emotion": "angry",
+      "order": 5,
+      "text_id": "Cari distraksi dengan melakukan sesuatu yang tidak terduga.",
+      "text_en": "Cari distraksi dengan melakukan sesuatu yang tidak terduga."
+    },
+    {
+      "id": 106,
+      "trait": "C",
+      "level": "low",
+      "emotion": "fear",
+      "order": 1,
+      "text_id": "Hadapi ketakutan secara spontan tanpa terlalu banyak berpikir.",
+      "text_en": "Hadapi ketakutan secara spontan tanpa terlalu banyak berpikir."
+    },
+    {
+      "id": 107,
+      "trait": "C",
+      "level": "low",
+      "emotion": "fear",
+      "order": 2,
+      "text_id": "Cari dukungan dari orang lain secara langsung.",
+      "text_en": "Cari dukungan dari orang lain secara langsung."
+    },
+    {
+      "id": 108,
+      "trait": "C",
+      "level": "low",
+      "emotion": "fear",
+      "order": 3,
+      "text_id": "Alihkan perhatian dengan aktivitas menyenangkan yang mendadak.",
+      "text_en": "Alihkan perhatian dengan aktivitas menyenangkan yang mendadak."
+    },
+    {
+      "id": 109,
+      "trait": "C",
+      "level": "low",
+      "emotion": "fear",
+      "order": 4,
+      "text_id": "Ingatkan diri bahwa tidak semuanya harus direncanakan.",
+      "text_en": "Ingatkan diri bahwa tidak semuanya harus direncanakan."
+    },
+    {
+      "id": 110,
+      "trait": "C",
+      "level": "low",
+      "emotion": "fear",
+      "order": 5,
+      "text_id": "Lakukan sesuatu yang menyenangkan sebagai pelarian sementara.",
+      "text_en": "Lakukan sesuatu yang menyenangkan sebagai pelarian sementara."
+    },
+    {
+      "id": 111,
+      "trait": "C",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 1,
+      "text_id": "Tinggalkan situasi dengan cepat tanpa perlu merapikan.",
+      "text_en": "Tinggalkan situasi dengan cepat tanpa perlu merapikan."
+    },
+    {
+      "id": 112,
+      "trait": "C",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 2,
+      "text_id": "Alihkan perhatian ke hal lain yang lebih menarik.",
+      "text_en": "Alihkan perhatian ke hal lain yang lebih menarik."
+    },
+    {
+      "id": 113,
+      "trait": "C",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 3,
+      "text_id": "Lompat ke aktivitas baru untuk reset suasana hati.",
+      "text_en": "Lompat ke aktivitas baru untuk reset suasana hati."
+    },
+    {
+      "id": 114,
+      "trait": "C",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 4,
+      "text_id": "Gunakan humor spontan untuk meredakan ketegangan.",
+      "text_en": "Gunakan humor spontan untuk meredakan ketegangan."
+    },
+    {
+      "id": 115,
+      "trait": "C",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 5,
+      "text_id": "Jangan paksakan diri untuk tetap berada dalam situasi tersebut.",
+      "text_en": "Jangan paksakan diri untuk tetap berada dalam situasi tersebut."
+    },
+    {
+      "id": 116,
+      "trait": "C",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 1,
+      "text_id": "Lakukan kegiatan tanpa rencana yang kaku.",
+      "text_en": "Lakukan kegiatan tanpa rencana yang kaku."
+    },
+    {
+      "id": 117,
+      "trait": "C",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 2,
+      "text_id": "Eksplorasi hobi baru secara iseng.",
+      "text_en": "Eksplorasi hobi baru secara iseng."
+    },
+    {
+      "id": 118,
+      "trait": "C",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 3,
+      "text_id": "Scroll dan cari inspirasi dari berbagai sumber acak.",
+      "text_en": "Scroll dan cari inspirasi dari berbagai sumber acak."
+    },
+    {
+      "id": 119,
+      "trait": "C",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 4,
+      "text_id": "Coba pendekatan berbeda dalam menyelesaikan tugas harian.",
+      "text_en": "Coba pendekatan berbeda dalam menyelesaikan tugas harian."
+    },
+    {
+      "id": 120,
+      "trait": "C",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 5,
+      "text_id": "Biarkan hari berjalan tanpa daftar tugas yang ketat.",
+      "text_en": "Biarkan hari berjalan tanpa daftar tugas yang ketat."
+    },
+    {
+      "id": 121,
+      "trait": "E",
+      "level": "high",
+      "emotion": "happy",
+      "order": 1,
+      "text_id": "Adakan kumpul-kumpul dengan teman-teman terdekat.",
+      "text_en": "Adakan kumpul-kumpul dengan teman-teman terdekat."
+    },
+    {
+      "id": 122,
+      "trait": "E",
+      "level": "high",
+      "emotion": "happy",
+      "order": 2,
+      "text_id": "Bagikan kegembiraan dengan orang-orang di sekitar.",
+      "text_en": "Bagikan kegembiraan dengan orang-orang di sekitar."
+    },
+    {
+      "id": 123,
+      "trait": "E",
+      "level": "high",
+      "emotion": "happy",
+      "order": 3,
+      "text_id": "Ikuti acara sosial atau komunitas yang menarik.",
+      "text_en": "Ikuti acara sosial atau komunitas yang menarik."
+    },
+    {
+      "id": 124,
+      "trait": "E",
+      "level": "high",
+      "emotion": "happy",
+      "order": 4,
+      "text_id": "Lakukan aktivitas yang melibatkan interaksi dengan banyak orang.",
+      "text_en": "Lakukan aktivitas yang melibatkan interaksi dengan banyak orang."
+    },
+    {
+      "id": 125,
+      "trait": "E",
+      "level": "high",
+      "emotion": "happy",
+      "order": 5,
+      "text_id": "Jadilah pusat perhatian yang positif dan menghibur.",
+      "text_en": "Jadilah pusat perhatian yang positif dan menghibur."
+    },
+    {
+      "id": 126,
+      "trait": "E",
+      "level": "high",
+      "emotion": "sad",
+      "order": 1,
+      "text_id": "Cari dukungan dari teman atau keluarga terdekat.",
+      "text_en": "Cari dukungan dari teman atau keluarga terdekat."
+    },
+    {
+      "id": 127,
+      "trait": "E",
+      "level": "high",
+      "emotion": "sad",
+      "order": 2,
+      "text_id": "Ceritakan perasaan kepada orang yang dipercaya.",
+      "text_en": "Ceritakan perasaan kepada orang yang dipercaya."
+    },
+    {
+      "id": 128,
+      "trait": "E",
+      "level": "high",
+      "emotion": "sad",
+      "order": 3,
+      "text_id": "Keluar rumah dan berada di keramaian untuk mengalihkan pikiran.",
+      "text_en": "Keluar rumah dan berada di keramaian untuk mengalihkan pikiran."
+    },
+    {
+      "id": 129,
+      "trait": "E",
+      "level": "high",
+      "emotion": "sad",
+      "order": 4,
+      "text_id": "Ikut serta dalam kegiatan kelompok yang ringan dan menyenangkan.",
+      "text_en": "Ikut serta dalam kegiatan kelompok yang ringan dan menyenangkan."
+    },
+    {
+      "id": 130,
+      "trait": "E",
+      "level": "high",
+      "emotion": "sad",
+      "order": 5,
+      "text_id": "Minta teman untuk menemani ngobrol atau jalan-jalan.",
+      "text_en": "Minta teman untuk menemani ngobrol atau jalan-jalan."
+    },
+    {
+      "id": 131,
+      "trait": "E",
+      "level": "high",
+      "emotion": "angry",
+      "order": 1,
+      "text_id": "Venting atau curhat ke teman yang bisa dipercaya.",
+      "text_en": "Venting atau curhat ke teman yang bisa dipercaya."
+    },
+    {
+      "id": 132,
+      "trait": "E",
+      "level": "high",
+      "emotion": "angry",
+      "order": 2,
+      "text_id": "Diskusikan masalah secara langsung dengan pihak terkait.",
+      "text_en": "Diskusikan masalah secara langsung dengan pihak terkait."
+    },
+    {
+      "id": 133,
+      "trait": "E",
+      "level": "high",
+      "emotion": "angry",
+      "order": 3,
+      "text_id": "Lakukan olahraga tim atau kelas kebugaran kelompok.",
+      "text_en": "Lakukan olahraga tim atau kelas kebugaran kelompok."
+    },
+    {
+      "id": 134,
+      "trait": "E",
+      "level": "high",
+      "emotion": "angry",
+      "order": 4,
+      "text_id": "Ekspresikan kemarahan secara verbal dengan cara yang asertif.",
+      "text_en": "Ekspresikan kemarahan secara verbal dengan cara yang asertif."
+    },
+    {
+      "id": 135,
+      "trait": "E",
+      "level": "high",
+      "emotion": "angry",
+      "order": 5,
+      "text_id": "Cari mediasi dari teman atau figur otoritas.",
+      "text_en": "Cari mediasi dari teman atau figur otoritas."
+    },
+    {
+      "id": 136,
+      "trait": "E",
+      "level": "high",
+      "emotion": "fear",
+      "order": 1,
+      "text_id": "Cari teman untuk menemani dan memberikan rasa aman.",
+      "text_en": "Cari teman untuk menemani dan memberikan rasa aman."
+    },
+    {
+      "id": 137,
+      "trait": "E",
+      "level": "high",
+      "emotion": "fear",
+      "order": 2,
+      "text_id": "Diskusikan ketakutan dengan kelompok pendukung.",
+      "text_en": "Diskusikan ketakutan dengan kelompok pendukung."
+    },
+    {
+      "id": 138,
+      "trait": "E",
+      "level": "high",
+      "emotion": "fear",
+      "order": 3,
+      "text_id": "Berada di lingkungan yang terang dan ramai.",
+      "text_en": "Berada di lingkungan yang terang dan ramai."
+    },
+    {
+      "id": 139,
+      "trait": "E",
+      "level": "high",
+      "emotion": "fear",
+      "order": 4,
+      "text_id": "Ikuti kegiatan sosial sebagai distraksi yang sehat.",
+      "text_en": "Ikuti kegiatan sosial sebagai distraksi yang sehat."
+    },
+    {
+      "id": 140,
+      "trait": "E",
+      "level": "high",
+      "emotion": "fear",
+      "order": 5,
+      "text_id": "Minta pendapat dari banyak orang untuk mendapat perspektif.",
+      "text_en": "Minta pendapat dari banyak orang untuk mendapat perspektif."
+    },
+    {
+      "id": 141,
+      "trait": "E",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 1,
+      "text_id": "Bicarakan kekesalan dengan lingkaran pertemanan.",
+      "text_en": "Bicarakan kekesalan dengan lingkaran pertemanan."
+    },
+    {
+      "id": 142,
+      "trait": "E",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 2,
+      "text_id": "Cari lingkungan sosial yang lebih positif dan menyenangkan.",
+      "text_en": "Cari lingkungan sosial yang lebih positif dan menyenangkan."
+    },
+    {
+      "id": 143,
+      "trait": "E",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 3,
+      "text_id": "Ajak teman untuk melakukan aktivitas bersama dan melupakan masalah.",
+      "text_en": "Ajak teman untuk melakukan aktivitas bersama dan melupakan masalah."
+    },
+    {
+      "id": 144,
+      "trait": "E",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 4,
+      "text_id": "Ekspresikan ketidaksukaan secara terbuka dan tegas.",
+      "text_en": "Ekspresikan ketidaksukaan secara terbuka dan tegas."
+    },
+    {
+      "id": 145,
+      "trait": "E",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 5,
+      "text_id": "Gunakan energi sosial untuk mencari pengalaman baru yang lebih baik.",
+      "text_en": "Gunakan energi sosial untuk mencari pengalaman baru yang lebih baik."
+    },
+    {
+      "id": 146,
+      "trait": "E",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 1,
+      "text_id": "Hubungi teman lama untuk sekadar bertukar kabar.",
+      "text_en": "Hubungi teman lama untuk sekadar bertukar kabar."
+    },
+    {
+      "id": 147,
+      "trait": "E",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 2,
+      "text_id": "Hadiri acara atau workshop untuk memperluas jaringan.",
+      "text_en": "Hadiri acara atau workshop untuk memperluas jaringan."
+    },
+    {
+      "id": 148,
+      "trait": "E",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 3,
+      "text_id": "Lakukan aktivitas yang melibatkan kerja tim.",
+      "text_en": "Lakukan aktivitas yang melibatkan kerja tim."
+    },
+    {
+      "id": 149,
+      "trait": "E",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 4,
+      "text_id": "Kunjungi tempat baru yang ramai dan hidup.",
+      "text_en": "Kunjungi tempat baru yang ramai dan hidup."
+    },
+    {
+      "id": 150,
+      "trait": "E",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 5,
+      "text_id": "Ikut serta dalam kegiatan sukarela atau komunitas.",
+      "text_en": "Ikut serta dalam kegiatan sukarela atau komunitas."
+    },
+    {
+      "id": 151,
+      "trait": "E",
+      "level": "low",
+      "emotion": "happy",
+      "order": 1,
+      "text_id": "Nikmati waktu berkualitas sendirian dengan hobi favorit.",
+      "text_en": "Nikmati waktu berkualitas sendirian dengan hobi favorit."
+    },
+    {
+      "id": 152,
+      "trait": "E",
+      "level": "low",
+      "emotion": "happy",
+      "order": 2,
+      "text_id": "Lakukan refleksi diri dalam suasana yang tenang.",
+      "text_en": "Lakukan refleksi diri dalam suasana yang tenang."
+    },
+    {
+      "id": 153,
+      "trait": "E",
+      "level": "low",
+      "emotion": "happy",
+      "order": 3,
+      "text_id": "Baca buku yang memperkaya wawasan dalam kedamaian.",
+      "text_en": "Baca buku yang memperkaya wawasan dalam kedamaian."
+    },
+    {
+      "id": 154,
+      "trait": "E",
+      "level": "low",
+      "emotion": "happy",
+      "order": 4,
+      "text_id": "Manjakan diri dengan perawatan diri (self-care) di rumah.",
+      "text_en": "Manjakan diri dengan perawatan diri (self-care) di rumah."
+    },
+    {
+      "id": 155,
+      "trait": "E",
+      "level": "low",
+      "emotion": "happy",
+      "order": 5,
+      "text_id": "Habiskan waktu dengan 1-2 orang terdekat secara intim.",
+      "text_en": "Habiskan waktu dengan 1-2 orang terdekat secara intim."
+    },
+    {
+      "id": 156,
+      "trait": "E",
+      "level": "low",
+      "emotion": "sad",
+      "order": 1,
+      "text_id": "Beri diri ruang untuk menyendiri tanpa gangguan.",
+      "text_en": "Beri diri ruang untuk menyendiri tanpa gangguan."
+    },
+    {
+      "id": 157,
+      "trait": "E",
+      "level": "low",
+      "emotion": "sad",
+      "order": 2,
+      "text_id": "Lakukan introspeksi dan journaling di tempat yang tenang.",
+      "text_en": "Lakukan introspeksi dan journaling di tempat yang tenang."
+    },
+    {
+      "id": 158,
+      "trait": "E",
+      "level": "low",
+      "emotion": "sad",
+      "order": 3,
+      "text_id": "Dengarkan musik yang menenangkan dalam kesendirian.",
+      "text_en": "Dengarkan musik yang menenangkan dalam kesendirian."
+    },
+    {
+      "id": 159,
+      "trait": "E",
+      "level": "low",
+      "emotion": "sad",
+      "order": 4,
+      "text_id": "Habiskan waktu dengan hewan peliharaan atau tanaman.",
+      "text_en": "Habiskan waktu dengan hewan peliharaan atau tanaman."
+    },
+    {
+      "id": 160,
+      "trait": "E",
+      "level": "low",
+      "emotion": "sad",
+      "order": 5,
+      "text_id": "Ciptakan sudut nyaman di rumah untuk memulihkan energi.",
+      "text_en": "Ciptakan sudut nyaman di rumah untuk memulihkan energi."
+    },
+    {
+      "id": 161,
+      "trait": "E",
+      "level": "low",
+      "emotion": "angry",
+      "order": 1,
+      "text_id": "Mundur ke ruang pribadi untuk menenangkan diri.",
+      "text_en": "Mundur ke ruang pribadi untuk menenangkan diri."
+    },
+    {
+      "id": 162,
+      "trait": "E",
+      "level": "low",
+      "emotion": "angry",
+      "order": 2,
+      "text_id": "Tuliskan kemarahan di jurnal tanpa perlu membagikannya.",
+      "text_en": "Tuliskan kemarahan di jurnal tanpa perlu membagikannya."
+    },
+    {
+      "id": 163,
+      "trait": "E",
+      "level": "low",
+      "emotion": "angry",
+      "order": 3,
+      "text_id": "Lakukan meditasi atau pernapasan dalam di tempat sunyi.",
+      "text_en": "Lakukan meditasi atau pernapasan dalam di tempat sunyi."
+    },
+    {
+      "id": 164,
+      "trait": "E",
+      "level": "low",
+      "emotion": "angry",
+      "order": 4,
+      "text_id": "Dengarkan musik instrumental untuk meredakan ketegangan.",
+      "text_en": "Dengarkan musik instrumental untuk meredakan ketegangan."
+    },
+    {
+      "id": 165,
+      "trait": "E",
+      "level": "low",
+      "emotion": "angry",
+      "order": 5,
+      "text_id": "Berjalan sendirian di alam untuk menjernihkan pikiran.",
+      "text_en": "Berjalan sendirian di alam untuk menjernihkan pikiran."
+    },
+    {
+      "id": 166,
+      "trait": "E",
+      "level": "low",
+      "emotion": "fear",
+      "order": 1,
+      "text_id": "Ciptakan lingkungan yang aman dan tenang di sekitar.",
+      "text_en": "Ciptakan lingkungan yang aman dan tenang di sekitar."
+    },
+    {
+      "id": 167,
+      "trait": "E",
+      "level": "low",
+      "emotion": "fear",
+      "order": 2,
+      "text_id": "Lakukan grounding dengan fokus pada sensasi fisik.",
+      "text_en": "Lakukan grounding dengan fokus pada sensasi fisik."
+    },
+    {
+      "id": 168,
+      "trait": "E",
+      "level": "low",
+      "emotion": "fear",
+      "order": 3,
+      "text_id": "Gunakan teknik pernapasan untuk menenangkan sistem saraf.",
+      "text_en": "Gunakan teknik pernapasan untuk menenangkan sistem saraf."
+    },
+    {
+      "id": 169,
+      "trait": "E",
+      "level": "low",
+      "emotion": "fear",
+      "order": 4,
+      "text_id": "Tarik diri dari stimulasi berlebih dan cari ketenangan.",
+      "text_en": "Tarik diri dari stimulasi berlebih dan cari ketenangan."
+    },
+    {
+      "id": 170,
+      "trait": "E",
+      "level": "low",
+      "emotion": "fear",
+      "order": 5,
+      "text_id": "Tuliskan kekhawatiran untuk memprosesnya secara internal.",
+      "text_en": "Tuliskan kekhawatiran untuk memprosesnya secara internal."
+    },
+    {
+      "id": 171,
+      "trait": "E",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 1,
+      "text_id": "Jaga jarak dan ciptakan ruang aman pribadi.",
+      "text_en": "Jaga jarak dan ciptakan ruang aman pribadi."
+    },
+    {
+      "id": 172,
+      "trait": "E",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 2,
+      "text_id": "Hindari konfrontasi langsung dan lebih baik menjauh.",
+      "text_en": "Hindari konfrontasi langsung dan lebih baik menjauh."
+    },
+    {
+      "id": 173,
+      "trait": "E",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 3,
+      "text_id": "Fokus pada aktivitas sendirian yang menyenangkan.",
+      "text_en": "Fokus pada aktivitas sendirian yang menyenangkan."
+    },
+    {
+      "id": 174,
+      "trait": "E",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 4,
+      "text_id": "Bersihkan lingkungan pribadi dari hal-hal yang mengganggu.",
+      "text_en": "Bersihkan lingkungan pribadi dari hal-hal yang mengganggu."
+    },
+    {
+      "id": 175,
+      "trait": "E",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 5,
+      "text_id": "Gunakan waktu menyendiri untuk memulihkan keseimbangan.",
+      "text_en": "Gunakan waktu menyendiri untuk memulihkan keseimbangan."
+    },
+    {
+      "id": 176,
+      "trait": "E",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 1,
+      "text_id": "Nikmati waktu sendirian untuk membaca atau belajar.",
+      "text_en": "Nikmati waktu sendirian untuk membaca atau belajar."
+    },
+    {
+      "id": 177,
+      "trait": "E",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 2,
+      "text_id": "Lakukan aktivitas yang membutuhkan konsentrasi penuh.",
+      "text_en": "Lakukan aktivitas yang membutuhkan konsentrasi penuh."
+    },
+    {
+      "id": 178,
+      "trait": "E",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 3,
+      "text_id": "Rapikan dan atur ulang ruang pribadi.",
+      "text_en": "Rapikan dan atur ulang ruang pribadi."
+    },
+    {
+      "id": 179,
+      "trait": "E",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 4,
+      "text_id": "Jalan-jalan santai sendirian di taman.",
+      "text_en": "Jalan-jalan santai sendirian di taman."
+    },
+    {
+      "id": 180,
+      "trait": "E",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 5,
+      "text_id": "Dengarkan podcast atau audiobook favorit.",
+      "text_en": "Dengarkan podcast atau audiobook favorit."
+    },
+    {
+      "id": 181,
+      "trait": "A",
+      "level": "high",
+      "emotion": "happy",
+      "order": 1,
+      "text_id": "Bantu orang lain yang membutuhkan bantuan.",
+      "text_en": "Bantu orang lain yang membutuhkan bantuan."
+    },
+    {
+      "id": 182,
+      "trait": "A",
+      "level": "high",
+      "emotion": "happy",
+      "order": 2,
+      "text_id": "Berikan pujian tulus kepada orang-orang di sekitar.",
+      "text_en": "Berikan pujian tulus kepada orang-orang di sekitar."
+    },
+    {
+      "id": 183,
+      "trait": "A",
+      "level": "high",
+      "emotion": "happy",
+      "order": 3,
+      "text_id": "Lakukan kegiatan sukarela atau amal.",
+      "text_en": "Lakukan kegiatan sukarela atau amal."
+    },
+    {
+      "id": 184,
+      "trait": "A",
+      "level": "high",
+      "emotion": "happy",
+      "order": 4,
+      "text_id": "Adakan acara kecil untuk mempererat hubungan.",
+      "text_en": "Adakan acara kecil untuk mempererat hubungan."
+    },
+    {
+      "id": 185,
+      "trait": "A",
+      "level": "high",
+      "emotion": "happy",
+      "order": 5,
+      "text_id": "Bagikan kebahagiaan dengan memasak atau memberi hadiah.",
+      "text_en": "Bagikan kebahagiaan dengan memasak atau memberi hadiah."
+    },
+    {
+      "id": 186,
+      "trait": "A",
+      "level": "high",
+      "emotion": "sad",
+      "order": 1,
+      "text_id": "Cari dukungan emosional dari orang-orang terdekat.",
+      "text_en": "Cari dukungan emosional dari orang-orang terdekat."
+    },
+    {
+      "id": 187,
+      "trait": "A",
+      "level": "high",
+      "emotion": "sad",
+      "order": 2,
+      "text_id": "Bantu orang lain sebagai cara mengalihkan kesedihan.",
+      "text_en": "Bantu orang lain sebagai cara mengalihkan kesedihan."
+    },
+    {
+      "id": 188,
+      "trait": "A",
+      "level": "high",
+      "emotion": "sad",
+      "order": 3,
+      "text_id": "Bicarakan perasaan dengan teman yang empatik.",
+      "text_en": "Bicarakan perasaan dengan teman yang empatik."
+    },
+    {
+      "id": 189,
+      "trait": "A",
+      "level": "high",
+      "emotion": "sad",
+      "order": 4,
+      "text_id": "Terima bantuan dan dukungan dari orang lain.",
+      "text_en": "Terima bantuan dan dukungan dari orang lain."
+    },
+    {
+      "id": 190,
+      "trait": "A",
+      "level": "high",
+      "emotion": "sad",
+      "order": 5,
+      "text_id": "Luangkan waktu untuk merawat hubungan yang berarti.",
+      "text_en": "Luangkan waktu untuk merawat hubungan yang berarti."
+    },
+    {
+      "id": 191,
+      "trait": "A",
+      "level": "high",
+      "emotion": "angry",
+      "order": 1,
+      "text_id": "Cari solusi yang menguntungkan semua pihak (win-win).",
+      "text_en": "Cari solusi yang menguntungkan semua pihak (win-win)."
+    },
+    {
+      "id": 192,
+      "trait": "A",
+      "level": "high",
+      "emotion": "angry",
+      "order": 2,
+      "text_id": "Mediasi konflik dengan pendekatan yang lembut.",
+      "text_en": "Mediasi konflik dengan pendekatan yang lembut."
+    },
+    {
+      "id": 193,
+      "trait": "A",
+      "level": "high",
+      "emotion": "angry",
+      "order": 3,
+      "text_id": "Ekspresikan kekecewaan dengan cara yang tidak menyakiti.",
+      "text_en": "Ekspresikan kekecewaan dengan cara yang tidak menyakiti."
+    },
+    {
+      "id": 194,
+      "trait": "A",
+      "level": "high",
+      "emotion": "angry",
+      "order": 4,
+      "text_id": "Ingatkan diri pada nilai-nilai kebaikan dan empati.",
+      "text_en": "Ingatkan diri pada nilai-nilai kebaikan dan empati."
+    },
+    {
+      "id": 195,
+      "trait": "A",
+      "level": "high",
+      "emotion": "angry",
+      "order": 5,
+      "text_id": "Minta maaf jika perlu dan cari jalan tengah.",
+      "text_en": "Minta maaf jika perlu dan cari jalan tengah."
+    },
+    {
+      "id": 196,
+      "trait": "A",
+      "level": "high",
+      "emotion": "fear",
+      "order": 1,
+      "text_id": "Cari dukungan dari komunitas atau kelompok.",
+      "text_en": "Cari dukungan dari komunitas atau kelompok."
+    },
+    {
+      "id": 197,
+      "trait": "A",
+      "level": "high",
+      "emotion": "fear",
+      "order": 2,
+      "text_id": "Diskusikan kekhawatiran dengan orang yang peduli.",
+      "text_en": "Diskusikan kekhawatiran dengan orang yang peduli."
+    },
+    {
+      "id": 198,
+      "trait": "A",
+      "level": "high",
+      "emotion": "fear",
+      "order": 3,
+      "text_id": "Bergabung dengan grup dukungan yang sesuai.",
+      "text_en": "Bergabung dengan grup dukungan yang sesuai."
+    },
+    {
+      "id": 199,
+      "trait": "A",
+      "level": "high",
+      "emotion": "fear",
+      "order": 4,
+      "text_id": "Minta bantuan tanpa merasa menjadi beban.",
+      "text_en": "Minta bantuan tanpa merasa menjadi beban."
+    },
+    {
+      "id": 200,
+      "trait": "A",
+      "level": "high",
+      "emotion": "fear",
+      "order": 5,
+      "text_id": "Percayakan kekhawatiran pada figur yang dipercaya.",
+      "text_en": "Percayakan kekhawatiran pada figur yang dipercaya."
+    },
+    {
+      "id": 201,
+      "trait": "A",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 1,
+      "text_id": "Coba pahami perspektif pihak lain sebelum menghakimi.",
+      "text_en": "Coba pahami perspektif pihak lain sebelum menghakimi."
+    },
+    {
+      "id": 202,
+      "trait": "A",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 2,
+      "text_id": "Tetapkan batasan yang sehat dengan tetap hormat.",
+      "text_en": "Tetapkan batasan yang sehat dengan tetap hormat."
+    },
+    {
+      "id": 203,
+      "trait": "A",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 3,
+      "text_id": "Cari dialog daripada konfrontasi untuk menyelesaikan masalah.",
+      "text_en": "Cari dialog daripada konfrontasi untuk menyelesaikan masalah."
+    },
+    {
+      "id": 204,
+      "trait": "A",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 4,
+      "text_id": "Ingatkan diri pada nilai-nilai kemanusiaan.",
+      "text_en": "Ingatkan diri pada nilai-nilai kemanusiaan."
+    },
+    {
+      "id": 205,
+      "trait": "A",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 5,
+      "text_id": "Jaga hubungan baik meskipun ada perbedaan.",
+      "text_en": "Jaga hubungan baik meskipun ada perbedaan."
+    },
+    {
+      "id": 206,
+      "trait": "A",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 1,
+      "text_id": "Hubungi teman atau keluarga untuk sekadar menyapa.",
+      "text_en": "Hubungi teman atau keluarga untuk sekadar menyapa."
+    },
+    {
+      "id": 207,
+      "trait": "A",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 2,
+      "text_id": "Lakukan kebaikan kecil secara acak.",
+      "text_en": "Lakukan kebaikan kecil secara acak."
+    },
+    {
+      "id": 208,
+      "trait": "A",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 3,
+      "text_id": "Dengarkan cerita orang lain dengan penuh perhatian.",
+      "text_en": "Dengarkan cerita orang lain dengan penuh perhatian."
+    },
+    {
+      "id": 209,
+      "trait": "A",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 4,
+      "text_id": "Ikut serta dalam kegiatan sosial di lingkungan sekitar.",
+      "text_en": "Ikut serta dalam kegiatan sosial di lingkungan sekitar."
+    },
+    {
+      "id": 210,
+      "trait": "A",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 5,
+      "text_id": "Luangkan waktu untuk menjadi relawan.",
+      "text_en": "Luangkan waktu untuk menjadi relawan."
+    },
+    {
+      "id": 211,
+      "trait": "A",
+      "level": "low",
+      "emotion": "happy",
+      "order": 1,
+      "text_id": "Rayakan pencapaian pribadi tanpa perlu validasi orang lain.",
+      "text_en": "Rayakan pencapaian pribadi tanpa perlu validasi orang lain."
+    },
+    {
+      "id": 212,
+      "trait": "A",
+      "level": "low",
+      "emotion": "happy",
+      "order": 2,
+      "text_id": "Nikmati kemandirian dan kebebasan dalam menentukan pilihan.",
+      "text_en": "Nikmati kemandirian dan kebebasan dalam menentukan pilihan."
+    },
+    {
+      "id": 213,
+      "trait": "A",
+      "level": "low",
+      "emotion": "happy",
+      "order": 3,
+      "text_id": "Fokus pada target dan ambisi pribadi.",
+      "text_en": "Fokus pada target dan ambisi pribadi."
+    },
+    {
+      "id": 214,
+      "trait": "A",
+      "level": "low",
+      "emotion": "happy",
+      "order": 4,
+      "text_id": "Lakukan aktivitas kompetitif yang menantang.",
+      "text_en": "Lakukan aktivitas kompetitif yang menantang."
+    },
+    {
+      "id": 215,
+      "trait": "A",
+      "level": "low",
+      "emotion": "happy",
+      "order": 5,
+      "text_id": "Manfaatkan momentum untuk advokasi diri sendiri.",
+      "text_en": "Manfaatkan momentum untuk advokasi diri sendiri."
+    },
+    {
+      "id": 216,
+      "trait": "A",
+      "level": "low",
+      "emotion": "sad",
+      "order": 1,
+      "text_id": "Proses kesedihan secara mandiri tanpa melibatkan orang lain.",
+      "text_en": "Proses kesedihan secara mandiri tanpa melibatkan orang lain."
+    },
+    {
+      "id": 217,
+      "trait": "A",
+      "level": "low",
+      "emotion": "sad",
+      "order": 2,
+      "text_id": "Fokus pada pemecahan masalah secara logis.",
+      "text_en": "Fokus pada pemecahan masalah secara logis."
+    },
+    {
+      "id": 218,
+      "trait": "A",
+      "level": "low",
+      "emotion": "sad",
+      "order": 3,
+      "text_id": "Lakukan aktivitas yang memperkuat kemandirian.",
+      "text_en": "Lakukan aktivitas yang memperkuat kemandirian."
+    },
+    {
+      "id": 219,
+      "trait": "A",
+      "level": "low",
+      "emotion": "sad",
+      "order": 4,
+      "text_id": "Analisis penyebab kesedihan secara objektif.",
+      "text_en": "Analisis penyebab kesedihan secara objektif."
+    },
+    {
+      "id": 220,
+      "trait": "A",
+      "level": "low",
+      "emotion": "sad",
+      "order": 5,
+      "text_id": "Beri diri waktu sendiri untuk memulihkan diri.",
+      "text_en": "Beri diri waktu sendiri untuk memulihkan diri."
+    },
+    {
+      "id": 221,
+      "trait": "A",
+      "level": "low",
+      "emotion": "angry",
+      "order": 1,
+      "text_id": "Tegaskan pendirian dan batasan dengan jelas.",
+      "text_en": "Tegaskan pendirian dan batasan dengan jelas."
+    },
+    {
+      "id": 222,
+      "trait": "A",
+      "level": "low",
+      "emotion": "angry",
+      "order": 2,
+      "text_id": "Konfrontasi masalah secara langsung dan faktual.",
+      "text_en": "Konfrontasi masalah secara langsung dan faktual."
+    },
+    {
+      "id": 223,
+      "trait": "A",
+      "level": "low",
+      "emotion": "angry",
+      "order": 3,
+      "text_id": "Salurkan kemarahan ke dalam kompetisi atau tantangan.",
+      "text_en": "Salurkan kemarahan ke dalam kompetisi atau tantangan."
+    },
+    {
+      "id": 224,
+      "trait": "A",
+      "level": "low",
+      "emotion": "angry",
+      "order": 4,
+      "text_id": "Jangan ragu untuk mengatakan 'tidak'.",
+      "text_en": "Jangan ragu untuk mengatakan 'tidak'."
+    },
+    {
+      "id": 225,
+      "trait": "A",
+      "level": "low",
+      "emotion": "angry",
+      "order": 5,
+      "text_id": "Prioritaskan kepentingan dan kebenaran pribadi.",
+      "text_en": "Prioritaskan kepentingan dan kebenaran pribadi."
+    },
+    {
+      "id": 226,
+      "trait": "A",
+      "level": "low",
+      "emotion": "fear",
+      "order": 1,
+      "text_id": "Analisis ancaman secara logis dan rasional.",
+      "text_en": "Analisis ancaman secara logis dan rasional."
+    },
+    {
+      "id": 227,
+      "trait": "A",
+      "level": "low",
+      "emotion": "fear",
+      "order": 2,
+      "text_id": "Buat rencana perlindungan diri secara mandiri.",
+      "text_en": "Buat rencana perlindungan diri secara mandiri."
+    },
+    {
+      "id": 228,
+      "trait": "A",
+      "level": "low",
+      "emotion": "fear",
+      "order": 3,
+      "text_id": "Hadapi sumber ketakutan dengan keberanian.",
+      "text_en": "Hadapi sumber ketakutan dengan keberanian."
+    },
+    {
+      "id": 229,
+      "trait": "A",
+      "level": "low",
+      "emotion": "fear",
+      "order": 4,
+      "text_id": "Kumpulkan kekuatan internal tanpa bergantung pada orang lain.",
+      "text_en": "Kumpulkan kekuatan internal tanpa bergantung pada orang lain."
+    },
+    {
+      "id": 230,
+      "trait": "A",
+      "level": "low",
+      "emotion": "fear",
+      "order": 5,
+      "text_id": "Fokus pada kemampuan diri untuk mengatasi situasi.",
+      "text_en": "Fokus pada kemampuan diri untuk mengatasi situasi."
+    },
+    {
+      "id": 231,
+      "trait": "A",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 1,
+      "text_id": "Singkirkan sumber ketidaknyamanan dengan tegas.",
+      "text_en": "Singkirkan sumber ketidaknyamanan dengan tegas."
+    },
+    {
+      "id": 232,
+      "trait": "A",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 2,
+      "text_id": "Jangan ragu untuk memutus hubungan yang toksik.",
+      "text_en": "Jangan ragu untuk memutus hubungan yang toksik."
+    },
+    {
+      "id": 233,
+      "trait": "A",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 3,
+      "text_id": "Prioritaskan kepentingan dan kenyamanan diri sendiri.",
+      "text_en": "Prioritaskan kepentingan dan kenyamanan diri sendiri."
+    },
+    {
+      "id": 234,
+      "trait": "A",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 4,
+      "text_id": "Ekspresikan ketidaksukaan secara langsung tanpa basa-basi.",
+      "text_en": "Ekspresikan ketidaksukaan secara langsung tanpa basa-basi."
+    },
+    {
+      "id": 235,
+      "trait": "A",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 5,
+      "text_id": "Buat jarak yang jelas dari hal-hal yang mengganggu.",
+      "text_en": "Buat jarak yang jelas dari hal-hal yang mengganggu."
+    },
+    {
+      "id": 236,
+      "trait": "A",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 1,
+      "text_id": "Fokus pada pengembangan diri dan kompetensi pribadi.",
+      "text_en": "Fokus pada pengembangan diri dan kompetensi pribadi."
+    },
+    {
+      "id": 237,
+      "trait": "A",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 2,
+      "text_id": "Tetapkan target ambisius tanpa perlu persetujuan orang lain.",
+      "text_en": "Tetapkan target ambisius tanpa perlu persetujuan orang lain."
+    },
+    {
+      "id": 238,
+      "trait": "A",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 3,
+      "text_id": "Analisis situasi secara kritis dan independen.",
+      "text_en": "Analisis situasi secara kritis dan independen."
+    },
+    {
+      "id": 239,
+      "trait": "A",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 4,
+      "text_id": "Lakukan aktivitas yang memperkuat kemandirian.",
+      "text_en": "Lakukan aktivitas yang memperkuat kemandirian."
+    },
+    {
+      "id": 240,
+      "trait": "A",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 5,
+      "text_id": "Gunakan waktu untuk merencanakan strategi pribadi.",
+      "text_en": "Gunakan waktu untuk merencanakan strategi pribadi."
+    },
+    {
+      "id": 241,
+      "trait": "N",
+      "level": "high",
+      "emotion": "happy",
+      "order": 1,
+      "text_id": "Nikmati momen tenang dan stabil tanpa kekhawatiran.",
+      "text_en": "Nikmati momen tenang dan stabil tanpa kekhawatiran."
+    },
+    {
+      "id": 242,
+      "trait": "N",
+      "level": "high",
+      "emotion": "happy",
+      "order": 2,
+      "text_id": "Rayakan pencapaian kecil dengan penuh syukur.",
+      "text_en": "Rayakan pencapaian kecil dengan penuh syukur."
+    },
+    {
+      "id": 243,
+      "trait": "N",
+      "level": "high",
+      "emotion": "happy",
+      "order": 3,
+      "text_id": "Praktikkan mindfulness untuk memperkuat rasa aman.",
+      "text_en": "Praktikkan mindfulness untuk memperkuat rasa aman."
+    },
+    {
+      "id": 244,
+      "trait": "N",
+      "level": "high",
+      "emotion": "happy",
+      "order": 4,
+      "text_id": "Dokumentasikan hal-hal positif yang terjadi hari ini.",
+      "text_en": "Dokumentasikan hal-hal positif yang terjadi hari ini."
+    },
+    {
+      "id": 245,
+      "trait": "N",
+      "level": "high",
+      "emotion": "happy",
+      "order": 5,
+      "text_id": "Luangkan waktu untuk aktivitas yang menenangkan saraf.",
+      "text_en": "Luangkan waktu untuk aktivitas yang menenangkan saraf."
+    },
+    {
+      "id": 246,
+      "trait": "N",
+      "level": "high",
+      "emotion": "sad",
+      "order": 1,
+      "text_id": "Praktikkan self-compassion dan validasi emosi sendiri.",
+      "text_en": "Praktikkan self-compassion dan validasi emosi sendiri."
+    },
+    {
+      "id": 247,
+      "trait": "N",
+      "level": "high",
+      "emotion": "sad",
+      "order": 2,
+      "text_id": "Gunakan teknik grounding untuk kembali ke saat ini.",
+      "text_en": "Gunakan teknik grounding untuk kembali ke saat ini."
+    },
+    {
+      "id": 248,
+      "trait": "N",
+      "level": "high",
+      "emotion": "sad",
+      "order": 3,
+      "text_id": "Buat jurnal untuk mengidentifikasi pemicu suasana hati.",
+      "text_en": "Buat jurnal untuk mengidentifikasi pemicu suasana hati."
+    },
+    {
+      "id": 249,
+      "trait": "N",
+      "level": "high",
+      "emotion": "sad",
+      "order": 4,
+      "text_id": "Lakukan aktivitas fisik ringan untuk meningkatkan mood.",
+      "text_en": "Lakukan aktivitas fisik ringan untuk meningkatkan mood."
+    },
+    {
+      "id": 250,
+      "trait": "N",
+      "level": "high",
+      "emotion": "sad",
+      "order": 5,
+      "text_id": "Cari dukungan profesional jika perlu.",
+      "text_en": "Cari dukungan profesional jika perlu."
+    },
+    {
+      "id": 251,
+      "trait": "N",
+      "level": "high",
+      "emotion": "angry",
+      "order": 1,
+      "text_id": "Lakukan teknik pernapasan dalam sebelum bereaksi.",
+      "text_en": "Lakukan teknik pernapasan dalam sebelum bereaksi."
+    },
+    {
+      "id": 252,
+      "trait": "N",
+      "level": "high",
+      "emotion": "angry",
+      "order": 2,
+      "text_id": "Jeda sejenak dan tinggalkan situasi yang memicu.",
+      "text_en": "Jeda sejenak dan tinggalkan situasi yang memicu."
+    },
+    {
+      "id": 253,
+      "trait": "N",
+      "level": "high",
+      "emotion": "angry",
+      "order": 3,
+      "text_id": "Tuliskan emosi untuk meredakan intensitas.",
+      "text_en": "Tuliskan emosi untuk meredakan intensitas."
+    },
+    {
+      "id": 254,
+      "trait": "N",
+      "level": "high",
+      "emotion": "angry",
+      "order": 4,
+      "text_id": "Praktikkan progressive muscle relaxation.",
+      "text_en": "Praktikkan progressive muscle relaxation."
+    },
+    {
+      "id": 255,
+      "trait": "N",
+      "level": "high",
+      "emotion": "angry",
+      "order": 5,
+      "text_id": "Kenali pemicu dan pola reaksi emosi.",
+      "text_en": "Kenali pemicu dan pola reaksi emosi."
+    },
+    {
+      "id": 256,
+      "trait": "N",
+      "level": "high",
+      "emotion": "fear",
+      "order": 1,
+      "text_id": "Praktikkan pernapasan diafragma untuk menenangkan sistem saraf.",
+      "text_en": "Praktikkan pernapasan diafragma untuk menenangkan sistem saraf."
+    },
+    {
+      "id": 257,
+      "trait": "N",
+      "level": "high",
+      "emotion": "fear",
+      "order": 2,
+      "text_id": "Gunakan teknik 5-4-3-2-1 grounding untuk mengurangi kecemasan.",
+      "text_en": "Gunakan teknik 5-4-3-2-1 grounding untuk mengurangi kecemasan."
+    },
+    {
+      "id": 258,
+      "trait": "N",
+      "level": "high",
+      "emotion": "fear",
+      "order": 3,
+      "text_id": "Identifikasi distorsi kognitif yang memperburuk ketakutan.",
+      "text_en": "Identifikasi distorsi kognitif yang memperburuk ketakutan."
+    },
+    {
+      "id": 259,
+      "trait": "N",
+      "level": "high",
+      "emotion": "fear",
+      "order": 4,
+      "text_id": "Buat jurnal kecemasan untuk melacak pola pemicu.",
+      "text_en": "Buat jurnal kecemasan untuk melacak pola pemicu."
+    },
+    {
+      "id": 260,
+      "trait": "N",
+      "level": "high",
+      "emotion": "fear",
+      "order": 5,
+      "text_id": "Cari terapi atau konseling untuk strategi koping jangka panjang.",
+      "text_en": "Cari terapi atau konseling untuk strategi koping jangka panjang."
+    },
+    {
+      "id": 261,
+      "trait": "N",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 1,
+      "text_id": "Praktikkan toleransi terhadap ketidaknyamanan secara bertahap.",
+      "text_en": "Praktikkan toleransi terhadap ketidaknyamanan secara bertahap."
+    },
+    {
+      "id": 262,
+      "trait": "N",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 2,
+      "text_id": "Gunakan teknik mindfulness untuk mengamati reaksi tanpa menghakimi.",
+      "text_en": "Gunakan teknik mindfulness untuk mengamati reaksi tanpa menghakimi."
+    },
+    {
+      "id": 263,
+      "trait": "N",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 3,
+      "text_id": "Identifikasi akar keengganan untuk memahami respons emosi.",
+      "text_en": "Identifikasi akar keengganan untuk memahami respons emosi."
+    },
+    {
+      "id": 264,
+      "trait": "N",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 4,
+      "text_id": "Cari perspektif yang lebih seimbang terhadap situasi.",
+      "text_en": "Cari perspektif yang lebih seimbang terhadap situasi."
+    },
+    {
+      "id": 265,
+      "trait": "N",
+      "level": "high",
+      "emotion": "disgust",
+      "order": 5,
+      "text_id": "Lakukan self-soothing dengan aktivitas yang menenangkan.",
+      "text_en": "Lakukan self-soothing dengan aktivitas yang menenangkan."
+    },
+    {
+      "id": 266,
+      "trait": "N",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 1,
+      "text_id": "Praktikkan meditasi mindfulness secara rutin.",
+      "text_en": "Praktikkan meditasi mindfulness secara rutin."
+    },
+    {
+      "id": 267,
+      "trait": "N",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 2,
+      "text_id": "Buat rutinitas tidur yang teratur dan sehat.",
+      "text_en": "Buat rutinitas tidur yang teratur dan sehat."
+    },
+    {
+      "id": 268,
+      "trait": "N",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 3,
+      "text_id": "Pelajari teknik manajemen stres dan regulasi emosi.",
+      "text_en": "Pelajari teknik manajemen stres dan regulasi emosi."
+    },
+    {
+      "id": 269,
+      "trait": "N",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 4,
+      "text_id": "Lakukan yoga atau peregangan untuk melepaskan ketegangan.",
+      "text_en": "Lakukan yoga atau peregangan untuk melepaskan ketegangan."
+    },
+    {
+      "id": 270,
+      "trait": "N",
+      "level": "high",
+      "emotion": "neutral",
+      "order": 5,
+      "text_id": "Kurangi stimulasi berlebih dari media sosial dan berita.",
+      "text_en": "Kurangi stimulasi berlebih dari media sosial dan berita."
+    },
+    {
+      "id": 271,
+      "trait": "N",
+      "level": "low",
+      "emotion": "happy",
+      "order": 1,
+      "text_id": "Nikmati stabilitas emosi yang alami.",
+      "text_en": "Nikmati stabilitas emosi yang alami."
+    },
+    {
+      "id": 272,
+      "trait": "N",
+      "level": "low",
+      "emotion": "happy",
+      "order": 2,
+      "text_id": "Manfaatkan ketenangan untuk mendukung orang lain.",
+      "text_en": "Manfaatkan ketenangan untuk mendukung orang lain."
+    },
+    {
+      "id": 273,
+      "trait": "N",
+      "level": "low",
+      "emotion": "happy",
+      "order": 3,
+      "text_id": "Lakukan aktivitas berani yang menantang zona nyaman.",
+      "text_en": "Lakukan aktivitas berani yang menantang zona nyaman."
+    },
+    {
+      "id": 274,
+      "trait": "N",
+      "level": "low",
+      "emotion": "happy",
+      "order": 4,
+      "text_id": "Bagikan ketenangan dan perspektif positif dengan sekitar.",
+      "text_en": "Bagikan ketenangan dan perspektif positif dengan sekitar."
+    },
+    {
+      "id": 275,
+      "trait": "N",
+      "level": "low",
+      "emotion": "happy",
+      "order": 5,
+      "text_id": "Jadikan diri pilar stabilitas bagi orang-orang terdekat.",
+      "text_en": "Jadikan diri pilar stabilitas bagi orang-orang terdekat."
+    },
+    {
+      "id": 276,
+      "trait": "N",
+      "level": "low",
+      "emotion": "sad",
+      "order": 1,
+      "text_id": "Proses kesedihan dengan perspektif yang seimbang.",
+      "text_en": "Proses kesedihan dengan perspektif yang seimbang."
+    },
+    {
+      "id": 277,
+      "trait": "N",
+      "level": "low",
+      "emotion": "sad",
+      "order": 2,
+      "text_id": "Gunakan pendekatan logis untuk mengatasi penyebab kesedihan.",
+      "text_en": "Gunakan pendekatan logis untuk mengatasi penyebab kesedihan."
+    },
+    {
+      "id": 278,
+      "trait": "N",
+      "level": "low",
+      "emotion": "sad",
+      "order": 3,
+      "text_id": "Pertahankan rutinitas harian sebagai jangkar stabilitas.",
+      "text_en": "Pertahankan rutinitas harian sebagai jangkar stabilitas."
+    },
+    {
+      "id": 279,
+      "trait": "N",
+      "level": "low",
+      "emotion": "sad",
+      "order": 4,
+      "text_id": "Bantu orang lain yang mungkin mengalami masa sulit.",
+      "text_en": "Bantu orang lain yang mungkin mengalami masa sulit."
+    },
+    {
+      "id": 280,
+      "trait": "N",
+      "level": "low",
+      "emotion": "sad",
+      "order": 5,
+      "text_id": "Ingatkan diri bahwa emosi negatif bersifat sementara.",
+      "text_en": "Ingatkan diri bahwa emosi negatif bersifat sementara."
+    },
+    {
+      "id": 281,
+      "trait": "N",
+      "level": "low",
+      "emotion": "angry",
+      "order": 1,
+      "text_id": "Tangani konflik dengan kepala dingin dan rasional.",
+      "text_en": "Tangani konflik dengan kepala dingin dan rasional."
+    },
+    {
+      "id": 282,
+      "trait": "N",
+      "level": "low",
+      "emotion": "angry",
+      "order": 2,
+      "text_id": "Gunakan ketenangan alami untuk meredakan situasi.",
+      "text_en": "Gunakan ketenangan alami untuk meredakan situasi."
+    },
+    {
+      "id": 283,
+      "trait": "N",
+      "level": "low",
+      "emotion": "angry",
+      "order": 3,
+      "text_id": "Konfrontasi masalah secara langsung tanpa dramatisasi.",
+      "text_en": "Konfrontasi masalah secara langsung tanpa dramatisasi."
+    },
+    {
+      "id": 284,
+      "trait": "N",
+      "level": "low",
+      "emotion": "angry",
+      "order": 4,
+      "text_id": "Jadilah penengah dalam konflik yang melibatkan orang lain.",
+      "text_en": "Jadilah penengah dalam konflik yang melibatkan orang lain."
+    },
+    {
+      "id": 285,
+      "trait": "N",
+      "level": "low",
+      "emotion": "angry",
+      "order": 5,
+      "text_id": "Fokus pada solusi daripada reaksi emosional.",
+      "text_en": "Fokus pada solusi daripada reaksi emosional."
+    },
+    {
+      "id": 286,
+      "trait": "N",
+      "level": "low",
+      "emotion": "fear",
+      "order": 1,
+      "text_id": "Hadapi situasi berisiko dengan keberanian yang tenang.",
+      "text_en": "Hadapi situasi berisiko dengan keberanian yang tenang."
+    },
+    {
+      "id": 287,
+      "trait": "N",
+      "level": "low",
+      "emotion": "fear",
+      "order": 2,
+      "text_id": "Gunakan stabilitas emosi untuk mengambil keputusan rasional.",
+      "text_en": "Gunakan stabilitas emosi untuk mengambil keputusan rasional."
+    },
+    {
+      "id": 288,
+      "trait": "N",
+      "level": "low",
+      "emotion": "fear",
+      "order": 3,
+      "text_id": "Bantu orang lain yang merasa cemas dengan ketenangan Anda.",
+      "text_en": "Bantu orang lain yang merasa cemas dengan ketenangan Anda."
+    },
+    {
+      "id": 289,
+      "trait": "N",
+      "level": "low",
+      "emotion": "fear",
+      "order": 4,
+      "text_id": "Tetap fokus pada fakta dan probabilitas objektif.",
+      "text_en": "Tetap fokus pada fakta dan probabilitas objektif."
+    },
+    {
+      "id": 290,
+      "trait": "N",
+      "level": "low",
+      "emotion": "fear",
+      "order": 5,
+      "text_id": "Manfaatkan ketahanan mental untuk menghadapi tantangan.",
+      "text_en": "Manfaatkan ketahanan mental untuk menghadapi tantangan."
+    },
+    {
+      "id": 291,
+      "trait": "N",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 1,
+      "text_id": "Tangani situasi tidak nyaman dengan kepala dingin.",
+      "text_en": "Tangani situasi tidak nyaman dengan kepala dingin."
+    },
+    {
+      "id": 292,
+      "trait": "N",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 2,
+      "text_id": "Berikan perspektif yang rasional tentang hal yang memicu.",
+      "text_en": "Berikan perspektif yang rasional tentang hal yang memicu."
+    },
+    {
+      "id": 293,
+      "trait": "N",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 3,
+      "text_id": "Atasi sumber masalah secara langsung dan efisien.",
+      "text_en": "Atasi sumber masalah secara langsung dan efisien."
+    },
+    {
+      "id": 294,
+      "trait": "N",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 4,
+      "text_id": "Jangan biarkan reaksi emosi mengaburkan penilaian.",
+      "text_en": "Jangan biarkan reaksi emosi mengaburkan penilaian."
+    },
+    {
+      "id": 295,
+      "trait": "N",
+      "level": "low",
+      "emotion": "disgust",
+      "order": 5,
+      "text_id": "Tunjukkan keteladanan dalam menghadapi situasi sulit.",
+      "text_en": "Tunjukkan keteladanan dalam menghadapi situasi sulit."
+    },
+    {
+      "id": 296,
+      "trait": "N",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 1,
+      "text_id": "Manfaatkan stabilitas untuk merencanakan tujuan baru.",
+      "text_en": "Manfaatkan stabilitas untuk merencanakan tujuan baru."
+    },
+    {
+      "id": 297,
+      "trait": "N",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 2,
+      "text_id": "Bantu orang lain yang sedang mengalami gejolak emosi.",
+      "text_en": "Bantu orang lain yang sedang mengalami gejolak emosi."
+    },
+    {
+      "id": 298,
+      "trait": "N",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 3,
+      "text_id": "Lakukan refleksi diri tanpa terjebak overthinking.",
+      "text_en": "Lakukan refleksi diri tanpa terjebak overthinking."
+    },
+    {
+      "id": 299,
+      "trait": "N",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 4,
+      "text_id": "Kembangkan ketahanan mental melalui tantangan baru.",
+      "text_en": "Kembangkan ketahanan mental melalui tantangan baru."
+    },
+    {
+      "id": 300,
+      "trait": "N",
+      "level": "low",
+      "emotion": "neutral",
+      "order": 5,
+      "text_id": "Nikmati kedamaian batin dan gunakan untuk berkarya.",
+      "text_en": "Nikmati kedamaian batin dan gunakan untuk berkarya."
+    }
+  ],
+  "default_neutral": [
+    {
+      "order": 1,
+      "text_id": "Jaga rutinitas tidur yang teratur.",
+      "text_en": "Keep a regular sleep routine."
+    },
+    {
+      "order": 2,
+      "text_id": "Berjalan kaki singkat di luar ruangan.",
+      "text_en": "Take a short walk outdoors."
+    },
+    {
+      "order": 3,
+      "text_id": "Lakukan pernapasan dalam selama beberapa menit.",
+      "text_en": "Practice deep breathing for a few minutes."
+    },
+    {
+      "order": 4,
+      "text_id": "Tulis jurnal singkat tentang perasaan hari ini.",
+      "text_en": "Write a short journal about how you feel today."
+    },
+    {
+      "order": 5,
+      "text_id": "Hubungi seseorang yang kamu percaya.",
+      "text_en": "Reach out to someone you trust."
+    }
+  ]
+}

@@ -1,4 +1,7 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -26,6 +29,7 @@ class ProfileMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Column(
       children: [
         Material(
@@ -33,29 +37,29 @@ class ProfileMenuItem extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.md.w,
+                vertical: AppSpacing.md.h,
+              ),
               child: Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(8.w),
-                    decoration: BoxDecoration(
+                    padding: EdgeInsets.all(AppSpacing.xs.w),
+                    decoration: p.circle(
                       color: iconBackgroundColor,
-                      shape: BoxShape.circle,
+                      borderColor: Colors.transparent,
                     ),
-                    child: Icon(
-                      icon,
-                      color: iconColor,
-                      size: 20.sp,
-                    ),
+                    child: Icon(icon, color: iconColor, size: 20.sp),
                   ),
-                  SizedBox(width: 16.w),
+                  SizedBox(width: AppSpacing.md.w),
                   Expanded(
                     child: Text(
                       title,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontSize: 14.sp,
+                      style: AppTypography.body.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: isDestructive ? const Color(0xFFDC2626) : AppColors.textPrimary,
+                        color: isDestructive
+                            ? p.primaryFocus
+                            : p.ink,
                       ),
                     ),
                   ),
@@ -64,8 +68,8 @@ class ProfileMenuItem extends StatelessWidget {
                   else if (onTap != null)
                     Icon(
                       Icons.chevron_right_rounded,
-                      color: AppColors.outlineVariant,
-                      size: 24.sp,
+                      color: p.inkFaint,
+                      size: 22.sp,
                     ),
                 ],
               ),
@@ -75,10 +79,10 @@ class ProfileMenuItem extends StatelessWidget {
         if (showBorder)
           Divider(
             height: 1,
-            thickness: 1,
-            color: AppColors.outline,
-            indent: 16.w + 36.w + 16.w, // padding + icon container + spacing
-            endIndent: 16.w,
+            thickness: AppBorder.thin,
+            color: p.hairline,
+            indent: AppSpacing.md.w + 36.w + AppSpacing.md.w,
+            endIndent: AppSpacing.md.w,
           ),
       ],
     );

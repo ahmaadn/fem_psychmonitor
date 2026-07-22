@@ -1,4 +1,5 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
@@ -45,70 +46,78 @@ class _PermissionsPageState extends State<PermissionsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     final allGranted = micGranted && storageGranted;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: p.canvas,
+      extendBodyBehindAppBar: true,
       appBar: CustomAppBar(title: l10n.permissionsTitle, showBackButton: true),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 8.h),
-              Text(
-                l10n.microphonePrivacy,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              SizedBox(height: 12.h),
-              Text(
-                l10n.appNeedsMicAccess,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              SizedBox(height: 24.h),
-
-              _permissionTile(
-                icon: Icons.mic_rounded,
-                title: l10n.microphone,
-                subtitle: micGranted ? l10n.granted : l10n.notGranted,
-                granted: micGranted,
-                onTap: () async {
-                  final res = await Permission.microphone.request();
-                  setState(() => micGranted = res.isGranted);
-                },
-              ),
-              SizedBox(height: 12.h),
-              _permissionTile(
-                icon: Icons.folder_rounded,
-                title: l10n.storage,
-                subtitle: storageGranted ? l10n.granted : l10n.notGranted,
-                granted: storageGranted,
-                onTap: () async {
-                  final res = await Permission.storage.request();
-                  setState(() => storageGranted = res.isGranted);
-                },
-              ),
-
-              SizedBox(height: 24.h),
-              PrimaryButton(
-                text: allGranted ? l10n.startRecording : l10n.requestPermission,
-                onPressed: allGranted
-                    ? () {
-                        context.goNamed(RouteNames.liveRecording);
-                      }
-                    : _requestAll,
-              ),
-              SizedBox(height: 12.h),
-              SecondaryButton(
-                text: l10n.skipForNow,
-                icon: Icons.skip_next,
-                onPressed: () {
-                  context.goNamed(RouteNames.liveRecording);
-                },
-              ),
-            ],
+      body: DecoratedBox(
+        decoration: BoxDecoration(gradient: p.canvasGradient),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 8.h),
+                Text(
+                  l10n.microphonePrivacy,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: p.ink,
+                      ),
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  l10n.appNeedsMicAccess,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: p.inkMuted,
+                      ),
+                ),
+                SizedBox(height: 24.h),
+                _permissionTile(
+                  icon: Icons.mic_rounded,
+                  title: l10n.microphone,
+                  subtitle: micGranted ? l10n.granted : l10n.notGranted,
+                  granted: micGranted,
+                  onTap: () async {
+                    final res = await Permission.microphone.request();
+                    setState(() => micGranted = res.isGranted);
+                  },
+                ),
+                SizedBox(height: 12.h),
+                _permissionTile(
+                  icon: Icons.folder_rounded,
+                  title: l10n.storage,
+                  subtitle: storageGranted ? l10n.granted : l10n.notGranted,
+                  granted: storageGranted,
+                  onTap: () async {
+                    final res = await Permission.storage.request();
+                    setState(() => storageGranted = res.isGranted);
+                  },
+                ),
+                SizedBox(height: 24.h),
+                PrimaryButton(
+                  text:
+                      allGranted ? l10n.startRecording : l10n.requestPermission,
+                  onPressed: allGranted
+                      ? () {
+                          context.goNamed(RouteNames.liveRecording);
+                        }
+                      : _requestAll,
+                ),
+                SizedBox(height: 12.h),
+                SecondaryButton(
+                  text: l10n.skipForNow,
+                  icon: Icons.skip_next,
+                  onPressed: () {
+                    context.goNamed(RouteNames.liveRecording);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -122,19 +131,20 @@ class _PermissionsPageState extends State<PermissionsPage> {
     required bool granted,
     required VoidCallback onTap,
   }) {
+    final p = context.palette;
     return ListTile(
       onTap: onTap,
-      tileColor: Colors.white,
+      tileColor: p.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.r),
-        side: BorderSide(color: AppColors.outline),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        side: BorderSide(color: p.hairline),
       ),
-      leading: Icon(icon, color: AppColors.primary),
+      leading: Icon(icon, color: p.primary),
       title: Text(title, style: Theme.of(context).textTheme.titleMedium),
       subtitle: Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
       trailing: Icon(
         granted ? Icons.check_circle_rounded : Icons.chevron_right_rounded,
-        color: granted ? AppColors.secondary : AppColors.textSecondary,
+        color: granted ? p.secondary : p.inkMuted,
       ),
     );
   }

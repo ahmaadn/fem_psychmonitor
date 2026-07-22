@@ -1,146 +1,148 @@
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/features/auth/pages/forgot_password_page.dart';
-import 'package:fem_psychmonitor/features/history/pages/history_page.dart';
-import 'package:fem_psychmonitor/features/home/pages/home_page.dart';
 import 'package:fem_psychmonitor/features/auth/pages/login_page.dart';
 import 'package:fem_psychmonitor/features/auth/pages/register_page.dart';
-import 'package:fem_psychmonitor/features/profile/pages/profile_page.dart';
 import 'package:fem_psychmonitor/features/dashboard/pages/main_layout.dart';
+import 'package:fem_psychmonitor/features/discover/pages/discover_page.dart';
+import 'package:fem_psychmonitor/features/home/pages/home_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/pages/ocean_result_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/pages/ocean_test_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/pages/onboarding_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/pages/post_assessment_choice_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/pages/psych_result_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/pages/psych_test_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/pages/splash_page.dart';
+import 'package:fem_psychmonitor/features/profile/pages/change_password_page.dart';
+import 'package:fem_psychmonitor/features/profile/pages/edit_profile_page.dart';
 import 'package:fem_psychmonitor/features/recording/pages/ai_processing_page.dart';
 import 'package:fem_psychmonitor/features/recording/pages/analysis_result_page.dart';
 import 'package:fem_psychmonitor/features/recording/pages/live_recording_page.dart';
-import 'package:fem_psychmonitor/features/onboarding/pages/initial_questionnaire_page.dart';
-import 'package:fem_psychmonitor/features/onboarding/pages/splash_page.dart';
-import 'package:fem_psychmonitor/features/onboarding/pages/onboarding_page.dart';
-import 'package:fem_psychmonitor/features/onboarding/pages/mbti_selection_page.dart';
-import 'package:fem_psychmonitor/features/onboarding/pages/mbti_test_page.dart';
-import 'package:fem_psychmonitor/features/onboarding/pages/mbti_result_page.dart';
-import 'package:fem_psychmonitor/features/onboarding/pages/psych_test_page.dart';
-import 'package:fem_psychmonitor/features/onboarding/pages/psych_result_page.dart';
-import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/features/settings/pages/settings_page.dart';
 import 'package:go_router/go_router.dart';
 
-/// Routes that require an authenticated user (US-02). The recording/teaser
-/// routes are intentionally public so the guest (unauthenticated) flow can
-/// reach the teaser result. Everything else (splash, onboarding, auth
-/// screens) is also publicly accessible.
-const Set<String> _protectedLocations = {
-  '/home',
-  '/history',
-  '/history/analysis-result',
-  '/profile',
+const Set<String> _shellLocations = {
+  '/dashboard',
+  '/discover',
+  '/discover/analysis-result',
+  '/settings',
+  '/settings/edit-profile',
+  '/settings/change-password',
 };
 
 class AppRouter {
   AppRouter._();
 
-  /// Build the router, wired to [authVm] so the redirect guard re-evaluates on
-  /// every auth-state change.
   static GoRouter build(AuthViewModel authVm) {
     return GoRouter(
       initialLocation: '/',
       refreshListenable: authVm,
       redirect: (context, state) {
-        final authenticated = authVm.isAuthenticated;
-        final location = state.matchedLocation;
-        final isProtected = _protectedLocations.contains(location);
+        final authed = authVm.isAuthenticated;
+        final assessed = authVm.hasCompletedAssessment;
+        final loc = state.matchedLocation;
 
-        // US-02: send unauthenticated users away from protected screens.
-        if (isProtected && !authenticated) {
-          return '/auth/login';
+        final isPublic = loc == '/' ||
+            loc == '/onboarding' ||
+            loc.startsWith('/auth') ||
+            loc.startsWith('/ocean') ||
+            loc.startsWith('/psych') ||
+            loc == '/post-assessment-choice';
+
+        final isShell = _shellLocations.contains(loc) ||
+            loc.startsWith('/discover') ||
+            loc == '/live-recording' ||
+            loc.startsWith('/recording');
+
+        if (!authed && isShell) {
+          return '/onboarding';
         }
-        // Authenticated users hitting the login/register screen bounce home.
-        if (authenticated &&
-            (location == '/auth/login' || location == '/auth/register')) {
-          return '/home';
+
+        if (authed &&
+            (loc == '/auth/login' || loc == '/auth/register') &&
+            assessed) {
+          return '/dashboard';
         }
+
+            if (authed &&
+            !assessed &&
+            (loc == '/dashboard' ||
+                loc == '/discover' ||
+                loc.startsWith('/settings'))) {
+          return '/ocean-test';
+        }
+
+        if (authed && assessed && loc == '/onboarding') {
+          return '/dashboard';
+        }
+
+        if (!isPublic && !authed) {
+          return '/onboarding';
+        }
+
         return null;
       },
       routes: <RouteBase>[
         GoRoute(
           path: '/',
           name: RouteNames.splash,
-          builder: (BuildContext context, GoRouterState state) {
-            return const SplashPage();
-          },
+          builder: (_, __) => const SplashPage(),
         ),
         GoRoute(
           path: '/onboarding',
           name: RouteNames.onboarding,
-          builder: (BuildContext context, GoRouterState state) {
+          builder: (_, state) {
             final fromProfile = state.extra == true;
             return OnboardingPage(fromProfile: fromProfile);
           },
         ),
         GoRoute(
-          path: '/initial-questions',
-          name: RouteNames.initialQuestions,
-          builder: (BuildContext context, GoRouterState state) {
-            return const InitialQuestionnairePage();
-          },
+          path: '/ocean-test',
+          name: RouteNames.oceanTest,
+          builder: (_, __) => const OceanTestPage(),
         ),
         GoRoute(
-          path: '/mbti-selection',
-          name: RouteNames.mbtiSelection,
-          builder: (BuildContext context, GoRouterState state) {
-            return const MbtiSelectionPage();
-          },
-        ),
-        GoRoute(
-          path: '/mbti-test',
-          name: RouteNames.mbtiTest,
-          builder: (BuildContext context, GoRouterState state) {
-            return const MbtiTestPage();
-          },
-        ),
-        GoRoute(
-          path: '/mbti-result',
-          name: RouteNames.mbtiResult,
-          builder: (BuildContext context, GoRouterState state) {
-            return const MbtiResultPage();
-          },
+          path: '/ocean-result',
+          name: RouteNames.oceanResult,
+          builder: (_, __) => const OceanResultPage(),
         ),
         GoRoute(
           path: '/psych-test',
           name: RouteNames.psychTest,
-          builder: (BuildContext context, GoRouterState state) {
-            return const PsychTestPage();
-          },
+          builder: (_, __) => const PsychTestPage(),
         ),
         GoRoute(
           path: '/psych-result',
           name: RouteNames.psychResult,
-          builder: (BuildContext context, GoRouterState state) {
-            return const PsychResultPage();
-          },
+          builder: (_, __) => const PsychResultPage(),
+        ),
+        GoRoute(
+          path: '/post-assessment-choice',
+          name: RouteNames.postAssessmentChoice,
+          builder: (_, __) => const PostAssessmentChoicePage(),
         ),
         GoRoute(
           path: '/auth/register',
           name: RouteNames.register,
-          builder: (BuildContext context, GoRouterState state) {
-            final returnTo = state.extra is String
-                ? state.extra as String
-                : null;
+          builder: (_, state) {
+            final returnTo =
+                state.extra is String ? state.extra as String : null;
             return RegisterPage(returnTo: returnTo);
           },
         ),
         GoRoute(
           path: '/auth/login',
           name: RouteNames.login,
-          builder: (BuildContext context, GoRouterState state) {
-            final returnTo = state.extra is String
-                ? state.extra as String
-                : null;
+          builder: (_, state) {
+            final returnTo =
+                state.extra is String ? state.extra as String : null;
             return LoginPage(returnTo: returnTo);
           },
         ),
         GoRoute(
           path: '/auth/forgot-password',
           name: RouteNames.forgotPassword,
-          builder: (BuildContext context, GoRouterState state) {
-            return const ForgotPasswordPage();
-          },
+          builder: (_, __) => const ForgotPasswordPage(),
         ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {
@@ -150,30 +152,25 @@ class AppRouter {
             StatefulShellBranch(
               routes: [
                 GoRoute(
-                  path: '/home',
-                  name: RouteNames.home,
-                  builder: (BuildContext context, GoRouterState state) {
-                    return HomePage();
-                  },
+                  path: '/dashboard',
+                  name: RouteNames.dashboard,
+                  builder: (_, __) => const HomePage(),
                 ),
               ],
             ),
             StatefulShellBranch(
               routes: [
                 GoRoute(
-                  path: '/history',
-                  name: RouteNames.history,
-                  builder: (BuildContext context, GoRouterState state) {
-                    return HistoryPage();
-                  },
+                  path: '/discover',
+                  name: RouteNames.discover,
+                  builder: (_, __) => const DiscoverPage(),
                   routes: [
                     GoRoute(
-                      path: '/analysis-result',
+                      path: 'analysis-result',
                       name: RouteNames.analysisResult,
-                      builder: (BuildContext context, GoRouterState state) {
-                        final sessionId = state.extra is String
-                            ? state.extra as String
-                            : null;
+                      builder: (_, state) {
+                        final sessionId =
+                            state.extra is String ? state.extra as String : null;
                         return AnalysisResultPage(sessionId: sessionId);
                       },
                     ),
@@ -184,39 +181,57 @@ class AppRouter {
             StatefulShellBranch(
               routes: [
                 GoRoute(
-                  path: '/profile',
-                  name: RouteNames.profile,
-                  builder: (BuildContext context, GoRouterState state) {
-                    return ProfilePage();
-                  },
+                  path: '/settings',
+                  name: RouteNames.settings,
+                  builder: (_, __) => const SettingsPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'edit-profile',
+                      name: RouteNames.editProfile,
+                      builder: (_, __) => const EditProfilePage(),
+                    ),
+                    GoRoute(
+                      path: 'change-password',
+                      name: RouteNames.changePassword,
+                      builder: (_, __) => const ChangePasswordPage(),
+                    ),
+                  ],
                 ),
               ],
             ),
           ],
         ),
         GoRoute(
-          path: "/live-recording",
-          name: RouteNames.liveRecording,
-          builder: (context, state) {
-            return LiveRecordingPage();
-          },
+          path: '/profile',
+          redirect: (_, __) => '/settings',
         ),
         GoRoute(
-          path: "/recording/processing",
+          path: '/live-recording',
+          name: RouteNames.liveRecording,
+          builder: (_, __) => const LiveRecordingPage(),
+        ),
+        GoRoute(
+          path: '/recording/processing',
           name: RouteNames.recordingProcessing,
-          builder: (context, state) {
-            final uploadedPath = state.extra is String
-                ? state.extra as String
-                : null;
+          builder: (_, state) {
+            final uploadedPath =
+                state.extra is String ? state.extra as String : null;
             return AiProcessingPage(uploadedAudioPath: uploadedPath);
           },
         ),
         GoRoute(
           path: '/recording/analysis-teaser',
           name: RouteNames.analysisResultTeaser,
-          builder: (context, state) {
-            return AnalysisResultPage(isTeaser: true);
-          },
+          builder: (_, __) => const AnalysisResultPage(isTeaser: true),
+        ),
+        // Legacy path aliases
+        GoRoute(
+          path: '/home',
+          redirect: (_, __) => '/dashboard',
+        ),
+        GoRoute(
+          path: '/history',
+          redirect: (_, __) => '/discover',
         ),
       ],
     );

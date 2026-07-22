@@ -262,12 +262,9 @@
   "startRecordToSeeTimeline": "Start recording to see emotion timeline",
   
   "personalityType": "Personality Type",
-  "knowMbtiQuestion": "Do you already know your MBTI type?",
   "yesIKnow": "Yes, I know",
   "notSure": "Not sure",
-  "selectYourMbti": "Select your MBTI type:",
   "continueButton": "Continue",
-  "mbtiTest": "MBTI Test",
   "failedToLoadQuestionnaire": "Failed to load questionnaire.",
   "questionXOfY": "Question {current} of {total}",
   "@questionXOfY": {
@@ -279,10 +276,8 @@
   "back": "Back",
   "finishAndContinue": "Finish & Continue",
   "nextQuestion": "Next",
-  "mbtiResultTitle": "MBTI Result",
   "yourPersonalityType": "Your Personality Type",
   "unknown": "Unknown",
-  "mbtiResultDesc": "We will use this information to customize suggestions in the app.",
   "continueToMentalHealth": "Continue to Mental Health Instrument",
   "mentalHealthAssessment": "Mental Health Assessment",
   "finishAndGoToRecording": "Finish & Go to Recording",
@@ -312,7 +307,6 @@
   "noDetectionDesc": "Record your voice to start understanding your emotions.",
   "startRecordingCta": "Start Recording",
 
-  "mbtiDimensionScores": "Dimension Scores",
 
   "currentAssessment": "Current Assessment",
   "mentalHealthScore": "Mental Health Score",

@@ -12,13 +12,9 @@ class DetectionSessionModel {
   final EmotionLabelType dominantEmotion;
   final double dominantConfidence;
   final List<DetectionResultModel> results;
-
-  /// Optional free-text note attached to the session (US-09).
   final String? note;
-
-  /// Optional user-corrected emotion label (US-17). When non-null, the UI and
-  /// history list should display this value instead of [dominantEmotion].
   final EmotionLabelType? correctedEmotion;
+  final EmotionLabelType? selfReportEmotion;
 
   const DetectionSessionModel({
     required this.id,
@@ -32,17 +28,13 @@ class DetectionSessionModel {
     required this.results,
     this.note,
     this.correctedEmotion,
+    this.selfReportEmotion,
   });
 
   Duration get duration => stoppedAt.difference(startedAt);
 
-  /// The emotion label that should be presented to the user: the corrected
-  /// value when present, otherwise the model's dominant prediction.
   EmotionLabelType get displayEmotion => correctedEmotion ?? dominantEmotion;
 
-  /// Confidence for the emotion currently shown to the user. If the user has
-  /// corrected the label, use the model probability for that corrected label so
-  /// score updates do not keep relying on the original dominant confidence.
   double get displayConfidence => confidenceForEmotion(displayEmotion);
 
   double confidenceForEmotion(EmotionLabelType emotion) {
@@ -64,6 +56,21 @@ class DetectionSessionModel {
     return total / values.length;
   }
 
+  /// Mean softmax over all result windows (length 6).
+  List<double> get averageProbs {
+    final acc = List<double>.filled(EmotionLabelType.values.length, 0);
+    var n = 0;
+    for (final r in results) {
+      if (r.allProbs.length < acc.length) continue;
+      for (var i = 0; i < acc.length; i++) {
+        acc[i] += r.allProbs[i];
+      }
+      n++;
+    }
+    if (n == 0) return acc;
+    return acc.map((v) => v / n).toList();
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -77,6 +84,7 @@ class DetectionSessionModel {
       'results': results.map((r) => r.toJson()).toList(),
       'note': note,
       'correctedEmotion': correctedEmotion?.name,
+      'selfReportEmotion': selfReportEmotion?.name,
     };
   }
 
@@ -110,6 +118,12 @@ class DetectionSessionModel {
               (e) => e.name == json['correctedEmotion'],
               orElse: () => EmotionLabelType.neutral,
             ),
+      selfReportEmotion: json['selfReportEmotion'] == null
+          ? null
+          : EmotionLabelType.values.firstWhere(
+              (e) => e.name == json['selfReportEmotion'],
+              orElse: () => EmotionLabelType.neutral,
+            ),
     );
   }
 
@@ -125,6 +139,7 @@ class DetectionSessionModel {
     List<DetectionResultModel>? results,
     String? note,
     EmotionLabelType? correctedEmotion,
+    EmotionLabelType? selfReportEmotion,
   }) {
     return DetectionSessionModel(
       id: id ?? this.id,
@@ -138,6 +153,7 @@ class DetectionSessionModel {
       results: results ?? this.results,
       note: note ?? this.note,
       correctedEmotion: correctedEmotion ?? this.correctedEmotion,
+      selfReportEmotion: selfReportEmotion ?? this.selfReportEmotion,
     );
   }
 }

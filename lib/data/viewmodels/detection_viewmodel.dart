@@ -114,6 +114,26 @@ class DetectionViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Delete a session. Does not reverse mental health score.
+  Future<bool> deleteSession(String sessionId) async {
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+    try {
+      await _detectionRepo.deleteSession(sessionId);
+      if (_currentSession?.id == sessionId) _currentSession = null;
+      if (_viewedSession?.id == sessionId) _viewedSession = null;
+      _isSaving = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = 'Gagal menghapus sesi: $e';
+      _isSaving = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
   /// Clear the current session reference.
   void clearCurrentSession() {
     _currentSession = null;

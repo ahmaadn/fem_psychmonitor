@@ -1,20 +1,25 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/utils/date_utils.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/utils/mental_health_score.dart';
+import 'package:fem_psychmonitor/app/utils/recommendation_engine.dart';
+import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
+import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
+import 'package:fem_psychmonitor/app/widgets/emotion_radar_chart.dart';
 import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
 import 'package:fem_psychmonitor/data/repositories/recommendation_repository.dart';
+import 'package:fem_psychmonitor/data/repositories/score_log_repository.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/detection_viewmodel.dart';
+import 'package:fem_psychmonitor/data/viewmodels/history_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
-import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/features/history/widgets/timeline_widget.dart';
-import 'package:fem_psychmonitor/features/onboarding/models/psych_model.dart';
-import 'package:fem_psychmonitor/features/onboarding/models/saran_model.dart';
-import 'package:fem_psychmonitor/features/onboarding/viewmodels/questionnaire_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,7 +38,7 @@ class AnalysisResultPage extends StatefulWidget {
 }
 
 class _AnalysisResultPageState extends State<AnalysisResultPage> {
-  SaranRecommendation? _saran;
+  RecommendationResult? _saranResult;
   Map<EmotionLabelType, int> _weeklyChart = {};
 
   TextEditingController? _noteController;
@@ -79,11 +84,18 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
     if (!mounted) return;
     _ensureNoteController(session);
 
-    final mbti = authVm.currentUser?.mbtiResult;
+    final user = authVm.currentUser;
+    final isEn = context.read<LocaleProvider>().isEnglish;
+    final emotion = session?.displayEmotion ?? EmotionLabelType.neutral;
 
-    SaranRecommendation? saran;
-    if (repo != null && mbti != null && mbti.isNotEmpty) {
-      saran = await repo.getSaran(mbti);
+    RecommendationResult? saranResult;
+    if (repo != null && user != null) {
+      saranResult = await repo.getRecommendations(
+        ocean: user.oceanScores,
+        emotion: emotion,
+        psychScore: user.psychScore,
+        isEnglish: isEn,
+      );
     }
 
     final weekly = widget.isTeaser
@@ -92,13 +104,14 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
 
     if (!mounted) return;
     setState(() {
-      _saran = saran;
+      _saranResult = saranResult;
       _weeklyChart = weekly;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     final detector = context.watch<EmotionDetector>();
     final detectionVm = context.watch<DetectionViewModel>();
@@ -121,7 +134,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
     final showHotline = _shouldShowHotline(dominant, dominantConfidence);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: p.canvas,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -129,7 +142,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
         leading: IconButton(
           icon: Icon(
             Icons.close_rounded,
-            color: AppColors.textSecondary,
+            color: p.inkMuted,
             size: 22.sp,
           ),
           onPressed: () {
@@ -137,8 +150,10 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
           },
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
+      body: DecoratedBox(
+        decoration: BoxDecoration(gradient: p.canvasGradient),
+        child: SafeArea(
+          child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -152,10 +167,40 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
               ),
               SizedBox(height: 24.h),
               if (!widget.isTeaser && session != null) ...[
-                _CorrectionButton(
-                  corrected: session.correctedEmotion != null,
-                  onTap: () => _showCorrectionSheet(context, session),
-                ),
+                Builder(builder: (context) {
+                  final canCorrect = isTodayLocal(session.startedAt);
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _CorrectionButton(
+                        corrected: session.correctedEmotion != null,
+                        enabled: canCorrect,
+                        onTap: canCorrect
+                            ? () => _showCorrectionSheet(context, session)
+                            : () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Koreksi emosi hanya bisa dilakukan pada hari yang sama dengan rekaman.',
+                                    ),
+                                  ),
+                                );
+                              },
+                      ),
+                      if (!canCorrect)
+                        Padding(
+                          padding: EdgeInsets.only(top: 6.h),
+                          child: Text(
+                            'Koreksi hanya tersedia di hari yang sama.',
+                            style: AppTypography.finePrint.copyWith(
+                              color: p.inkFaint,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                    ],
+                  );
+                }),
                 SizedBox(height: 16.h),
               ],
               if (!widget.isTeaser &&
@@ -174,6 +219,24 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                 SizedBox(height: 16.h),
                 _ScoreCalculationCard(session: session),
               ],
+              if (session?.selfReportEmotion != null) ...[
+                SizedBox(height: 12.h),
+                Text(
+                  'Self-report: ${session!.selfReportEmotion!.emoji} ${session.selfReportEmotion!.displayName}',
+                  style: AppTypography.caption
+                      .copyWith(color: p.inkMuted),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              SizedBox(height: 16.h),
+              _SectionCard(
+                child: EmotionRadarChart(
+                  title: 'Distribusi emosi',
+                  values: session?.averageProbs ??
+                      (detector.latest?.allProbs ??
+                          List.filled(EmotionLabelType.values.length, 0)),
+                ),
+              ),
               SizedBox(height: 16.h),
               if (showHotline) ...[
                 _HotlineCard(onCall: (n) => _launchHotline(context, l10n, n)),
@@ -188,8 +251,9 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                 title: l10n.emotionComponent,
               ),
               SizedBox(height: 16.h),
-              if (_saran != null) ...[
-                _SaranCard(tips: _tipsFor(dominant)),
+              if (_saranResult != null && _saranResult!.items.isNotEmpty) ...[
+                _SaranCard(
+                    tips: _saranResult!.items.map((e) => e.text).toList()),
                 SizedBox(height: 16.h),
               ],
               SecondaryButton(
@@ -198,6 +262,18 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                 icon: Icons.replay_rounded,
                 onPressed: () => context.goNamed(RouteNames.liveRecording),
               ),
+              if (!widget.isTeaser && session != null) ...[
+                SizedBox(height: 12.h),
+                TextButton(
+                  onPressed: () => _confirmDelete(session),
+                  child: Text(
+                    'Hapus rekaman ini',
+                    style: AppTypography.captionStrong.copyWith(
+                      color: p.warning,
+                    ),
+                  ),
+                ),
+              ],
               if (widget.isTeaser) ...[
                 SizedBox(height: 16.h),
                 const _TeaserCard(),
@@ -212,7 +288,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                     style: TextStyle(
                       fontSize: 10.sp,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary.withValues(alpha: 0.8),
+                      color: p.inkMuted.withValues(alpha: 0.8),
                       height: 1.5,
                     ),
                   ),
@@ -221,6 +297,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
               SizedBox(height: 48.h),
             ],
           ),
+        ),
         ),
       ),
     );
@@ -245,79 +322,140 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
     return significant.contains(dominant) && confidence >= 0.6;
   }
 
+  Future<void> _confirmDelete(DetectionSessionModel session) async {
+    final p = context.palette;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Hapus rekaman?'),
+        content: const Text(
+          'Rekaman dihapus dari riwayat. Skor kesehatan mental tidak diubah.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              'Hapus',
+              style: TextStyle(color: p.warning),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    final detectionVm = context.read<DetectionViewModel>();
+    final success = await detectionVm.deleteSession(session.id);
+    if (!mounted) return;
+    if (success) {
+      try {
+        context.read<HistoryViewModel>().loadHistory();
+      } catch (_) {}
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        context.goNamed(RouteNames.discover);
+      }
+    } else if (detectionVm.error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(detectionVm.error!)),
+      );
+    }
+  }
+
   Future<void> _showCorrectionSheet(
     BuildContext context,
     DetectionSessionModel session,
   ) async {
+    final p = context.palette;
+    if (!isTodayLocal(session.startedAt)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Koreksi emosi hanya bisa dilakukan pada hari yang sama dengan rekaman.',
+          ),
+        ),
+      );
+      return;
+    }
+
     EmotionLabelType? picked =
         session.correctedEmotion ?? session.dominantEmotion;
     final detectionVm = context.read<DetectionViewModel>();
 
     final result = await showModalBottomSheet<EmotionLabelType>(
       context: context,
-      backgroundColor: AppColors.surface,
+      isScrollControlled: true,
+      backgroundColor: p.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (innerContext, setSheetState) {
+            final bottomInset = MediaQuery.viewInsetsOf(innerContext).bottom;
             return SafeArea(
               child: Padding(
-                padding: EdgeInsets.all(24.w),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 40.w,
-                        height: 4.h,
-                        decoration: BoxDecoration(
-                          color: AppColors.outline,
-                          borderRadius: BorderRadius.circular(2.r),
+                padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 16.h + bottomInset),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40.w,
+                          height: 4.h,
+                          decoration: BoxDecoration(
+                            color: p.hairline,
+                            borderRadius: BorderRadius.circular(AppRadius.xs),
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 16.h),
-                    Text(
-                      'Koreksi Hasil Emosi',
-                      style: AppTypography.fraunces(size: 20),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'Pilih emosi yang menurutmu paling akurat mendeskripsikan rekaman ini.',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: AppColors.textSecondary,
+                      SizedBox(height: 12.h),
+                      Text(
+                        'Koreksi Hasil Emosi',
+                        style: AppTypography.tagline,
                       ),
-                    ),
-                    SizedBox(height: 20.h),
-                    Wrap(
-                      spacing: 8.w,
-                      runSpacing: 8.h,
-                      children: EmotionLabelType.values.map((e) {
-                        final selected = e == picked;
-                        return ChoiceChip(
-                          label: Text('${e.emoji} ${e.displayName}'),
-                          selected: selected,
-                          onSelected: (_) => setSheetState(() => picked = e),
-                          selectedColor: e.color,
-                          labelStyle: TextStyle(
-                            color: selected
-                                ? Colors.white
-                                : AppColors.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    SizedBox(height: 20.h),
-                    PrimaryButton(
-                      text: 'Simpan Koreksi',
-                      onPressed: () => Navigator.of(innerContext).pop(picked),
-                    ),
-                  ],
+                      SizedBox(height: 6.h),
+                      Text(
+                        'Pilih emosi yang menurutmu paling akurat mendeskripsikan rekaman ini.',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: p.inkMuted,
+                        ),
+                      ),
+                      SizedBox(height: 12.h),
+                      Wrap(
+                        spacing: 8.w,
+                        runSpacing: 8.h,
+                        children: EmotionLabelType.values.map((e) {
+                          final selected = e == picked;
+                          return ChoiceChip(
+                            label: Text('${e.emoji} ${e.displayName}'),
+                            selected: selected,
+                            onSelected: (_) => setSheetState(() => picked = e),
+                            selectedColor: e.color,
+                            labelStyle: TextStyle(
+                              color: selected
+                                  ? Colors.white
+                                  : p.ink,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      SizedBox(height: 16.h),
+                      PrimaryButton(
+                        text: 'Simpan Koreksi',
+                        onPressed: () =>
+                            Navigator.of(innerContext).pop(picked),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -326,17 +464,38 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
       },
     );
 
-    if (result != null && result != session.correctedEmotion) {
-      if (!mounted) return;
-      await detectionVm.correctSession(session.id, result);
-      final updated = detectionVm.currentSession?.id == session.id
-          ? detectionVm.currentSession
-          : detectionVm.viewedSession;
-      if (updated != null) {
-        await _applyCorrectionMentalHealthImpact(session, updated);
-      }
-      await _loadExtras();
+    if (result == null || result == session.correctedEmotion) return;
+    if (!mounted) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Simpan koreksi emosi?'),
+        content: const Text(
+          'Emosi rekaman akan dikoreksi. Skor kesehatan mental dan saran akan diperbarui. Yakin simpan?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Ya, simpan'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    await detectionVm.correctSession(session.id, result);
+    final updated = detectionVm.currentSession?.id == session.id
+        ? detectionVm.currentSession
+        : detectionVm.viewedSession;
+    if (updated != null) {
+      await _applyCorrectionMentalHealthImpact(session, updated);
     }
+    await _loadExtras();
   }
 
   Future<void> _applyCorrectionMentalHealthImpact(
@@ -345,7 +504,6 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
   ) async {
     final profileVm = context.read<ProfileViewModel>();
     final authVm = context.read<AuthViewModel>();
-    final questionnaireVm = context.read<QuestionnaireViewModel>();
     final l10n = AppLocalizations.of(context)!;
 
     var user = profileVm.user;
@@ -362,17 +520,19 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
       session: updatedSession,
       previousSession: previousSession,
     );
-    final updatedClass = resolvePsychClassForDisplayScore(
-      updatedScore,
-      questionnaireVm.psychData,
-    );
+    final classKey = psychClassKeyForScore(updatedScore);
 
     await profileVm.updateProfile(
       user.copyWith(
         psychScore: updatedScore,
-        psychClass: updatedClass?.classLevel.toString() ?? user.psychClass,
+        psychClass: classKey,
       ),
       l10n,
+    );
+    await ScoreLogRepository().append(
+      userId: user.id,
+      score: updatedScore,
+      reason: 'session_correct',
     );
   }
 
@@ -389,24 +549,6 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
       _isSavingNote = false;
       _noteSavedTick = detectionVm.error == null;
     });
-  }
-
-  List<String> _tipsFor(EmotionLabelType emotion) {
-    final e = _saran!.emotions;
-    switch (emotion) {
-      case EmotionLabelType.happy:
-        return e.happy;
-      case EmotionLabelType.sad:
-        return e.sad;
-      case EmotionLabelType.anger:
-        return e.angry;
-      case EmotionLabelType.fearful:
-        return e.fear;
-      case EmotionLabelType.disgust:
-        return e.disgust;
-      case EmotionLabelType.neutral:
-        return e.neutral;
-    }
   }
 
   Future<void> _launchHotline(
@@ -445,14 +587,15 @@ class _Hero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 20.w),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(28.r),
-        border: Border.all(color: AppColors.outline),
+        color: p.strawberrySoft,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: p.hairline),
       ),
       child: Column(
         children: [
@@ -465,22 +608,22 @@ class _Hero extends StatelessWidget {
                   fontSize: 11.sp,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.2,
-                  color: AppColors.textSecondary,
+                  color: p.inkMuted,
                 ),
               ),
               if (isCorrected)
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                   decoration: BoxDecoration(
-                    color: AppColors.secondary.withValues(alpha: 0.16),
-                    borderRadius: BorderRadius.circular(9999.r),
+                    color: p.secondary.withValues(alpha: 0.16),
+                    borderRadius: AppRadius.chip,
                   ),
                   child: Text(
                     'Dikoreksi',
                     style: TextStyle(
                       fontSize: 10.sp,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.secondary,
+                      color: p.secondary,
                     ),
                   ),
                 ),
@@ -500,11 +643,7 @@ class _Hero extends StatelessWidget {
           SizedBox(height: 6.h),
           Text(
             dominant.displayName,
-            style: AppTypography.fraunces(
-              size: 30,
-              weight: FontWeight.w600,
-              color: dominant.color,
-            ),
+            style: AppTypography.tagline,
           ),
           SizedBox(height: 4.h),
           Text(
@@ -512,7 +651,7 @@ class _Hero extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 11.sp,
-              color: AppColors.textSecondary,
+              color: p.inkMuted,
               height: 1.4,
             ),
           ),
@@ -525,7 +664,7 @@ class _Hero extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12.sp,
                 height: 1.5,
-                color: AppColors.textSecondary,
+                color: p.inkMuted,
               ),
             ),
           ),
@@ -538,23 +677,31 @@ class _Hero extends StatelessWidget {
 // ───────────────────────── Correction button ─────────────────────────
 class _CorrectionButton extends StatelessWidget {
   final bool corrected;
+  final bool enabled;
   final VoidCallback onTap;
-  const _CorrectionButton({required this.corrected, required this.onTap});
+  const _CorrectionButton({
+    required this.corrected,
+    required this.onTap,
+    this.enabled = true,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final p = context.palette;
+    return Opacity(
+      opacity: enabled ? 1 : 0.5,
+      child: GestureDetector(
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 14.h),
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: AppColors.outline),
+          color: p.surface,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(color: p.hairline),
         ),
         child: Row(
           children: [
-            Icon(Icons.edit_outlined, size: 18.sp, color: AppColors.primary),
+            Icon(Icons.edit_outlined, size: 18.sp, color: p.primary),
             SizedBox(width: 10.w),
             Expanded(
               child: Text(
@@ -562,17 +709,18 @@ class _CorrectionButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
+                  color: p.primary,
                 ),
               ),
             ),
             Icon(
               Icons.chevron_right_rounded,
-              color: AppColors.textSecondary,
+              color: p.inkMuted,
               size: 20.sp,
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -585,12 +733,13 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Container(
       padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: AppColors.outline),
+        color: p.surface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: p.hairline),
       ),
       child: child,
     );
@@ -604,6 +753,7 @@ class _ScoreCalculationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final profileVm = context.watch<ProfileViewModel>();
     final authVm = context.watch<AuthViewModel>();
     final user = profileVm.user ?? authVm.currentUser;
@@ -641,10 +791,7 @@ class _ScoreCalculationCard extends StatelessWidget {
                   children: [
                     Text(
                       'Perhitungan Skor Sesi Ini',
-                      style: AppTypography.fraunces(
-                        size: 16,
-                        weight: FontWeight.w600,
-                      ),
+                      style: AppTypography.tagline,
                     ),
                     SizedBox(height: 2.h),
                     Text(
@@ -652,7 +799,7 @@ class _ScoreCalculationCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11.sp,
                         height: 1.35,
-                        color: AppColors.textSecondary,
+                        color: p.inkMuted,
                       ),
                     ),
                   ],
@@ -686,10 +833,10 @@ class _ScoreCalculationCard extends StatelessWidget {
             width: double.infinity,
             padding: EdgeInsets.all(14.w),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.07),
-              borderRadius: BorderRadius.circular(16.r),
+              color: p.primary.withValues(alpha: 0.07),
+              borderRadius: BorderRadius.circular(AppRadius.md),
               border: Border.all(
-                color: AppColors.primary.withValues(alpha: 0.12),
+                color: p.primary.withValues(alpha: 0.12),
               ),
             ),
             child: Column(
@@ -701,19 +848,13 @@ class _ScoreCalculationCard extends StatelessWidget {
                     fontSize: 10.sp,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
-                    color: AppColors.textSecondary,
+                    color: p.inkMuted,
                   ),
                 ),
                 SizedBox(height: 6.h),
                 Text(
                   '$impact x ${breakdown.effectiveConfidence.toStringAsFixed(2)} = $weighted -> $sign${breakdown.delta} poin',
-                  style: AppTypography.fraunces(
-                    size: 17,
-                    weight: FontWeight.w600,
-                    color: breakdown.delta < 0
-                        ? AppColors.warning
-                        : breakdown.emotion.color,
-                  ),
+                  style: AppTypography.tagline,
                 ),
               ],
             ),
@@ -731,7 +872,7 @@ class _ScoreCalculationCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.45,
-              color: AppColors.textSecondary,
+              color: p.inkMuted,
             ),
           ),
         ],
@@ -753,6 +894,7 @@ class _FormulaLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Padding(
       padding: EdgeInsets.only(bottom: 8.h),
       child: Row(
@@ -764,7 +906,7 @@ class _FormulaLine extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11.sp,
                 height: 1.35,
-                color: AppColors.textSecondary,
+                color: p.inkMuted,
               ),
             ),
           ),
@@ -777,7 +919,7 @@ class _FormulaLine extends StatelessWidget {
                 fontSize: 11.sp,
                 height: 1.35,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: p.ink,
               ),
             ),
           ),
@@ -804,6 +946,7 @@ class _NoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     return _SectionCard(
       child: Column(
@@ -813,13 +956,13 @@ class _NoteCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.edit_note_rounded,
-                color: AppColors.secondary,
+                color: p.secondary,
                 size: 20.sp,
               ),
               SizedBox(width: 8.w),
               Text(
                 l10n.sessionNoteTitle,
-                style: AppTypography.fraunces(size: 16),
+                style: AppTypography.bodyStrong.copyWith(fontSize: 16.0),
               ),
             ],
           ),
@@ -834,23 +977,23 @@ class _NoteCard extends StatelessWidget {
               hintText: l10n.sessionNoteHint,
               hintStyle: TextStyle(
                 fontSize: 12.sp,
-                color: AppColors.textSecondary.withValues(alpha: 0.7),
+                color: p.inkMuted.withValues(alpha: 0.7),
               ),
               filled: true,
-              fillColor: AppColors.inputFill,
+              fillColor: p.inputFill,
               isDense: true,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 14.w,
                 vertical: 12.h,
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14.r),
-                borderSide: const BorderSide(color: AppColors.outline),
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                borderSide: BorderSide(color: p.hairline),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14.r),
+                borderRadius: BorderRadius.circular(AppRadius.md),
                 borderSide: BorderSide(
-                  color: AppColors.primary.withValues(alpha: 0.5),
+                  color: p.primary.withValues(alpha: 0.5),
                   width: 2,
                 ),
               ),
@@ -870,12 +1013,12 @@ class _NoteCard extends StatelessWidget {
                   : Icon(
                       Icons.save_outlined,
                       size: 16.sp,
-                      color: AppColors.primary,
+                      color: p.primary,
                     ),
               label: Text(
                 savedTick ? l10n.noteSaved : l10n.saveNote,
                 style: TextStyle(
-                  color: AppColors.primary,
+                  color: p.primary,
                   fontWeight: FontWeight.w600,
                   fontSize: 12.sp,
                 ),
@@ -895,21 +1038,22 @@ class _HotlineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
-        color: AppColors.warningSurface,
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
+        color: p.warningSurface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: p.warning.withValues(alpha: 0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: EdgeInsets.all(10.w),
-            decoration: const BoxDecoration(
-              color: AppColors.warning,
+            decoration: BoxDecoration(
+              color: p.warning,
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -925,11 +1069,7 @@ class _HotlineCard extends StatelessWidget {
               children: [
                 Text(
                   l10n.needHelp,
-                  style: AppTypography.fraunces(
-                    size: 16,
-                    weight: FontWeight.w600,
-                    color: AppColors.warning,
-                  ),
+                  style: AppTypography.tagline,
                 ),
                 SizedBox(height: 4.h),
                 Text(
@@ -937,7 +1077,7 @@ class _HotlineCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11.sp,
                     height: 1.4,
-                    color: AppColors.textPrimary,
+                    color: p.ink,
                   ),
                 ),
                 SizedBox(height: 10.h),
@@ -962,19 +1102,20 @@ class _HotlineCard extends StatelessWidget {
     String dial,
     String label,
   ) {
+    final p = context.palette;
     return ActionChip(
       onPressed: () => onCall(dial),
-      avatar: Icon(Icons.call, size: 14.sp, color: AppColors.warning),
+      avatar: Icon(Icons.call, size: 14.sp, color: p.warning),
       label: Text(
         '$dial · $label',
         style: TextStyle(
           fontSize: 11.sp,
           fontWeight: FontWeight.w600,
-          color: AppColors.warning,
+          color: p.warning,
         ),
       ),
       backgroundColor: Colors.white,
-      side: BorderSide(color: AppColors.warning.withValues(alpha: 0.4)),
+      side: BorderSide(color: p.warning.withValues(alpha: 0.4)),
     );
   }
 }
@@ -986,6 +1127,7 @@ class _WeeklyChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     final entries = chart.entries.where((e) => e.value > 0).toList()
       ..sort((a, b) => b.value.compareTo(a.value));
@@ -998,13 +1140,13 @@ class _WeeklyChart extends StatelessWidget {
         children: [
           Text(
             l10n.weeklyEmotionDistribution,
-            style: AppTypography.fraunces(size: 16),
+            style: AppTypography.bodyStrong.copyWith(fontSize: 16.0),
           ),
           SizedBox(height: 16.h),
           if (entries.isEmpty)
             Text(
               l10n.noDataThisWeek,
-              style: TextStyle(fontSize: 12.sp, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 12.sp, color: p.inkMuted),
             )
           else
             ...entries.map(
@@ -1021,18 +1163,18 @@ class _WeeklyChart extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary,
+                          color: p.inkMuted,
                         ),
                       ),
                     ),
                     SizedBox(width: 8.w),
                     Expanded(
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(9999.r),
+                        borderRadius: AppRadius.chip,
                         child: LinearProgressIndicator(
                           value: e.value / maxCount,
                           minHeight: 7.h,
-                          backgroundColor: AppColors.surfaceContainerHighest,
+                          backgroundColor: p.strawberry,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             e.key.color,
                           ),
@@ -1047,7 +1189,7 @@ class _WeeklyChart extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: p.ink,
                         ),
                       ),
                     ),
@@ -1068,6 +1210,7 @@ class _SaranCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     if (tips.isEmpty) return const SizedBox.shrink();
     return _SectionCard(
@@ -1078,11 +1221,11 @@ class _SaranCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.tips_and_updates_outlined,
-                color: AppColors.secondary,
+                color: p.secondary,
                 size: 18.sp,
               ),
               SizedBox(width: 8.w),
-              Text(l10n.tipsForYou, style: AppTypography.fraunces(size: 16)),
+              Text(l10n.tipsForYou, style: AppTypography.bodyStrong.copyWith(fontSize: 16.0)),
             ],
           ),
           SizedBox(height: 8.h),
@@ -1097,7 +1240,7 @@ class _SaranCard extends StatelessWidget {
                     child: Icon(
                       Icons.circle,
                       size: 4.sp,
-                      color: AppColors.secondary,
+                      color: p.secondary,
                     ),
                   ),
                   SizedBox(width: 8.w),
@@ -1107,7 +1250,7 @@ class _SaranCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12.sp,
                         height: 1.45,
-                        color: AppColors.textPrimary,
+                        color: p.ink,
                       ),
                     ),
                   ),
@@ -1127,27 +1270,28 @@ class _TeaserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     return _SectionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.wantFullResults, style: AppTypography.fraunces(size: 16)),
+          Text(l10n.wantFullResults, style: AppTypography.bodyStrong.copyWith(fontSize: 16.0)),
           SizedBox(height: 6.h),
           Text(
             l10n.loginRegisterForFull,
             style: TextStyle(
               fontSize: 12.sp,
               height: 1.4,
-              color: AppColors.textSecondary,
+              color: p.inkMuted,
             ),
           ),
           SizedBox(height: 12.h),
           SecondaryButton(
             text: l10n.loginRegister,
             icon: Icons.lock_rounded,
-            backgroundColor: AppColors.secondaryFixed,
-            textColor: AppColors.onSecondaryFixed,
+            backgroundColor: p.matcha,
+            textColor: p.onPrimary,
             onPressed: () => context.goNamed(
               RouteNames.login,
               extra: RouteNames.analysisResult,

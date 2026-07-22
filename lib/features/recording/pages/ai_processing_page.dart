@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
@@ -8,11 +9,13 @@ import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/detection_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
+import 'package:fem_psychmonitor/app/utils/date_utils.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/utils/mental_health_score.dart';
+import 'package:fem_psychmonitor/data/local/database_helper.dart';
+import 'package:fem_psychmonitor/data/local/tables/app_tables.dart';
+import 'package:fem_psychmonitor/data/repositories/score_log_repository.dart';
 import 'package:fem_psychmonitor/detection/services/emotion_detector.dart';
-import 'package:fem_psychmonitor/features/onboarding/models/psych_model.dart';
-import 'package:fem_psychmonitor/features/onboarding/viewmodels/questionnaire_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -85,6 +88,8 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
         }
 
         final dominant = dominantFromResults(timeline);
+        final selfReport =
+            await _loadTodayMood(authVm.currentUser!.id);
 
         final session = DetectionSessionModel(
           id: sessionId,
@@ -98,6 +103,7 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
           dominantEmotion: dominant.emotion,
           dominantConfidence: dominant.confidence,
           results: results,
+          selfReportEmotion: selfReport,
         );
 
         await detectionVm.saveCurrentSession(session);
@@ -129,10 +135,31 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
     return context.read<AuthViewModel>().isAuthenticated;
   }
 
+  Future<EmotionLabelType?> _loadTodayMood(String userId) async {
+    try {
+      final db = await DatabaseHelper.instance.database;
+      final today = dateKeyLocal(DateTime.now());
+      final rows = await db.query(
+        AppTables.dailyMoods,
+        where: 'user_id = ? AND date = ?',
+        whereArgs: [userId, today],
+        limit: 1,
+      );
+      if (rows.isEmpty) return null;
+      final name = rows.first['emotion'] as String?;
+      if (name == null) return null;
+      return EmotionLabelType.values.firstWhere(
+        (e) => e.name == name,
+        orElse: () => EmotionLabelType.neutral,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _applyMentalHealthImpact(DetectionSessionModel session) async {
     final profileVm = context.read<ProfileViewModel>();
     final authVm = context.read<AuthViewModel>();
-    final questionnaireVm = context.read<QuestionnaireViewModel>();
     final l10n = AppLocalizations.of(context)!;
 
     var user = profileVm.user;
@@ -148,17 +175,19 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
       currentScore: currentScore,
       session: session,
     );
-    final updatedClass = resolvePsychClassForDisplayScore(
-      updatedScore,
-      questionnaireVm.psychData,
-    );
+    final classKey = psychClassKeyForScore(updatedScore);
 
     await profileVm.updateProfile(
       user.copyWith(
         psychScore: updatedScore,
-        psychClass: updatedClass?.classLevel.toString() ?? user.psychClass,
+        psychClass: classKey,
       ),
       l10n,
+    );
+    await ScoreLogRepository().append(
+      userId: user.id,
+      score: updatedScore,
+      reason: 'session_create',
     );
   }
 
@@ -174,16 +203,18 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: p.canvas,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.close_rounded,
-            color: AppColors.textSecondary,
+            color: p.inkMuted,
             size: 22.sp,
           ),
           onPressed: () {
@@ -197,18 +228,21 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
             fontSize: 13.sp,
             fontWeight: FontWeight.w700,
             letterSpacing: 1.0,
-            color: AppColors.textSecondary,
+            color: p.inkMuted,
           ),
         ),
         centerTitle: true,
       ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-            child: _noSpeech
-                ? _buildNoSpeechState(context, l10n)
-                : _buildProcessingState(context, l10n),
+      body: DecoratedBox(
+        decoration: BoxDecoration(gradient: p.canvasGradient),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+              child: _noSpeech
+                  ? _buildNoSpeechState(context, l10n)
+                  : _buildProcessingState(context, l10n),
+            ),
           ),
         ),
       ),
@@ -216,20 +250,21 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
   }
 
   Widget _buildProcessingState(BuildContext context, AppLocalizations l10n) {
+    final p = context.palette;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         VoiceprintOrb(
           mode: VoiceprintMode.idle,
           color: _processingError == null
-              ? AppColors.primary
-              : AppColors.warning,
+              ? p.primary
+              : p.warning,
           size: 240,
         ),
         SizedBox(height: 40.h),
         Text(
           l10n.analyzingEmotions,
-          style: AppTypography.fraunces(size: 28, weight: FontWeight.w600),
+          style: AppTypography.displayMd.copyWith(fontSize: 28.0),
           textAlign: TextAlign.center,
         ),
         SizedBox(height: 12.h),
@@ -240,8 +275,8 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
             fontSize: 13.sp,
             height: 1.5,
             color: _processingError == null
-                ? AppColors.textSecondary
-                : AppColors.warning,
+                ? p.inkMuted
+                : p.warning,
           ),
         ),
       ],
@@ -249,19 +284,20 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
   }
 
   Widget _buildNoSpeechState(BuildContext context, AppLocalizations l10n) {
+    final p = context.palette;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         VoiceprintOrb(
           mode: VoiceprintMode.static,
-          color: AppColors.primary,
+          color: p.primary,
           size: 200,
           confidence: 0.18,
         ),
         SizedBox(height: 32.h),
         Text(
           l10n.noSpeechDetected,
-          style: AppTypography.fraunces(size: 24, weight: FontWeight.w600),
+          style: AppTypography.tagline.copyWith(fontSize: 24.0),
           textAlign: TextAlign.center,
         ),
         SizedBox(height: 12.h),
@@ -273,7 +309,7 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
             style: TextStyle(
               fontSize: 13.sp,
               height: 1.5,
-              color: AppColors.textSecondary,
+              color: p.inkMuted,
             ),
           ),
         ),
@@ -283,8 +319,8 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
             decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(9999.r),
+              color: p.primary,
+              borderRadius: AppRadius.chip,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -65,6 +66,7 @@ class _PulsingMicButtonState extends State<PulsingMicButton>
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Center(
       child: SizedBox(
         width: 120.w,
@@ -72,9 +74,9 @@ class _PulsingMicButtonState extends State<PulsingMicButton>
         child: Stack(
           alignment: Alignment.center,
           children: [
-            buildPulse(maxSize: 200, delay: 1, color: AppColors.primary),
+            buildPulse(maxSize: 200, delay: 1, color: p.primary),
 
-            buildPulse(maxSize: 150, delay: 0.5, color: AppColors.primary),
+            buildPulse(maxSize: 150, delay: 0.5, color: p.primary),
 
             GestureDetector(
               onTap: widget.onTap,
@@ -83,7 +85,7 @@ class _PulsingMicButtonState extends State<PulsingMicButton>
                 height: 140,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.primary,
+                  color: p.primary,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withAlpha((255 * 0.18).toInt()),

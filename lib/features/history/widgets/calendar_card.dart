@@ -1,4 +1,4 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +25,7 @@ class CalendarCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final dataVersion = Object.hashAll(
       emotionData.entries.map(
         (entry) =>
@@ -35,9 +36,9 @@ class CalendarCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: p.surface,
         borderRadius: BorderRadius.circular(AppRadius.xxl),
-        border: Border.all(color: AppColors.outline),
+        border: Border.all(color: p.hairline),
       ),
       child: Column(
         children: [
@@ -127,6 +128,7 @@ class CalendarCard extends StatelessWidget {
     BuildContext context,
     DateRangePickerCellDetails details,
   ) {
+    final p = context.palette;
     final DateTime date = details.date;
     final DateTime selectedDate =
         datePickerController.selectedDate ?? DateTime.now();
@@ -141,7 +143,7 @@ class CalendarCard extends StatelessWidget {
         date.year == DateTime.now().year;
 
     Color bgColor = emotion?.color ?? Colors.transparent;
-    Color textColor = emotion?.onColor ?? AppColors.primary;
+    Color textColor = emotion?.onColor ?? p.primary;
     FontWeight fontWeight = FontWeight.w700;
 
     if (isOutDate) {
@@ -149,7 +151,7 @@ class CalendarCard extends StatelessWidget {
       fontWeight = FontWeight.w500;
     } else if (_isSameDate(date, selectedDate)) {
       bgColor = Colors.transparent;
-      textColor = AppColors.onPrimary;
+      textColor = p.onPrimary;
     }
 
     return Container(
@@ -157,7 +159,7 @@ class CalendarCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         shape: BoxShape.circle,
-        border: isToday ? Border.all(color: AppColors.primary, width: 2) : null,
+        border: isToday ? Border.all(color: p.primary, width: 2) : null,
       ),
       child: Center(
         child: Text(
@@ -178,18 +180,23 @@ class CalendarCard extends StatelessWidget {
 
   // Tombol navigasi arah panah (Bulan sebelumnya/selanjutnya)
   Widget _buildNavButton(IconData icon, {required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 32.w,
-        height: 32.w,
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          shape: BoxShape.circle,
-          border: Border.all(color: AppColors.outline),
-        ),
-        child: Icon(icon, size: 20.sp, color: Colors.grey.shade600),
-      ),
+    return Builder(
+      builder: (context) {
+        final p = context.palette;
+        return GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: 32.w,
+            height: 32.w,
+            decoration: BoxDecoration(
+              color: p.surface,
+              shape: BoxShape.circle,
+              border: Border.all(color: p.hairline),
+            ),
+            child: Icon(icon, size: 20.sp, color: p.inkMuted),
+          ),
+        );
+      },
     );
   }
 
@@ -197,6 +204,7 @@ class CalendarCard extends StatelessWidget {
     BuildContext context, {
     required EmotionLabelType emotion,
   }) {
+    final p = context.palette;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -213,7 +221,7 @@ class CalendarCard extends StatelessWidget {
           emotion.label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
             fontSize: 9.sp,
-            color: AppColors.primary.withAlpha(179),
+            color: p.primary.withAlpha(179),
             fontWeight: FontWeight.w700,
             letterSpacing: 0.5,
           ),

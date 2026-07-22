@@ -1,11 +1,13 @@
-import 'package:fem_psychmonitor/features/onboarding/models/saran_model.dart';
+import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/app/utils/recommendation_engine.dart';
+import 'package:fem_psychmonitor/features/onboarding/models/ocean_model.dart';
 
-/// Contract for fetching MBTI-tailored emotion recommendations (US-10).
-///
-/// Implementations: SqliteRecommendationRepository (asset-seeded SQLite),
-/// (future) ApiRecommendationRepository. Master data, read-only at runtime.
 abstract class RecommendationRepository {
-  /// Get the recommendation set for [mbtiType] (e.g. "INTJ"). Returns null if
-  /// no recommendation is seeded for the given type.
-  Future<SaranRecommendation?> getSaran(String mbtiType);
+  Future<RecommendationResult> getRecommendations({
+    required OceanScores? ocean,
+    required EmotionLabelType emotion,
+    required int? psychScore,
+    required bool isEnglish,
+    bool crisisExplicit = false,
+  });
 }

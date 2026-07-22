@@ -1,17 +1,24 @@
-import 'package:file_picker/file_picker.dart';
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'dart:math' as math;
+
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
-import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
+import 'package:fem_psychmonitor/app/utils/mental_health_score.dart';
+import 'package:fem_psychmonitor/app/utils/recommendation_engine.dart';
+import 'package:fem_psychmonitor/data/models/emotion_summary_model.dart';
+import 'package:fem_psychmonitor/data/repositories/recommendation_repository.dart';
+import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/home_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
-import 'package:fem_psychmonitor/features/assessment/widgets/current_assessment_card.dart';
+import 'package:fem_psychmonitor/features/home/widgets/today_mood_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,260 +27,985 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  EmotionLabelType? _todayMood;
+  RecommendationResult? _saran;
+  late AnimationController _pulseCtrl;
+  late Animation<double> _pulseAnim;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    _pulseCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+    _pulseAnim = Tween<double>(
+      begin: 0.95,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       context.read<HomeViewModel>().loadStats();
       context.read<ProfileViewModel>().loadProfile();
+      await _loadMoodAndSaran();
     });
   }
 
-  Future<void> _handleUploadAudio() async {
-    final l10n = AppLocalizations.of(context)!;
-    final picked = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: const ['wav', 'pcm', 'mp3', 'm4a', 'aac'],
+  @override
+  void dispose() {
+    _pulseCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadMoodAndSaran() async {
+    final auth = context.read<AuthViewModel>();
+    final user = auth.currentUser;
+    if (user == null) return;
+    final homeVm = context.read<HomeViewModel>();
+    final isEn = context.read<LocaleProvider>().isEnglish;
+    final repo = context.read<RecommendationRepository>();
+    final mood = await loadDailyMood(user.id);
+    if (!mounted) return;
+    final homeStats = homeVm.stats;
+    final emotion = mood ?? homeStats?.currentMood ?? EmotionLabelType.neutral;
+    final saran = await repo.getRecommendations(
+      ocean: user.oceanScores,
+      emotion: emotion,
+      psychScore: user.psychScore,
+      isEnglish: isEn,
     );
-    if (!mounted || picked == null || picked.files.isEmpty) return;
-    final path = picked.files.single.path;
-    if (path == null || path.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.failedToReadAudioPath)));
-      return;
+    if (!mounted) return;
+    setState(() {
+      _todayMood = mood;
+      _saran = saran;
+    });
+  }
+
+  Future<void> _pickMood() async {
+    final selected = await showTodayMoodSheet(context, initial: _todayMood);
+    if (selected == null || !mounted) return;
+    final user = context.read<AuthViewModel>().currentUser;
+    if (user == null) return;
+    await persistDailyMood(userId: user.id, emotion: selected);
+    await _loadMoodAndSaran();
+  }
+
+  // icon berdasarkan waktu hari
+  IconData _greetingIcon() {
+    final h = DateTime.now().hour;
+    if (h < 11) return Icons.wb_sunny_rounded; // pagi - matahari
+    if (h < 15) return Icons.light_mode_rounded; // siang - terang
+    if (h < 18) return Icons.wb_twilight_rounded; // sore - senja
+    return Icons.nights_stay_rounded; // malam - bulan
+  }
+
+  String _greetingTime(bool isEn) {
+    final h = DateTime.now().hour;
+    if (isEn) {
+      if (h < 12) return 'Good morning';
+      if (h < 15) return 'Good afternoon';
+      if (h < 18) return 'Good evening';
+      return 'Good night';
     }
-    context.goNamed(RouteNames.recordingProcessing, extra: path);
+    if (h < 11) return 'Selamat pagi';
+    if (h < 15) return 'Selamat siang';
+    if (h < 18) return 'Selamat sore';
+    return 'Selamat malam';
+  }
+
+  String _scoreLabel(int score, bool isEn) {
+    final key = psychClassKeyForScore(score);
+    if (isEn) {
+      return switch (key) {
+        'butuh_perhatian' => 'Needs attention',
+        'rentan' => 'Vulnerable',
+        'cukup_sehat' => 'Fairly healthy',
+        _ => 'Healthy',
+      };
+    }
+    return switch (key) {
+      'butuh_perhatian' => 'Butuh Perhatian',
+      'rentan' => 'Rentan',
+      'cukup_sehat' => 'Cukup Sehat',
+      _ => 'Sehat',
+    };
+  }
+
+  // [7] warna score: hapus biru untuk 'rentan', ganti oranye/amber
+  Color _scoreColor(int score) {
+    if (score <= 25) return const Color(0xFFC66F80); // rose - butuh perhatian
+    if (score <= 50) return const Color(0xFFD4854A); // oranye hangat - rentan
+    if (score <= 75) return const Color(0xFF9FAA74); // sage - cukup sehat
+    return const Color(0xFF4A6644); // matcha - sehat
+  }
+
+  String _scoreEmoji(int score) {
+    if (score <= 25) return '😢';
+    if (score <= 50) return '😔';
+    if (score <= 75) return '😊';
+    return '🥰';
+  }
+
+  bool _isToday(DateTime d) {
+    final n = DateTime.now();
+    return d.year == n.year && d.month == n.month && d.day == n.day;
+  }
+
+  bool _needsSupport(int score) {
+    final key = psychClassKeyForScore(score);
+    return key == 'rentan' || key == 'butuh_perhatian';
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final p = context.palette;
     final homeVm = context.watch<HomeViewModel>();
     final profileVm = context.watch<ProfileViewModel>();
+    final auth = context.watch<AuthViewModel>();
+    final isEn = context.watch<LocaleProvider>().isEnglish;
     final stats = homeVm.stats;
-
-    final Color orbColor = stats != null && stats.hasDetection
-        ? stats.currentMood.color
-        : AppColors.primary;
-
-    final hour = DateTime.now().hour;
-    final String greeting;
-    final String userName = (profileVm.user?.fullName ?? '').trim();
-    if (hour >= 5 && hour < 12) {
-      greeting = l10n.goodMorning(userName);
-    } else if (hour >= 12 && hour < 17) {
-      greeting = l10n.goodAfternoon(userName);
-    } else {
-      greeting = l10n.goodEvening(userName);
-    }
+    final user = profileVm.user ?? auth.currentUser;
+    final score = user?.psychScore ?? 0;
+    final name = (user?.fullName ?? '').trim();
+    final mood = _todayMood ?? stats?.currentMood;
+    final streakDays = stats?.streakDays ?? 0;
+    final todayCount =
+        stats?.weeklyCheckins
+            .where((d) => d.isCheckedIn && _isToday(d.date))
+            .length ??
+        0;
+    final scoreColor = _scoreColor(score);
+    final showSupportBanner = _needsSupport(score);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        bottom: false,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 12.h),
-              Text(greeting, style: AppTypography.fraunces(size: 30)),
-              SizedBox(height: 4.h),
-              Text(
-                l10n.howAreYouFeeling,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                  height: 1.5,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              SizedBox(height: 28.h),
-              Center(
-                child: VoiceprintOrb(
-                  mode: VoiceprintMode.idle,
-                  color: orbColor,
-                  size: 240,
-                  centerTop: stats != null && stats.hasDetection
-                      ? '${stats.currentMoodPercentage}%'
-                      : null,
-                  centerBottom: stats != null && stats.hasDetection
-                      ? stats.currentMood.displayName
-                      : null,
-                ),
-              ),
-              if (stats != null && !stats.hasDetection) ...[
-                SizedBox(height: 12.h),
-                Center(
-                  child: Text(
-                    l10n.noDetectionYet,
-                    style: AppTypography.fraunces(size: 20),
-                  ),
-                ),
-                SizedBox(height: 4.h),
-                Center(
-                  child: SizedBox(
-                    width: 260.w,
-                    child: Text(
-                      l10n.noDetectionDesc,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        height: 1.5,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ),
-                ),
-              ] else if (stats != null) ...[
-                SizedBox(height: 12.h),
-                Center(
-                  child: Text(
-                    stats.moodDescription,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      height: 1.5,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ),
-              ],
-              SizedBox(height: 32.h),
-              _StreakStrip(stats: stats),
-              SizedBox(height: 32.h),
-              const CurrentAssessmentCard(),
-              SizedBox(height: 24.h),
-              _RecordCard(
-                onRecord: () => context.goNamed(RouteNames.liveRecording),
-                onUpload: _handleUploadAudio,
-              ),
-              SizedBox(height: 24.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      icon: Icons.graphic_eq_rounded,
-                      title: stats?.currentMood.displayName ?? l10n.calm,
-                      subtitle: l10n.currentMood,
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: _StatCard(
-                      icon: Icons.history_rounded,
-                      title: '${stats?.totalRecordings ?? 0}',
-                      subtitle: l10n.totalRecordings,
-                      accent: AppColors.secondary,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 120.h),
+      // Scaffold transparan — gradient dihandle oleh DecoratedBox di bawah
+      backgroundColor: Colors.transparent,
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            // Satu gradient utuh: canvas → strawberry (40%) → canvas lagi
+            // supaya hero menyatu dengan body tanpa seam
+            colors: [
+              p.canvas,
+              Color.lerp(p.canvas, p.strawberry, p.isDark ? 0.45 : 0.65)!,
+              p.canvas,
             ],
+            stops: const [0.0, 0.28, 0.7],
           ),
+        ),
+        child: RefreshIndicator(
+        color: p.primary,
+        backgroundColor: p.surface,
+        onRefresh: () async {
+          await homeVm.loadStats();
+          await _loadMoodAndSaran();
+        },
+        child: CustomScrollView(
+          slivers: [
+            // ── Hero header ──────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: _HeroHeader(
+                greetingTime: _greetingTime(isEn),
+                greetingIcon: _greetingIcon(),
+                name: name,
+                score: score,
+                scoreLabel: _scoreLabel(score, isEn),
+                scoreEmoji: _scoreEmoji(score),
+                scoreColor: scoreColor,
+                mood: mood,
+                isEn: isEn,
+                pulseAnim: _pulseAnim,
+                onMoodTap: _pickMood,
+              ),
+            ),
+
+            // ── Body content ─────────────────────────────────────────────
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.pageX.w,
+                AppSpacing.md.h,
+                AppSpacing.pageX.w,
+                80.h,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  // [6] Support banner jika skor rentan/butuh perhatian
+                  if (showSupportBanner) ...[
+                    _SupportBanner(isEn: isEn, score: score),
+                    SizedBox(height: AppSpacing.md.h),
+                  ],
+
+                  // [3] Stat row — hanya 2 card: checkin + streak
+                  _StatRow(
+                    todayCount: todayCount,
+                    streakDays: streakDays,
+                    isEn: isEn,
+                  ),
+                  SizedBox(height: AppSpacing.md.h),
+
+                  // Week strip
+                  _WeekStrip(
+                    checkins: stats?.weeklyCheckins ?? const [],
+                    isEn: isEn,
+                  ),
+                  SizedBox(height: AppSpacing.lg.h),
+
+                  // [4] Hanya Voice CTA, tidak ada aksi cepat lagi
+                  _VoiceCheckinCTA(
+                    isEn: isEn,
+                    mood: mood,
+                    onTap: () => context.goNamed(RouteNames.liveRecording),
+                    onMoodTap: _pickMood,
+                  ),
+                  SizedBox(height: AppSpacing.lg.h),
+
+                  // [5] Section: For you — diperbagus
+                  _ForYouHeader(isEn: isEn),
+                  SizedBox(height: AppSpacing.sm.h),
+                  _RecommendationSection(saran: _saran, isEn: isEn),
+                ]),
+              ),
+            ),
+          ],
+        ),
+        ),
         ),
       ),
     );
   }
 }
 
-/// 7-day check-in strip. Order is meaningful (a real weekly sequence), so the
-/// day markers are appropriate here — the only place the page uses ordering.
-class _StreakStrip extends StatelessWidget {
-  final dynamic stats;
-  const _StreakStrip({required this.stats});
+// ── Hero Header ─────────────────────────────────────────────────────────────
+
+class _HeroHeader extends StatelessWidget {
+  const _HeroHeader({
+    required this.greetingTime,
+    required this.greetingIcon,
+    required this.name,
+    required this.score,
+    required this.scoreLabel,
+    required this.scoreEmoji,
+    required this.scoreColor,
+    required this.mood,
+    required this.isEn,
+    required this.pulseAnim,
+    required this.onMoodTap,
+  });
+
+  final String greetingTime;
+  final IconData greetingIcon;
+  final String name;
+  final int score;
+  final String scoreLabel;
+  final String scoreEmoji;
+  final Color scoreColor;
+  final EmotionLabelType? mood;
+  final bool isEn;
+  final Animation<double> pulseAnim;
+  final VoidCallback onMoodTap;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-    final streakDays = stats?.streakDays ?? 0;
-    final checked = stats != null
-        ? (stats.weeklyCheckins as List)
-              .map((c) => c.isCheckedIn as bool)
-              .toList()
-        : List.filled(7, false);
-    final todayIndex = DateTime.now().weekday % 7;
+    final p = context.palette;
+
+    // [2] bg hero sekarang solid canvas + surface, bukan gradient beraneka warna
+    // score ring container juga pakai warna yang serasi
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.only(
+            top: MediaQuery.paddingOf(context).top + AppSpacing.md.h,
+            left: AppSpacing.pageX.w,
+            right: AppSpacing.pageX.w,
+            bottom: AppSpacing.xl.h,
+          ),
+          // Transparan — gradient sudah dihandle Scaffold satu level atas
+          color: Colors.transparent,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // [1] Greeting dengan icon waktu
+              Row(
+                children: [
+                  Container(
+                    width: 32.w,
+                    height: 32.w,
+                    decoration: BoxDecoration(
+                      color: p.primary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                    ),
+                    child: Icon(
+                      greetingIcon,
+                      color: p.primaryFocus,
+                      size: 16.sp,
+                    ),
+                  ),
+                  SizedBox(width: AppSpacing.xs.w),
+                  Text(
+                    greetingTime,
+                    style: AppTypography.captionStrong.copyWith(
+                      color: p.primaryFocus,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: AppSpacing.xs.h),
+
+              // Name
+              Text(
+                name.isEmpty
+                    ? (isEn ? 'Welcome back' : 'Selamat datang')
+                    : name,
+                style: AppTypography.displayLg.copyWith(
+                  color: p.ink,
+                  height: 1.1,
+                ),
+              ),
+              SizedBox(height: AppSpacing.xxs.h),
+              Text(
+                isEn
+                    ? 'How is your heart today?'
+                    : 'Bagaimana hatimu hari ini?',
+                style: AppTypography.body.copyWith(color: p.inkMuted),
+              ),
+              SizedBox(height: AppSpacing.lg.h),
+
+              // [2] Score panel — sekarang card putih di atas bg strawberry,
+              // tidak ada warna kontras yang membentur gradient hero
+              Container(
+                padding: EdgeInsets.all(AppSpacing.md.w),
+                decoration: BoxDecoration(
+                  color: p.surface,
+                  borderRadius: AppRadius.card,
+                  border: Border.all(color: p.hairline, width: AppBorder.thin),
+                  boxShadow: [
+                    BoxShadow(
+                      color: p.shadow,
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Score ring
+                    _ScoreRing(
+                      score: score,
+                      emoji: scoreEmoji,
+                      color: scoreColor,
+                      pulseAnim: pulseAnim,
+                    ),
+                    SizedBox(width: AppSpacing.md.w),
+
+                    // Score details
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            isEn ? 'Mental health' : 'Kesehatan mental',
+                            style: AppTypography.finePrint.copyWith(
+                              color: p.inkMuted,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                          SizedBox(height: 2.h),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: [
+                              Text(
+                                '$score',
+                                style: AppTypography.heroDisplay.copyWith(
+                                  color: p.ink,
+                                  height: 1.0,
+                                ),
+                              ),
+                              SizedBox(width: 4.w),
+                              Text(
+                                '/ 100',
+                                style: AppTypography.caption.copyWith(
+                                  color: p.inkFaint,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: AppSpacing.xxs.h),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: AppSpacing.sm.w,
+                              vertical: 3.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: scoreColor.withValues(alpha: 0.15),
+                              borderRadius: AppRadius.chip,
+                            ),
+                            child: Text(
+                              scoreLabel,
+                              style: AppTypography.finePrint.copyWith(
+                                color: scoreColor,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: AppSpacing.sm.h),
+                          ClipRRect(
+                            borderRadius: AppRadius.chip,
+                            child: LinearProgressIndicator(
+                              value: score / 100,
+                              minHeight: 5.h,
+                              backgroundColor: p.hairline,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                scoreColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: AppSpacing.md.h),
+
+              // Mood chip
+              GestureDetector(
+                onTap: onMoodTap,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md.w,
+                    vertical: AppSpacing.xs.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: p.surface.withValues(alpha: 0.9),
+                    borderRadius: AppRadius.chip,
+                    border: Border.all(
+                      color: p.primary.withValues(alpha: 0.25),
+                      width: AppBorder.thin,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: p.primary.withValues(alpha: 0.08),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        mood?.emoji ?? '💭',
+                        style: TextStyle(fontSize: 16.sp),
+                      ),
+                      SizedBox(width: AppSpacing.xs.w),
+                      Text(
+                        mood != null
+                            ? (isEn
+                                  ? 'Feeling ${mood!.displayName.toLowerCase()}'
+                                  : 'Merasa ${mood!.displayName.toLowerCase()}')
+                            : (isEn ? 'Set your mood' : 'Atur moodmu'),
+                        style: AppTypography.captionStrong.copyWith(
+                          color: p.ink,
+                        ),
+                      ),
+                      SizedBox(width: AppSpacing.xs.w),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        size: 14.sp,
+                        color: p.inkFaint,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Dekoratif orb kecil — warna primer saja, tidak terlalu mencolok
+        Positioned(
+          right: -20.w,
+          top: MediaQuery.paddingOf(context).top,
+          child: Opacity(
+            opacity: 0.09,
+            child: Container(
+              width: 120.w,
+              height: 120.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: p.primary,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Score Ring ───────────────────────────────────────────────────────────────
+
+class _ScoreRing extends StatelessWidget {
+  const _ScoreRing({
+    required this.score,
+    required this.emoji,
+    required this.color,
+    required this.pulseAnim,
+  });
+
+  final int score;
+  final String emoji;
+  final Color color;
+  final Animation<double> pulseAnim;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final size = 88.w;
+
+    return AnimatedBuilder(
+      animation: pulseAnim,
+      builder: (_, _) {
+        return Transform.scale(
+          scale: pulseAnim.value,
+          child: SizedBox(
+            width: size,
+            height: size,
+            child: CustomPaint(
+              painter: _RingPainter(
+                progress: score / 100,
+                trackColor: p.hairline,
+                progressColor: color,
+              ),
+              child: Center(
+                child: Text(
+                  emoji,
+                  style: TextStyle(fontSize: 32.sp, height: 1),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _RingPainter extends CustomPainter {
+  _RingPainter({
+    required this.progress,
+    required this.trackColor,
+    required this.progressColor,
+  });
+
+  final double progress;
+  final Color trackColor;
+  final Color progressColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final radius = (size.width / 2) - 6;
+    const strokeW = 5.0;
+    final rect = Rect.fromCircle(center: Offset(cx, cy), radius: radius);
+
+    canvas.drawArc(
+      rect,
+      -math.pi / 2,
+      2 * math.pi,
+      false,
+      Paint()
+        ..color = trackColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeW
+        ..strokeCap = StrokeCap.round,
+    );
+
+    final sweepAngle = 2 * math.pi * progress;
+    final gradient = SweepGradient(
+      startAngle: -math.pi / 2,
+      endAngle: -math.pi / 2 + sweepAngle,
+      colors: [progressColor.withValues(alpha: 0.55), progressColor],
+    );
+    canvas.drawArc(
+      rect,
+      -math.pi / 2,
+      sweepAngle,
+      false,
+      Paint()
+        ..shader = gradient.createShader(rect)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeW
+        ..strokeCap = StrokeCap.round,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_RingPainter old) =>
+      old.progress != progress || old.progressColor != progressColor;
+}
+
+// ── Support Banner ────────────────────────────────────────────────────────────
+
+class _SupportBanner extends StatelessWidget {
+  const _SupportBanner({required this.isEn, required this.score});
+  final bool isEn;
+  final int score;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final isAttention = psychClassKeyForScore(score) == 'butuh_perhatian';
+
+    return GestureDetector(
+      onTap: () async {
+        final uri = Uri.parse('tel:119');
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri);
+        }
+      },
+      child: Container(
+        padding: EdgeInsets.all(AppSpacing.md.w),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isAttention
+                ? [const Color(0xFFF5D0D8), const Color(0xFFFDE8E8)]
+                : [const Color(0xFFFFF0DC), const Color(0xFFFFF8EC)],
+          ),
+          borderRadius: AppRadius.card,
+          border: Border.all(
+            color: isAttention
+                ? const Color(0xFFC66F80).withValues(alpha: 0.4)
+                : const Color(0xFFD4854A).withValues(alpha: 0.4),
+            width: AppBorder.thin,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: p.shadow,
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44.w,
+              height: 44.w,
+              decoration: BoxDecoration(
+                color: isAttention
+                    ? const Color(0xFFC66F80).withValues(alpha: 0.15)
+                    : const Color(0xFFD4854A).withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                isAttention
+                    ? Icons.favorite_rounded
+                    : Icons.support_agent_rounded,
+                color: isAttention
+                    ? const Color(0xFFC66F80)
+                    : const Color(0xFFD4854A),
+                size: 22.sp,
+              ),
+            ),
+            SizedBox(width: AppSpacing.md.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isEn
+                        ? (isAttention
+                              ? 'You are not alone'
+                              : 'Support is available')
+                        : (isAttention
+                              ? 'Kamu tidak sendirian'
+                              : 'Bantuan tersedia'),
+                    style: AppTypography.bodyStrong.copyWith(
+                      color: isAttention
+                          ? const Color(0xFFA85568)
+                          : const Color(0xFFB06030),
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    isEn
+                        ? 'Tap to call free helpline 119'
+                        : 'Ketuk untuk hubungi hotline 119',
+                    style: AppTypography.finePrint.copyWith(color: p.inkMuted),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.phone_rounded,
+              color: isAttention
+                  ? const Color(0xFFC66F80)
+                  : const Color(0xFFD4854A),
+              size: 18.sp,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Stat Row — hanya 2 card ──────────────────────────────────────────────────
+
+class _StatRow extends StatelessWidget {
+  const _StatRow({
+    required this.todayCount,
+    required this.streakDays,
+    required this.isEn,
+  });
+
+  final int todayCount;
+  final int streakDays;
+  final bool isEn;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Row(
+      children: [
+        Expanded(
+          child: _BigStatCard(
+            value: '$todayCount',
+            label: isEn ? 'Today' : 'Hari ini',
+            sub: isEn ? 'check-in' : 'cek-in',
+            icon: Icons.mic_rounded,
+            accent: p.primary,
+            iconBg: p.strawberry,
+          ),
+        ),
+        SizedBox(width: AppSpacing.sm.w),
+        Expanded(
+          child: _BigStatCard(
+            value: '$streakDays',
+            label: 'Streak',
+            sub: isEn ? 'days' : 'hari',
+            icon: Icons.local_fire_department_rounded,
+            accent: const Color(0xFFD4854A),
+            iconBg: const Color(0xFFF5E0CB),
+            suffix: streakDays > 0 ? '🔥' : null,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BigStatCard extends StatelessWidget {
+  const _BigStatCard({
+    required this.value,
+    required this.label,
+    required this.sub,
+    required this.icon,
+    required this.accent,
+    required this.iconBg,
+    this.suffix,
+  });
+
+  final String value;
+  final String label;
+  final String sub;
+  final IconData icon;
+  final Color accent;
+  final Color iconBg;
+  final String? suffix;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Container(
+      padding: EdgeInsets.all(AppSpacing.md.w),
+      decoration: BoxDecoration(
+        color: p.surface,
+        borderRadius: AppRadius.card,
+        border: Border.all(color: p.hairline, width: AppBorder.thin),
+        boxShadow: [
+          BoxShadow(
+            color: p.shadow,
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 34.w,
+            height: 34.w,
+            decoration: BoxDecoration(
+              color: iconBg,
+              borderRadius: BorderRadius.circular(AppRadius.sm),
+            ),
+            child: Icon(icon, color: accent, size: 17.sp),
+          ),
+          SizedBox(height: AppSpacing.sm.h),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                value,
+                style: AppTypography.displayMd.copyWith(
+                  color: p.ink,
+                  height: 1.0,
+                ),
+              ),
+              if (suffix != null) ...[
+                SizedBox(width: 3.w),
+                Text(suffix!, style: TextStyle(fontSize: 14.sp)),
+              ],
+            ],
+          ),
+          SizedBox(height: 2.h),
+          Text(
+            label,
+            style: AppTypography.captionStrong.copyWith(color: p.inkMuted),
+          ),
+          Text(
+            sub,
+            style: AppTypography.microLegal.copyWith(color: p.inkFaint),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Week Strip ───────────────────────────────────────────────────────────────
+
+class _WeekStrip extends StatelessWidget {
+  const _WeekStrip({required this.checkins, required this.isEn});
+
+  final List<DailyCheckIn> checkins;
+  final bool isEn;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final days = isEn
+        ? const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        : const ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+    final now = DateTime.now();
+    final checked = checkins.where((c) => c.isCheckedIn).length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              l10n.checkInStreak,
-              style: TextStyle(
-                fontSize: 13.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              isEn ? 'This week' : 'Minggu ini',
+              style: AppTypography.bodyStrong.copyWith(color: p.ink),
             ),
-            Row(
-              children: [
-                Icon(
-                  Icons.local_fire_department_rounded,
-                  color: AppColors.emotionHappiness,
-                  size: 16.sp,
+            const Spacer(),
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.xs.w,
+                vertical: 2.h,
+              ),
+              decoration: BoxDecoration(
+                color: p.strawberry,
+                borderRadius: AppRadius.chip,
+              ),
+              child: Text(
+                '$checked/7',
+                style: AppTypography.microLegal.copyWith(
+                  color: p.primaryFocus,
+                  fontWeight: FontWeight.w700,
                 ),
-                SizedBox(width: 4.w),
-                Text(
-                  l10n.daysCount(streakDays),
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.emotionHappiness,
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),
-        SizedBox(height: 12.h),
+        SizedBox(height: AppSpacing.sm.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(7, (i) {
-            final isChecked = i < checked.length ? checked[i] : false;
-            final isToday = i == todayIndex;
-            final color = isChecked
-                ? AppColors.primary
-                : isToday
-                ? AppColors.emotionHappiness
-                : AppColors.outline;
-            return Container(
-              width: 38.w,
-              height: 44.h,
-              decoration: BoxDecoration(
-                color: isChecked
-                    ? AppColors.primary.withValues(alpha: 0.12)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: color, width: isToday ? 1.5 : 1),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    days[i],
-                    style: TextStyle(
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.w600,
-                      color: isChecked
-                          ? AppColors.primary
-                          : isToday
-                          ? AppColors.textPrimary
-                          : AppColors.textSecondary,
-                    ),
+            final checkin = i < checkins.length ? checkins[i] : null;
+            final isChecked = checkin?.isCheckedIn == true;
+            final date = checkin?.date;
+            final isToday =
+                date != null &&
+                date.year == now.year &&
+                date.month == now.month &&
+                date.day == now.day;
+            final emotion = checkin?.dominantEmotion;
+            final bubbleSize = isToday ? 42.w : 36.w;
+
+            return Column(
+              children: [
+                Text(
+                  days[i],
+                  style: AppTypography.microLegal.copyWith(
+                    color: isToday ? p.primaryFocus : p.inkFaint,
+                    fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
                   ),
-                  if (isChecked) ...[
-                    SizedBox(height: 2.h),
-                    Icon(Icons.circle, size: 4.sp, color: AppColors.primary),
-                  ],
-                ],
-              ),
+                ),
+                SizedBox(height: AppSpacing.xxs.h + 2),
+                Container(
+                  width: bubbleSize,
+                  height: bubbleSize,
+                  decoration: BoxDecoration(
+                    color: isChecked
+                        ? (emotion?.surfaceColor ?? p.strawberry)
+                        : (isToday
+                              ? p.primary.withValues(alpha: 0.08)
+                              : p.strawberrySoft),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isToday
+                          ? p.primary
+                          : (isChecked
+                                ? (emotion?.color ?? p.primary).withValues(
+                                    alpha: 0.45,
+                                  )
+                                : p.hairline),
+                      width: isToday ? AppBorder.thick : AppBorder.thin,
+                    ),
+                    boxShadow: isChecked
+                        ? [
+                            BoxShadow(
+                              color: (emotion?.color ?? p.primary).withValues(
+                                alpha: 0.2,
+                              ),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  alignment: Alignment.center,
+                  child: isChecked
+                      ? Text(
+                          emotion?.emoji ?? '✓',
+                          style: TextStyle(fontSize: isToday ? 17.sp : 14.sp),
+                        )
+                      : Icon(
+                          isToday
+                              ? Icons.radio_button_unchecked_rounded
+                              : Icons.circle_outlined,
+                          size: isToday ? 13.sp : 10.sp,
+                          color: isToday ? p.primary : p.inkFaint,
+                        ),
+                ),
+              ],
             );
           }),
         ),
@@ -282,153 +1014,379 @@ class _StreakStrip extends StatelessWidget {
   }
 }
 
-class _RecordCard extends StatelessWidget {
-  final VoidCallback onRecord;
-  final VoidCallback onUpload;
-  const _RecordCard({required this.onRecord, required this.onUpload});
+// ── Voice Check-in CTA — mencakup tombol + mood shortcut ─────────────────────
+
+class _VoiceCheckinCTA extends StatelessWidget {
+  const _VoiceCheckinCTA({
+    required this.isEn,
+    required this.mood,
+    required this.onTap,
+    required this.onMoodTap,
+  });
+  final bool isEn;
+  final EmotionLabelType? mood;
+  final VoidCallback onTap;
+  final VoidCallback onMoodTap;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 28.h, horizontal: 20.w),
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(24.r),
-      ),
-      child: Column(
-        children: [
-          Text(
-            l10n.recordYourVoice,
-            style: AppTypography.fraunces(
-              size: 22,
-              weight: FontWeight.w600,
-              color: AppColors.onPrimary,
+    final p = context.palette;
+    return Column(
+      children: [
+        // Tombol utama voice check-in
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg.w,
+              vertical: AppSpacing.md.h + 2,
             ),
-          ),
-          SizedBox(height: 4.h),
-          Text(
-            l10n.letAiRecognize,
-            style: TextStyle(
-              fontSize: 12.sp,
-              height: 1.4,
-              color: AppColors.onPrimary.withValues(alpha: 0.82),
-            ),
-          ),
-          SizedBox(height: 20.h),
-          GestureDetector(
-            onTap: onRecord,
-            child: Container(
-              width: 76.w,
-              height: 76.w,
-              decoration: BoxDecoration(
-                color: AppColors.onPrimary,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.onPrimary.withValues(alpha: 0.35),
-                    blurRadius: 18,
-                    offset: const Offset(0, 6),
-                  ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  p.primary,
+                  Color.lerp(p.primary, p.primaryFocus, 0.4)!,
                 ],
               ),
-              child: Icon(
-                Icons.mic_rounded,
-                color: AppColors.primary,
-                size: 30.sp,
-              ),
+              borderRadius: AppRadius.card,
+              boxShadow: [
+                BoxShadow(
+                  color: p.primary.withValues(alpha: 0.35),
+                  blurRadius: 18,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 44.w,
+                  height: 44.w,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.graphic_eq_rounded,
+                    color: Colors.white,
+                    size: 22.sp,
+                  ),
+                ),
+                SizedBox(width: AppSpacing.md.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isEn ? 'Start voice check-in' : 'Mulai cek-in suara',
+                        style: AppTypography.bodyStrong.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        isEn ? 'Speak your feelings' : 'Ungkapkan perasaanmu',
+                        style: AppTypography.finePrint.copyWith(
+                          color: Colors.white.withValues(alpha: 0.75),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Colors.white.withValues(alpha: 0.7),
+                  size: 14.sp,
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 18.h),
-          GestureDetector(
-            onTap: onUpload,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              decoration: BoxDecoration(
-                color: AppColors.onPrimary.withValues(alpha: 0.16),
-                borderRadius: BorderRadius.circular(9999.r),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.upload_file_rounded,
-                    size: 14.sp,
-                    color: AppColors.onPrimary,
+        ),
+
+        // Mood shortcut di bawah tombol utama
+        SizedBox(height: AppSpacing.xs.h),
+        GestureDetector(
+          onTap: onMoodTap,
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSpacing.md.w,
+              vertical: AppSpacing.xs.h + 1,
+            ),
+            decoration: BoxDecoration(
+              color: p.surface,
+              borderRadius: AppRadius.card,
+              border: Border.all(color: p.hairline, width: AppBorder.thin),
+            ),
+            child: Row(
+              children: [
+                Text(mood?.emoji ?? '💭', style: TextStyle(fontSize: 18.sp)),
+                SizedBox(width: AppSpacing.xs.w),
+                Expanded(
+                  child: Text(
+                    mood != null
+                        ? (isEn
+                              ? 'Feeling ${mood!.displayName.toLowerCase()} today'
+                              : 'Hari ini merasa ${mood!.displayName.toLowerCase()}')
+                        : (isEn ? 'How do you feel?' : 'Bagaimana perasaanmu?'),
+                    style: AppTypography.caption.copyWith(color: p.inkMuted),
                   ),
-                  SizedBox(width: 6.w),
-                  Text(
-                    l10n.uploadAudio,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.onPrimary,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                Text(
+                  isEn ? 'Change' : 'Ubah',
+                  style: AppTypography.captionStrong.copyWith(color: p.primary),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Color accent;
-  const _StatCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    this.accent = AppColors.primary,
-  });
+// ── For You Header ────────────────────────────────────────────────────────────
+
+class _ForYouHeader extends StatelessWidget {
+  const _ForYouHeader({required this.isEn});
+  final bool isEn;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: AppColors.outline),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.14),
-              shape: BoxShape.circle,
+    final p = context.palette;
+    return Row(
+      children: [
+        Container(
+          width: 28.w,
+          height: 28.w,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [p.primary, p.primaryFocus],
             ),
-            child: Icon(icon, color: accent, size: 18.sp),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
-          SizedBox(height: 12.h),
-          Text(
-            title,
-            style: AppTypography.fraunces(
-              size: 22,
-              weight: FontWeight.w600,
-              color: AppColors.textPrimary,
+          child: Icon(
+            Icons.auto_awesome_rounded,
+            color: Colors.white,
+            size: 13.sp,
+          ),
+        ),
+        SizedBox(width: AppSpacing.xs.w),
+        Text(
+          isEn ? 'For you' : 'Untukmu',
+          style: AppTypography.bodyStrong.copyWith(color: p.ink),
+        ),
+        SizedBox(width: AppSpacing.xxs.w),
+        Text('✨', style: TextStyle(fontSize: 14.sp)),
+      ],
+    );
+  }
+}
+
+// ── Recommendation Section ────────────────────────────────────────────────────
+
+class _RecommendationSection extends StatelessWidget {
+  const _RecommendationSection({required this.saran, required this.isEn});
+  final RecommendationResult? saran;
+  final bool isEn;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+
+    // Loading state
+    if (saran == null) {
+      return Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.md.w,
+          vertical: AppSpacing.lg.h,
+        ),
+        decoration: BoxDecoration(
+          color: p.surface,
+          borderRadius: AppRadius.card,
+          border: Border.all(color: p.hairline),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 16.w,
+              height: 16.w,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: p.primary,
+              ),
+            ),
+            SizedBox(width: AppSpacing.sm.w),
+            Text(
+              isEn ? 'Loading suggestions…' : 'Memuat saran…',
+              style: AppTypography.caption.copyWith(color: p.inkMuted),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Safety banner
+    if (saran!.safetyTriggered) {
+      return Container(
+        padding: EdgeInsets.all(AppSpacing.md.w),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFFFF0DC), Color(0xFFFFF8EC)],
+          ),
+          borderRadius: AppRadius.card,
+          border: Border.all(
+            color: const Color(0xFFD4854A).withValues(alpha: 0.4),
+            width: AppBorder.thin,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: p.shadow,
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 36.w,
+                  height: 36.w,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD4854A).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                  ),
+                  child: const Icon(
+                    Icons.favorite_rounded,
+                    color: Color(0xFFD4854A),
+                  ),
+                ),
+                SizedBox(width: AppSpacing.sm.w),
+                Expanded(
+                  child: Text(
+                    isEn
+                        ? 'You matter — support is here'
+                        : 'Kamu berharga — dukungan ada',
+                    style: AppTypography.bodyStrong.copyWith(
+                      color: const Color(0xFFB06030),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: AppSpacing.sm.h),
+            ...saran!.items.map(
+              (i) => Padding(
+                padding: EdgeInsets.only(bottom: AppSpacing.xs.h),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '• ',
+                      style: AppTypography.caption.copyWith(
+                        color: const Color(0xFFD4854A),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        i.text,
+                        style: AppTypography.caption.copyWith(
+                          color: p.ink,
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Normal recommendations — [5] tampilan diperbagus
+    // Pakai horizontal scroll card untuk kesan "feed personal"
+    final tipEmojis = ['🌱', '🫧', '🪷', '☀️', '🫶'];
+    // warna accent bergantian: strawberry dan matcha
+    final accentPairs = [
+      (bg: p.strawberry, icon: p.primaryFocus),
+      (bg: p.matcha, icon: p.secondary),
+      (bg: p.matchaSoft, icon: p.secondary),
+      (bg: p.strawberrySoft, icon: p.primaryFocus),
+      (bg: Color.lerp(p.strawberry, p.matcha, 0.5)!, icon: p.secondaryFocus),
+    ];
+
+    return Column(
+      children: saran!.items.asMap().entries.map((entry) {
+        final i = entry.value;
+        final idx = entry.key % tipEmojis.length;
+        final emoji = tipEmojis[idx];
+        final accent = accentPairs[idx];
+
+        return Container(
+          margin: EdgeInsets.only(bottom: AppSpacing.sm.h),
+          decoration: BoxDecoration(
+            color: p.surface,
+            borderRadius: AppRadius.card,
+            border: Border.all(color: p.hairline, width: AppBorder.thin),
+            boxShadow: [
+              BoxShadow(
+                color: p.shadow,
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // [5] accent strip di sisi kiri + emoji
+                Container(
+                  width: 52.w,
+                  decoration: BoxDecoration(
+                    color: accent.bg,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(AppRadius.lg),
+                      bottomLeft: Radius.circular(AppRadius.lg),
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(emoji, style: TextStyle(fontSize: 22.sp)),
+                ),
+                // Teks rekomendasi
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md.w,
+                      vertical: AppSpacing.sm.h + 2,
+                    ),
+                    child: Text(
+                      i.text,
+                      style: AppTypography.caption.copyWith(
+                        color: p.ink,
+                        height: 1.55,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 2.h),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 10.sp,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.8,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
+        );
+      }).toList(),
     );
   }
 }

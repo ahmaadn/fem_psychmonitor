@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:flutter/material.dart';
@@ -18,43 +19,37 @@ class InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     return Container(
-      padding: EdgeInsets.all(AppSpacing.md.w),
-      decoration: BoxDecoration(
-        // Surface putih bersih di atas background abu-abu (layering principle)
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        // Border tipis outline, bukan shadow (Borders over Shadows)
-        border: Border.all(color: AppColors.outline),
-      ),
+      padding: EdgeInsets.all(AppSpacing.card.w),
+      decoration: p.card(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                icon,
-                size: 20.sp,
-                color: AppColors.textSecondary,
-              ),
+              Icon(icon, size: 20.sp, color: p.primary),
               SizedBox(width: AppSpacing.sm.w),
               Text(
                 title,
                 style: AppTypography.bodyMd.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: p.ink,
                 ),
               ),
             ],
           ),
           SizedBox(height: AppSpacing.sm.h),
-          // Divider tipis pemisah judul & isi
-          Divider(height: 1, thickness: 1, color: AppColors.outline),
+          Divider(
+            height: 1,
+            thickness: AppBorder.thin,
+            color: p.hairline,
+          ),
           SizedBox(height: AppSpacing.sm.h),
           Text(
             message,
             style: AppTypography.bodySm.copyWith(
-              color: AppColors.textSecondary,
+              color: p.inkMuted,
               height: 1.6,
             ),
           ),

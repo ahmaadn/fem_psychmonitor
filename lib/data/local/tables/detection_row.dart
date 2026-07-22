@@ -18,12 +18,11 @@ class DetectionSessionRow {
   static const String colDominantConfidence = 'dominant_confidence';
   static const String colNote = 'note';
   static const String colCorrectedEmotion = 'corrected_emotion';
+  static const String colSelfReportEmotion = 'self_report_emotion';
   static const String colCreatedAt = 'created_at';
   static const String colUpdatedAt = 'updated_at';
   static const String colIsDirty = 'is_dirty';
 
-  /// Map a [DetectionSessionModel] to the `detection_sessions` row.
-  /// `createdAt`/`updatedAt` default to now if not supplied.
   static Map<String, Object?> toRow(
     DetectionSessionModel session, {
     int? createdAt,
@@ -42,14 +41,13 @@ class DetectionSessionRow {
       colDominantConfidence: session.dominantConfidence,
       colNote: session.note,
       colCorrectedEmotion: session.correctedEmotion?.name,
+      colSelfReportEmotion: session.selfReportEmotion?.name,
       colCreatedAt: createdAt ?? now,
       colUpdatedAt: updatedAt ?? now,
       colIsDirty: isDirty ? 1 : 0,
     };
   }
 
-  /// Rehydrate a session from a row. Results are loaded separately and merged
-  /// via [withResults].
   static DetectionSessionModel toModel(
     Map<String, Object?> row, {
     List<DetectionResultModel> results = const [],
@@ -75,6 +73,12 @@ class DetectionSessionRow {
           ? null
           : EmotionLabelType.values.firstWhere(
               (e) => e.name == row[colCorrectedEmotion],
+              orElse: () => EmotionLabelType.neutral,
+            ),
+      selfReportEmotion: row[colSelfReportEmotion] == null
+          ? null
+          : EmotionLabelType.values.firstWhere(
+              (e) => e.name == row[colSelfReportEmotion],
               orElse: () => EmotionLabelType.neutral,
             ),
       results: results,

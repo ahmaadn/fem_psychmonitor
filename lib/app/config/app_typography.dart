@@ -1,111 +1,159 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'app_colors.dart';
 
-/// Aura Echo typography.
+/// Central Inter type scale. Do not hardcode fontSize/weight in widgets.
 ///
-/// The personality carrier is **Fraunces** — a characterful modern serif with
-/// optical sizing and a soft, slightly-oldstyle feel. It turns the headlines
-/// into a "journal you speak into" rather than a neutral UI delivery vehicle,
-/// and it never goes to a heavier weight than the face carries at 600 — the
-/// warmth comes from the letterforms, not the weight.
-///
-/// Body, UI, buttons, and labels run on **Inter** — neutral, high-function
-/// grotesk that lets the serif carry the personality.
+/// Color hierarchy (apply via AppPalette):
+/// - Display / bodyStrong → `p.ink` (primary text, WCAG AA)
+/// - body / caption → `p.ink` or default theme onSurface
+/// - Supporting / meta → `p.inkMuted`
+/// - Placeholder / legal → `p.inkFaint`
+/// - Brand emphasis → `p.primary` / `p.primaryFocus`
 class AppTypography {
-  /// **Display (32px, SemiBold, Fraunces)** — hero metrics, splash titles.
-  static TextStyle get display => GoogleFonts.fraunces(
-        fontSize: 32,
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.6,
-        height: 1.05,
-        color: AppColors.textPrimary,
-      );
+  AppTypography._();
 
-  /// **H1 (32px, SemiBold, Fraunces)** — screen-level headlines.
-  static TextStyle get h1 => GoogleFonts.fraunces(
-        fontSize: 32,
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.6,
-        height: 1.1,
-        color: AppColors.textPrimary,
-      );
-
-  /// **H2 (18px, SemiBold, Inter)** — section / card titles.
-  static TextStyle get h2 => GoogleFonts.inter(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.2,
-        color: AppColors.textPrimary,
-      );
-
-  /// **Body Large (16px, Regular, Inter)** — intro paragraphs, companion voice.
-  static TextStyle get bodyLg => GoogleFonts.inter(
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        height: 1.55,
-        color: AppColors.textPrimary,
-      );
-
-  /// **Body Medium (14px, Regular, Inter)** — default running text, labels.
-  static TextStyle get bodyMd => GoogleFonts.inter(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        height: 1.55,
-        color: AppColors.textPrimary,
-      );
-
-  /// **Body Small (12px, Regular, Inter)** — captions, metadata.
-  static TextStyle get bodySm => GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        height: 1.5,
-        color: AppColors.textSecondary,
-      );
-
-  /// **Label (12px, SemiBold, Inter)** — chips, micro-copy.
-  static TextStyle get label => GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textPrimary,
-      );
-
-  /// **Extra Small (10px, SemiBold, Inter)** — axis labels, bottom nav.
-  static TextStyle get xs => GoogleFonts.inter(
-        fontSize: 10,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0.4,
-        color: AppColors.textSecondary,
-      );
-
-  /// Material TextTheme mapping so legacy Material components pick the tokens.
-  static TextTheme get textTheme {
-    return TextTheme(
-      displayLarge: display,
-      headlineLarge: h1,
-      headlineMedium: h2,
-      bodyLarge: bodyLg,
-      bodyMedium: bodyMd,
-      bodySmall: bodySm,
-      labelLarge: label,
-      labelSmall: xs,
+  static TextStyle _inter({
+    required double size,
+    required FontWeight weight,
+    double height = 1.4,
+    double letterSpacing = -0.2,
+    Color? color,
+  }) {
+    return GoogleFonts.inter(
+      fontSize: size,
+      fontWeight: weight,
+      height: height,
+      letterSpacing: letterSpacing,
+      color: color,
     );
   }
 
-  // ── Fraunces convenience helpers (used by the new UI) ────────────────
-  /// Large serif display reused for big hero scores / result emotions.
-  static TextStyle fraunces({
-    double size = 32,
-    FontWeight weight = FontWeight.w600,
-    Color? color,
-    double spacing = -0.6,
-    double height = 1.05,
-  }) =>
-      GoogleFonts.fraunces(
-        fontSize: size,
-        fontWeight: weight,
-        letterSpacing: spacing,
-        height: height,
-        color: color ?? AppColors.textPrimary,
+  static TextStyle get heroDisplay => _inter(
+        size: 40,
+        weight: FontWeight.w600,
+        height: 1.08,
+        letterSpacing: -0.4,
       );
+
+  static TextStyle get displayLg => _inter(
+        size: 28,
+        weight: FontWeight.w600,
+        height: 1.12,
+        letterSpacing: -0.3,
+      );
+
+  static TextStyle get displayMd => _inter(
+        size: 24,
+        weight: FontWeight.w600,
+        height: 1.2,
+        letterSpacing: -0.25,
+      );
+
+  static TextStyle get lead => _inter(
+        size: 18,
+        weight: FontWeight.w400,
+        height: 1.3,
+      );
+
+  static TextStyle get leadAiry => _inter(
+        size: 16,
+        weight: FontWeight.w300,
+        height: 1.4,
+        letterSpacing: 0,
+      );
+
+  static TextStyle get tagline => _inter(
+        size: 16,
+        weight: FontWeight.w600,
+        height: 1.25,
+      );
+
+  static TextStyle get bodyStrong => _inter(
+        size: 15,
+        weight: FontWeight.w600,
+        height: 1.3,
+      );
+
+  static TextStyle get body => _inter(
+        size: 15,
+        weight: FontWeight.w400,
+        height: 1.45,
+      );
+
+  static TextStyle get denseLink => _inter(
+        size: 14,
+        weight: FontWeight.w400,
+        height: 1.8,
+        letterSpacing: 0,
+      );
+
+  static TextStyle get caption => _inter(
+        size: 12,
+        weight: FontWeight.w400,
+        height: 1.35,
+      );
+
+  static TextStyle get captionStrong => _inter(
+        size: 12,
+        weight: FontWeight.w600,
+        height: 1.3,
+      );
+
+  static TextStyle get buttonLarge => _inter(
+        size: 15,
+        weight: FontWeight.w400,
+        height: 1.0,
+        letterSpacing: 0,
+      );
+
+  static TextStyle get buttonUtility => _inter(
+        size: 12,
+        weight: FontWeight.w400,
+        height: 1.25,
+      );
+
+  static TextStyle get finePrint => _inter(
+        size: 11,
+        weight: FontWeight.w400,
+        height: 1.2,
+      );
+
+  static TextStyle get microLegal => _inter(
+        size: 10,
+        weight: FontWeight.w400,
+        height: 1.25,
+      );
+
+  static TextStyle get navLink => _inter(
+        size: 11,
+        weight: FontWeight.w500,
+        height: 1.0,
+        letterSpacing: 0,
+      );
+
+  static TextStyle get display => displayLg;
+  static TextStyle get h1 => displayMd;
+  static TextStyle get h2 => tagline;
+  static TextStyle get bodyLg => body;
+  static TextStyle get bodyMd => caption;
+  static TextStyle get bodySm => finePrint;
+  static TextStyle get label => captionStrong;
+  static TextStyle get xs => microLegal;
+
+  static TextTheme get textTheme {
+    return TextTheme(
+      displayLarge: heroDisplay,
+      displayMedium: displayLg,
+      displaySmall: displayMd,
+      headlineLarge: displayLg,
+      headlineMedium: tagline,
+      headlineSmall: bodyStrong,
+      bodyLarge: body,
+      bodyMedium: caption,
+      bodySmall: finePrint,
+      labelLarge: bodyStrong,
+      labelMedium: captionStrong,
+      labelSmall: navLink,
+    );
+  }
 }

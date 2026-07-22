@@ -1268,12 +1268,6 @@ abstract class AppLocalizations {
   /// **'Personality Type'**
   String get personalityType;
 
-  /// No description provided for @knowMbtiQuestion.
-  ///
-  /// In en, this message translates to:
-  /// **'Do you already know your MBTI type?'**
-  String get knowMbtiQuestion;
-
   /// No description provided for @yesIKnow.
   ///
   /// In en, this message translates to:
@@ -1286,23 +1280,11 @@ abstract class AppLocalizations {
   /// **'Not sure'**
   String get notSure;
 
-  /// No description provided for @selectYourMbti.
-  ///
-  /// In en, this message translates to:
-  /// **'Select your MBTI type:'**
-  String get selectYourMbti;
-
   /// No description provided for @continueButton.
   ///
   /// In en, this message translates to:
   /// **'Continue'**
   String get continueButton;
-
-  /// No description provided for @mbtiTest.
-  ///
-  /// In en, this message translates to:
-  /// **'MBTI Test'**
-  String get mbtiTest;
 
   /// No description provided for @failedToLoadQuestionnaire.
   ///
@@ -1334,12 +1316,6 @@ abstract class AppLocalizations {
   /// **'Next'**
   String get nextQuestion;
 
-  /// No description provided for @mbtiResultTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'MBTI Result'**
-  String get mbtiResultTitle;
-
   /// No description provided for @yourPersonalityType.
   ///
   /// In en, this message translates to:
@@ -1351,12 +1327,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown'**
   String get unknown;
-
-  /// No description provided for @mbtiResultDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'We will use this information to customize suggestions in the app.'**
-  String get mbtiResultDesc;
 
   /// No description provided for @continueToMentalHealth.
   ///
@@ -1477,12 +1447,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start Recording'**
   String get startRecordingCta;
-
-  /// No description provided for @mbtiDimensionScores.
-  ///
-  /// In en, this message translates to:
-  /// **'Dimension Scores'**
-  String get mbtiDimensionScores;
 
   /// No description provided for @currentAssessment.
   ///

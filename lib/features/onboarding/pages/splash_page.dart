@@ -1,4 +1,5 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
@@ -39,7 +40,11 @@ class _SplashPageState extends State<SplashPage>
     if (!mounted || _hasNavigated) return;
     _hasNavigated = true;
     if (authVm.isAuthenticated) {
-      context.goNamed(RouteNames.home);
+      if (authVm.hasCompletedAssessment) {
+        context.goNamed(RouteNames.dashboard);
+      } else {
+        context.goNamed(RouteNames.oceanTest);
+      }
     } else {
       context.goNamed(RouteNames.onboarding);
     }
@@ -53,85 +58,100 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: GestureDetector(
-        onVerticalDragEnd: (d) {
-          if ((d.primaryVelocity ?? 0) < 0) _navigateBasedOnAuth();
-        },
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 24.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Spacer(),
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: 320.w,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const VoiceprintOrb(
-                          mode: VoiceprintMode.idle, size: 220),
-                      SizedBox(height: 32.h),
-                      Text(l10n.appName,
+      backgroundColor: p.canvas,
+      body: DecoratedBox(
+        decoration: BoxDecoration(gradient: p.canvasGradient),
+        child: GestureDetector(
+          onVerticalDragEnd: (d) {
+            if ((d.primaryVelocity ?? 0) < 0) _navigateBasedOnAuth();
+          },
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 24.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Spacer(),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: 320.w,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const VoiceprintOrb(
+                            mode: VoiceprintMode.idle, size: 220),
+                        SizedBox(height: 32.h),
+                        Text(
+                          l10n.appName,
                           textAlign: TextAlign.center,
-                          style: AppTypography.fraunces(size: 36)),
-                      SizedBox(height: 10.h),
-                      Text(
-                        l10n.appTagline,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
+                          style: AppTypography.heroDisplay.copyWith(
+                            fontSize: 36.0,
+                            color: p.ink,
+                          ),
+                        ),
+                        SizedBox(height: 10.h),
+                        Text(
+                          l10n.appTagline,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
                             fontSize: 13.sp,
                             height: 1.6,
-                            color: AppColors.textSecondary),
-                      ),
-                    ],
+                            color: p.inkMuted,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const Spacer(),
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: 320.w,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      AnimatedBuilder(
-                        animation: _progressController,
-                        builder: (context, _) => SizedBox(
-                          width: 220.w,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(9999.r),
-                            child: LinearProgressIndicator(
-                              value: _progressController.value,
-                              minHeight: 5.h,
-                              backgroundColor:
-                                  AppColors.surfaceContainerHighest,
-                              valueColor: const AlwaysStoppedAnimation(
-                                  AppColors.primary),
+                  const Spacer(),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: 320.w,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        AnimatedBuilder(
+                          animation: _progressController,
+                          builder: (context, _) => SizedBox(
+                            width: 220.w,
+                            child: ClipRRect(
+                              borderRadius: AppRadius.chip,
+                              child: LinearProgressIndicator(
+                                value: _progressController.value,
+                                minHeight: 5.h,
+                                backgroundColor: p.strawberry,
+                                valueColor:
+                                    AlwaysStoppedAnimation(p.primary),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 12.h),
-                      Icon(Icons.keyboard_arrow_up_rounded,
-                          color: AppColors.textSecondary, size: 22.sp),
-                      SizedBox(height: 2.h),
-                      Text(l10n.swipeUpToStart,
+                        SizedBox(height: 12.h),
+                        Icon(
+                          Icons.keyboard_arrow_up_rounded,
+                          color: p.inkMuted,
+                          size: 22.sp,
+                        ),
+                        SizedBox(height: 2.h),
+                        Text(
+                          l10n.swipeUpToStart,
                           style: TextStyle(
-                              fontSize: 12.sp,
-                              letterSpacing: 0.4,
-                              color: AppColors.textSecondary)),
-                    ],
+                            fontSize: 12.sp,
+                            letterSpacing: 0.4,
+                            color: p.inkMuted,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

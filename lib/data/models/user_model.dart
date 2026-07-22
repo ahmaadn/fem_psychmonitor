@@ -1,3 +1,5 @@
+import 'package:fem_psychmonitor/features/onboarding/models/ocean_model.dart';
+
 class UserModel {
   final String id;
   final String fullName;
@@ -6,7 +8,9 @@ class UserModel {
   final DateTime? dateOfBirth;
   final String? avatarUrl;
   final DateTime createdAt;
-  final String? mbtiResult;
+  final bool isGuest;
+  final OceanScores? oceanScores;
+  final DateTime? oceanCompletedAt;
   final int? psychScore;
   final String? psychClass;
 
@@ -18,10 +22,15 @@ class UserModel {
     this.dateOfBirth,
     this.avatarUrl,
     required this.createdAt,
-    this.mbtiResult,
+    this.isGuest = false,
+    this.oceanScores,
+    this.oceanCompletedAt,
     this.psychScore,
     this.psychClass,
   });
+
+  bool get hasCompletedAssessment =>
+      oceanScores != null && psychScore != null;
 
   UserModel copyWith({
     String? id,
@@ -31,9 +40,13 @@ class UserModel {
     DateTime? dateOfBirth,
     String? avatarUrl,
     DateTime? createdAt,
-    String? mbtiResult,
+    bool? isGuest,
+    OceanScores? oceanScores,
+    DateTime? oceanCompletedAt,
     int? psychScore,
     String? psychClass,
+    bool clearOcean = false,
+    bool clearPsych = false,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -43,9 +56,12 @@ class UserModel {
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       createdAt: createdAt ?? this.createdAt,
-      mbtiResult: mbtiResult ?? this.mbtiResult,
-      psychScore: psychScore ?? this.psychScore,
-      psychClass: psychClass ?? this.psychClass,
+      isGuest: isGuest ?? this.isGuest,
+      oceanScores: clearOcean ? null : (oceanScores ?? this.oceanScores),
+      oceanCompletedAt:
+          clearOcean ? null : (oceanCompletedAt ?? this.oceanCompletedAt),
+      psychScore: clearPsych ? null : (psychScore ?? this.psychScore),
+      psychClass: clearPsych ? null : (psychClass ?? this.psychClass),
     );
   }
 
@@ -58,13 +74,20 @@ class UserModel {
       'dateOfBirth': dateOfBirth?.toIso8601String(),
       'avatarUrl': avatarUrl,
       'createdAt': createdAt.toIso8601String(),
-      'mbtiResult': mbtiResult,
+      'isGuest': isGuest,
+      'oceanScores': oceanScores?.toMap(),
+      'oceanCompletedAt': oceanCompletedAt?.toIso8601String(),
       'psychScore': psychScore,
       'psychClass': psychClass,
     };
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    OceanScores? ocean;
+    final rawOcean = json['oceanScores'];
+    if (rawOcean is Map<String, dynamic>) {
+      ocean = OceanScores.fromMap(rawOcean);
+    }
     return UserModel(
       id: json['id'] as String,
       fullName: json['fullName'] as String,
@@ -75,12 +98,13 @@ class UserModel {
           : null,
       avatarUrl: json['avatarUrl'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      mbtiResult: json['mbtiResult'] as String?,
+      isGuest: json['isGuest'] as bool? ?? false,
+      oceanScores: ocean,
+      oceanCompletedAt: json['oceanCompletedAt'] != null
+          ? DateTime.parse(json['oceanCompletedAt'] as String)
+          : null,
       psychScore: json['psychScore'] as int?,
       psychClass: json['psychClass'] as String?,
     );
   }
-
-  @override
-  String toString() => 'UserModel(id: $id, fullName: $fullName, email: $email)';
 }

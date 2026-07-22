@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
@@ -52,6 +53,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   Future<void> _save() async {
+    final p = context.palette;
     if (!_formKey.currentState!.validate()) return;
 
     final profileVm = context.read<ProfileViewModel>();
@@ -63,11 +65,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
 
     if (mounted && success) {
+      final p = context.palette;
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.primary,
+          backgroundColor: p.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
@@ -92,28 +95,30 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   ({String label, Color color}) get _strengthInfo {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     switch (_strengthLevel) {
       case 0:
       case 1:
-        return (label: l10n.veryWeak, color: AppColors.warning);
+        return (label: l10n.veryWeak, color: p.warning);
       case 2:
-        return (label: l10n.weak, color: const Color(0xFFEA580C));
+        return (label: l10n.weak, color: p.primaryFocus);
       case 3:
-        return (label: l10n.medium, color: AppColors.secondary);
+        return (label: l10n.medium, color: p.secondary);
       default:
-        return (label: l10n.strong, color: AppColors.success);
+        return (label: l10n.strong, color: p.success);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     final info = _strengthInfo;
     final profileVm = context.watch<ProfileViewModel>();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: p.canvas,
       appBar: CustomAppBar(
         title: l10n.changePasswordTitle,
         showBackButton: true,
@@ -134,13 +139,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         child: Container(
                           width: 72.w,
                           height: 72.w,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFDBEAFE),
+                          decoration: BoxDecoration(
+                            color: p.strawberry,
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.lock_outline_rounded,
-                            color: AppColors.info,
+                            color: p.primary,
                             size: 34.sp,
                           ),
                         ),
@@ -150,7 +155,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         child: Text(
                           l10n.changeAccountPassword,
                           style: AppTypography.bodySm.copyWith(
-                            color: AppColors.textSecondary.withValues(
+                            color: p.inkMuted.withValues(
                               alpha: 0.7,
                             ),
                           ),
@@ -200,7 +205,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                     ),
                                     color: active
                                         ? info.color
-                                        : AppColors.outline,
+                                        : p.hairline,
                                   ),
                                 ),
                               );

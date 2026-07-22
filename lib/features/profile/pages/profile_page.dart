@@ -1,21 +1,20 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
+import 'package:fem_psychmonitor/app/utils/mental_health_score.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
-import 'package:fem_psychmonitor/features/profile/pages/change_password_page.dart';
+import 'package:fem_psychmonitor/features/onboarding/models/ocean_model.dart';
 import 'package:fem_psychmonitor/features/profile/pages/edit_profile_page.dart';
-import 'package:fem_psychmonitor/features/profile/widgets/profile_menu_group.dart';
-import 'package:fem_psychmonitor/features/profile/widgets/profile_menu_item.dart';
-import 'package:fem_psychmonitor/features/profile/widgets/sheets/app_guide_sheet.dart';
-import 'package:fem_psychmonitor/features/profile/widgets/sheets/terms_sheet.dart';
-import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+/// Identity-focused profile tab.
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -32,342 +31,507 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  Future<void> _handleLogout() async {
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        title: Text(l10n.logout, style: AppTypography.fraunces(size: 20)),
-        content: Text(
-          l10n.logoutConfirmMessage,
-          style: TextStyle(
-            fontSize: 13.sp,
-            height: 1.5,
-            color: AppColors.textSecondary,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(
-              l10n.cancel,
-              style: const TextStyle(color: AppColors.textSecondary),
+    final isEn = context.watch<LocaleProvider>().isEnglish;
+    final profileVm = context.watch<ProfileViewModel>();
+    final auth = context.watch<AuthViewModel>();
+    final user = profileVm.user ?? auth.currentUser;
+    final ocean = user?.oceanScores;
+    final score = user?.psychScore;
+    final classKey = user?.psychClass ??
+        (score != null ? psychClassKeyForScore(score) : null);
+    final initial = (user?.fullName.isNotEmpty == true)
+        ? user!.fullName[0].toUpperCase()
+        : '?';
+
+    return Scaffold(
+      backgroundColor: p.canvas,
+      body: CustomScrollView(
+        slivers: [
+          // ── Hero identity panel ─────────────────────────────────────
+          SliverToBoxAdapter(
+            child: _ProfileHero(
+              initial: initial,
+              name: user?.fullName ?? '—',
+              subtitle: user?.isGuest == true
+                  ? (isEn ? 'Guest account' : 'Akun tamu')
+                  : (user?.email ?? ''),
+              score: score,
+              classKey: classKey,
+              isEn: isEn,
+              onEditTap: () async {
+                final vm = context.read<ProfileViewModel>();
+                await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const EditProfilePage()),
+                );
+                if (mounted) {
+                  vm.loadProfile();
+                }
+              },
             ),
           ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(
-              l10n.confirmLogout,
-              style: const TextStyle(
-                color: AppColors.warning,
-                fontWeight: FontWeight.w600,
-              ),
+
+          // ── Body ────────────────────────────────────────────────────
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.pageX.w,
+              AppSpacing.md.h,
+              AppSpacing.pageX.w,
+              120.h,
+            ),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                // OCEAN traits
+                if (ocean != null) ...[
+                  _SectionHeader(
+                    label: 'Big Five (OCEAN)',
+                    icon: Icons.psychology_rounded,
+                  ),
+                  SizedBox(height: AppSpacing.sm.h),
+                  _OceanGrid(ocean: ocean, isEn: isEn),
+                  SizedBox(height: AppSpacing.lg.h),
+                ],
+
+                // Action links
+                _SectionHeader(
+                  label: isEn ? 'Account' : 'Akun',
+                  icon: Icons.manage_accounts_rounded,
+                ),
+                SizedBox(height: AppSpacing.sm.h),
+                _ActionCard(
+                  items: [
+                    _ActionItem(
+                      icon: Icons.edit_outlined,
+                      label: l10n.editProfile,
+                      onTap: () async {
+                        final vm = context.read<ProfileViewModel>();
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (_) => const EditProfilePage()),
+                        );
+                        if (mounted) {
+                          vm.loadProfile();
+                        }
+                      },
+                    ),
+                    if (user?.isGuest != true)
+                      _ActionItem(
+                        icon: Icons.lock_outline,
+                        label: l10n.changePassword,
+                        onTap: () =>
+                            context.pushNamed(RouteNames.changePassword),
+                      ),
+                  ],
+                ),
+              ]),
             ),
           ),
         ],
       ),
     );
-    if (confirm != true || !mounted) return;
-    await context.read<AuthViewModel>().logout();
-    if (!mounted) return;
-    context.goNamed(RouteNames.login);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final localeProvider = context.watch<LocaleProvider>();
-    final isEnglish = localeProvider.isEnglish;
-    final profileVm = context.watch<ProfileViewModel>();
-    final user = profileVm.user;
-
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        bottom: false,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 16.h),
-              Text(l10n.myProfile, style: AppTypography.fraunces(size: 30)),
-              SizedBox(height: 20.h),
-              _Header(user: user),
-              SizedBox(height: 24.h),
-              ProfileMenuGroup(
-                items: [
-                  ProfileMenuItem(
-                    icon: Icons.person_outline_rounded,
-                    title: l10n.editProfile,
-                    iconColor: AppColors.primary,
-                    iconBackgroundColor: AppColors.primary.withValues(
-                      alpha: 0.12,
-                    ),
-                    onTap: () async {
-                      final vm = context.read<ProfileViewModel>();
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const EditProfilePage(),
-                        ),
-                      );
-                      if (mounted) vm.loadProfile();
-                    },
-                    showBorder: true,
-                  ),
-                  ProfileMenuItem(
-                    icon: Icons.lock_outline_rounded,
-                    title: l10n.changePassword,
-                    iconColor: AppColors.info,
-                    iconBackgroundColor: AppColors.infoSurface,
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const ChangePasswordPage(),
-                      ),
-                    ),
-                    showBorder: false,
-                  ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              ProfileMenuGroup(
-                items: [
-                  ProfileMenuItem(
-                    icon: Icons.language_rounded,
-                    title: l10n.language,
-                    iconColor: AppColors.primary,
-                    iconBackgroundColor: AppColors.primary.withValues(
-                      alpha: 0.12,
-                    ),
-                    trailing: _LangTabs(isEnglish: isEnglish),
-                    showBorder: false,
-                  ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              ProfileMenuGroup(
-                items: [
-                  ProfileMenuItem(
-                    icon: Icons.menu_book_rounded,
-                    title: l10n.appGuide,
-                    iconColor: AppColors.tertiary,
-                    iconBackgroundColor: AppColors.tertiary.withValues(
-                      alpha: 0.14,
-                    ),
-                    onTap: () => AppGuideSheet.show(context),
-                    showBorder: true,
-                  ),
-                  ProfileMenuItem(
-                    icon: Icons.description_outlined,
-                    title: l10n.termsAndConditions,
-                    iconColor: AppColors.secondary,
-                    iconBackgroundColor: AppColors.secondary.withValues(
-                      alpha: 0.16,
-                    ),
-                    onTap: () => TermsSheet.show(context),
-                    showBorder: true,
-                  ),
-                  ProfileMenuItem(
-                    icon: Icons.verified_user_outlined,
-                    title: l10n.licenses,
-                    iconColor: AppColors.textSecondary,
-                    iconBackgroundColor: AppColors.surfaceContainerHighest,
-                    onTap: () => showLicensePage(
-                      context: context,
-                      applicationName: 'Aura Echo',
-                      applicationVersion: '1.0.0',
-                      applicationLegalese: l10n.licenseLegalese,
-                    ),
-                    showBorder: true,
-                  ),
-                  ProfileMenuItem(
-                    icon: Icons.rocket_launch_outlined,
-                    title: l10n.goOnBoarding,
-                    iconColor: AppColors.tertiary,
-                    iconBackgroundColor: AppColors.tertiary.withValues(
-                      alpha: 0.14,
-                    ),
-                    onTap: () =>
-                        context.pushNamed(RouteNames.onboarding, extra: true),
-                    showBorder: false,
-                  ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              ProfileMenuGroup(
-                items: [
-                  ProfileMenuItem(
-                    icon: Icons.logout_rounded,
-                    title: l10n.logout,
-                    iconColor: AppColors.warning,
-                    iconBackgroundColor: AppColors.warningSurface,
-                    isDestructive: true,
-                    onTap: _handleLogout,
-                    showBorder: false,
-                  ),
-                ],
-              ),
-              SizedBox(height: 120.h),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
 
-// ───────────────────────── Header card ─────────────────────────
-class _Header extends StatelessWidget {
-  final dynamic user; // UserModel?
-  const _Header({required this.user});
+// ── Profile Hero ─────────────────────────────────────────────────────────────
+
+class _ProfileHero extends StatelessWidget {
+  const _ProfileHero({
+    required this.initial,
+    required this.name,
+    required this.subtitle,
+    required this.score,
+    required this.classKey,
+    required this.isEn,
+    required this.onEditTap,
+  });
+
+  final String initial;
+  final String name;
+  final String subtitle;
+  final int? score;
+  final String? classKey;
+  final bool isEn;
+  final VoidCallback onEditTap;
+
+  Color _scoreColor(int s) {
+    if (s <= 25) return const Color(0xFFC66F80);
+    if (s <= 50) return const Color(0xFF6B8FB8);
+    if (s <= 75) return const Color(0xFF9FAA74);
+    return const Color(0xFF4A6644);
+  }
+
+  String _classLabel(String? key, bool isEn) {
+    return switch (key) {
+      'butuh_perhatian' => isEn ? 'Needs attention' : 'Butuh Perhatian',
+      'rentan' => isEn ? 'Vulnerable' : 'Rentan',
+      'cukup_sehat' => isEn ? 'Fairly healthy' : 'Cukup Sehat',
+      'sehat' => isEn ? 'Healthy' : 'Sehat',
+      _ => key ?? '—',
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final p = context.palette;
+    final sc = score;
+    final scoreColor = sc != null ? _scoreColor(sc) : p.primary;
+
     return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: AppColors.outline),
+      width: double.infinity,
+      padding: EdgeInsets.only(
+        top: MediaQuery.paddingOf(context).top + AppSpacing.md.h,
+        left: AppSpacing.pageX.w,
+        right: AppSpacing.pageX.w,
+        bottom: AppSpacing.xl.h,
       ),
-      child: Row(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            p.strawberry,
+            Color.lerp(p.strawberry, scoreColor, 0.1)!,
+          ],
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 56.w,
-            height: 56.w,
-            decoration: BoxDecoration(
-              color: AppColors.primaryFixed,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.person_rounded,
-              color: AppColors.primary,
-              size: 28.sp,
-            ),
-          ),
-          SizedBox(width: 16.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.access_time_filled_rounded,
-                      size: 12.sp,
-                      color: AppColors.textSecondary,
-                    ),
-                    SizedBox(width: 5.w),
-                    Flexible(
-                      child: Text(
-                        user != null
-                            ? '${l10n.joinedSince} ${user.createdAt.day}/${user.createdAt.month}/${user.createdAt.year}'
-                            : l10n.joinedSince,
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Avatar
+              Container(
+                width: 68.w,
+                height: 68.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      p.primary,
+                      p.primaryFocus,
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: p.primary.withValues(alpha: 0.35),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
-                SizedBox(height: 4.h),
-                Text(
-                  user?.fullName ?? '...',
-                  style: AppTypography.fraunces(
-                    size: 20,
-                    weight: FontWeight.w600,
+                alignment: Alignment.center,
+                child: Text(
+                  initial,
+                  style: AppTypography.displayMd.copyWith(
+                    color: Colors.white,
+                    height: 1,
                   ),
                 ),
-                SizedBox(height: 4.h),
-                Row(
+              ),
+              SizedBox(width: AppSpacing.md.w),
+
+              // Name + subtitle
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: 5.w,
-                      height: 5.w,
-                      decoration: const BoxDecoration(
-                        color: AppColors.secondary,
-                        shape: BoxShape.circle,
+                    SizedBox(height: 4.h),
+                    Text(
+                      name,
+                      style: AppTypography.displayMd.copyWith(
+                        color: p.ink,
+                        height: 1.1,
                       ),
                     ),
-                    SizedBox(width: 6.w),
-                    Flexible(
-                      child: Text(
-                        user?.email ?? '...',
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          color: AppColors.textSecondary,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                    SizedBox(height: AppSpacing.xxs.h),
+                    Text(
+                      subtitle,
+                      style: AppTypography.caption.copyWith(
+                        color: p.inkMuted,
                       ),
                     ),
                   ],
+                ),
+              ),
+
+              // Edit button
+              GestureDetector(
+                onTap: onEditTap,
+                child: Container(
+                  padding: EdgeInsets.all(AppSpacing.xs.w),
+                  decoration: BoxDecoration(
+                    color: p.surface.withValues(alpha: 0.8),
+                    borderRadius: AppRadius.card,
+                    border: Border.all(
+                      color: p.primary.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.edit_outlined,
+                    color: p.primaryFocus,
+                    size: 18.sp,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          // Score bar (if exists)
+          if (sc != null) ...[
+            SizedBox(height: AppSpacing.lg.h),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            '$sc',
+                            style: AppTypography.displayLg.copyWith(
+                              color: p.ink,
+                              height: 1,
+                            ),
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            '/ 100',
+                            style: AppTypography.caption.copyWith(
+                              color: p.inkFaint,
+                            ),
+                          ),
+                          SizedBox(width: AppSpacing.xs.w),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: AppSpacing.xs.w,
+                              vertical: 2.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: scoreColor.withValues(alpha: 0.18),
+                              borderRadius: AppRadius.chip,
+                            ),
+                            child: Text(
+                              _classLabel(classKey, isEn),
+                              style: AppTypography.finePrint.copyWith(
+                                color: scoreColor,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: AppSpacing.xs.h),
+                      ClipRRect(
+                        borderRadius: AppRadius.chip,
+                        child: LinearProgressIndicator(
+                          value: sc / 100,
+                          minHeight: 6.h,
+                          backgroundColor:
+                              p.primary.withValues(alpha: 0.15),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(scoreColor),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
+          ],
         ],
       ),
     );
   }
 }
 
-class _LangTabs extends StatelessWidget {
-  final bool isEnglish;
-  const _LangTabs({required this.isEnglish});
+// ── OCEAN Grid ───────────────────────────────────────────────────────────────
+
+class _OceanGrid extends StatelessWidget {
+  const _OceanGrid({required this.ocean, required this.isEn});
+  final OceanScores ocean;
+  final bool isEn;
+
+  static const _traitColors = [
+    Color(0xFFF5D0D8), // O - rose
+    Color(0xFFE2E6C8), // C - sage
+    Color(0xFFE6F0F8), // E - blue
+    Color(0xFFF3EBF8), // A - lavender
+    Color(0xFFF4EBE3), // N - warm
+  ];
+
+  static const _traitBorderColors = [
+    Color(0xFFC66F80),
+    Color(0xFF4A6644),
+    Color(0xFF6B8FB8),
+    Color(0xFFA890C4),
+    Color(0xFF8B7A74),
+  ];
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
+    final traits = OceanTrait.values;
+
+    return Wrap(
+      spacing: AppSpacing.xs,
+      runSpacing: AppSpacing.xs,
+      children: List.generate(traits.length, (i) {
+        final t = traits[i];
+        final level = ocean.levelOf(t);
+        final s = ocean.scoreOf(t);
+        final bg = p.isDark
+            ? _traitColors[i].withValues(alpha: 0.12)
+            : _traitColors[i];
+        final border = _traitBorderColors[i].withValues(alpha: 0.3);
+
+        return Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.md.w,
+            vertical: AppSpacing.xs.h,
+          ),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: AppRadius.card,
+            border: Border.all(color: border, width: AppBorder.thin),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                t.code,
+                style: AppTypography.captionStrong.copyWith(
+                  color: _traitBorderColors[i],
+                ),
+              ),
+              SizedBox(height: 2.h),
+              Text(
+                s.toStringAsFixed(1),
+                style: AppTypography.bodyStrong.copyWith(color: p.ink),
+              ),
+              Text(
+                isEn ? level.labelEn : level.labelId,
+                style: AppTypography.microLegal.copyWith(color: p.inkMuted),
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+}
+
+// ── Section Header ────────────────────────────────────────────────────────────
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.label, required this.icon});
+  final String label;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Row(
+      children: [
+        Container(
+          width: 24.w,
+          height: 24.w,
+          decoration: BoxDecoration(
+            color: p.strawberry,
+            borderRadius: BorderRadius.circular(AppRadius.xs),
+          ),
+          child: Icon(icon, color: p.primaryFocus, size: 12.sp),
+        ),
+        SizedBox(width: AppSpacing.xs.w),
+        Text(
+          label,
+          style: AppTypography.bodyStrong.copyWith(color: p.ink),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Action Card ──────────────────────────────────────────────────────────────
+
+class _ActionCard extends StatelessWidget {
+  const _ActionCard({required this.items});
+  final List<_ActionItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(9999.r),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _tab(
-            context,
-            'ID',
-            !isEnglish,
-            () => context.read<LocaleProvider>().switchToIndonesian(),
-          ),
-          _tab(
-            context,
-            'EN',
-            isEnglish,
-            () => context.read<LocaleProvider>().switchToEnglish(),
+        color: p.surface,
+        borderRadius: AppRadius.card,
+        border: Border.all(color: p.hairline, width: AppBorder.thin),
+        boxShadow: [
+          BoxShadow(
+            color: p.shadow,
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _tab(BuildContext ctx, String label, bool active, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 5.h),
-        decoration: BoxDecoration(
-          color: active ? AppColors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(9999.r),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 11.sp,
-            fontWeight: FontWeight.w700,
-            color: active
-                ? Colors.white
-                : AppColors.primary.withValues(alpha: 0.7),
-          ),
-        ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: items.asMap().entries.map((entry) {
+          final isLast = entry.key == items.length - 1;
+          return Column(
+            children: [
+              ListTile(
+                leading: Container(
+                  width: 36.w,
+                  height: 36.w,
+                  decoration: BoxDecoration(
+                    color: p.strawberry,
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                  ),
+                  child: Icon(
+                    entry.value.icon,
+                    color: p.primaryFocus,
+                    size: 16.sp,
+                  ),
+                ),
+                title: Text(
+                  entry.value.label,
+                  style: AppTypography.body.copyWith(color: p.ink),
+                ),
+                trailing: Icon(
+                  Icons.chevron_right_rounded,
+                  color: p.inkFaint,
+                  size: 18.sp,
+                ),
+                onTap: entry.value.onTap,
+              ),
+              if (!isLast) Divider(color: p.hairline, height: 1, indent: 56.w),
+            ],
+          );
+        }).toList(),
       ),
     );
   }
 }
+
+class _ActionItem {
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+  const _ActionItem({
+    required this.icon,
+    required this.label,
+    this.onTap,
+  });
+}
+
+

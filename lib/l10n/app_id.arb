@@ -231,12 +231,9 @@
   "startRecordToSeeTimeline": "Mulai merekam untuk melihat riwayat emosi",
 
   "personalityType": "Tipe Kepribadian",
-  "knowMbtiQuestion": "Apakah Anda sudah mengetahui tipe MBTI Anda?",
   "yesIKnow": "Ya, saya tahu",
   "notSure": "Belum tahu",
-  "selectYourMbti": "Pilih tipe MBTI Anda:",
   "continueButton": "Lanjutkan",
-  "mbtiTest": "Tes MBTI",
   "failedToLoadQuestionnaire": "Gagal memuat kuesioner.",
   "questionXOfY": "Pertanyaan {current} dari {total}",
   "@questionXOfY": {
@@ -248,10 +245,8 @@
   "back": "Kembali",
   "finishAndContinue": "Selesai & Lanjut",
   "nextQuestion": "Selanjutnya",
-  "mbtiResultTitle": "Hasil MBTI",
   "yourPersonalityType": "Tipe Kepribadian Anda",
   "unknown": "Tidak diketahui",
-  "mbtiResultDesc": "Kami akan menggunakan informasi ini untuk menyesuaikan rekomendasi saran dalam aplikasi.",
   "continueToMentalHealth": "Lanjut ke Instrumen Kesehatan Mental",
   "mentalHealthAssessment": "Penilaian Kesehatan Mental",
   "finishAndGoToRecording": "Selesai & Lanjut ke Rekaman",
@@ -281,7 +276,6 @@
   "noDetectionDesc": "Rekam suaramu untuk mulai memahami emosimu.",
   "startRecordingCta": "Mulai Rekam",
 
-  "mbtiDimensionScores": "Skor Dimensi",
 
   "currentAssessment": "Asesmen Terkini",
   "mentalHealthScore": "Skor Kesehatan Mental",

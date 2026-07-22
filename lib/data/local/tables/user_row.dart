@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:fem_psychmonitor/data/local/tables/app_tables.dart';
 import 'package:fem_psychmonitor/data/models/auth_state.dart';
 import 'package:fem_psychmonitor/data/models/user_model.dart';
+import 'package:fem_psychmonitor/features/onboarding/models/ocean_model.dart';
 
-/// Row ⇄ model mappers for the `users`, `auth_tokens` and `sync_queue` tables.
 class UserRow {
   UserRow._();
 
@@ -18,7 +18,13 @@ class UserRow {
   static const String colUpdatedAt = 'updated_at';
   static const String colIsDirty = 'is_dirty';
   static const String colPasswordHash = 'password_hash';
-  static const String colMbtiResult = 'mbti_result';
+  static const String colIsGuest = 'is_guest';
+  static const String colOceanO = 'ocean_o';
+  static const String colOceanC = 'ocean_c';
+  static const String colOceanE = 'ocean_e';
+  static const String colOceanA = 'ocean_a';
+  static const String colOceanN = 'ocean_n';
+  static const String colOceanCompletedAt = 'ocean_completed_at';
   static const String colPsychScore = 'psych_score';
   static const String colPsychClass = 'psych_class';
 
@@ -41,13 +47,29 @@ class UserRow {
       colUpdatedAt: now,
       colIsDirty: isDirty ? 1 : 0,
       colPasswordHash: passwordHash,
-      colMbtiResult: user.mbtiResult,
+      colIsGuest: user.isGuest ? 1 : 0,
+      colOceanO: user.oceanScores?.o,
+      colOceanC: user.oceanScores?.c,
+      colOceanE: user.oceanScores?.e,
+      colOceanA: user.oceanScores?.a,
+      colOceanN: user.oceanScores?.n,
+      colOceanCompletedAt: user.oceanCompletedAt?.millisecondsSinceEpoch,
       colPsychScore: user.psychScore,
       colPsychClass: user.psychClass,
     };
   }
 
   static UserModel toModel(Map<String, Object?> row) {
+    OceanScores? ocean;
+    if (row[colOceanO] != null) {
+      ocean = OceanScores(
+        o: (row[colOceanO] as num).toDouble(),
+        c: (row[colOceanC] as num).toDouble(),
+        e: (row[colOceanE] as num).toDouble(),
+        a: (row[colOceanA] as num).toDouble(),
+        n: (row[colOceanN] as num).toDouble(),
+      );
+    }
     return UserModel(
       id: row[colId] as String,
       fullName: row[colFullName] as String,
@@ -58,7 +80,12 @@ class UserRow {
           : DateTime.fromMillisecondsSinceEpoch(row[colDateOfBirth] as int),
       avatarUrl: row[colAvatarUrl] as String?,
       createdAt: DateTime.fromMillisecondsSinceEpoch(row[colCreatedAt] as int),
-      mbtiResult: row[colMbtiResult] as String?,
+      isGuest: (row[colIsGuest] as int? ?? 0) == 1,
+      oceanScores: ocean,
+      oceanCompletedAt: row[colOceanCompletedAt] == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(
+              row[colOceanCompletedAt] as int),
       psychScore: row[colPsychScore] as int?,
       psychClass: row[colPsychClass] as String?,
     );
@@ -91,7 +118,6 @@ class AuthTokenRow {
       row[colToken] as String;
 }
 
-/// A pending sync-queue entry.
 class SyncQueueEntry {
   final int? id;
   final String entityType;
@@ -121,9 +147,7 @@ class SyncQueueEntry {
   }
 }
 
-/// Convenience: serialise a model as the sync payload JSON.
 String syncPayloadJson(Map<String, dynamic> json) => jsonEncode(json);
 
-/// Builds an [AuthState] from a stored token + user (used by `getCurrentAuth`).
 AuthState buildAuthedState(UserModel user, String? token) =>
     AuthState.authenticated(user: user, token: token);
