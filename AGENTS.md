@@ -27,7 +27,7 @@ flutter run
 - Dummy repos under `lib/data/repositories/dummy/` are for tests/scaffolds — do not use them as the app default.
 - SQLite: `DatabaseHelper` (`fem_psychmonitor.db` v2). Desktop needs `DatabaseHelper.initPlatform()` (sqflite FFI) before open — already done in `main`.
 - Routes/auth gates: `lib/app/routes/app_routes.dart` (assessment required before shell routes).
-- Theme: prefer `context.palette` (`AppPalette`) over raw `AppColors`. Tokens live in `lib/app/config/*`; design source `DESIGN.md` (strawberry backgrounds, matcha **accent-only**).
+- Theme: prefer `context.palette` (`AppPalette`) over raw `AppColors`. Tokens live in `lib/app/config/*`; design source `DESIGN.md` — "Strawberry Match" system: Strawberry Rose `#C66F80` (primary) + Matcha Green `#4a6644` (secondary) as co-equal brand fills, generated as 10-step tonal ramps, with a fixed 6-color emotion palette (happy/sad/anger/fearful/disgust/neutral) as the app's real functional-color system. Ships **both** light and dark themes (`AppPalette.light()` / `AppPalette.dark()`), not dark-only.
 - i18n: `lib/l10n` (`app_en.arb` template, `app_id.arb`). Locales: `en_US`, `id_ID`. Edit ARB → regenerate.
 
 ### Emotion detection (easy to break)
