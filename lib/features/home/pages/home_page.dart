@@ -133,12 +133,11 @@ class _HomePageState extends State<HomePage>
     };
   }
 
-  // [7] warna score: hapus biru untuk 'rentan', ganti oranye/amber
-  Color _scoreColor(int score) {
-    if (score <= 25) return const Color(0xFFC66F80); // rose - butuh perhatian
-    if (score <= 50) return const Color(0xFFD4854A); // oranye hangat - rentan
-    if (score <= 75) return const Color(0xFF9FAA74); // sage - cukup sehat
-    return const Color(0xFF4A6644); // matcha - sehat
+  Color _scoreColor(int score, AppPalette p) {
+    if (score <= 25) return p.errorText;
+    if (score <= 50) return p.warningText;
+    if (score <= 75) return p.infoText;
+    return p.successText;
   }
 
   String _scoreEmoji(int score) {
@@ -176,7 +175,7 @@ class _HomePageState extends State<HomePage>
             .where((d) => d.isCheckedIn && _isToday(d.date))
             .length ??
         0;
-    final scoreColor = _scoreColor(score);
+    final scoreColor = _scoreColor(score, p);
     final showSupportBanner = _needsSupport(score);
 
     return Scaffold(
@@ -191,15 +190,15 @@ class _HomePageState extends State<HomePage>
             // supaya hero menyatu dengan body tanpa seam
             colors: [
               p.canvas,
-              Color.lerp(p.canvas, p.strawberry, p.isDark ? 0.45 : 0.65)!,
+              Color.lerp(p.canvas, p.primarySoft, p.isDark ? 0.45 : 0.65)!,
               p.canvas,
             ],
             stops: const [0.0, 0.28, 0.7],
           ),
         ),
         child: RefreshIndicator(
-        color: p.primary,
-        backgroundColor: p.surface,
+        color: p.primaryFill,
+        backgroundColor: p.surface1,
         onRefresh: () async {
           await homeVm.loadStats();
           await _loadMoodAndSaran();
@@ -273,7 +272,6 @@ class _HomePageState extends State<HomePage>
           ],
         ),
         ),
-        ),
       ),
     );
   }
@@ -341,15 +339,15 @@ class _HeroHeader extends StatelessWidget {
                     ),
                     child: Icon(
                       greetingIcon,
-                      color: p.primaryFocus,
+                      color: p.primaryPressed,
                       size: 16.sp,
                     ),
                   ),
                   SizedBox(width: AppSpacing.xs.w),
                   Text(
                     greetingTime,
-                    style: AppTypography.captionStrong.copyWith(
-                      color: p.primaryFocus,
+                    style: AppTypography.label.copyWith(
+                      color: p.primaryText,
                       letterSpacing: 0.2,
                     ),
                   ),
@@ -362,8 +360,8 @@ class _HeroHeader extends StatelessWidget {
                 name.isEmpty
                     ? (isEn ? 'Welcome back' : 'Selamat datang')
                     : name,
-                style: AppTypography.displayLg.copyWith(
-                  color: p.ink,
+                style: AppTypography.display.copyWith(
+                  color: p.textPrimary,
                   height: 1.1,
                 ),
               ),
@@ -372,7 +370,7 @@ class _HeroHeader extends StatelessWidget {
                 isEn
                     ? 'How is your heart today?'
                     : 'Bagaimana hatimu hari ini?',
-                style: AppTypography.body.copyWith(color: p.inkMuted),
+                style: AppTypography.body.copyWith(color: p.textSecondary),
               ),
               SizedBox(height: AppSpacing.lg.h),
 
@@ -381,12 +379,12 @@ class _HeroHeader extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(AppSpacing.md.w),
                 decoration: BoxDecoration(
-                  color: p.surface,
+                  color: p.surface1,
                   borderRadius: AppRadius.card,
-                  border: Border.all(color: p.hairline, width: AppBorder.thin),
+                  border: Border.all(color: p.divider, width: AppBorder.thin),
                   boxShadow: [
                     BoxShadow(
-                      color: p.shadow,
+                      color: p.shadowRaised,
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     ),
@@ -411,8 +409,8 @@ class _HeroHeader extends StatelessWidget {
                         children: [
                           Text(
                             isEn ? 'Mental health' : 'Kesehatan mental',
-                            style: AppTypography.finePrint.copyWith(
-                              color: p.inkMuted,
+                            style: AppTypography.caption.copyWith(
+                              color: p.textSecondary,
                               letterSpacing: 0.3,
                             ),
                           ),
@@ -423,8 +421,8 @@ class _HeroHeader extends StatelessWidget {
                             children: [
                               Text(
                                 '$score',
-                                style: AppTypography.heroDisplay.copyWith(
-                                  color: p.ink,
+                                style: AppTypography.metric.copyWith(
+                                  color: p.textPrimary,
                                   height: 1.0,
                                 ),
                               ),
@@ -432,7 +430,7 @@ class _HeroHeader extends StatelessWidget {
                               Text(
                                 '/ 100',
                                 style: AppTypography.caption.copyWith(
-                                  color: p.inkFaint,
+                                  color: p.textTertiary,
                                 ),
                               ),
                             ],
@@ -449,7 +447,7 @@ class _HeroHeader extends StatelessWidget {
                             ),
                             child: Text(
                               scoreLabel,
-                              style: AppTypography.finePrint.copyWith(
+                              style: AppTypography.caption.copyWith(
                                 color: scoreColor,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -461,7 +459,7 @@ class _HeroHeader extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: score / 100,
                               minHeight: 5.h,
-                              backgroundColor: p.hairline,
+                              backgroundColor: p.divider,
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 scoreColor,
                               ),
@@ -484,7 +482,7 @@ class _HeroHeader extends StatelessWidget {
                     vertical: AppSpacing.xs.h,
                   ),
                   decoration: BoxDecoration(
-                    color: p.surface.withValues(alpha: 0.9),
+                    color: p.surface1.withValues(alpha: 0.9),
                     borderRadius: AppRadius.chip,
                     border: Border.all(
                       color: p.primary.withValues(alpha: 0.25),
@@ -512,15 +510,15 @@ class _HeroHeader extends StatelessWidget {
                                   ? 'Feeling ${mood!.displayName.toLowerCase()}'
                                   : 'Merasa ${mood!.displayName.toLowerCase()}')
                             : (isEn ? 'Set your mood' : 'Atur moodmu'),
-                        style: AppTypography.captionStrong.copyWith(
-                          color: p.ink,
+                        style: AppTypography.label.copyWith(
+                          color: p.textPrimary,
                         ),
                       ),
                       SizedBox(width: AppSpacing.xs.w),
                       Icon(
                         Icons.chevron_right_rounded,
                         size: 14.sp,
-                        color: p.inkFaint,
+                        color: p.textTertiary,
                       ),
                     ],
                   ),
@@ -541,7 +539,7 @@ class _HeroHeader extends StatelessWidget {
               height: 120.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: p.primary,
+                color: p.primaryFill,
               ),
             ),
           ),
@@ -582,7 +580,7 @@ class _ScoreRing extends StatelessWidget {
             child: CustomPaint(
               painter: _RingPainter(
                 progress: score / 100,
-                trackColor: p.hairline,
+                trackColor: p.divider,
                 progressColor: color,
               ),
               child: Center(
@@ -680,19 +678,19 @@ class _SupportBanner extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: isAttention
-                ? [const Color(0xFFF5D0D8), const Color(0xFFFDE8E8)]
-                : [const Color(0xFFFFF0DC), const Color(0xFFFFF8EC)],
+                ? [p.primarySoft, p.primaryWash]
+                : [p.warning.withValues(alpha: 0.12), p.surface1],
           ),
           borderRadius: AppRadius.card,
           border: Border.all(
             color: isAttention
-                ? const Color(0xFFC66F80).withValues(alpha: 0.4)
-                : const Color(0xFFD4854A).withValues(alpha: 0.4),
+                ? p.primary.withValues(alpha: 0.4)
+                : p.warning.withValues(alpha: 0.4),
             width: AppBorder.thin,
           ),
           boxShadow: [
             BoxShadow(
-              color: p.shadow,
+              color: p.shadowRaised,
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -705,17 +703,15 @@ class _SupportBanner extends StatelessWidget {
               height: 44.w,
               decoration: BoxDecoration(
                 color: isAttention
-                    ? const Color(0xFFC66F80).withValues(alpha: 0.15)
-                    : const Color(0xFFD4854A).withValues(alpha: 0.15),
+                    ? p.primary.withValues(alpha: 0.15)
+                    : p.warning.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 isAttention
                     ? Icons.favorite_rounded
                     : Icons.support_agent_rounded,
-                color: isAttention
-                    ? const Color(0xFFC66F80)
-                    : const Color(0xFFD4854A),
+                color: isAttention ? p.primary : p.warning,
                 size: 22.sp,
               ),
             ),
@@ -733,9 +729,7 @@ class _SupportBanner extends StatelessWidget {
                               ? 'Kamu tidak sendirian'
                               : 'Bantuan tersedia'),
                     style: AppTypography.bodyStrong.copyWith(
-                      color: isAttention
-                          ? const Color(0xFFA85568)
-                          : const Color(0xFFB06030),
+                      color: isAttention ? p.primaryText : p.warningText,
                     ),
                   ),
                   SizedBox(height: 2.h),
@@ -743,16 +737,14 @@ class _SupportBanner extends StatelessWidget {
                     isEn
                         ? 'Tap to call free helpline 119'
                         : 'Ketuk untuk hubungi hotline 119',
-                    style: AppTypography.finePrint.copyWith(color: p.inkMuted),
+                    style: AppTypography.caption.copyWith(color: p.textSecondary),
                   ),
                 ],
               ),
             ),
             Icon(
               Icons.phone_rounded,
-              color: isAttention
-                  ? const Color(0xFFC66F80)
-                  : const Color(0xFFD4854A),
+              color: isAttention ? p.primary : p.warning,
               size: 18.sp,
             ),
           ],
@@ -787,7 +779,7 @@ class _StatRow extends StatelessWidget {
             sub: isEn ? 'check-in' : 'cek-in',
             icon: Icons.mic_rounded,
             accent: p.primary,
-            iconBg: p.strawberry,
+            iconBg: p.primarySoft,
           ),
         ),
         SizedBox(width: AppSpacing.sm.w),
@@ -797,8 +789,8 @@ class _StatRow extends StatelessWidget {
             label: 'Streak',
             sub: isEn ? 'days' : 'hari',
             icon: Icons.local_fire_department_rounded,
-            accent: const Color(0xFFD4854A),
-            iconBg: const Color(0xFFF5E0CB),
+            accent: p.warning,
+            iconBg: p.warning.withValues(alpha: 0.12),
             suffix: streakDays > 0 ? '🔥' : null,
           ),
         ),
@@ -832,12 +824,12 @@ class _BigStatCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(AppSpacing.md.w),
       decoration: BoxDecoration(
-        color: p.surface,
+        color: p.surface1,
         borderRadius: AppRadius.card,
-        border: Border.all(color: p.hairline, width: AppBorder.thin),
+        border: Border.all(color: p.divider, width: AppBorder.thin),
         boxShadow: [
           BoxShadow(
-            color: p.shadow,
+            color: p.shadowRaised,
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -862,8 +854,8 @@ class _BigStatCard extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: AppTypography.displayMd.copyWith(
-                  color: p.ink,
+                style: AppTypography.title.copyWith(
+                  color: p.textPrimary,
                   height: 1.0,
                 ),
               ),
@@ -876,11 +868,11 @@ class _BigStatCard extends StatelessWidget {
           SizedBox(height: 2.h),
           Text(
             label,
-            style: AppTypography.captionStrong.copyWith(color: p.inkMuted),
+            style: AppTypography.label.copyWith(color: p.textSecondary),
           ),
           Text(
             sub,
-            style: AppTypography.microLegal.copyWith(color: p.inkFaint),
+            style: AppTypography.label.copyWith(color: p.textTertiary),
           ),
         ],
       ),
@@ -912,7 +904,7 @@ class _WeekStrip extends StatelessWidget {
           children: [
             Text(
               isEn ? 'This week' : 'Minggu ini',
-              style: AppTypography.bodyStrong.copyWith(color: p.ink),
+              style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
             ),
             const Spacer(),
             Container(
@@ -921,13 +913,13 @@ class _WeekStrip extends StatelessWidget {
                 vertical: 2.h,
               ),
               decoration: BoxDecoration(
-                color: p.strawberry,
+                color: p.primarySoft,
                 borderRadius: AppRadius.chip,
               ),
               child: Text(
                 '$checked/7',
-                style: AppTypography.microLegal.copyWith(
-                  color: p.primaryFocus,
+                style: AppTypography.label.copyWith(
+                  color: p.primaryText,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -948,13 +940,15 @@ class _WeekStrip extends StatelessWidget {
                 date.day == now.day;
             final emotion = checkin?.dominantEmotion;
             final bubbleSize = isToday ? 42.w : 36.w;
+            final emotionColor =
+                emotion != null ? p.emotionBase(emotion) : p.primary;
 
             return Column(
               children: [
                 Text(
                   days[i],
-                  style: AppTypography.microLegal.copyWith(
-                    color: isToday ? p.primaryFocus : p.inkFaint,
+                  style: AppTypography.label.copyWith(
+                    color: isToday ? p.primaryText : p.textTertiary,
                     fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
                   ),
                 ),
@@ -964,27 +958,23 @@ class _WeekStrip extends StatelessWidget {
                   height: bubbleSize,
                   decoration: BoxDecoration(
                     color: isChecked
-                        ? (emotion?.surfaceColor ?? p.strawberry)
+                        ? emotionColor.withValues(alpha: 0.15)
                         : (isToday
                               ? p.primary.withValues(alpha: 0.08)
-                              : p.strawberrySoft),
+                              : p.primaryWash),
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: isToday
                           ? p.primary
                           : (isChecked
-                                ? (emotion?.color ?? p.primary).withValues(
-                                    alpha: 0.45,
-                                  )
-                                : p.hairline),
+                                ? emotionColor.withValues(alpha: 0.45)
+                                : p.divider),
                       width: isToday ? AppBorder.thick : AppBorder.thin,
                     ),
                     boxShadow: isChecked
                         ? [
                             BoxShadow(
-                              color: (emotion?.color ?? p.primary).withValues(
-                                alpha: 0.2,
-                              ),
+                              color: emotionColor.withValues(alpha: 0.2),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -1002,7 +992,7 @@ class _WeekStrip extends StatelessWidget {
                               ? Icons.radio_button_unchecked_rounded
                               : Icons.circle_outlined,
                           size: isToday ? 13.sp : 10.sp,
-                          color: isToday ? p.primary : p.inkFaint,
+                          color: isToday ? p.primary : p.textTertiary,
                         ),
                 ),
               ],
@@ -1048,7 +1038,7 @@ class _VoiceCheckinCTA extends StatelessWidget {
                 end: Alignment.centerRight,
                 colors: [
                   p.primary,
-                  Color.lerp(p.primary, p.primaryFocus, 0.4)!,
+                  Color.lerp(p.primary, p.primaryPressed, 0.4)!,
                 ],
               ),
               borderRadius: AppRadius.card,
@@ -1066,12 +1056,12 @@ class _VoiceCheckinCTA extends StatelessWidget {
                   width: 44.w,
                   height: 44.w,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: p.onPrimary.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.graphic_eq_rounded,
-                    color: Colors.white,
+                    color: p.onPrimary,
                     size: 22.sp,
                   ),
                 ),
@@ -1083,13 +1073,13 @@ class _VoiceCheckinCTA extends StatelessWidget {
                       Text(
                         isEn ? 'Start voice check-in' : 'Mulai cek-in suara',
                         style: AppTypography.bodyStrong.copyWith(
-                          color: Colors.white,
+                          color: p.onPrimary,
                         ),
                       ),
                       Text(
                         isEn ? 'Speak your feelings' : 'Ungkapkan perasaanmu',
-                        style: AppTypography.finePrint.copyWith(
-                          color: Colors.white.withValues(alpha: 0.75),
+                        style: AppTypography.caption.copyWith(
+                          color: p.onPrimary.withValues(alpha: 0.75),
                         ),
                       ),
                     ],
@@ -1097,7 +1087,7 @@ class _VoiceCheckinCTA extends StatelessWidget {
                 ),
                 Icon(
                   Icons.arrow_forward_ios_rounded,
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: p.onPrimary.withValues(alpha: 0.7),
                   size: 14.sp,
                 ),
               ],
@@ -1116,9 +1106,9 @@ class _VoiceCheckinCTA extends StatelessWidget {
               vertical: AppSpacing.xs.h + 1,
             ),
             decoration: BoxDecoration(
-              color: p.surface,
+              color: p.surface1,
               borderRadius: AppRadius.card,
-              border: Border.all(color: p.hairline, width: AppBorder.thin),
+              border: Border.all(color: p.divider, width: AppBorder.thin),
             ),
             child: Row(
               children: [
@@ -1131,12 +1121,13 @@ class _VoiceCheckinCTA extends StatelessWidget {
                               ? 'Feeling ${mood!.displayName.toLowerCase()} today'
                               : 'Hari ini merasa ${mood!.displayName.toLowerCase()}')
                         : (isEn ? 'How do you feel?' : 'Bagaimana perasaanmu?'),
-                    style: AppTypography.caption.copyWith(color: p.inkMuted),
+                    style:
+                        AppTypography.caption.copyWith(color: p.textSecondary),
                   ),
                 ),
                 Text(
                   isEn ? 'Change' : 'Ubah',
-                  style: AppTypography.captionStrong.copyWith(color: p.primary),
+                  style: AppTypography.label.copyWith(color: p.primaryText),
                 ),
               ],
             ),
@@ -1165,20 +1156,20 @@ class _ForYouHeader extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [p.primary, p.primaryFocus],
+              colors: [p.primary, p.primaryPressed],
             ),
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           child: Icon(
             Icons.auto_awesome_rounded,
-            color: Colors.white,
+            color: p.onPrimary,
             size: 13.sp,
           ),
         ),
         SizedBox(width: AppSpacing.xs.w),
         Text(
           isEn ? 'For you' : 'Untukmu',
-          style: AppTypography.bodyStrong.copyWith(color: p.ink),
+          style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
         ),
         SizedBox(width: AppSpacing.xxs.w),
         Text('✨', style: TextStyle(fontSize: 14.sp)),
@@ -1206,9 +1197,9 @@ class _RecommendationSection extends StatelessWidget {
           vertical: AppSpacing.lg.h,
         ),
         decoration: BoxDecoration(
-          color: p.surface,
+          color: p.surface1,
           borderRadius: AppRadius.card,
-          border: Border.all(color: p.hairline),
+          border: Border.all(color: p.divider),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1218,37 +1209,36 @@ class _RecommendationSection extends StatelessWidget {
               height: 16.w,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: p.primary,
+                color: p.primaryText,
               ),
             ),
             SizedBox(width: AppSpacing.sm.w),
             Text(
               isEn ? 'Loading suggestions…' : 'Memuat saran…',
-              style: AppTypography.caption.copyWith(color: p.inkMuted),
+              style: AppTypography.caption.copyWith(color: p.textSecondary),
             ),
           ],
         ),
       );
     }
 
-    // Safety banner
     if (saran!.safetyTriggered) {
       return Container(
         padding: EdgeInsets.all(AppSpacing.md.w),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFFFFF0DC), Color(0xFFFFF8EC)],
+            colors: [p.warning.withValues(alpha: 0.12), p.surface1],
           ),
           borderRadius: AppRadius.card,
           border: Border.all(
-            color: const Color(0xFFD4854A).withValues(alpha: 0.4),
+            color: p.warning.withValues(alpha: 0.4),
             width: AppBorder.thin,
           ),
           boxShadow: [
             BoxShadow(
-              color: p.shadow,
+              color: p.shadowRaised,
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -1263,12 +1253,12 @@ class _RecommendationSection extends StatelessWidget {
                   width: 36.w,
                   height: 36.w,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD4854A).withValues(alpha: 0.15),
+                    color: p.warning.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.favorite_rounded,
-                    color: Color(0xFFD4854A),
+                    color: p.warning,
                   ),
                 ),
                 SizedBox(width: AppSpacing.sm.w),
@@ -1278,7 +1268,7 @@ class _RecommendationSection extends StatelessWidget {
                         ? 'You matter — support is here'
                         : 'Kamu berharga — dukungan ada',
                     style: AppTypography.bodyStrong.copyWith(
-                      color: const Color(0xFFB06030),
+                      color: p.warningText,
                     ),
                   ),
                 ),
@@ -1294,7 +1284,7 @@ class _RecommendationSection extends StatelessWidget {
                     Text(
                       '• ',
                       style: AppTypography.caption.copyWith(
-                        color: const Color(0xFFD4854A),
+                        color: p.warning,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -1302,7 +1292,7 @@ class _RecommendationSection extends StatelessWidget {
                       child: Text(
                         i.text,
                         style: AppTypography.caption.copyWith(
-                          color: p.ink,
+                          color: p.textPrimary,
                           height: 1.5,
                         ),
                       ),
@@ -1321,11 +1311,11 @@ class _RecommendationSection extends StatelessWidget {
     final tipEmojis = ['🌱', '🫧', '🪷', '☀️', '🫶'];
     // warna accent bergantian: strawberry dan matcha
     final accentPairs = [
-      (bg: p.strawberry, icon: p.primaryFocus),
-      (bg: p.matcha, icon: p.secondary),
-      (bg: p.matchaSoft, icon: p.secondary),
-      (bg: p.strawberrySoft, icon: p.primaryFocus),
-      (bg: Color.lerp(p.strawberry, p.matcha, 0.5)!, icon: p.secondaryFocus),
+      (bg: p.primarySoft, icon: p.primaryPressed),
+      (bg: p.secondarySoft, icon: p.secondary),
+      (bg: p.secondaryWash, icon: p.secondary),
+      (bg: p.primaryWash, icon: p.primaryPressed),
+      (bg: Color.lerp(p.primarySoft, p.secondarySoft, 0.5)!, icon: p.secondaryPressed),
     ];
 
     return Column(
@@ -1338,12 +1328,12 @@ class _RecommendationSection extends StatelessWidget {
         return Container(
           margin: EdgeInsets.only(bottom: AppSpacing.sm.h),
           decoration: BoxDecoration(
-            color: p.surface,
+            color: p.surface1,
             borderRadius: AppRadius.card,
-            border: Border.all(color: p.hairline, width: AppBorder.thin),
+            border: Border.all(color: p.divider, width: AppBorder.thin),
             boxShadow: [
               BoxShadow(
-                color: p.shadow,
+                color: p.shadowRaised,
                 blurRadius: 10,
                 offset: const Offset(0, 3),
               ),
@@ -1376,7 +1366,7 @@ class _RecommendationSection extends StatelessWidget {
                     child: Text(
                       i.text,
                       style: AppTypography.caption.copyWith(
-                        color: p.ink,
+                        color: p.textPrimary,
                         height: 1.55,
                       ),
                     ),

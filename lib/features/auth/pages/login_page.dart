@@ -1,5 +1,6 @@
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
@@ -88,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_rounded,
-            color: p.inkMuted,
+            color: p.textSecondary,
             size: 22.sp,
           ),
           onPressed: _goBack,
@@ -98,35 +99,31 @@ class _LoginPageState extends State<LoginPage> {
         decoration: BoxDecoration(gradient: p.canvasGradient),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 8.h),
+                SizedBox(height: AppSpacing.xs.h),
                 const VoiceprintOrb(mode: VoiceprintMode.idle, size: 140),
-                SizedBox(height: 24.h),
+                SizedBox(height: AppSpacing.xl.h),
                 Text(
                   l10n.welcomeBack,
                   textAlign: TextAlign.center,
-                  style: AppTypography.displayMd.copyWith(
-                    fontSize: 28.0,
-                    color: p.ink,
-                  ),
+                  style: AppTypography.display.copyWith(color: p.textPrimary),
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: AppSpacing.xs.h),
                 SizedBox(
                   width: 280.w,
                   child: Text(
                     l10n.continueCheckin,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13.sp,
+                    style: AppTypography.caption.copyWith(
+                      color: p.textSecondary,
                       height: 1.55,
-                      color: p.inkMuted,
                     ),
                   ),
                 ),
-                SizedBox(height: 28.h),
+                SizedBox(height: AppSpacing.xxl.h - 4.h),
                 Form(
                   key: _formKey,
                   child: Column(
@@ -145,7 +142,7 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 14.h),
+                      SizedBox(height: AppSpacing.sm.h + 2.h),
                       CustomTextField(
                         label: l10n.password,
                         hintText: l10n.passwordHint,
@@ -159,20 +156,19 @@ class _LoginPageState extends State<LoginPage> {
                               context.pushNamed(RouteNames.forgotPassword),
                           child: Text(
                             l10n.forgotPasswordQ,
-                            style: TextStyle(
-                              color: p.primary,
-                              fontWeight: FontWeight.w600,
+                            style: AppTypography.bodyStrong.copyWith(
+                              color: p.primaryText,
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(height: 24.h),
+                      SizedBox(height: AppSpacing.xl.h),
                       PrimaryButton(
                         text: l10n.signIn,
                         onPressed: _handleLogin,
                         isLoading: authVm.isLoading,
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: AppSpacing.sm.h),
                       SecondaryButton(
                         text: l10n.continueAsGuest,
                         onPressed: () async {
@@ -191,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: AppSpacing.xl.h),
                 Center(
                   child: AuthFooterPrompt(
                     text: l10n.noAccountYet,
@@ -199,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                     onTap: () => context.pushNamed(RouteNames.register),
                   ),
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: AppSpacing.xl.h),
               ],
             ),
           ),

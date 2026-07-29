@@ -74,28 +74,38 @@ class _PulsingMicButtonState extends State<PulsingMicButton>
         child: Stack(
           alignment: Alignment.center,
           children: [
-            buildPulse(maxSize: 200, delay: 1, color: p.primary),
-
-            buildPulse(maxSize: 150, delay: 0.5, color: p.primary),
-
+            buildPulse(
+              maxSize: 200.r,
+              delay: 1,
+              color: AppColors.primary500.withValues(alpha: 0.35),
+            ),
+            buildPulse(
+              maxSize: 150.r,
+              delay: 0.5,
+              color: AppColors.primary500.withValues(alpha: 0.25),
+            ),
             GestureDetector(
               onTap: widget.onTap,
               child: Container(
-                width: 140,
-                height: 140,
+                width: 88.r,
+                height: 88.r,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: p.primary,
+                  color: AppColors.primary500,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withAlpha((255 * 0.18).toInt()),
+                      color: p.shadowFloating,
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     ),
                   ],
                 ),
-                child: const Center(
-                  child: Icon(Icons.mic, color: Colors.white, size: 42),
+                child: Center(
+                  child: Icon(
+                    Icons.mic,
+                    color: AppColors.onPrimary,
+                    size: 36.sp,
+                  ),
                 ),
               ),
             ),

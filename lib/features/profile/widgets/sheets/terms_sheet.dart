@@ -1,4 +1,3 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
@@ -13,7 +12,6 @@ class TermsSheet extends StatelessWidget {
   const TermsSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    final p = context.palette;
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -53,7 +51,7 @@ class TermsSheet extends StatelessWidget {
       builder: (_, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: p.surface,
+            color: p.surface1,
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(AppRadius.lg),
             ),
@@ -66,7 +64,7 @@ class TermsSheet extends StatelessWidget {
                   width: 40.w,
                   height: 4.h,
                   decoration: BoxDecoration(
-                    color: p.hairline,
+                    color: p.divider,
                     borderRadius: BorderRadius.circular(AppRadius.full),
                   ),
                 ),
@@ -84,7 +82,7 @@ class TermsSheet extends StatelessWidget {
                       width: 40.w,
                       height: 40.w,
                       decoration: BoxDecoration(
-                        color: p.strawberry,
+                        color: p.primarySoft,
                         borderRadius: AppRadius.tile,
                       ),
                       child: Icon(
@@ -98,11 +96,11 @@ class TermsSheet extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n.termsSheetTitle, style: AppTypography.h2),
+                          Text(l10n.termsSheetTitle, style: AppTypography.subtitle),
                           Text(
                             l10n.termsUpdatedDate,
-                            style: AppTypography.bodySm.copyWith(
-                              color: p.inkMuted,
+                            style: AppTypography.caption.copyWith(
+                              color: p.textSecondary,
                             ),
                           ),
                         ],
@@ -112,7 +110,7 @@ class TermsSheet extends StatelessWidget {
                       onPressed: () => Navigator.of(context).pop(),
                       icon: Icon(
                         Icons.close_rounded,
-                        color: p.inkMuted,
+                        color: p.textSecondary,
                         size: 22.sp,
                       ),
                     ),
@@ -122,7 +120,7 @@ class TermsSheet extends StatelessWidget {
               Divider(
                 height: 1,
                 thickness: AppBorder.thin,
-                color: p.hairline,
+                color: p.divider,
               ),
               Expanded(
                 child: SingleChildScrollView(
@@ -134,7 +132,7 @@ class TermsSheet extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.all(AppSpacing.md.w),
                         decoration: p.card(
-                          color: p.strawberry,
+                          color: p.primarySoft,
                           borderColor: p.primary.withValues(alpha: 0.25),
                         ),
                         child: Row(
@@ -143,14 +141,14 @@ class TermsSheet extends StatelessWidget {
                             Icon(
                               Icons.info_outline_rounded,
                               size: 18.sp,
-                              color: p.primaryFocus,
+                              color: p.primaryPressed,
                             ),
                             SizedBox(width: AppSpacing.sm.w),
                             Expanded(
                               child: Text(
                                 l10n.termsReadCarefully,
-                                style: AppTypography.bodySm.copyWith(
-                                  color: p.primaryFocus,
+                                style: AppTypography.caption.copyWith(
+                                  color: p.primaryPressed,
                                   fontWeight: FontWeight.w500,
                                   height: 1.5,
                                 ),
@@ -188,7 +186,7 @@ class TermsSheet extends StatelessWidget {
                                 SizedBox(width: AppSpacing.xs.w),
                                 Text(
                                   l10n.contactUs,
-                                  style: AppTypography.bodyMd.copyWith(
+                                  style: AppTypography.caption.copyWith(
                                     color: p.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -198,8 +196,8 @@ class TermsSheet extends StatelessWidget {
                             SizedBox(height: AppSpacing.sm.h),
                             Text(
                               l10n.contactUsMessage,
-                              style: AppTypography.bodySm.copyWith(
-                                color: p.inkMuted,
+                              style: AppTypography.caption.copyWith(
+                                color: p.textSecondary,
                                 height: 1.5,
                               ),
                             ),
@@ -249,13 +247,13 @@ class _TermsTile extends StatelessWidget {
       children: [
         Text(
           section.title,
-          style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.w700),
+          style: AppTypography.caption.copyWith(fontWeight: FontWeight.w700),
         ),
         SizedBox(height: AppSpacing.sm.h),
         Text(
           section.content,
-          style: AppTypography.bodyMd.copyWith(
-            color: p.inkMuted,
+          style: AppTypography.caption.copyWith(
+            color: p.textSecondary,
             height: 1.65,
           ),
         ),

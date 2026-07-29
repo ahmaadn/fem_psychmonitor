@@ -44,7 +44,7 @@ Future<void> main() async {
   final privacyProvider = PrivacyProvider();
   await privacyProvider.load();
 
-  DatabaseHelper.initPlatform();
+  await DatabaseHelper.initPlatform();
   await DatabaseHelper.instance.database;
   await QuestionSeeder.instance.seedIfEmpty();
 

@@ -28,14 +28,14 @@ class PsychTestPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_rounded, color: p.inkMuted, size: 22.sp),
+          icon: Icon(Icons.arrow_back_rounded, color: p.textSecondary, size: 22.sp),
           onPressed: () => context.pop(),
         ),
         title: Text(
           l10n.mentalHealthAssessment,
           style: AppTypography.bodyStrong.copyWith(
             fontSize: 18.0,
-            color: p.ink,
+            color: p.textPrimary,
 
           ),
         ),
@@ -76,9 +76,9 @@ class PsychTestPage extends StatelessWidget {
                           margin: EdgeInsets.only(bottom: 16.h),
                           padding: EdgeInsets.all(20.w),
                           decoration: BoxDecoration(
-                            color: p.surface,
+                            color: p.surface1,
                             borderRadius: BorderRadius.circular(AppRadius.lg),
-                            border: Border.all(color: p.hairline),
+                            border: Border.all(color: p.divider),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,9 +105,9 @@ class PsychTestPage extends StatelessWidget {
                               SizedBox(height: 12.h),
                               Text(
                                 "${index + 1}. ${question.question.get(isEnglish)}",
-                                style: AppTypography.captionStrong.copyWith(
+                                style: AppTypography.label.copyWith(
                                   fontSize: 15.0,
-                                  color: p.ink,
+                                  color: p.textPrimary,
                                 ),
                               ),
                               SizedBox(height: 16.h),
@@ -131,14 +131,14 @@ class PsychTestPage extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         color: isSelected
                                             ? p.primary.withValues(alpha: 0.08)
-                                            : p.inputFill,
+                                            : p.surface2,
                                         borderRadius: BorderRadius.circular(
                                           AppRadius.md,
                                         ),
                                         border: Border.all(
                                           color: isSelected
                                               ? p.primary
-                                              : p.hairline,
+                                              : p.divider,
                                           width: isSelected ? 1.5 : 1,
                                         ),
                                       ),
@@ -150,7 +150,7 @@ class PsychTestPage extends StatelessWidget {
                                                 : Icons.radio_button_off,
                                             color: isSelected
                                                 ? p.primary
-                                                : p.inkMuted,
+                                                : p.textSecondary,
                                             size: 20.sp,
                                           ),
                                           SizedBox(width: 12.w),
@@ -160,7 +160,7 @@ class PsychTestPage extends StatelessWidget {
                                               style: TextStyle(
                                                 color: isSelected
                                                     ? p.primary
-                                                    : p.ink,
+                                                    : p.textPrimary,
                                                 fontWeight: isSelected
                                                     ? FontWeight.w600
                                                     : FontWeight.w400,
@@ -185,8 +185,8 @@ class PsychTestPage extends StatelessWidget {
                       vertical: 16.h,
                     ),
                     decoration: BoxDecoration(
-                      color: p.surface,
-                      border: Border.all(color: p.hairline),
+                      color: p.surface1,
+                      border: Border.all(color: p.divider),
                     ),
                     child: PrimaryButton(
                       text: l10n.finishAndGoToRecording,

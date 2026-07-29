@@ -1,4 +1,3 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
@@ -18,20 +17,21 @@ Future<EmotionLabelType?> showTodayMoodSheet(
   EmotionLabelType? initial,
   String? title,
 }) {
-    final p = context.palette;
+  final p = context.palette;
   return showModalBottomSheet<EmotionLabelType>(
     context: context,
-    backgroundColor: p.surface,
+    backgroundColor: p.surface1,
     shape: const RoundedRectangleBorder(borderRadius: AppRadius.sheet),
     builder: (ctx) {
       EmotionLabelType? sel = initial;
       return StatefulBuilder(
         builder: (ctx, setModal) {
+          final sheetP = ctx.palette;
           return Padding(
             padding: EdgeInsets.fromLTRB(
-              AppSpacing.lg.w,
+              AppSpacing.pageX.w,
               AppSpacing.md.h,
-              AppSpacing.lg.w,
+              AppSpacing.pageX.w,
               AppSpacing.xl.h,
             ),
             child: Column(
@@ -42,13 +42,15 @@ Future<EmotionLabelType?> showTodayMoodSheet(
                   height: 4.h,
                   margin: EdgeInsets.only(bottom: AppSpacing.md.h),
                   decoration: BoxDecoration(
-                    color: p.hairline,
+                    color: sheetP.divider,
                     borderRadius: AppRadius.chip,
                   ),
                 ),
                 Text(
                   title ?? 'Aku merasa hari ini',
-                  style: AppTypography.tagline,
+                  style: AppTypography.subtitle.copyWith(
+                    color: sheetP.textPrimary,
+                  ),
                 ),
                 SizedBox(height: AppSpacing.md.h),
                 Wrap(

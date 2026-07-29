@@ -1,178 +1,250 @@
 import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:flutter/material.dart';
 
-/// Theme-aware semantic colors. Prefer this over raw [AppColors] for UI chrome.
-/// Access: `context.palette` (see [AppThemeX]).
+/// Theme-aware Strawberry Match tokens (DESIGN.md §2 / §7).
+/// Access: `context.palette`.
 @immutable
 class AppPalette extends ThemeExtension<AppPalette> {
   const AppPalette({
     required this.brightness,
     required this.primary,
-    required this.primaryFocus,
+    required this.primaryText,
+    required this.primaryPressed,
+    required this.primaryDisabled,
+    required this.primarySoft,
+    required this.primaryWash,
     required this.onPrimary,
     required this.secondary,
-    required this.secondaryFocus,
+    required this.secondaryText,
+    required this.secondaryPressed,
+    required this.secondaryDisabled,
+    required this.secondarySoft,
+    required this.secondaryWash,
     required this.onSecondary,
     required this.canvas,
-    required this.surface,
-    required this.surfaceHigh,
-    required this.strawberry,
-    required this.strawberrySoft,
-    required this.matcha,
-    required this.matchaSoft,
-    required this.ink,
-    required this.inkMuted,
-    required this.inkFaint,
-    required this.hairline,
-    required this.border,
-    required this.inputFill,
+    required this.surface1,
+    required this.surface2,
+    required this.surface3,
+    required this.divider,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.textTertiary,
     required this.success,
-    required this.successSurface,
+    required this.successText,
     required this.warning,
-    required this.warningSurface,
-    required this.shadow,
+    required this.warningText,
+    required this.error,
+    required this.errorText,
+    required this.info,
+    required this.infoText,
+    required this.emotion,
+    required this.emotionOnSurface,
+    required this.shadowRaised,
+    required this.shadowFloating,
   });
 
   final Brightness brightness;
+
+  /// primary-500 fill (light) / primary-400 interactive (dark ColorScheme map).
   final Color primary;
-  final Color primaryFocus;
+  final Color primaryText;
+  final Color primaryPressed;
+  final Color primaryDisabled;
+  final Color primarySoft;
+  final Color primaryWash;
   final Color onPrimary;
+
   final Color secondary;
-  final Color secondaryFocus;
+  final Color secondaryText;
+  final Color secondaryPressed;
+  final Color secondaryDisabled;
+  final Color secondarySoft;
+  final Color secondaryWash;
   final Color onSecondary;
+
   final Color canvas;
-  final Color surface;
-  final Color surfaceHigh;
-  final Color strawberry;
-  final Color strawberrySoft;
-  final Color matcha;
-  final Color matchaSoft;
-  final Color ink;
-  final Color inkMuted;
-  final Color inkFaint;
-  final Color hairline;
-  final Color border;
-  final Color inputFill;
+  final Color surface1;
+  final Color surface2;
+  final Color surface3;
+  final Color divider;
+
+  final Color textPrimary;
+  final Color textSecondary;
+  final Color textTertiary;
+
   final Color success;
-  final Color successSurface;
+  final Color successText;
   final Color warning;
-  final Color warningSurface;
-  final Color shadow;
+  final Color warningText;
+  final Color error;
+  final Color errorText;
+  final Color info;
+  final Color infoText;
+
+  final Map<EmotionLabelType, Color> emotion;
+  final Map<EmotionLabelType, Color> emotionOnSurface;
+
+  final Color shadowRaised;
+  final Color shadowFloating;
 
   bool get isDark => brightness == Brightness.dark;
 
-  // Aliases for gradual migration from AppColors names
-  Color get background => canvas;
-  Color get surfacePearl => surface;
-  Color get strawberryBlush => strawberry;
-  Color get strawberryMilk => strawberrySoft;
-  Color get matchaMist => matcha;
-  Color get softMatcha => secondary;
-  Color get textPrimary => ink;
-  Color get textSecondary => inkMuted;
-  Color get onSurface => ink;
-  Color get onSurfaceVariant => inkMuted;
-  Color get outline => hairline;
-  Color get outlineVariant => border;
-  Color get surfaceContainerHighest => strawberry;
-  Color get surfaceContainerLow => strawberrySoft;
-  Color get canvasParchment => strawberry;
-  Color get primaryFixed => strawberrySoft;
-  Color get secondaryContainer => matchaSoft;
-  Color get primaryContainer => strawberry;
+  Color emotionBase(EmotionLabelType e) => emotion[e]!;
+  Color emotionText(EmotionLabelType e) => emotionOnSurface[e]!;
+
+  static const Map<EmotionLabelType, Color> _emotionBase = {
+    EmotionLabelType.happy: AppColors.emotionHappy,
+    EmotionLabelType.sad: AppColors.emotionSad,
+    EmotionLabelType.anger: AppColors.emotionAnger,
+    EmotionLabelType.fearful: AppColors.emotionFearful,
+    EmotionLabelType.disgust: AppColors.emotionDisgust,
+    EmotionLabelType.neutral: AppColors.emotionNeutral,
+  };
+
+  static const Map<EmotionLabelType, Color> _emotionOnLight = {
+    EmotionLabelType.happy: AppColors.emotionHappyOnLight,
+    EmotionLabelType.sad: AppColors.emotionSadOnLight,
+    EmotionLabelType.anger: AppColors.emotionAngerOnLight,
+    EmotionLabelType.fearful: AppColors.emotionFearfulOnLight,
+    EmotionLabelType.disgust: AppColors.emotionDisgustOnLight,
+    EmotionLabelType.neutral: AppColors.emotionNeutralOnLight,
+  };
+
+  static const Map<EmotionLabelType, Color> _emotionOnDark = {
+    EmotionLabelType.happy: AppColors.emotionHappyOnDark,
+    EmotionLabelType.sad: AppColors.emotionSadOnDark,
+    EmotionLabelType.anger: AppColors.emotionAngerOnDark,
+    EmotionLabelType.fearful: AppColors.emotionFearfulOnDark,
+    EmotionLabelType.disgust: AppColors.emotionDisgustOnDark,
+    EmotionLabelType.neutral: AppColors.emotionNeutralOnDark,
+  };
 
   static const AppPalette light = AppPalette(
     brightness: Brightness.light,
-    primary: AppColors.primary,
-    primaryFocus: AppColors.primaryFocus,
+    primary: AppColors.primary500,
+    primaryText: AppColors.primary600,
+    primaryPressed: AppColors.primary700,
+    primaryDisabled: AppColors.primary300,
+    primarySoft: AppColors.primary100,
+    primaryWash: AppColors.primary50,
     onPrimary: AppColors.onPrimary,
-    secondary: AppColors.secondary,
-    secondaryFocus: AppColors.secondaryFocus,
+    secondary: AppColors.secondary500,
+    secondaryText: AppColors.secondary600,
+    secondaryPressed: AppColors.secondary700,
+    secondaryDisabled: AppColors.secondary300,
+    secondarySoft: AppColors.secondary100,
+    secondaryWash: AppColors.secondary50,
     onSecondary: AppColors.onSecondary,
-    canvas: AppColors.lightCanvas,
-    surface: AppColors.lightSurface,
-    surfaceHigh: AppColors.lightSurfaceHigh,
-    strawberry: AppColors.lightStrawberry,
-    strawberrySoft: AppColors.lightStrawberryMilk,
-    matcha: AppColors.lightMatcha,
-    matchaSoft: AppColors.lightMatchaSoft,
-    ink: AppColors.lightInk,
-    inkMuted: AppColors.lightInkMuted,
-    inkFaint: AppColors.lightInkFaint,
-    hairline: AppColors.lightHairline,
-    border: AppColors.lightBorder,
-    inputFill: AppColors.lightSurface,
-    success: AppColors.secondary,
-    successSurface: AppColors.lightMatchaSoft,
-    warning: AppColors.primary,
-    warningSurface: AppColors.lightStrawberry,
-    shadow: AppColors.shadow,
+    canvas: AppColors.canvasLight,
+    surface1: AppColors.surfaceLight1,
+    surface2: AppColors.surfaceLight2,
+    surface3: AppColors.surfaceLight3,
+    divider: AppColors.dividerLight,
+    textPrimary: AppColors.textPrimaryLight,
+    textSecondary: AppColors.textSecondaryLight,
+    textTertiary: AppColors.textTertiaryLight,
+    success: AppColors.success,
+    successText: AppColors.successOnLight,
+    warning: AppColors.warning,
+    warningText: AppColors.warningOnLight,
+    error: AppColors.error,
+    errorText: AppColors.errorOnLight,
+    info: AppColors.info,
+    infoText: AppColors.infoOnLight,
+    emotion: _emotionBase,
+    emotionOnSurface: _emotionOnLight,
+    shadowRaised: Color(0x142B211F),
+    shadowFloating: Color(0x242B211F),
   );
 
   static const AppPalette dark = AppPalette(
     brightness: Brightness.dark,
-    primary: AppColors.primarySoft,
-    primaryFocus: AppColors.primary,
-    onPrimary: AppColors.darkCanvas,
-    secondary: AppColors.secondarySoft,
-    secondaryFocus: AppColors.secondary,
-    onSecondary: AppColors.darkCanvas,
-    canvas: AppColors.darkCanvas,
-    surface: AppColors.darkSurface,
-    surfaceHigh: AppColors.darkSurfaceHigh,
-    strawberry: AppColors.darkStrawberry,
-    strawberrySoft: Color(0xFF3D252B),
-    matcha: AppColors.darkMatcha,
-    matchaSoft: Color(0xFF263623),
-    ink: AppColors.darkInk,
-    inkMuted: AppColors.darkInkMuted,
-    inkFaint: AppColors.darkInkFaint,
-    hairline: AppColors.darkHairline,
-    border: AppColors.darkBorder,
-    inputFill: AppColors.darkSurfaceHigh,
-    success: AppColors.secondarySoft,
-    successSurface: AppColors.darkMatcha,
-    warning: AppColors.primarySoft,
-    warningSurface: AppColors.darkStrawberry,
-    shadow: Color(0x48000000),
+    primary: AppColors.primary400,
+    primaryText: AppColors.primary400,
+    primaryPressed: AppColors.primary500,
+    primaryDisabled: AppColors.primary800,
+    primarySoft: AppColors.primary800,
+    primaryWash: AppColors.primary900,
+    onPrimary: AppColors.canvasDark,
+    secondary: AppColors.secondary400,
+    secondaryText: AppColors.secondary400,
+    secondaryPressed: AppColors.secondary500,
+    secondaryDisabled: AppColors.secondary800,
+    secondarySoft: AppColors.secondary800,
+    secondaryWash: AppColors.secondary900,
+    onSecondary: AppColors.canvasDark,
+    canvas: AppColors.canvasDark,
+    surface1: AppColors.surfaceDark1,
+    surface2: AppColors.surfaceDark2,
+    surface3: AppColors.surfaceDark3,
+    divider: AppColors.dividerDark,
+    textPrimary: AppColors.textPrimaryDark,
+    textSecondary: AppColors.textSecondaryDark,
+    textTertiary: AppColors.textTertiaryDark,
+    success: AppColors.success,
+    successText: AppColors.successOnDark,
+    warning: AppColors.warning,
+    warningText: AppColors.warningOnDark,
+    error: AppColors.error,
+    errorText: AppColors.errorOnDark,
+    info: AppColors.info,
+    infoText: AppColors.infoOnDark,
+    emotion: _emotionBase,
+    emotionOnSurface: _emotionOnDark,
+    shadowRaised: Color(0x00000000),
+    shadowFloating: Color(0x80000000),
   );
 
-  /// Soft ambient wash for page backgrounds (canvas → strawberry tint).
+  /// Fill color for brand primary buttons (always seed -500 on light; seed on dark fills).
+  Color get primaryFill =>
+      isDark ? AppColors.primary500 : AppColors.primary500;
+
+  Color get secondaryFill => AppColors.secondary500;
+
   LinearGradient get canvasGradient => LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
           canvas,
-          Color.lerp(canvas, strawberrySoft, isDark ? 0.35 : 0.45)!,
+          Color.lerp(canvas, primaryWash, isDark ? 0.35 : 0.45)!,
         ],
       );
 
-  /// Hero / score panel: primary brand surface with gentle depth.
   LinearGradient get strawberryGradient => LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          strawberry,
-          Color.lerp(strawberry, primary, isDark ? 0.22 : 0.12)!,
+          primarySoft,
+          Color.lerp(primarySoft, primary, isDark ? 0.22 : 0.12)!,
         ],
       );
 
-  /// Secondary brand panel.
   LinearGradient get matchaGradient => LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          matcha,
-          Color.lerp(matcha, secondary, isDark ? 0.2 : 0.1)!,
+          secondarySoft,
+          Color.lerp(secondarySoft, secondary, isDark ? 0.2 : 0.1)!,
         ],
       );
 
-  List<BoxShadow> get cardShadow => [
+  List<BoxShadow> get cardShadow => isDark
+      ? const <BoxShadow>[]
+      : [
+          BoxShadow(
+            color: shadowRaised,
+            offset: const Offset(0, 1),
+            blurRadius: 3,
+          ),
+        ];
+
+  List<BoxShadow> get floatingShadow => [
         BoxShadow(
-          color: shadow,
-          offset: const Offset(0, 6),
-          blurRadius: 20,
+          color: shadowFloating,
+          offset: const Offset(0, 8),
+          blurRadius: 24,
         ),
       ];
 
@@ -182,13 +254,16 @@ class AppPalette extends ThemeExtension<AppPalette> {
     double radius = AppRadius.lg,
     bool elevated = false,
   }) {
+    final useBorder = !isDark || borderColor != null;
     return BoxDecoration(
-      color: color ?? surface,
+      color: color ?? surface1,
       borderRadius: BorderRadius.circular(radius),
-      border: Border.all(
-        color: borderColor ?? hairline,
-        width: AppBorder.thin,
-      ),
+      border: useBorder
+          ? Border.all(
+              color: borderColor ?? divider,
+              width: AppBorder.thin,
+            )
+          : null,
       boxShadow: elevated ? cardShadow : null,
     );
   }
@@ -224,19 +299,19 @@ class AppPalette extends ThemeExtension<AppPalette> {
 
   BoxDecoration panelSoft({double radius = AppRadius.lg}) {
     return BoxDecoration(
-      color: strawberrySoft,
+      color: primaryWash,
       borderRadius: BorderRadius.circular(radius),
-      border: Border.all(color: border, width: AppBorder.thin),
+      border: Border.all(color: divider, width: AppBorder.thin),
     );
   }
 
   BoxDecoration chip({required bool selected, bool useMatcha = false}) {
     final fill = selected
         ? (useMatcha ? secondary : primary)
-        : surface;
+        : surface2;
     final edge = selected
-        ? (useMatcha ? secondaryFocus : primaryFocus)
-        : hairline;
+        ? (useMatcha ? secondaryPressed : primaryPressed)
+        : divider;
     return BoxDecoration(
       color: fill,
       borderRadius: AppRadius.chip,
@@ -255,13 +330,13 @@ class AppPalette extends ThemeExtension<AppPalette> {
     return BoxDecoration(
       color: Colors.transparent,
       borderRadius: AppRadius.button,
-      border: Border.all(color: color, width: AppBorder.thin),
+      border: Border.all(color: color, width: AppBorder.medium),
     );
   }
 
   BoxDecoration circle({Color? color, Color? borderColor}) {
     return BoxDecoration(
-      color: color ?? strawberry,
+      color: color ?? primarySoft,
       shape: BoxShape.circle,
       border: Border.all(
         color: borderColor ?? primary.withValues(alpha: 0.28),
@@ -271,71 +346,128 @@ class AppPalette extends ThemeExtension<AppPalette> {
   }
 
   BorderSide get hairlineSide =>
-      BorderSide(color: hairline, width: AppBorder.thin);
+      BorderSide(color: divider, width: AppBorder.thin);
 
   BorderSide get focusSide =>
-      BorderSide(color: primaryFocus, width: AppBorder.thick);
+      BorderSide(color: AppColors.primary500, width: AppBorder.medium);
 
   BorderSide get primarySide =>
       BorderSide(color: primary, width: AppBorder.thin);
 
   BorderSide get secondarySide =>
-      BorderSide(color: secondary, width: AppBorder.thin);
+      BorderSide(color: AppColors.secondary500, width: AppBorder.medium);
+
+  ColorScheme toColorScheme() {
+    if (isDark) {
+      return ColorScheme.dark(
+        primary: AppColors.primary400,
+        onPrimary: AppColors.canvasDark,
+        primaryContainer: AppColors.primary800,
+        onPrimaryContainer: AppColors.textPrimaryDark,
+        secondary: AppColors.secondary400,
+        onSecondary: AppColors.canvasDark,
+        secondaryContainer: AppColors.secondary800,
+        onSecondaryContainer: AppColors.textPrimaryDark,
+        surface: AppColors.canvasDark,
+        onSurface: AppColors.textPrimaryDark,
+        error: AppColors.errorOnDark,
+        onError: AppColors.canvasDark,
+        outline: AppColors.dividerDark,
+        outlineVariant: AppColors.surfaceDark3,
+      );
+    }
+    return ColorScheme.light(
+      primary: AppColors.primary500,
+      onPrimary: AppColors.onPrimary,
+      primaryContainer: AppColors.primary100,
+      onPrimaryContainer: AppColors.primary800,
+      secondary: AppColors.secondary500,
+      onSecondary: AppColors.onSecondary,
+      secondaryContainer: AppColors.secondary100,
+      onSecondaryContainer: AppColors.secondary800,
+      surface: AppColors.canvasLight,
+      onSurface: AppColors.textPrimaryLight,
+      error: AppColors.errorOnLight,
+      onError: AppColors.onPrimary,
+      outline: AppColors.dividerLight,
+      outlineVariant: AppColors.surfaceLight3,
+    );
+  }
 
   @override
   AppPalette copyWith({
     Brightness? brightness,
     Color? primary,
-    Color? primaryFocus,
+    Color? primaryText,
+    Color? primaryPressed,
+    Color? primaryDisabled,
+    Color? primarySoft,
+    Color? primaryWash,
     Color? onPrimary,
     Color? secondary,
-    Color? secondaryFocus,
+    Color? secondaryText,
+    Color? secondaryPressed,
+    Color? secondaryDisabled,
+    Color? secondarySoft,
+    Color? secondaryWash,
     Color? onSecondary,
     Color? canvas,
-    Color? surface,
-    Color? surfaceHigh,
-    Color? strawberry,
-    Color? strawberrySoft,
-    Color? matcha,
-    Color? matchaSoft,
-    Color? ink,
-    Color? inkMuted,
-    Color? inkFaint,
-    Color? hairline,
-    Color? border,
-    Color? inputFill,
+    Color? surface1,
+    Color? surface2,
+    Color? surface3,
+    Color? divider,
+    Color? textPrimary,
+    Color? textSecondary,
+    Color? textTertiary,
     Color? success,
-    Color? successSurface,
+    Color? successText,
     Color? warning,
-    Color? warningSurface,
-    Color? shadow,
+    Color? warningText,
+    Color? error,
+    Color? errorText,
+    Color? info,
+    Color? infoText,
+    Map<EmotionLabelType, Color>? emotion,
+    Map<EmotionLabelType, Color>? emotionOnSurface,
+    Color? shadowRaised,
+    Color? shadowFloating,
   }) {
     return AppPalette(
       brightness: brightness ?? this.brightness,
       primary: primary ?? this.primary,
-      primaryFocus: primaryFocus ?? this.primaryFocus,
+      primaryText: primaryText ?? this.primaryText,
+      primaryPressed: primaryPressed ?? this.primaryPressed,
+      primaryDisabled: primaryDisabled ?? this.primaryDisabled,
+      primarySoft: primarySoft ?? this.primarySoft,
+      primaryWash: primaryWash ?? this.primaryWash,
       onPrimary: onPrimary ?? this.onPrimary,
       secondary: secondary ?? this.secondary,
-      secondaryFocus: secondaryFocus ?? this.secondaryFocus,
+      secondaryText: secondaryText ?? this.secondaryText,
+      secondaryPressed: secondaryPressed ?? this.secondaryPressed,
+      secondaryDisabled: secondaryDisabled ?? this.secondaryDisabled,
+      secondarySoft: secondarySoft ?? this.secondarySoft,
+      secondaryWash: secondaryWash ?? this.secondaryWash,
       onSecondary: onSecondary ?? this.onSecondary,
       canvas: canvas ?? this.canvas,
-      surface: surface ?? this.surface,
-      surfaceHigh: surfaceHigh ?? this.surfaceHigh,
-      strawberry: strawberry ?? this.strawberry,
-      strawberrySoft: strawberrySoft ?? this.strawberrySoft,
-      matcha: matcha ?? this.matcha,
-      matchaSoft: matchaSoft ?? this.matchaSoft,
-      ink: ink ?? this.ink,
-      inkMuted: inkMuted ?? this.inkMuted,
-      inkFaint: inkFaint ?? this.inkFaint,
-      hairline: hairline ?? this.hairline,
-      border: border ?? this.border,
-      inputFill: inputFill ?? this.inputFill,
+      surface1: surface1 ?? this.surface1,
+      surface2: surface2 ?? this.surface2,
+      surface3: surface3 ?? this.surface3,
+      divider: divider ?? this.divider,
+      textPrimary: textPrimary ?? this.textPrimary,
+      textSecondary: textSecondary ?? this.textSecondary,
+      textTertiary: textTertiary ?? this.textTertiary,
       success: success ?? this.success,
-      successSurface: successSurface ?? this.successSurface,
+      successText: successText ?? this.successText,
       warning: warning ?? this.warning,
-      warningSurface: warningSurface ?? this.warningSurface,
-      shadow: shadow ?? this.shadow,
+      warningText: warningText ?? this.warningText,
+      error: error ?? this.error,
+      errorText: errorText ?? this.errorText,
+      info: info ?? this.info,
+      infoText: infoText ?? this.infoText,
+      emotion: emotion ?? this.emotion,
+      emotionOnSurface: emotionOnSurface ?? this.emotionOnSurface,
+      shadowRaised: shadowRaised ?? this.shadowRaised,
+      shadowFloating: shadowFloating ?? this.shadowFloating,
     );
   }
 
@@ -343,32 +475,51 @@ class AppPalette extends ThemeExtension<AppPalette> {
   AppPalette lerp(ThemeExtension<AppPalette>? other, double t) {
     if (other is! AppPalette) return this;
     Color l(Color a, Color b) => Color.lerp(a, b, t)!;
+    Map<EmotionLabelType, Color> lm(
+      Map<EmotionLabelType, Color> a,
+      Map<EmotionLabelType, Color> b,
+    ) {
+      return {
+        for (final e in EmotionLabelType.values) e: l(a[e]!, b[e]!),
+      };
+    }
+
     return AppPalette(
       brightness: t < 0.5 ? brightness : other.brightness,
       primary: l(primary, other.primary),
-      primaryFocus: l(primaryFocus, other.primaryFocus),
+      primaryText: l(primaryText, other.primaryText),
+      primaryPressed: l(primaryPressed, other.primaryPressed),
+      primaryDisabled: l(primaryDisabled, other.primaryDisabled),
+      primarySoft: l(primarySoft, other.primarySoft),
+      primaryWash: l(primaryWash, other.primaryWash),
       onPrimary: l(onPrimary, other.onPrimary),
       secondary: l(secondary, other.secondary),
-      secondaryFocus: l(secondaryFocus, other.secondaryFocus),
+      secondaryText: l(secondaryText, other.secondaryText),
+      secondaryPressed: l(secondaryPressed, other.secondaryPressed),
+      secondaryDisabled: l(secondaryDisabled, other.secondaryDisabled),
+      secondarySoft: l(secondarySoft, other.secondarySoft),
+      secondaryWash: l(secondaryWash, other.secondaryWash),
       onSecondary: l(onSecondary, other.onSecondary),
       canvas: l(canvas, other.canvas),
-      surface: l(surface, other.surface),
-      surfaceHigh: l(surfaceHigh, other.surfaceHigh),
-      strawberry: l(strawberry, other.strawberry),
-      strawberrySoft: l(strawberrySoft, other.strawberrySoft),
-      matcha: l(matcha, other.matcha),
-      matchaSoft: l(matchaSoft, other.matchaSoft),
-      ink: l(ink, other.ink),
-      inkMuted: l(inkMuted, other.inkMuted),
-      inkFaint: l(inkFaint, other.inkFaint),
-      hairline: l(hairline, other.hairline),
-      border: l(border, other.border),
-      inputFill: l(inputFill, other.inputFill),
+      surface1: l(surface1, other.surface1),
+      surface2: l(surface2, other.surface2),
+      surface3: l(surface3, other.surface3),
+      divider: l(divider, other.divider),
+      textPrimary: l(textPrimary, other.textPrimary),
+      textSecondary: l(textSecondary, other.textSecondary),
+      textTertiary: l(textTertiary, other.textTertiary),
       success: l(success, other.success),
-      successSurface: l(successSurface, other.successSurface),
+      successText: l(successText, other.successText),
       warning: l(warning, other.warning),
-      warningSurface: l(warningSurface, other.warningSurface),
-      shadow: l(shadow, other.shadow),
+      warningText: l(warningText, other.warningText),
+      error: l(error, other.error),
+      errorText: l(errorText, other.errorText),
+      info: l(info, other.info),
+      infoText: l(infoText, other.infoText),
+      emotion: lm(emotion, other.emotion),
+      emotionOnSurface: lm(emotionOnSurface, other.emotionOnSurface),
+      shadowRaised: l(shadowRaised, other.shadowRaised),
+      shadowFloating: l(shadowFloating, other.shadowFloating),
     );
   }
 }

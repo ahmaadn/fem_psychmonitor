@@ -63,8 +63,8 @@ class _CircularProgressRingState extends State<CircularProgressRing>
     final size = widget.radius * 2;
     final centerSpace =
         (widget.radius - widget.lineWidth).clamp(0.0, widget.radius);
-    final progress = widget.progressColor ?? p.primary;
-    final track = widget.backgroundColor ?? p.strawberry;
+    final progress = widget.progressColor ?? p.primaryFill;
+    final track = widget.backgroundColor ?? p.surface3;
 
     return SizedBox(
       width: size,

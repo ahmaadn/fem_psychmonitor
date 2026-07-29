@@ -4,6 +4,7 @@ import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
+import 'package:fem_psychmonitor/app/widgets/session_card.dart';
 import 'package:fem_psychmonitor/features/onboarding/models/ocean_model.dart';
 import 'package:fem_psychmonitor/features/onboarding/viewmodels/questionnaire_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -29,83 +30,78 @@ class OceanResultPage extends StatelessWidget {
         elevation: 0,
         title: Text(
           isEn ? 'OCEAN Result' : 'Hasil OCEAN',
-          style: AppTypography.tagline.copyWith(color: p.ink),
+          style: AppTypography.subtitle.copyWith(color: p.textPrimary),
         ),
       ),
       body: DecoratedBox(
         decoration: BoxDecoration(gradient: p.canvasGradient),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(24.w),
+            padding: EdgeInsets.all(AppSpacing.pageX.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
                   isEn ? 'Your Big Five profile' : 'Profil Big Five Anda',
-                  style: AppTypography.displayMd.copyWith(
-                    fontSize: 28.sp,
-                    color: p.ink,
-                  ),
+                  style: AppTypography.display.copyWith(color: p.textPrimary),
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: AppSpacing.xs.h),
                 Text(
                   isEn
                       ? 'All items completed. Continue to mental health assessment.'
                       : 'Semua item selesai. Lanjut ke asesmen kesehatan mental.',
-                  style: AppTypography.caption.copyWith(color: p.inkMuted),
+                  style: AppTypography.body.copyWith(color: p.textSecondary),
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: AppSpacing.xl.h),
                 if (scores != null)
                   Expanded(
                     child: ListView(
                       children: OceanTrait.values.map((t) {
                         final s = scores.scoreOf(t);
                         final level = scores.levelOf(t);
-                        return Container(
-                          margin: EdgeInsets.only(bottom: 12.h),
-                          padding: EdgeInsets.all(16.w),
-                          decoration: BoxDecoration(
-                            color: p.surface,
-                            borderRadius: BorderRadius.circular(AppRadius.lg),
-                            border: Border.all(color: p.hairline),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    t.label(isEn),
-                                    style: AppTypography.bodyStrong
-                                        .copyWith(color: p.ink),
-                                  ),
-                                  Text(
-                                    isEn ? level.labelEn : level.labelId,
-                                    style:
-                                        AppTypography.captionStrong.copyWith(
-                                      color: p.primary,
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: AppSpacing.sm.h),
+                          child: SessionCard(
+                            elevated: false,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      t.label(isEn),
+                                      style: AppTypography.bodyStrong
+                                          .copyWith(color: p.textPrimary),
+                                    ),
+                                    Text(
+                                      isEn ? level.labelEn : level.labelId,
+                                      style: AppTypography.label
+                                          .copyWith(color: p.primaryText),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: AppSpacing.xs.h),
+                                ClipRRect(
+                                  borderRadius: AppRadius.chip,
+                                  child: LinearProgressIndicator(
+                                    value: ((s - 1) / 4).clamp(0.0, 1.0),
+                                    minHeight: 8.h,
+                                    backgroundColor: p.surface3,
+                                    valueColor: AlwaysStoppedAnimation(
+                                      p.primaryFill,
                                     ),
                                   ),
-                                ],
-                              ),
-                              SizedBox(height: 8.h),
-                              LinearProgressIndicator(
-                                value: ((s - 1) / 4).clamp(0.0, 1.0),
-                                minHeight: 8,
-                                borderRadius:
-                                    BorderRadius.circular(AppRadius.pill),
-                                backgroundColor: p.strawberrySoft,
-                                color: p.primary,
-                              ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                s.toStringAsFixed(2),
-                                style: AppTypography.finePrint
-                                    .copyWith(color: p.inkFaint),
-                              ),
-                            ],
+                                ),
+                                SizedBox(height: AppSpacing.xxs.h),
+                                Text(
+                                  s.toStringAsFixed(2),
+                                  style: AppTypography.caption
+                                      .copyWith(color: p.textTertiary),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       }).toList(),

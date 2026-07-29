@@ -1,9 +1,9 @@
-import 'dart:io';
-
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import 'package:fem_psychmonitor/data/local/db_factory_stub.dart'
+    if (dart.library.html) 'package:fem_psychmonitor/data/local/db_factory_web.dart'
+    if (dart.library.io) 'package:fem_psychmonitor/data/local/db_factory_io.dart'
+    as db_factory;
 import 'package:fem_psychmonitor/data/local/tables/app_tables.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   DatabaseHelper._();
@@ -13,28 +13,27 @@ class DatabaseHelper {
   static const String _dbName = 'fem_psychmonitor.db';
 
   Database? _db;
-  static bool _ffiInitialised = false;
+  static bool _factoryInitialised = false;
 
-  static void initPlatform() {
-    if (_ffiInitialised) return;
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      sqfliteFfiInit();
-      databaseFactory = databaseFactoryFfi;
-    }
-    _ffiInitialised = true;
+  /// Sets platform database factory (desktop FFI / web wasm / mobile default).
+  /// Safe to call multiple times; must complete before first [database] open.
+  static Future<void> initPlatform() async {
+    if (_factoryInitialised) return;
+    await db_factory.initDatabaseFactory();
+    _factoryInitialised = true;
   }
 
   Future<Database> get database async {
     if (_db != null && _db!.isOpen) return _db!;
+    await initPlatform();
     _db = await _open();
     return _db!;
   }
 
   Future<Database> _open() async {
-    final docsDir = await getApplicationDocumentsDirectory();
-    final path = p.join(docsDir.path, _dbName);
-    return openDatabase(
-      path,
+    final path = await db_factory.resolveDatabasePath(_dbName);
+    return db_factory.openAppDatabase(
+      path: path,
       version: _dbVersion,
       onConfigure: _onConfigure,
       onCreate: _onCreate,

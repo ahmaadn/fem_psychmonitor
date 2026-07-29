@@ -3,6 +3,7 @@ import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
+import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/utils/mental_health_score.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
@@ -156,11 +157,11 @@ class _ProfileHero extends StatelessWidget {
   final bool isEn;
   final VoidCallback onEditTap;
 
-  Color _scoreColor(int s) {
-    if (s <= 25) return const Color(0xFFC66F80);
-    if (s <= 50) return const Color(0xFF6B8FB8);
-    if (s <= 75) return const Color(0xFF9FAA74);
-    return const Color(0xFF4A6644);
+  Color _scoreColor(int s, AppPalette p) {
+    if (s <= 25) return p.error;
+    if (s <= 50) return p.warning;
+    if (s <= 75) return p.secondaryText;
+    return p.secondary;
   }
 
   String _classLabel(String? key, bool isEn) {
@@ -177,7 +178,7 @@ class _ProfileHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final sc = score;
-    final scoreColor = sc != null ? _scoreColor(sc) : p.primary;
+    final scoreColor = sc != null ? _scoreColor(sc, p) : p.primary;
 
     return Container(
       width: double.infinity,
@@ -192,8 +193,8 @@ class _ProfileHero extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            p.strawberry,
-            Color.lerp(p.strawberry, scoreColor, 0.1)!,
+            p.primarySoft,
+            Color.lerp(p.primarySoft, scoreColor, 0.1)!,
           ],
         ),
       ),
@@ -214,7 +215,7 @@ class _ProfileHero extends StatelessWidget {
                     end: Alignment.bottomRight,
                     colors: [
                       p.primary,
-                      p.primaryFocus,
+                      p.primaryPressed,
                     ],
                   ),
                   boxShadow: [
@@ -228,8 +229,8 @@ class _ProfileHero extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Text(
                   initial,
-                  style: AppTypography.displayMd.copyWith(
-                    color: Colors.white,
+                  style: AppTypography.title.copyWith(
+                    color: p.onPrimary,
                     height: 1,
                   ),
                 ),
@@ -244,8 +245,8 @@ class _ProfileHero extends StatelessWidget {
                     SizedBox(height: 4.h),
                     Text(
                       name,
-                      style: AppTypography.displayMd.copyWith(
-                        color: p.ink,
+                      style: AppTypography.title.copyWith(
+                        color: p.textPrimary,
                         height: 1.1,
                       ),
                     ),
@@ -253,7 +254,7 @@ class _ProfileHero extends StatelessWidget {
                     Text(
                       subtitle,
                       style: AppTypography.caption.copyWith(
-                        color: p.inkMuted,
+                        color: p.textSecondary,
                       ),
                     ),
                   ],
@@ -266,7 +267,7 @@ class _ProfileHero extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.all(AppSpacing.xs.w),
                   decoration: BoxDecoration(
-                    color: p.surface.withValues(alpha: 0.8),
+                    color: p.surface1.withValues(alpha: 0.8),
                     borderRadius: AppRadius.card,
                     border: Border.all(
                       color: p.primary.withValues(alpha: 0.2),
@@ -274,7 +275,7 @@ class _ProfileHero extends StatelessWidget {
                   ),
                   child: Icon(
                     Icons.edit_outlined,
-                    color: p.primaryFocus,
+                    color: p.primaryPressed,
                     size: 18.sp,
                   ),
                 ),
@@ -297,8 +298,8 @@ class _ProfileHero extends StatelessWidget {
                         children: [
                           Text(
                             '$sc',
-                            style: AppTypography.displayLg.copyWith(
-                              color: p.ink,
+                            style: AppTypography.display.copyWith(
+                              color: p.textPrimary,
                               height: 1,
                             ),
                           ),
@@ -306,7 +307,7 @@ class _ProfileHero extends StatelessWidget {
                           Text(
                             '/ 100',
                             style: AppTypography.caption.copyWith(
-                              color: p.inkFaint,
+                              color: p.textTertiary,
                             ),
                           ),
                           SizedBox(width: AppSpacing.xs.w),
@@ -321,7 +322,7 @@ class _ProfileHero extends StatelessWidget {
                             ),
                             child: Text(
                               _classLabel(classKey, isEn),
-                              style: AppTypography.finePrint.copyWith(
+                              style: AppTypography.caption.copyWith(
                                 color: scoreColor,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -360,26 +361,24 @@ class _OceanGrid extends StatelessWidget {
   final OceanScores ocean;
   final bool isEn;
 
-  static const _traitColors = [
-    Color(0xFFF5D0D8), // O - rose
-    Color(0xFFE2E6C8), // C - sage
-    Color(0xFFE6F0F8), // E - blue
-    Color(0xFFF3EBF8), // A - lavender
-    Color(0xFFF4EBE3), // N - warm
-  ];
-
-  static const _traitBorderColors = [
-    Color(0xFFC66F80),
-    Color(0xFF4A6644),
-    Color(0xFF6B8FB8),
-    Color(0xFFA890C4),
-    Color(0xFF8B7A74),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
     final traits = OceanTrait.values;
+    final traitFills = [
+      p.primarySoft,
+      p.secondarySoft,
+      p.info.withValues(alpha: 0.15),
+      p.emotionBase(EmotionLabelType.fearful).withValues(alpha: 0.15),
+      p.surface2,
+    ];
+    final traitBorders = [
+      p.primary,
+      p.secondary,
+      p.info,
+      p.emotionBase(EmotionLabelType.fearful),
+      p.textTertiary,
+    ];
 
     return Wrap(
       spacing: AppSpacing.xs,
@@ -388,10 +387,8 @@ class _OceanGrid extends StatelessWidget {
         final t = traits[i];
         final level = ocean.levelOf(t);
         final s = ocean.scoreOf(t);
-        final bg = p.isDark
-            ? _traitColors[i].withValues(alpha: 0.12)
-            : _traitColors[i];
-        final border = _traitBorderColors[i].withValues(alpha: 0.3);
+        final bg = traitFills[i];
+        final border = traitBorders[i].withValues(alpha: 0.3);
 
         return Container(
           padding: EdgeInsets.symmetric(
@@ -409,18 +406,18 @@ class _OceanGrid extends StatelessWidget {
             children: [
               Text(
                 t.code,
-                style: AppTypography.captionStrong.copyWith(
-                  color: _traitBorderColors[i],
+                style: AppTypography.label.copyWith(
+                  color: traitBorders[i],
                 ),
               ),
               SizedBox(height: 2.h),
               Text(
                 s.toStringAsFixed(1),
-                style: AppTypography.bodyStrong.copyWith(color: p.ink),
+                style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
               ),
               Text(
                 isEn ? level.labelEn : level.labelId,
-                style: AppTypography.microLegal.copyWith(color: p.inkMuted),
+                style: AppTypography.label.copyWith(color: p.textSecondary),
               ),
             ],
           ),
@@ -446,15 +443,15 @@ class _SectionHeader extends StatelessWidget {
           width: 24.w,
           height: 24.w,
           decoration: BoxDecoration(
-            color: p.strawberry,
+            color: p.primarySoft,
             borderRadius: BorderRadius.circular(AppRadius.xs),
           ),
-          child: Icon(icon, color: p.primaryFocus, size: 12.sp),
+          child: Icon(icon, color: p.primaryPressed, size: 12.sp),
         ),
         SizedBox(width: AppSpacing.xs.w),
         Text(
           label,
-          style: AppTypography.bodyStrong.copyWith(color: p.ink),
+          style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
         ),
       ],
     );
@@ -472,12 +469,12 @@ class _ActionCard extends StatelessWidget {
     final p = context.palette;
     return Container(
       decoration: BoxDecoration(
-        color: p.surface,
+        color: p.surface1,
         borderRadius: AppRadius.card,
-        border: Border.all(color: p.hairline, width: AppBorder.thin),
+        border: Border.all(color: p.divider, width: AppBorder.thin),
         boxShadow: [
           BoxShadow(
-            color: p.shadow,
+            color: p.shadowRaised,
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -494,27 +491,27 @@ class _ActionCard extends StatelessWidget {
                   width: 36.w,
                   height: 36.w,
                   decoration: BoxDecoration(
-                    color: p.strawberry,
+                    color: p.primarySoft,
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   child: Icon(
                     entry.value.icon,
-                    color: p.primaryFocus,
+                    color: p.primaryPressed,
                     size: 16.sp,
                   ),
                 ),
                 title: Text(
                   entry.value.label,
-                  style: AppTypography.body.copyWith(color: p.ink),
+                  style: AppTypography.body.copyWith(color: p.textPrimary),
                 ),
                 trailing: Icon(
                   Icons.chevron_right_rounded,
-                  color: p.inkFaint,
+                  color: p.textTertiary,
                   size: 18.sp,
                 ),
                 onTap: entry.value.onTap,
               ),
-              if (!isLast) Divider(color: p.hairline, height: 1, indent: 56.w),
+              if (!isLast) Divider(color: p.divider, height: 1, indent: 56.w),
             ],
           );
         }).toList(),

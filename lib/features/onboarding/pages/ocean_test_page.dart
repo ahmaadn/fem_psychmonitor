@@ -53,7 +53,7 @@ class OceanTestPage extends StatelessWidget {
           child: Center(
             child: Text(
               isEn ? 'No questions loaded' : 'Pertanyaan belum dimuat',
-              style: TextStyle(color: p.inkMuted),
+              style: AppTypography.body.copyWith(color: p.textSecondary),
             ),
           ),
         ),
@@ -72,14 +72,14 @@ class OceanTestPage extends StatelessWidget {
         elevation: 0,
         title: Text(
           isEn ? 'Big Five (OCEAN)' : 'Big Five (OCEAN)',
-          style: AppTypography.tagline.copyWith(color: p.ink),
+          style: AppTypography.subtitle.copyWith(color: p.textPrimary),
         ),
       ),
       body: DecoratedBox(
         decoration: BoxDecoration(gradient: p.canvasGradient),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w, vertical: 16.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -87,20 +87,20 @@ class OceanTestPage extends StatelessWidget {
                   value: progress,
                   minHeight: 6,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
-                  backgroundColor: p.strawberrySoft,
-                  color: p.primary,
+                  backgroundColor: p.primaryWash,
+                  color: p.primaryText,
                 ),
                 SizedBox(height: 8.h),
                 Text(
                   '${vm.currentOceanIndex + 1} / ${vm.oceanQuestions.length}',
-                  style: AppTypography.caption.copyWith(color: p.inkMuted),
+                  style: AppTypography.caption.copyWith(color: p.textSecondary),
                 ),
                 SizedBox(height: 24.h),
                 Text(
                   q.statement.get(isEn),
-                  style: AppTypography.lead.copyWith(
+                  style: AppTypography.subtitle.copyWith(
                     fontSize: 22.sp,
-                    color: p.ink,
+                    color: p.textPrimary,
                   ),
                 ),
                 SizedBox(height: 28.h),
@@ -121,17 +121,17 @@ class OceanTestPage extends StatelessWidget {
                             vertical: 14.h,
                           ),
                           decoration: BoxDecoration(
-                            color: isSel ? p.primary : p.surface,
+                            color: isSel ? p.primary : p.surface1,
                             borderRadius: BorderRadius.circular(AppRadius.pill),
                             border: Border.all(
-                              color: isSel ? p.primaryFocus : p.hairline,
+                              color: isSel ? p.primaryPressed : p.divider,
                               width: isSel ? 2 : 1,
                             ),
                           ),
                           child: Text(
                             labels[i],
                             style: AppTypography.body.copyWith(
-                              color: isSel ? p.onPrimary : p.ink,
+                              color: isSel ? p.onPrimary : p.textPrimary,
                             ),
                           ),
                         ),

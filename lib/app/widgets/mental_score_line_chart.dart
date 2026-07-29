@@ -1,4 +1,3 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/data/repositories/score_log_repository.dart';
@@ -20,7 +19,7 @@ class MentalScoreLineChart extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 24.h),
         child: Text(
           'Belum ada riwayat skor.',
-          style: AppTypography.caption.copyWith(color: p.inkMuted),
+          style: AppTypography.caption.copyWith(color: p.textSecondary),
           textAlign: TextAlign.center,
         ),
       );
@@ -41,7 +40,7 @@ class MentalScoreLineChart extends StatelessWidget {
             show: true,
             drawVerticalLine: false,
             getDrawingHorizontalLine: (_) => FlLine(
-              color: p.hairline,
+              color: p.divider,
               strokeWidth: 1,
             ),
           ),
@@ -57,8 +56,8 @@ class MentalScoreLineChart extends StatelessWidget {
                 interval: 25,
                 getTitlesWidget: (v, _) => Text(
                   v.toInt().toString(),
-                  style: AppTypography.microLegal
-                      .copyWith(color: p.inkFaint),
+                  style: AppTypography.micro
+                      .copyWith(color: p.textTertiary),
                 ),
               ),
             ),
@@ -71,8 +70,8 @@ class MentalScoreLineChart extends StatelessWidget {
                   if (i < 0 || i >= series.length) return const SizedBox.shrink();
                   return Text(
                     DateFormat.Md().format(series[i].at),
-                    style: AppTypography.microLegal
-                        .copyWith(color: p.inkFaint),
+                    style: AppTypography.micro
+                        .copyWith(color: p.textTertiary),
                   );
                 },
               ),

@@ -30,6 +30,17 @@ flutter run
 - Theme: prefer `context.palette` (`AppPalette`) over raw `AppColors`. Tokens live in `lib/app/config/*`; design source `DESIGN.md` — "Strawberry Match" system: Strawberry Rose `#C66F80` (primary) + Matcha Green `#4a6644` (secondary) as co-equal brand fills, generated as 10-step tonal ramps, with a fixed 6-color emotion palette (happy/sad/anger/fearful/disgust/neutral) as the app's real functional-color system. Ships **both** light and dark themes (`AppPalette.light()` / `AppPalette.dark()`), not dark-only.
 - i18n: `lib/l10n` (`app_en.arb` template, `app_id.arb`). Locales: `en_US`, `id_ID`. Edit ARB → regenerate.
 
+### UI / Widget Conventions (read `DESIGN.md` before writing any widget)
+
+- **Never hardcode color.** No raw `Color(0x...)` or hex literal in a feature widget — everything comes from `context.palette`. If a token you need doesn't exist yet, add it to `AppPalette` (both `.light()` and `.dark()`) rather than inlining a one-off value.
+- **Never hardcode size.** Padding, radius, icon size, font size all go through ScreenUtil (`.w`/`.h`/`.r`/`.sp`) against the `390×844` design canvas from `DESIGN.md` §5 — no raw pixel literals in new/edited widgets.
+- **Reuse the shared component library before writing a new widget.** Buttons, cards, chips, the emotion badge, the emotion trend ring, bottom nav, inputs, and the segmented control are specified once in `DESIGN.md` §4 and must live as shared widgets (not redefined per screen). If a screen needs a variant, extend the shared widget's parameters — don't fork a near-duplicate.
+- **Ramp-step rule (brand colors):** fills use the `-500` step; text/icons rendered directly in a brand color use `-600` on light theme and `-400` on dark theme — never render small text in the raw `-500` seed. (Check `DESIGN.md` §2.3 per-file — Bloom's secondary uses `-700` on light, not `-600`; the step isn't guaranteed identical across the two palette files.)
+- **Emotion colors are for emotion data only** (`EmotionLabelType`-keyed chips, chart/ring segments, per-emotion labels) — never reused as a generic UI accent, and brand colors are never substituted for an emotion. Text set directly in an emotion color must use the on-light/on-dark text-safe variant from `DESIGN.md` §2.6, not the raw base hex.
+- **Every new screen/widget supports both themes before it's considered done** — verify against `AppPalette.light()` and `.dark()`, not just whichever theme is active in the emulator by default.
+- Full rebuild scope, execution order, and the do-not-touch list (routing, viewmodels/repositories, `EmotionLabelType` order, SER pipeline) for a system-wide UI refactor are captured in `REFACTOR_PROMPT.md` — reuse it rather than re-deriving refactor scope ad hoc.
+
+
 ### Emotion detection (easy to break)
 
 - Pipeline contract: **`PLAN.md`** — order and constants are part of the training contract, not style choices.
@@ -37,6 +48,9 @@ flutter run
 - Feature stack order: **MFCC → Δ → ΔΔ → ZCR**. Global z-score uses **`assets/models/norm_female_model.json`** (do not hardcode mean/std).
 - Model asset: `assets/models/female_model.tflite`. Input tensor name: `serving_default_female_model_input:0`.
 - C++ MFCC FFI: `android/app/src/main/cpp/mfcc_extractor.*` ↔ `lib/detection/services/mfcc_ffi.dart`. **Android/iOS only** — other platforms throw `UnsupportedError`.
+- **Web (dev UI only):** `EmotionDetector` is a conditional export (`emotion_detector.dart` → `emotion_detector_stub.dart` when `dart.library.io` is absent). SER/TFLite/MFCC/FFmpeg do not run on web; recording flows stay not-ready with a clear error. SQLite uses `sqflite_common_ffi_web` via `db_factory_*.dart`. Prefer `flutter run -d chrome` for UI; full SER remains Android (release target).
+- **Web SQLite binaries** (required once per machine/clone): `web/sqlite3.wasm` + `web/sqflite_sw.js`. Prefer `dart run sqflite_common_ffi_web:setup` (needs working `webdev`). If that hangs, compile from the package workdir and fetch wasm:
+  - `dart compile js .dart_tool/sqflite_common_ffi_web/setup/<ver>/web/sqflite_sw.dart -O2 -o web/sqflite_sw.js` (after a partial setup has copied package sources), and download `sqlite3.wasm` from the URL in that package’s `sqlite3_wasm_version.dart`.
 - Label index = `EmotionLabelType.values` order: happy, sad, **anger**, fearful, disgust, neutral. Do not reorder the enum.
 - Inference runs in a background isolate (`inference_isolate.dart`); UI uses `EmotionDetector`.
 

@@ -139,7 +139,7 @@ class _VoiceprintOrbState extends State<VoiceprintOrb>
                               fontWeight: FontWeight.w600,
                               height: 1.0,
                               letterSpacing: -1.0,
-                              color: p.ink,
+                              color: p.textPrimary,
                             ),
                           ),
                         if (widget.centerTop != null &&
@@ -152,7 +152,7 @@ class _VoiceprintOrbState extends State<VoiceprintOrb>
                               fontSize: 10.sp,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 1.2,
-                              color: p.inkMuted,
+                              color: p.textSecondary,
                             ),
                           ),
                       ],

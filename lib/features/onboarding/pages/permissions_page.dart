@@ -1,8 +1,10 @@
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
+import 'package:fem_psychmonitor/app/widgets/session_card.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -58,25 +60,24 @@ class _PermissionsPageState extends State<PermissionsPage> {
         decoration: BoxDecoration(gradient: p.canvasGradient),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSpacing.pageX.w,
+              vertical: AppSpacing.md.h,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 8.h),
+                SizedBox(height: AppSpacing.xs.h),
                 Text(
                   l10n.microphonePrivacy,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: p.ink,
-                      ),
+                  style: AppTypography.title.copyWith(color: p.textPrimary),
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: AppSpacing.sm.h),
                 Text(
                   l10n.appNeedsMicAccess,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: p.inkMuted,
-                      ),
+                  style: AppTypography.body.copyWith(color: p.textSecondary),
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: AppSpacing.xl.h),
                 _permissionTile(
                   icon: Icons.mic_rounded,
                   title: l10n.microphone,
@@ -87,7 +88,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
                     setState(() => micGranted = res.isGranted);
                   },
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: AppSpacing.sm.h),
                 _permissionTile(
                   icon: Icons.folder_rounded,
                   title: l10n.storage,
@@ -98,7 +99,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
                     setState(() => storageGranted = res.isGranted);
                   },
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: AppSpacing.xl.h),
                 PrimaryButton(
                   text:
                       allGranted ? l10n.startRecording : l10n.requestPermission,
@@ -108,7 +109,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
                         }
                       : _requestAll,
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: AppSpacing.sm.h),
                 SecondaryButton(
                   text: l10n.skipForNow,
                   icon: Icons.skip_next,
@@ -132,19 +133,41 @@ class _PermissionsPageState extends State<PermissionsPage> {
     required VoidCallback onTap,
   }) {
     final p = context.palette;
-    return ListTile(
-      onTap: onTap,
-      tileColor: p.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-        side: BorderSide(color: p.hairline),
+    return SessionCard(
+      elevated: false,
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm.w,
+        vertical: AppSpacing.xs.h,
       ),
-      leading: Icon(icon, color: p.primary),
-      title: Text(title, style: Theme.of(context).textTheme.titleMedium),
-      subtitle: Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
-      trailing: Icon(
-        granted ? Icons.check_circle_rounded : Icons.chevron_right_rounded,
-        color: granted ? p.secondary : p.inkMuted,
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(icon, color: p.primaryText, size: 24.sp),
+          SizedBox(width: AppSpacing.sm.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTypography.subtitle.copyWith(
+                    color: p.textPrimary,
+                    fontSize: 16.sp,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: AppTypography.caption.copyWith(color: p.textSecondary),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            granted ? Icons.check_circle_rounded : Icons.chevron_right_rounded,
+            color: granted ? p.successText : p.textTertiary,
+            size: 22.sp,
+          ),
+        ],
       ),
     );
   }

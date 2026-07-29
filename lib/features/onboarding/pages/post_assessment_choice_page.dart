@@ -1,5 +1,6 @@
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
@@ -48,16 +49,16 @@ class _PostAssessmentChoicePageState extends State<PostAssessmentChoicePage> {
         decoration: BoxDecoration(gradient: p.canvasGradient),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(24.w),
+            padding: EdgeInsets.all(AppSpacing.pageX.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Spacer(),
                 Text(
                   isEn ? 'Almost there' : 'Hampir selesai',
-                  style: AppTypography.displayMd.copyWith(
-                    fontSize: 28.sp,
-                    color: p.ink,
+                  style: AppTypography.title.copyWith(
+                    fontSize: 28,
+                    color: p.textPrimary,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -66,7 +67,7 @@ class _PostAssessmentChoicePageState extends State<PostAssessmentChoicePage> {
                   isEn
                       ? 'Save your assessment as a guest or create an account.'
                       : 'Simpan hasil asesmen sebagai tamu atau buat akun.',
-                  style: AppTypography.body.copyWith(color: p.inkMuted),
+                  style: AppTypography.body.copyWith(color: p.textSecondary),
                   textAlign: TextAlign.center,
                 ),
                 const Spacer(),

@@ -42,14 +42,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   icon: Icon(
                     Icons.arrow_back_ios_new_rounded,
                     size: 18.sp,
-                    color: p.ink,
+                    color: p.textPrimary,
                   ),
                   onPressed: () => context.pop(),
                 )
               : null),
       title: Text(
         title,
-        style: AppTypography.tagline.copyWith(color: p.ink),
+        style: AppTypography.title.copyWith(color: p.textPrimary),
       ),
       actions: actions != null
           ? [...actions!, SizedBox(width: AppSpacing.xs.w)]

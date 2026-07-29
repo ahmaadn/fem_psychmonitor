@@ -1,263 +1,384 @@
-# Design System — Fem-Psychmonitor "Strawberry Match"
+# Design System — Fem-Psychmonitor "Strawberry Match: Cherry"
 
-## 0. What Changed From the Peloton Reference
+## 0. Relationship to `DESIGN.md` and Palette Provenance
 
-This file replaces the earlier Peloton-inspired, dark-only, single-accent reference. Fem-Psychmonitor keeps Peloton's *rigor* (fixed semantics, tabular numerics discipline, documented component specs) but drops its constraints that don't fit a wellness app used across a full day: **two brand colors, not one**, and **two themes, not one**. Everything below is built from color theory outward, not "reskinned" — ramps are generated from the two seed colors, not picked by eye.
+This is a color/component variant of the same "Strawberry Match" system as `DESIGN.md`, `DESIGN-bright.md`, and `DESIGN-merlot.md` — structured here in the same section order as the Peloton reference doc (`1` Visual Theme through `9` Agent Prompt Guide) so it can be read and built from the same way. Pick one palette file per build; don't mix tokens across files.
 
-**Brand seeds:**
-- **Strawberry Rose** `#C66F80` — HSL(348°, 43%, 61%). A desaturated warm rose. Reads as care, warmth, attention — the app's primary interactive color.
-- **Matcha Green** `#4A6644` — HSL(109°, 20%, 33%). A muted, low-saturation forest green. Reads as calm, growth, groundedness — the secondary brand color.
+**Seed:** `#B4182D` — HSL(352°, 76%, 40%), a vivid, highly saturated cherry-crimson. Same hue family as every other variant's primary (348–352° across the whole set), the most saturated primary seed yet. Because the seed already carries plenty of saturation, this file uses the **fixed-hue/fixed-saturation ramp method** introduced in `DESIGN-merlot.md` (vary lightness only) rather than the linear-to-white/black method in `DESIGN.md`/`DESIGN-bright.md` — that's what keeps every tint and shade reading unmistakably "Cherry" instead of fading toward gray.
 
-These two sit **159° apart** on the hue wheel — close to a split-complementary relationship, not a clash. Both are deliberately **low-saturation** (43% and 20%) so neither screams; this is what lets both colors coexist as genuine co-leads ("full color," not one-accent-and-monochrome) without the screen feeling loud, which matters for an app people open when they're already emotionally activated.
+The secondary (Jade, hue 145°) is color-theory-derived, not supplied: ~159° from Cherry on the hue wheel (the same split-complementary spacing the base system already uses between Rose and Matcha), matched to Cherry's saturation level so the two read as genuine co-leads rather than "bold primary, muted afterthought."
 
 ## 1. Visual Theme & Atmosphere
 
-Fem-Psychmonitor is a **soft clinical** app — closer to a considerate telehealth intake form than a boutique-fitness dashboard. Where Peloton is cinematic and loud (true black, one hot red), this app is warm and legible: a cream or deep-cocoa canvas depending on theme, rounded cards instead of edge-to-edge tiles, and generous internal padding because the content — mood check-ins, voice-recording prompts, emotion trend charts — asks for a moment of attention rather than a scroll-past glance.
+Fem-Psychmonitor Cherry is **an encouraging, high-energy self-care space rendered in confident color** — the boldest, most saturated variant in the "Strawberry Match" family. Where the base `DESIGN.md` reads soft-clinical and `DESIGN-merlot.md` reads warm-and-grounded, Cherry is built for the moments the product wants to feel alive: a completed streak, a positive weekly trend, a gentle nudge to check in again. The canvas is a crisp, barely-pink near-white in light mode and a deep crimson-black in dark mode — bright enough, in both cases, to let the two saturated brand ramps do the emotional work instead of competing with a busy background.
 
-Both themes share the same structure and both brand colors; only the value (lightness) axis flips. **Light mode** is the default for daytime check-ins and reads as a "strawberry cream" paper. **Dark mode** is a deep cocoa-plum (not true black — true black reads cold and clinical against warm rose/green, so the dark canvas keeps a whisper of brown) for evening journaling sessions.
+The app has two signature surfaces, mirrored from the same architecture Peloton's reference doc describes for its own product: the **history/check-in feed** — a vertically scrolling list of rounded 18dp mood check-in cards, each carrying an emotion-colored icon chip, a title, a timestamp, and a confidence percentage in tabular metric type — and the **emotion trend screen**, where a large **Emotion Trend Ring** anchors the bottom half of the screen (a thick colored arc on a `surface-3` track, the dominant emotion's confidence in 900-weight-equivalent numerals at center), flanked by a weekly summary strip and, during an active recording, a pulsing waveform capture card.
+
+Typography is **Inter**, set with a gentler weight ladder than Peloton's 800–900-everywhere voice — this is a wellness context, not a competitive-fitness one — but confidence numbers and the ring's center value are still set heavy and tabular, because they're this app's equivalent of Peloton's "the metric is the hero" principle. Emotion labels are small uppercase whispers in their own fixed hue, exactly like Peloton's discipline eyebrow, just multiplied across six meanings instead of one brand red.
+
+Chrome is minimal on both themes: the bottom nav has no tint pill (color alone marks the active tab, same rule Peloton uses), cards are flat rounded tiles separated by spacing and a soft shadow (light theme) or a lightness-step (dark theme), and depth never depends on Material-style drop shadows on dark surfaces.
 
 **Key Characteristics:**
-- Two co-equal brand colors — Strawberry Rose (primary) and Matcha Green (secondary) — both usable as fills, not just one accent + monochrome
-- Full light/dark theme pair, generated from one token set (see §6) — never hand-authored twice
-- Rounded-corner cards (16–20dp), not edge-to-edge tiles — the app is a personal space, not a storefront
-- A dedicated **6-color Emotion Palette** (happy/sad/anger/fearful/disgust/neutral) that is the app's real "functional color" system — fixed hues, theme-invariant, exactly like Peloton's metric colors were fixed
-- Warm neutrals throughout — no pure white, no pure black; canvas and text both carry a hint of the brand hue family
-- Semantic colors (success/warning/error/info) kept **visually distinct** from both brand colors and from the emotion palette, so a system alert is never mistaken for a mood label
-- Elevation via warm surface-lightness steps + soft shadow (not Peloton's flat/scrim-only model — this app permits gentle elevation because cards, not tiles, are the atom)
+- Two co-equal, matched-saturation brand ramps — **Cherry** (primary, 352°) and **Jade** (secondary, 145°) — bold-on-bold, never bold-plus-muted
+- Fixed-hue/fixed-saturation ramp generation — every tint and shade stays visibly "Cherry" or "Jade," nothing fades toward gray
+- Rounded 18dp mood check-in cards, not edge-to-edge tiles — this is a personal space, not a storefront
+- **Emotion Trend Ring** — the screen's hero metric, directly analogous to Peloton's output ring, just colored by dominant emotion instead of always-red
+- Fixed 6-color **Emotion Palette** (happy/sad/anger/fearful/disgust/neutral) — this file's equivalent of Peloton's fixed metric colors; two of the six (Success-adjacent green, Anger-adjacent red) were deliberately re-hued away from the brand ramps to avoid collision (§2.5–2.6)
+- Both themes ship from one token set; only the value axis flips
+- Tabular numerals on the confidence percentage and any ticking value, so the trend ring and history list never jitter
 
-## 2. Color Theory & Token Ramps
+## 2. Color Palette & Roles
 
-Every brand and neutral color is a **10-step tonal ramp** (50 → 900) generated by mixing the seed color toward white (light steps) and toward black (dark steps), so tone 500 is always the literal seed hex and every other step is derived, not eyeballed. This is what "gunakan teori warna" means in practice here — one seed, one rule, ten reproducible values.
-
-### 2.1 Primary Ramp — Strawberry Rose (seed `#C66F80`)
+### Primary (Interactive) — Cherry, hue 352°, saturation held at 76.5%
 
 | Token | Hex | Role |
 |---|---|---|
-| `primary-50` | `#FCF6F7` | Tinted backgrounds, selected-row wash |
-| `primary-100` | `#F6E9EC` | Chip/badge fill on light theme |
-| `primary-200` | `#EDD1D6` | Hover/pressed wash, progress-track alt |
-| `primary-300` | `#E2B7C0` | Disabled-state fill |
-| `primary-400` | `#D697A4` | **On-dark text/icon** — clears AA on dark canvas |
-| `primary-500` | `#C66F80` | **Seed.** Primary fills on light theme, brand mark |
-| `primary-600` | `#A25B69` | **On-light text/links** — clears AA on light canvas |
-| `primary-700` | `#7F4752` | Pressed state (light theme primary button) |
-| `primary-800` | `#59323A` | High-emphasis text on light, rare |
-| `primary-900` | `#371F24` | Reserved / deepest emphasis |
+| `primary-50` | `#FCE8EB` | Tinted backgrounds, selected-row wash |
+| `primary-100` | `#F9D2D7` | Chip/badge fill on light theme |
+| `primary-200` | `#F4AEB7` | Hover/pressed wash, progress-track alt |
+| `primary-300` | `#EE8190` | **On-dark text/icon** (chosen over `-400` for extra margin, §2.3) |
+| `primary-400` | `#E64258` | Bright accent fill — energetic highlights, active-state icon |
+| `primary-500` | `#B4182D` | **Seed.** Primary fills on light theme, brand mark |
+| `primary-600` | `#901324` | **On-light text/links** |
+| `primary-700` | `#710F1C` | Pressed state (light theme primary button) |
+| `primary-800` | `#510B14` | High-emphasis text on light, rare |
+| `primary-900` | `#36070E` | Reserved / deepest emphasis |
 
-### 2.2 Secondary Ramp — Matcha Green (seed `#4A6644`)
+### Secondary (Co-Brand) — Jade, hue 145°, saturation held at 65%
 
 | Token | Hex | Role |
 |---|---|---|
-| `secondary-50` | `#F4F6F4` | Tinted backgrounds |
-| `secondary-100` | `#E4E8E3` | Chip/badge fill on light theme |
-| `secondary-200` | `#C5CEC3` | Hover/pressed wash |
-| `secondary-300` | `#A4B2A2` | Disabled-state fill |
-| `secondary-400` | `#7D9178` | **On-dark text/icon** |
-| `secondary-500` | `#4A6644` | **Seed.** Secondary fills on light theme |
-| `secondary-600` | `#3D5438` | **On-light text/links** |
-| `secondary-700` | `#2F412C` | Pressed state (light theme secondary) |
-| `secondary-800` | `#212E1F` | High-emphasis text, rare |
-| `secondary-900` | `#151D13` | Reserved / deepest emphasis |
+| `secondary-50` | `#EAFBF1` | Tinted backgrounds |
+| `secondary-100` | `#CDF4DD` | Chip/badge fill on light theme |
+| `secondary-200` | `#A2EBC1` | Hover/pressed wash |
+| `secondary-300` | `#70E19F` | On-dark text/icon |
+| `secondary-400` | `#3DD67D` | Bright accent fill |
+| `secondary-500` | `#25B15F` | **Seed.** Secondary fills on light theme |
+| `secondary-600` | `#1D8B4B` | Mid-emphasis (not the on-light text step, §2.3) |
+| `secondary-700` | `#166939` | **On-light text/links** |
+| `secondary-800` | `#104C29` | High-emphasis text, rare |
+| `secondary-900` | `#0B321B` | Reserved / deepest emphasis |
 
-### 2.3 Contrast Verification (WCAG 2.1)
+### Canvas & Surfaces (Both Themes)
 
-| Pair | Ratio | Passes |
-|---|---|---|
-| `primary-600` on light canvas `#FDF9F6` | 4.73:1 | AA (body text) |
-| `primary-400` on dark canvas `#1C1614` | 7.51:1 | AAA |
-| `secondary-600` on light canvas | 6.5:1 | AA / AAA large |
-| `secondary-400` on dark canvas | 5.27:1 | AA |
-| `primary-500` (raw seed) on light canvas | 3.35:1 | Large text / icons / fills only — **do not** set small body text directly in `primary-500`, use `primary-600` |
+- **Light Canvas** (`#FFF7F8`): App background — crisp, barely-pink near-white.
+- **Light Surface 1 / 2 / 3** (`#FDEEF0` / `#FBE3E6` / `#F6D0D5`): Cards → nested rows/inputs → pressed/track backgrounds.
+- **Light Divider** (`#F2C2C8`): 1px hairlines.
+- **Dark Canvas** (`#1A0C0F`): App background — deep crimson-black, kept in the primary hue family rather than a neutral charcoal.
+- **Dark Surface 1 / 2 / 3** (`#24141A` / `#301B22` / `#3D242C`): Same role ladder as light, dark register.
+- **Dark Divider** (`#4A2E36`): 1px hairlines.
 
-This is the one rule to remember: **the raw seed hexes (`primary-500`, `secondary-500`) are fill colors, not small-text colors on light theme.** Use the `-600` step for text and links on light backgrounds, and the `-400` step for text and links on dark backgrounds — this pairing (`500` fills / `600`↔`400` text) repeats throughout the system.
+### Text
 
-### 2.4 Neutral Ramps (Warm, Theme-Specific)
+- **Text Primary** (`#2B0E12` light / `#F9E9EA` dark): Titles, metric values, card titles.
+- **Text Secondary** (`#6E3A40` light / `#D6BCC0` dark): Body, metadata.
+- **Text Tertiary** (`#A17178` light / `#A8878C` dark): Meta line, units, captions, disabled.
+- **On-Primary** (`#FFFFFF` light / `#1A0C0F` dark): Text/icon on a `primary-500` fill.
+- **On-Secondary** (`#1A0C0F` both themes): Text/icon on a `secondary-500` fill — **dark text in both themes**, since white fails contrast on Jade-500 (§2.3).
 
-Neutrals are tinted very slightly warm (toward the rose/matcha hue family, not toward blue-gray) so they never fight the brand colors.
+### Functional / Emotion Colors (fixed meaning, theme-invariant)
 
-**Light theme surfaces**
-| Token | Hex | Role |
-|---|---|---|
-| `canvas-light` | `#FDF9F6` | App background |
-| `surface-light-1` | `#F7F1EE` | Cards, sheets |
-| `surface-light-2` | `#F1E8E4` | Nested rows, inputs, unselected chips |
-| `surface-light-3` | `#EAD9D3` | Pressed surfaces, track backgrounds |
-| `divider-light` | `#E6D5CF` | 1px hairlines |
+Fem-Psychmonitor's equivalent of Peloton's fixed in-class metric colors — each `EmotionLabelType` owns a color so a glance reads instantly. These never restyle per theme beyond the on-light/on-dark text-safe swap.
 
-**Dark theme surfaces**
-| Token | Hex | Role |
-|---|---|---|
-| `canvas-dark` | `#1C1614` | App background — deep cocoa-plum, not true black |
-| `surface-dark-1` | `#241C1A` | Cards, sheets |
-| `surface-dark-2` | `#2E2422` | Nested rows, inputs, unselected chips |
-| `surface-dark-3` | `#3A2E2B` | Pressed surfaces, track backgrounds |
-| `divider-dark` | `#453733` | 1px hairlines |
-
-**Text**
-| Token | Light value | Dark value | Role |
-|---|---|---|---|
-| `text-primary` | `#2B211F` | `#F7EDE9` | Titles, primary copy |
-| `text-secondary` | `#6B5854` | `#C9B6B0` | Body, metadata |
-| `text-tertiary` | `#9C8983` | `#94807A` | Captions, disabled, units |
-| `on-primary` | `#FFFFFF` | `#FFFFFF` | Text/icon on top of `primary-500` fill |
-| `on-secondary` | `#FFFFFF` | `#FFFFFF` | Text/icon on top of `secondary-500` fill |
-
-### 2.5 Semantic Colors (System States)
-
-Chosen at hues clearly outside both brand hues (348° and 109°) so a system message never reads as "a mood" or "a brand accent."
-
-| Role | Hex | Hue | On-light text variant | On-dark text variant |
+| Emotion | Base (fill/icon/chart) | On-light text-safe | On-dark text-safe | Hue rationale |
 |---|---|---|---|---|
-| Success | `#3C8B54` | 133° (green, but shifted well clear of Matcha's 109°) | `#2C6A3F` | `#6BB37D` |
-| Warning | `#C98A2E` | 36° (amber) | `#8F6420` | `#E3AB57` |
-| Error | `#C24B4B` | 0° (true red — distinct from Rose's 348° and from the Anger emotion color) | `#9C3838` | `#E08282` |
-| Info | `#4A78A6` | 206° (blue) | `#385F84` | `#7FA6C6` |
+| Happy | `#FFB03C` | `#8C6121` | `#FFBC59` | Warm gold — energy, positive affect |
+| Sad | `#5388C4` | `#4774A7` | `#6D9ACD` | Cool slate-blue — low-arousal-negative cue |
+| Anger | `#F46325` | `#B74A1C` | `#F67A46` | Hot vermillion — re-hued from a near-red to sit ~26° clear of Cherry primary (352°); the original reused hue sat only ~13° away and risked reading as "brand red" |
+| Fearful | `#946ACC` | `#7E5AAD` | `#A480D4` | Violet — unease |
+| Disgust | `#A9C234` | `#5D6B1D` | `#B6CB52` | Olive — yellow-shifted green, distinct from Jade |
+| Neutral | `#B09989` | `#726359` | `#BCA89B` | Warm taupe — genuinely neutral |
 
-### 2.6 Emotion Palette (Fixed Semantics — the app's real "metric colors")
+### Semantic
 
-This is Fem-Psychmonitor's equivalent of Peloton's fixed metric-color table (§Functional colors) — the one place color carries *data meaning*, not decoration. **These six never restyle per theme** beyond swapping the on-light/on-dark text-safe variant; the hue is the label.
+- **Success** (`#1FAD9A`): A teal-leaning green, re-hued from a near-Jade green so it sits ~27° clear of Jade secondary (145°) — the reused hue was only ~6° away and risked blurring into "one green." On-light text `#147064`, on-dark text `#41B9A9`.
+- **Warning** (`#F29A18`): Low-confidence detection notice, incomplete session. On-light text `#9D6410`, on-dark text `#F4A93B`.
+- **Error** (`#E04343`): Failed upload, recording error, destructive-action confirm. On-light text `#BE3939`, on-dark text `#E55F5F`.
+- **Info** (`#3A82C9`): Neutral system notices, onboarding tips. On-light text `#316EAB`, on-dark text `#5895D1`.
+- **Track / Empty** (`surface-3`, both themes): Unfilled portion of the Emotion Trend Ring or any progress bar.
 
-| Emotion (`EmotionLabelType`) | Base (fill/icon/chart) | On-light text-safe | On-dark text-safe | Hue rationale |
-|---|---|---|---|---|
-| Happy | `#E8A23C` | `#976927` | `#F0BC70` | Warm gold — energy, positive affect |
-| Sad | `#5C7FA6` | `#3F5A7A` | `#8FAAC7` | Cool slate-blue — classic low-arousal-negative cue |
-| Anger | `#D1483D` | `#A5382F` | `#E37A70` | Hot red-orange — deliberately hotter/more saturated than brand Rose so it never reads as "brand pink" |
-| Fearful | `#8B6FB0` | `#6B5488` | `#B39ECF` | Violet — unease, sits opposite the warm gold/green side of the wheel |
-| Disgust | `#8C9A4A` | `#697438` | `#B0BE73` | Olive — yellow-shifted green, kept visually distinct from Matcha (109°) by sitting nearer 75° |
-| Neutral | `#9C8F86` | `#756B64` | `#BFB2AA` | Warm taupe — genuinely neutral, doesn't borrow from any emotion or brand hue |
+## 3. Typography Rules
 
-Six emotions spaced roughly 0°→40°→75°→206°(via blue at sad, ~210°)→265°→348° around the wheel means adjacent emotions in the app's charts/legends are always visually separable, even for the two "negative" emotions (Sad/Fearful) that sit closer together in valence.
+### Font Family
+- **All text:** `Inter` (variable, SIL OFL) via the `google_fonts` package — an excellent UI/data face with real tabular figures, needed for confidence percentages and trend numerals.
+- **Numerals:** Inter with tabular figures enabled — the confidence percentage, streak counters, and any ticking value must not jitter.
+- **Fallback stack:** `Roboto, -apple-system, sans-serif`
 
-**Usage rule:** emotion colors are fill/icon/chart-stroke colors first. For any running text set directly in an emotion color (e.g. a label under 18px), use the on-light/on-dark text-safe column — the raw base hexes are tuned for area-fill contrast against surfaces, not for small-text contrast.
+### Hierarchy
 
-## 3. Typography
+| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
+|---|---|---|---|---|---|---|
+| Display | Inter | 28sp | 700 | 1.2 | -0.3 | Screen hero — "Bagaimana perasaanmu hari ini?" |
+| Screen Title | Inter | 22sp | 700 | 1.25 | -0.2 | Section titles, sheet headers |
+| Card Title | Inter | 18sp | 600 | 1.3 | 0 | Mood check-in card title, list-item title |
+| Confidence Metric | Inter | 32sp | 700 | 1.1 | -0.5 | Emotion Trend Ring center value, trend headline numbers (tabular) |
+| Body Strong | Inter | 15sp | 600 | 1.4 | 0 | Emphasized inline copy |
+| Body | Inter | 15sp | 400 | 1.5 | 0 | Default paragraph |
+| Meta / Caption | Inter | 13sp | 500 | 1.35 | 0.1 | Timestamps, metadata |
+| Emotion Label | Inter | 12sp | 600 | 1.2 | 0.4 (UPPERCASE) | Emotion chip labels, form field labels |
+| Button | Inter | 15sp | 600 | 1.0 | 0.1 | All button text |
+| Tab Label | Inter | 11sp | 600 | 1.0 | 0.1 | Bottom nav labels |
+| Badge | Inter | 10sp | 700 | 1.0 | 0.5 (UPPERCASE) | Streak badge, "Recording" indicator |
 
-**Font:** `Inter` (variable, OFL-licensed, ships via `google_fonts` in Flutter) — kept from the Peloton reference because it's an excellent UI/data face with real tabular figures, needed for the emotion-confidence percentages and trend charts. Fallback stack: `Roboto, -apple-system, sans-serif`.
+### Principles
+- **Gentler than Peloton's weight ladder:** titles top out at 700, not 900 — this is a wellness context asking for a moment of attention, not a competitive-fitness push.
+- **The confidence number is the hero, same as Peloton's output metric:** the Emotion Trend Ring's center value is the single largest, heaviest number on screen; its label sits small and uppercase beneath it.
+- **Tabular for anything that ticks:** confidence percentages, streak counts, recording timers — always tabular so the ring and history list never jitter.
+- **Emotion label in its fixed hue:** the uppercase emotion chip label is the one place a small text element carries a strong, meaning-bearing color — exactly like Peloton's red discipline eyebrow, just across six meanings instead of one.
+- **Color stays functional:** hierarchy comes from weight and size; color is reserved for brand fills, emotion semantics, and system states.
 
-Unlike Peloton's 800–900-weight-everywhere voice, Fem-Psychmonitor uses a **gentler weight ladder** — this is a wellness context, not a competitive fitness one.
-
-| Token | Size (sp) | Weight | Line Height | Letter Spacing | Use |
-|---|---|---|---|---|---|
-| `display` | 28 | 700 | 1.2 | -0.3 | Screen hero ("How are you feeling?") |
-| `title` | 22 | 700 | 1.25 | -0.2 | Section titles, sheet headers |
-| `subtitle` | 18 | 600 | 1.3 | 0 | Card titles, list-item titles |
-| `body-strong` | 15 | 600 | 1.4 | 0 | Emphasized inline copy |
-| `body` | 15 | 400 | 1.5 | 0 | Default paragraph |
-| `caption` | 13 | 500 | 1.35 | 0.1 | Metadata, timestamps |
-| `label` | 12 | 600 | 1.2 | 0.4 (uppercase) | Emotion chip labels, form field labels |
-| `metric` | 32 | 700 | 1.1 | -0.5 | Confidence %, trend headline numbers (tabular figures) |
-| `button` | 15 | 600 | 1.0 | 0.1 | All button text |
-
-All sizes are `sp` values to be wrapped in `.sp` (ScreenUtil) against the app's `390×844` design size — see §7.
-
-## 4. Components
+## 4. Component Stylings
 
 ### Buttons
-- **Primary** — pill, `primary-500` fill, `on-primary` text, `button` typography, 24dp horizontal / 14dp vertical padding. Pressed: `primary-700` (light) / darken 8% (dark). Disabled: `primary-300`/`surface-2` fill, `text-tertiary` text.
-- **Secondary** — pill, transparent fill, 1.5px `secondary-500` border, `secondary-600` (light) / `secondary-400` (dark) text.
-- **Text button** — no fill, `primary-600` (light) / `primary-400` (dark) text.
 
-### Cards
-- **Session/Journal Card** — `surface-1`, 18dp radius, 1px `divider` border (light theme only — dark theme relies on the surface-lightness step instead of a visible border, matching how the Peloton reference used borders only where contrast against pure black needed help). 16dp internal padding.
-- **Mood Check-in Card** — same shell, plus a leading 40dp emotion-colored icon chip (`emotion-base` at 15% opacity as the chip fill, full-opacity icon).
+**Primary Button (Save Check-in / Start Recording)**
+- Shape: full pill, 999dp corner radius
+- Background: `primary-500` (`#B4182D`)
+- Text: `on-primary`, Inter 15sp 600
+- Padding: 14dp vertical, 24dp horizontal
+- Pressed: `primary-700` + scale 0.98
+- Disabled: `surface-3` background, `text-tertiary` text
 
-### Emotion Chip / Badge
-- Pill, `label` typography, uppercase.
-- Fill: emotion base color at 12–15% opacity; text/icon: emotion's on-light or on-dark text-safe variant (never the raw base as text).
+**Secondary Button (Jade outline — "View Trends," "Skip")**
+- Background: transparent
+- Border: 1.5dp `secondary-500`
+- Text: `secondary-700` (light) / `secondary-300` (dark), Inter 15sp 600
+- Pill, same padding as primary
+- Pressed: `secondary-50`/`secondary-900`-tinted wash at 10% opacity
 
-### Emotion Trend Ring (the "output ring" analog)
-- 96dp ring, `surface-3` track (4dp stroke), progress arc in the **dominant emotion's** color for that period, round cap.
-- Center: dominant emotion label (`subtitle`) over confidence % (`metric`, tabular).
-- Where a session has more than one meaningful emotion, use a segmented multi-color ring (each segment = that emotion's base color) instead of forcing a single dominant arc — this is the one place the emotion palette is allowed to appear all at once, since the ring is explicitly the "full color" summary view.
+**Text Button ("See History," inline links)**
+- Background: none
+- Text: `primary-600` (light) / `primary-300` (dark), Inter 14sp 600
 
-### Bottom Navigation
-- 4–5 tabs, `surface-1` background, 0.5px top `divider`.
-- Active: icon + label in `primary-600` (light) / `primary-400` (dark). Inactive: `text-tertiary`.
-- No tint pill behind the active tab (kept from Peloton) — color alone signals selection.
+**Icon Button (header action)**
+- 20dp glyph in 44dp hit area
+- Default `text-secondary`; pressed 60% opacity
+- Stroke-style line icons, 2dp stroke
+
+### Core Atoms
+
+**Mood Check-in Card** (the history-feed unit)
+- Background: `surface-1`, 18dp corner radius, 1px `divider` border (light theme only — dark theme relies on the surface-lightness step)
+- Leading: 40dp chip, filled with the detected emotion's base color at 15% opacity, icon in the emotion's on-surface text-safe variant
+- Title: Inter 18sp 600 (`Card Title`), `text-primary`
+- Timestamp: Inter 13sp 500 (`Meta`), `text-tertiary`
+- Trailing: confidence percentage, Inter 32sp 700 tabular, colored in the emotion's text-safe variant
+- 16dp internal padding
+
+**Emotion Chip / Badge**
+- Pill, `Emotion Label` typography (12sp/600, uppercase)
+- Fill: emotion base color at 12–15% opacity
+- Text/icon: the emotion's on-light or on-dark text-safe variant — never the raw base as text
+
+**Emotion Trend Ring** (the screen's hero, Peloton output-ring analog)
+- 96dp ring, `surface-3` track at 4dp stroke
+- Progress arc: the dominant emotion's base color, 4dp stroke, round cap, starting at -90°
+- Center: dominant emotion label (`Card Title` weight) over confidence % (`Confidence Metric`, tabular)
+- Segmented multi-color mode: where a session carries more than one meaningful emotion, the ring splits into arc segments — one per emotion, each in its own base color — instead of forcing a single dominant arc. This is the one place all six emotion colors are allowed to appear together at once.
+
+**Voice Capture Card** (recording-in-progress, Peloton cinematic-thumbnail analog)
+- Background: `surface-1`, 18dp radius
+- Center: animated waveform bars, gradient from `primary-400` to `primary-600`, height responds to input amplitude
+- Record button: 64dp circle, `primary-500` fill, 3dp white/`on-primary` ring; while recording, the ring pulses opacity 1 → 0.5 → 1 on a 1.2s ease-in-out loop — this file's answer to Peloton's LIVE-dot heartbeat
+- Duration timer: Inter 18sp 700 tabular, `text-primary`, centered below the waveform
+- Small uppercase "MEREKAM" badge (`Badge` typography) in `primary-600`/`primary-300`, top-left, while active
+
+**Weekly Emotion Summary Strip**
+- A horizontal row of 7 equal segments (one per day), each a rounded 6dp-radius bar, 28dp tall
+- Fill: that day's dominant emotion base color; empty/no-data day uses `surface-3`
+- Tap a segment to jump to that day's Mood Check-in Card in the history feed
+
+**Streak / Milestone Card**
+- On hitting a streak milestone: a `Success` (`#1FAD9A`) ring pulse behind the card icon, a brief confetti burst, and "Streak 7 hari!" in `Display` typography, 1.2s duration, paired with a success haptic — direct analog to Peloton's PR burst, re-hued to this file's corrected Success color specifically so it never reads as "Jade, but muted"
+
+### Navigation
+
+**Bottom Tab Bar**
+- Height: 56dp + safe area
+- Background: `surface-1`, 0.5dp top `divider`
+- Tabs: 4–5 (Home, History, Record, Trends, Profile)
+- Icon: 22dp; **no tint pill** — color alone signals selection, same principle as the base system and Peloton
+- Active: glyph + label in `primary-600` (light) / `primary-300` (dark)
+- Inactive: `text-tertiary`
+- Labels: Inter 11sp 600, always shown
+
+**Top Header**
+- Height: 44dp + safe area
+- Leading: screen title (`Screen Title`, 22sp/700) or back chevron
+- Trailing: 20dp stroke icons in `text-secondary`
+
+**Section Header**
+- `Screen Title` typography at 20sp, 20dp top margin, 12dp bottom
+- Optional trailing text button ("Lihat Semua") in `primary-600`/`primary-300`
 
 ### Input Fields
-- `surface-2` fill, 12dp radius (not full pill — forms read calmer as soft rectangles than as pills in a wellness intake context), 1px `divider` border, focus ring 1.5px `primary-500`.
-- Placeholder in `text-tertiary`.
 
-### Segmented / Filter Control
-- Track `surface-2`, selected segment `primary-100` fill (light) / `primary-800`-tinted overlay (dark) with `primary-600`/`primary-400` text — a **tonal** selected-state (Material 3 style), not Peloton's stark white-chip inversion, since this app's selected state should feel like "gently lit," not "inverted."
+**Text Input**
+- `surface-2` fill, 12dp radius, 1px `divider` border
+- Focus ring: 1.5dp `primary-500`
+- Placeholder: `text-tertiary`
 
-## 5. Layout
+**Segmented Control (Week / Month / Year — trend filter)**
+- Track: `surface-2`, pill shape
+- Selected segment: **tonal** fill — `primary-100` (light) / a `primary-800`-tinted overlay (dark) — with `primary-600`/`primary-300` text. Deliberately *not* Peloton's stark white-chip inversion; the base system's rule is that a selected state should feel "gently lit," not "inverted"
+- Inter 13sp 600
 
-- **Base unit:** 4dp. Scale: 4·8·12·16·20·24·32·40·48.
-- **Screen side inset:** 16dp. **Card-to-card gap:** 16dp. **Card internal padding:** 16dp.
-- **Design canvas:** 390×844 (iPhone-class reference, per `ScreenUtilInit` in `main.dart`) — author all fixed sizes in this space and let ScreenUtil (`.w`/`.h`/`.sp`/`.r`) scale them; don't hand-tune per-device.
+### Distinctive Components
 
-## 6. Elevation & Depth
+**Emotion Trend Ring + Weekly Summary** (full screen-anchor composition)
+- Card: `surface-1`, 18dp radius, 16dp padding
+- Center: 96dp Emotion Trend Ring as specified above
+- Below: the Weekly Emotion Summary Strip
+- All values tabular, updating live as new check-ins land
 
-| Level | Light treatment | Dark treatment | Use |
+**Recording Indicator Badge**
+- `primary-500` fill, `on-primary` text "MEREKAM," Inter 10sp 700 uppercase, 5dp radius
+- Leading 6dp dot that pulses (opacity 1 → 0.4 → 1, 1.2s loop) — this file's equivalent of Peloton's LIVE dot heartbeat, scoped to "a recording is active" rather than "a class is live"
+
+**Multi-Emotion Segmented Ring** (see Emotion Trend Ring above for full spec)
+- The one screen element allowed to show all six emotion base colors simultaneously — everywhere else, emotion color appears one-at-a-time per data point
+
+**Streak / Milestone Burst** (see Core Atoms above for full spec)
+
+## 5. Layout Principles
+
+### Spacing System
+- Base unit: 4dp
+- Scale: 4, 8, 12, 16, 20, 24, 32, 40, 48
+- Card internal padding: 16dp
+- Card-to-card gap: 16dp
+- Screen side inset: 16dp
+
+### Grid & Container
+- Design canvas: 390×844 (`ScreenUtilInit` in `main.dart`) — author fixed sizes here, let ScreenUtil scale
+- Phone-first; if a tablet/foldable target is ever added, content max-width ~600dp centered, history feed becomes a 2-column grid
+- Trend screen: Emotion Trend Ring + Weekly Summary Strip stacked; history list scrolls below
+
+### Whitespace Philosophy
+- **Calm content, quiet chrome:** cards and the trend ring get the visual weight; UI chrome stays thin so the emotional content — not the interface — reads first
+- **Gentle type, generous cards:** titles are confident but not shouting (max 700 weight); cards are spaced 16dp apart so the feed breathes
+- **The ring owns the trend screen:** everything else on that screen orbits the Emotion Trend Ring, same principle as Peloton's output ring
+- **No decorative empty space:** spacing is structural; warmth comes from color and rounded shapes, not from emptiness
+
+### Border Radius Scale
+| Token | Value | Use |
+|---|---|---|
+| `none` | 0dp | Full-bleed imagery (rare in this app) |
+| `xs` | 5dp | Recording indicator badge |
+| `sm` | 8dp | Small utility chips |
+| `md` | 12dp | Text inputs |
+| `lg` | 18dp | Mood check-in cards, trend card, voice capture card |
+| `pill` | 999dp | All buttons, emotion chips, segmented control |
+| `full` | 50% | Emotion Trend Ring, avatars, recording dot |
+
+## 6. Depth & Elevation
+
+| Level | Light Treatment | Dark Treatment | Use |
 |---|---|---|---|
 | Base | `canvas-light`, no shadow | `canvas-dark`, no shadow | App background |
-| Raised | `surface-light-1` + `0 1px 3px rgba(43,33,31,0.08)` | `surface-dark-1`, no shadow (shadows are invisible on dark surfaces; rely on the lightness step) | Cards, list items |
-| Floating | `surface-light-1` + `0 8px 24px rgba(43,33,31,0.14)` | `surface-dark-2` + `0 8px 24px rgba(0,0,0,0.5)` | Bottom sheets, dialogs |
-| Pressed | `surface-light-3` | `surface-dark-3` | Active/pressed surfaces, track backgrounds |
+| Raised | `surface-1` + `0 1px 3px rgba(43,14,18,0.08)` | `surface-1`, no shadow (rely on the lightness step) | Cards, list items |
+| Floating | `surface-1` + `0 8px 24px rgba(43,14,18,0.14)` | `surface-2` + `0 8px 24px rgba(0,0,0,0.5)` | Bottom sheets, dialogs |
+| Pressed | `surface-3` | `surface-3` | Active/pressed surfaces, track backgrounds |
 
-Unlike the Peloton reference's "flat everywhere, depth only from lightness," this system permits one soft shadow tier because rounded cards on a warm cream canvas need it to separate from the background the way a tile-on-black doesn't.
+**Shadow philosophy:** shadows are invisible on the dark canvas, so dark-theme depth comes entirely from the surface-lightness ladder, same as Peloton's reasoning for pure black — applied here to a warm crimson-black rather than a neutral one.
 
-## 7. Flutter Implementation
+### Motion
+- **Card tap:** scale 1.0 → 0.98 over 120ms, then push-transition to detail
+- **Recording pulse:** the Voice Capture Card's record-button ring and the Recording Indicator's dot both pulse opacity 1 → 0.4/0.5 → 1 on a 1.2s ease-in-out loop
+- **Emotion Trend Ring fill:** arc animates from 0 to value over 600ms ease-out on first load; live updates use a 300ms ease-out tween
+- **Confidence tick:** values count with tabular spacing (no layout shift); a brief color flash on a changed dominant emotion
+- **Streak burst:** `Success` ring pulse + confetti + "Streak N hari!" scale-in, 1.2s, success haptic
+- **Segmented control select:** tonal fill cross-fades in over 150ms
+- **Tab switch:** cross-fade 150ms; active glyph swaps stroke→fill instantly
+- **Haptic:** light impact on chip/segment select and tab change; medium impact on "Save Check-in"; success notification on streak milestone
+- **Reduce Motion:** recording pulse stays solid (no animation); ring sets final value with a 150ms crossfade; no card scale; weekly strip updates instantly
 
-`AppPalette` (referenced from `context.palette` per `AGENTS.md`) should expose both brand ramps, semantics, and the emotion map as a single object swapped by `ThemeMode`, e.g.:
-
-```dart
-class AppPalette {
-  final Color primary, primaryText, secondary, secondaryText;
-  final Color canvas, surface1, surface2, surface3, divider;
-  final Color textPrimary, textSecondary, textTertiary;
-  final Color success, warning, error, info;
-  final Map<EmotionLabelType, Color> emotion;      // base fill/icon/chart color
-  final Map<EmotionLabelType, Color> emotionOnSurface; // text-safe variant
-
-  const AppPalette.light() : /* §2 light values */;
-  const AppPalette.dark()  : /* §2 dark values, using -400 text steps */;
-}
-```
-
-Map into Flutter's `ColorScheme` for anything that still reads raw `Theme.of(context).colorScheme` (third-party widgets, `Material` defaults):
-
-| ColorScheme field | Light value | Dark value |
-|---|---|---|
-| `primary` | `primary-500` | `primary-400` |
-| `onPrimary` | `on-primary` | `#1C1614` |
-| `secondary` | `secondary-500` | `secondary-400` |
-| `onSecondary` | `on-secondary` | `#1C1614` |
-| `surface` | `canvas-light` | `canvas-dark` |
-| `onSurface` | `text-primary` | `text-primary` (dark value) |
-| `error` | Error (on-light) | Error (on-dark) |
-
-Register both in `MaterialApp`: `theme: buildLightTheme()`, `darkTheme: buildDarkTheme()`, `themeMode: ThemeMode.system` (or a user toggle, if the product wants an explicit switch rather than following OS setting).
-
-## 8. Do's and Don'ts
+## 7. Do's and Don'ts
 
 ### Do
-- Use both `primary` and `secondary` as genuine fill colors — buttons, chips, chart segments — not just one accent plus gray.
-- Reserve the six emotion colors strictly for emotion data (labels, chips, chart/ring segments) — never repurpose an emotion color for a generic UI accent.
-- Use `-600`/`-400` ramp steps for any text or icon set directly in a brand color; reserve `-500` (the raw seed) for fills.
-- Keep semantic colors (success/warning/error/info) visually distinct from both the brand ramps and the emotion palette at all times.
-- Build both themes from the same token set — a new component should be specified once, against both `light` and `dark` values in this doc.
+- Use `primary-500` (Cherry) and `secondary-500` (Jade) as genuine, matched-weight fills — bold-on-bold, never bold-plus-muted
+- Generate every tint/shade with fixed hue and saturation, varying only lightness — this is what keeps the palette "segar," not "pias"
+- Reserve the six emotion colors strictly for emotion data (chips, ring segments, per-emotion labels) — never repurpose one as a generic UI accent
+- Keep Success (`#1FAD9A`) and Anger (`#F46325`) at their corrected hues — they were deliberately moved away from Jade and Cherry respectively to avoid visual collision
+- Use `-600`/`-300` ramp steps (not `-400`) for any Cherry text/icon on a dark surface; use `-700` (not `-600`) for any Jade text/icon on a light surface — both were measured, not assumed
+- Set the confidence number and ring value heavy and tabular, same "the metric is the hero" principle as Peloton's output number
+- Pulse the recording indicator — it's this app's heartbeat, the direct equivalent of Peloton's LIVE dot
+- Keep the bottom tab bar pill-free — active is color alone
 
 ### Don't
-- Don't set body-size text directly in `primary-500` or `secondary-500` on light theme — contrast fails AA (§2.3).
-- Don't let the Emotion Trend Ring's multi-color segmented mode bleed into everyday chrome — it's the one deliberately "loud" moment in an otherwise calm system.
-- Don't introduce a third brand hue; Success/Warning/Error/Info already cover the system-state space without needing a new brand color.
-- Don't reuse true black/true white — every canvas, surface, and max-emphasis text token in this system carries the warm undertone.
-- Don't hand-author dark-theme hexes from scratch for a new component — derive them from the same ramp step relationship already established (e.g., "text uses `-400` on dark, `-600` on light") so the two themes never visually drift apart.
+- Don't set body-size text directly in `primary-500` or `secondary-500` on light theme without checking §2 — use the documented text-safe step instead
+- Don't let the Emotion Trend Ring's segmented multi-color mode bleed into everyday chrome — it's the one deliberately "loud" moment in an otherwise calm system
+- Don't introduce a third brand hue; Success/Warning/Error/Info already cover the system-state space
+- Don't reuse true black/true white for canvas or max-emphasis text — every token here carries the warm crimson undertone
+- Don't set white text on a `secondary-500` fill — it fails contrast; use dark text (`on-secondary`) in both themes
+- Don't hand-author a new component's dark-theme colors from scratch — derive them from the same ramp-step relationship already established here
+- Don't over-animate — motion is the recording pulse, ring fill, and streak burst; quiet elsewhere
 
-## 9. Agent Prompt Guide — Quick Reference
+## 8. Responsive Behavior
 
-```
-Light canvas:  #FDF9F6   Dark canvas:  #1C1614
-Light surface 1/2/3: #F7F1EE / #F1E8E4 / #EAD9D3
-Dark  surface 1/2/3: #241C1A / #2E2422 / #3A2E2B
-Primary (fill):   #C66F80   Primary text (light/dark): #A25B69 / #D697A4
-Secondary (fill): #4A6644   Secondary text (light/dark): #3D5438 / #7D9178
-Success #3C8B54 · Warning #C98A2E · Error #C24B4B · Info #4A78A6
-Emotion — Happy #E8A23C · Sad #5C7FA6 · Anger #D1483D · Fearful #8B6FB0 · Disgust #8C9A4A · Neutral #9C8F86
-Font: Inter. Base unit: 4dp. Design canvas: 390×844 (ScreenUtil).
-```
+### Device Sizes
+| Device | Width | Key Changes |
+|---|---|---|
+| Small phone | 360dp | Emotion Trend Ring 84dp; Voice Capture waveform shorter |
+| Standard phone (design canvas) | 390dp | Reference layout — all specs above assume this width |
+| Large phone | 430dp | Ring and cards scale up proportionally via ScreenUtil |
+| Tablet (portrait, if added) | 768dp+ | History feed → 2-column grid; trend screen gains a side rail |
 
-**Example prompt:** "Build a Fem-Psychmonitor mood check-in card in Flutter: `surface-1` background, 18dp radius, 16dp padding. Leading 40dp chip in the detected emotion's base color at 15% opacity with the emotion icon in its on-surface text-safe variant. Title in `subtitle` (18sp/600), timestamp in `caption` (13sp/500, `text-tertiary`). Trailing confidence percentage in `metric` typography (32sp/700, tabular), colored in the emotion's text-safe variant. Support both `AppPalette.light()` and `AppPalette.dark()`."
+### Text Scaling
+- Scales with system text-size settings: Display, Screen Title, Card Title, Body, Meta
+- Layout-pinned (not scaled): Confidence Metric (ring center value), Tab Label, Badge — these live in tight, live-updating layouts where reflow would break the composition
+- The confidence number already dominates visually; don't additionally scale it with system text size
+
+### Orientation
+- Portrait-first throughout; this app has no equivalent of Peloton's in-class landscape mode
+- If a chart-heavy trend view is ever added in landscape, keep the Emotion Trend Ring centered and let the Weekly Summary Strip move beside it rather than below
+
+### Touch Targets
+- Tab bar icon: 22dp glyph, 44dp hit area
+- Mood check-in card: full-card tap, ≥ 72dp tall
+- Buttons: ≥ 48dp tall
+- Record button: 64dp circle, generously oversized for a primary action performed under emotional load
+
+### Safe Area Handling
+- Top: header respects safe area / status bar / notch
+- Bottom: tab bar + home indicator respected; a sticky "Save Check-in" button (where present) sits above the indicator
+- Sides: 16dp content inset throughout
+
+## 9. Agent Prompt Guide
+
+### Quick Color Reference
+- Light canvas: `#FFF7F8` · Dark canvas: `#1A0C0F`
+- Light surface 1/2/3: `#FDEEF0` / `#FBE3E6` / `#F6D0D5`
+- Dark surface 1/2/3: `#24141A` / `#301B22` / `#3D242C`
+- Primary (fill): `#B4182D` · Primary text (light/dark): `#901324` / `#EE8190`
+- Secondary (fill): `#25B15F` · Secondary text (light/dark): `#166939` / `#70E19F`
+- `on-secondary` text/icon: `#1A0C0F` on **both** themes (white fails contrast on Jade-500)
+- Success `#1FAD9A` · Warning `#F29A18` · Error `#E04343` · Info `#3A82C9`
+- Emotion — Happy `#FFB03C` · Sad `#5388C4` · Anger `#F46325` · Fearful `#946ACC` · Disgust `#A9C234` · Neutral `#B09989`
+- Font: Inter. Base unit: 4dp. Design canvas: 390×844 (ScreenUtil)
+
+### Example Component Prompts
+
+- "Build a Fem-Psychmonitor Mood Check-in Card in Flutter, Cherry palette: `surface-1` background, 18dp radius, 1px `divider` border on light theme only, 16dp padding. Leading 40dp chip filled with the detected emotion's base color at 15% opacity, icon in that emotion's on-surface text-safe variant. Title 'Merasa Bahagia' in Card Title (Inter 18sp 600, `text-primary`). Timestamp '2 jam lalu' in Meta (Inter 13sp 500, `text-tertiary`). Trailing confidence '87%' in Confidence Metric (Inter 32sp 700 tabular), colored in the emotion's text-safe variant."
+
+- "Create the Fem-Psychmonitor Emotion Trend Ring: a 96dp ring — `surface-3` track at 4dp stroke, a progress arc in the dominant emotion's base color at 4dp stroke, round cap, starting at -90°, animating from 0 over 600ms ease-out on first load. Centered: emotion label 'Sedih' in Card Title weight over confidence '72%' in Confidence Metric (Inter 32sp 700 tabular)."
+
+- "Build the Fem-Psychmonitor Voice Capture Card: `surface-1` background, 18dp radius. Centered animated waveform bars gradient from `primary-400` (#E64258) to `primary-600` (#901324), bar height responding to input amplitude. A 64dp circular record button, `primary-500` fill, 3dp `on-primary` ring that pulses opacity 1→0.4→1 on a 1.2s loop while recording. Duration '00:42' in Inter 18sp 700 tabular below the waveform. Top-left 'MEREKAM' badge, `primary-500` fill, `on-primary` text, Inter 10sp 700 uppercase, 5dp radius, with a pulsing 6dp dot."
+
+- "Render the Fem-Psychmonitor Weekly Emotion Summary Strip: 7 equal segments in a horizontal row, each a 6dp-radius bar, 28dp tall, filled with that day's dominant emotion base color (empty days use `surface-3`). Tapping a segment navigates to that day's entry in the history feed."
+
+- "Build the Fem-Psychmonitor segmented trend filter (Minggu / Bulan / Tahun): track `surface-2`, pill shape. Selected segment gets a tonal fill — `primary-100` on light theme, a `primary-800`-tinted overlay on dark theme — with `primary-600`/`primary-300` text, Inter 13sp 600. This is a gently-lit tonal selection, not a stark inverted white chip."
+
+- "Build the Fem-Psychmonitor primary button: full pill (999dp radius), `primary-500` background, `on-primary` Inter 15sp 600 text, 14dp × 24dp padding. Pressed: `primary-700` + scale 0.98. Provide a Jade secondary variant (transparent background, 1.5dp `secondary-500` border, `secondary-700`/`secondary-300` text) for 'Lihat Tren'."
+
+### Iteration Guide
+1. Canvas is a crisp near-white (`#FFF7F8`) in light mode or a deep crimson-black (`#1A0C0F`) in dark mode — never neutral gray or true black/white
+2. Cherry (`#B4182D`) and Jade (`#25B15F`) are **co-equal** brand fills, both held at matched saturation — never treat one as "the accent" and the other as filler
+3. Ramps are generated by **fixed hue/saturation, varying lightness only** — this is the "segar, tidak pias" fix; don't fall back to linear-to-white/black mixing for new tokens in this file
+4. The six emotion colors are **fixed semantics** — never recolor per theme beyond the on-light/on-dark text-safe swap, and never reuse one as a generic UI accent
+5. Success and Anger are **intentionally re-hued** away from Jade and Cherry — don't "simplify" them back to a more obvious green/red without re-checking the hue-collision math in §2.5–2.6
+6. The **Emotion Trend Ring** is the hero, exactly like Peloton's output ring — thick colored arc, heavy tabular confidence number centered, fills from 0 on load
+7. Numbers are **heavy and tabular** wherever they tick — confidence %, streak counts, recording timer
+8. The **Voice Capture Card's** pulsing record-ring and the **Recording Indicator's** pulsing dot are this app's "heartbeat," the direct equivalent of Peloton's LIVE pulse
+9. Selected states are **tonal** (gently lit), not inverted white chips — segmented controls and selected filter pills use a light tint fill, not a stark color-swap
+10. Depth is **surface lightness + a soft shadow on light theme only**; dark theme never uses drop shadows on content

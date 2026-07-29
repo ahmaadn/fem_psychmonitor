@@ -1,9 +1,7 @@
-import 'dart:io';
-
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/utils/fs_support.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
@@ -12,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path_util;
 import 'package:provider/provider.dart';
 
@@ -61,7 +58,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   /// US-04: pick an avatar image from gallery or camera, copy it into the app
   /// documents directory, and stage the resulting path for saving.
   Future<void> _pickAvatar(ImageSource source) async {
-    final p = context.palette;
     if (_isPickingAvatar) return;
     setState(() => _isPickingAvatar = true);
     try {
@@ -74,18 +70,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
       );
       if (picked == null) return;
 
-      final appDir = await getApplicationDocumentsDirectory();
-      final avatarsDir = Directory('${appDir.path}/avatars');
-      if (!await avatarsDir.exists()) {
-        await avatarsDir.create(recursive: true);
-      }
       final ext = path_util.extension(picked.path);
-      final destPath =
-          '${avatarsDir.path}/avatar_${DateTime.now().millisecondsSinceEpoch}$ext';
-      final destFile = await File(picked.path).copy(destPath);
+      final fileName =
+          'avatar_${DateTime.now().millisecondsSinceEpoch}$ext';
+      final saved = await persistPickedImagePath(picked.path, fileName);
 
       if (mounted) {
-        setState(() => _avatarUrl = destFile.path);
+        setState(() => _avatarUrl = saved);
       }
     } catch (_) {
       // Best-effort: silently ignore so the user can retry.
@@ -100,7 +91,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final l10n = AppLocalizations.of(context)!;
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
-      backgroundColor: p.surface,
+      backgroundColor: p.surface1,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -119,7 +110,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       l10n.tapToChangePhoto,
-                      style: AppTypography.h2.copyWith(fontSize: 15.sp),
+                      style: AppTypography.subtitle.copyWith(fontSize: 15.sp),
                     ),
                   ),
                 ),
@@ -171,7 +162,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (url == null || url.isEmpty) {
       return Icon(
         Icons.person_rounded,
-        color: p.hairline,
+        color: p.divider,
         size: 52.sp,
       );
     }
@@ -179,7 +170,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (url.startsWith('assets/')) {
       return Image.asset(url, fit: BoxFit.cover);
     }
-    return Image.file(File(url), fit: BoxFit.cover);
+    return Image(image: localImageProvider(url), fit: BoxFit.cover);
   }
 
   Future<void> _saveProfile() async {
@@ -211,15 +202,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
           content: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.check_circle_outline_rounded,
-                color: Colors.white,
+                color: palette.onPrimary,
                 size: 18,
               ),
               SizedBox(width: AppSpacing.sm.w),
               Text(
                 l10n.profileSaved,
-                style: AppTypography.bodyMd.copyWith(color: Colors.white),
+                style:
+                    AppTypography.caption.copyWith(color: palette.onPrimary),
               ),
             ],
           ),
@@ -257,7 +249,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               height: 96.w,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: p.strawberry,
+                                color: p.primarySoft,
                                 border: Border.all(
                                   color: p.primary.withValues(
                                     alpha: 0.2,
@@ -280,24 +272,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   width: 30.w,
                                   height: 30.w,
                                   decoration: BoxDecoration(
-                                    color: p.primary,
+                                    color: p.primaryText,
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: p.surface,
+                                      color: p.surface1,
                                       width: 2,
                                     ),
                                   ),
                                   child: _isPickingAvatar
                                       ? Padding(
                                           padding: EdgeInsets.all(7.w),
-                                          child: const CircularProgressIndicator(
+                                          child: CircularProgressIndicator(
                                             strokeWidth: 2,
-                                            color: Colors.white,
+                                            color: p.onPrimary,
                                           ),
                                         )
                                       : Icon(
                                           Icons.camera_alt_rounded,
-                                          color: Colors.white,
+                                          color: p.onPrimary,
                                           size: 14.sp,
                                         ),
                                 ),
@@ -310,8 +302,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       Center(
                         child: Text(
                           l10n.tapToChangePhoto,
-                          style: AppTypography.bodySm.copyWith(
-                            color: p.inkMuted.withValues(
+                          style: AppTypography.caption.copyWith(
+                            color: p.textSecondary.withValues(
                               alpha: 0.6,
                             ),
                           ),
@@ -382,12 +374,12 @@ class _SectionLabel extends StatelessWidget {
           width: 3.w,
           height: 14.h,
           decoration: BoxDecoration(
-            color: p.primary,
+            color: p.primaryText,
             borderRadius: BorderRadius.circular(AppRadius.full),
           ),
         ),
         SizedBox(width: AppSpacing.sm.w),
-        Text(label, style: AppTypography.h2.copyWith(fontSize: 14.sp)),
+        Text(label, style: AppTypography.subtitle.copyWith(fontSize: 14.sp)),
       ],
     );
   }
@@ -412,7 +404,7 @@ class _DateField extends StatelessWidget {
         Text(
           label,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: p.inkMuted,
+            color: p.textSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -426,23 +418,23 @@ class _DateField extends StatelessWidget {
               vertical: AppSpacing.md.h,
             ),
             decoration: BoxDecoration(
-              color: p.inputFill,
+              color: p.surface2,
               borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(color: p.hairline),
+              border: Border.all(color: p.divider),
             ),
             child: Row(
               children: [
                 Icon(
                   Icons.calendar_today_outlined,
                   size: 18.sp,
-                  color: p.inkMuted.withValues(alpha: 0.6),
+                  color: p.textSecondary.withValues(alpha: 0.6),
                 ),
                 SizedBox(width: AppSpacing.sm.w),
-                Expanded(child: Text(value, style: AppTypography.bodyMd)),
+                Expanded(child: Text(value, style: AppTypography.caption)),
                 Icon(
                   Icons.chevron_right_rounded,
                   size: 20.sp,
-                  color: p.hairline,
+                  color: p.divider,
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/widgets/linear_progress_bar.dart';
 import 'package:flutter/material.dart';
@@ -90,7 +91,7 @@ class RecordingTimeline extends StatelessWidget {
               .map((e) {
                 return Expanded(
                   flex: e.flex,
-                  child: Container(color: e.label.color),
+                  child: Container(color: p.emotionBase(e.label)),
                 );
               })
               .toList(growable: false);
@@ -238,9 +239,9 @@ class ComponentTimeline extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(AppSpacing.relaxed.w),
       decoration: BoxDecoration(
-        color: p.surface,
+        color: p.surface1,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: p.hairline),
+        border: Border.all(color: p.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,6 +279,8 @@ class ComponentTimeline extends StatelessWidget {
     required int percentage,
   }) {
     final p = context.palette;
+    final base = p.emotionBase(emotion);
+    final onE = p.emotionText(emotion);
     return Column(
       children: [
         Row(
@@ -286,28 +289,20 @@ class ComponentTimeline extends StatelessWidget {
             Row(
               children: [
                 Text(emotion.emoji, style: TextStyle(fontSize: 18.sp)),
-                SizedBox(width: 8.w),
+                SizedBox(width: AppSpacing.xs.w),
                 Text(
                   emotion.displayName,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
                 ),
               ],
             ),
             Text(
               '$percentage%',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: p.primary.withValues(alpha: 0.7),
-              ),
+              style: AppTypography.bodyStrong.copyWith(color: onE),
             ),
           ],
         ),
-        SizedBox(height: 12.h),
-        // Batang progres horizontal (custom, tanpa package percent_indicator).
+        SizedBox(height: AppSpacing.sm.h),
         LinearProgressBar(
           lineHeight: 8.h,
           percent: percentage / 100,
@@ -315,8 +310,8 @@ class ComponentTimeline extends StatelessWidget {
             milliseconds: animateFromLastPercent ? 500 : 1000,
           ),
           animateFromLastPercent: animateFromLastPercent,
-          backgroundColor: p.hairline.withValues(alpha: 0.6),
-          progressColor: emotion.color,
+          backgroundColor: p.surface3,
+          progressColor: base,
           barRadius: const Radius.circular(AppRadius.full),
         ),
       ],

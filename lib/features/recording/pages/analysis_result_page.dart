@@ -1,4 +1,3 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
@@ -142,7 +141,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
         leading: IconButton(
           icon: Icon(
             Icons.close_rounded,
-            color: p.inkMuted,
+            color: p.textSecondary,
             size: 22.sp,
           ),
           onPressed: () {
@@ -154,7 +153,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
         decoration: BoxDecoration(gradient: p.canvasGradient),
         child: SafeArea(
           child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -192,8 +191,8 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                           padding: EdgeInsets.only(top: 6.h),
                           child: Text(
                             'Koreksi hanya tersedia di hari yang sama.',
-                            style: AppTypography.finePrint.copyWith(
-                              color: p.inkFaint,
+                            style: AppTypography.caption.copyWith(
+                              color: p.textTertiary,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -224,7 +223,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                 Text(
                   'Self-report: ${session!.selfReportEmotion!.emoji} ${session.selfReportEmotion!.displayName}',
                   style: AppTypography.caption
-                      .copyWith(color: p.inkMuted),
+                      .copyWith(color: p.textSecondary),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -268,7 +267,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                   onPressed: () => _confirmDelete(session),
                   child: Text(
                     'Hapus rekaman ini',
-                    style: AppTypography.captionStrong.copyWith(
+                    style: AppTypography.label.copyWith(
                       color: p.warning,
                     ),
                   ),
@@ -288,7 +287,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                     style: TextStyle(
                       fontSize: 10.sp,
                       fontWeight: FontWeight.w500,
-                      color: p.inkMuted.withValues(alpha: 0.8),
+                      color: p.textSecondary.withValues(alpha: 0.8),
                       height: 1.5,
                     ),
                   ),
@@ -389,7 +388,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
     final result = await showModalBottomSheet<EmotionLabelType>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: p.surface,
+      backgroundColor: p.surface1,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -410,7 +409,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                           width: 40.w,
                           height: 4.h,
                           decoration: BoxDecoration(
-                            color: p.hairline,
+                            color: p.divider,
                             borderRadius: BorderRadius.circular(AppRadius.xs),
                           ),
                         ),
@@ -418,14 +417,14 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                       SizedBox(height: 12.h),
                       Text(
                         'Koreksi Hasil Emosi',
-                        style: AppTypography.tagline,
+                        style: AppTypography.subtitle,
                       ),
                       SizedBox(height: 6.h),
                       Text(
                         'Pilih emosi yang menurutmu paling akurat mendeskripsikan rekaman ini.',
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: p.inkMuted,
+                          color: p.textSecondary,
                         ),
                       ),
                       SizedBox(height: 12.h),
@@ -441,8 +440,8 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                             selectedColor: e.color,
                             labelStyle: TextStyle(
                               color: selected
-                                  ? Colors.white
-                                  : p.ink,
+                                  ? p.onPrimary
+                                  : p.textPrimary,
                               fontWeight: FontWeight.w600,
                             ),
                           );
@@ -593,9 +592,9 @@ class _Hero extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 20.w),
       decoration: BoxDecoration(
-        color: p.strawberrySoft,
+        color: p.primaryWash,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: p.hairline),
+        border: Border.all(color: p.divider),
       ),
       child: Column(
         children: [
@@ -608,7 +607,7 @@ class _Hero extends StatelessWidget {
                   fontSize: 11.sp,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.2,
-                  color: p.inkMuted,
+                  color: p.textSecondary,
                 ),
               ),
               if (isCorrected)
@@ -632,7 +631,7 @@ class _Hero extends StatelessWidget {
           SizedBox(height: 12.h),
           VoiceprintOrb(
             mode: VoiceprintMode.static,
-            color: dominant.color,
+            color: p.emotionBase(dominant),
             size: 220,
             confidence: confidence,
             centerTop: '${(confidence * 100).round()}%',
@@ -643,7 +642,7 @@ class _Hero extends StatelessWidget {
           SizedBox(height: 6.h),
           Text(
             dominant.displayName,
-            style: AppTypography.tagline,
+            style: AppTypography.subtitle,
           ),
           SizedBox(height: 4.h),
           Text(
@@ -651,7 +650,7 @@ class _Hero extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 11.sp,
-              color: p.inkMuted,
+              color: p.textSecondary,
               height: 1.4,
             ),
           ),
@@ -664,7 +663,7 @@ class _Hero extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12.sp,
                 height: 1.5,
-                color: p.inkMuted,
+                color: p.textSecondary,
               ),
             ),
           ),
@@ -695,13 +694,13 @@ class _CorrectionButton extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 14.h),
         decoration: BoxDecoration(
-          color: p.surface,
+          color: p.surface1,
           borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: p.hairline),
+          border: Border.all(color: p.divider),
         ),
         child: Row(
           children: [
-            Icon(Icons.edit_outlined, size: 18.sp, color: p.primary),
+            Icon(Icons.edit_outlined, size: 18.sp, color: p.primaryText),
             SizedBox(width: 10.w),
             Expanded(
               child: Text(
@@ -709,13 +708,13 @@ class _CorrectionButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
-                  color: p.primary,
+                  color: p.primaryText,
                 ),
               ),
             ),
             Icon(
               Icons.chevron_right_rounded,
-              color: p.inkMuted,
+              color: p.textSecondary,
               size: 20.sp,
             ),
           ],
@@ -737,9 +736,9 @@ class _SectionCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
-        color: p.surface,
+        color: p.surface1,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: p.hairline),
+        border: Border.all(color: p.divider),
       ),
       child: child,
     );
@@ -775,12 +774,12 @@ class _ScoreCalculationCard extends StatelessWidget {
                 width: 36.w,
                 height: 36.w,
                 decoration: BoxDecoration(
-                  color: breakdown.emotion.color.withValues(alpha: 0.14),
+                  color: p.primaryFill.withValues(alpha: 0.14),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.calculate_rounded,
-                  color: breakdown.emotion.color,
+                  color: p.primaryText,
                   size: 19.sp,
                 ),
               ),
@@ -791,7 +790,7 @@ class _ScoreCalculationCard extends StatelessWidget {
                   children: [
                     Text(
                       'Perhitungan Skor Sesi Ini',
-                      style: AppTypography.tagline,
+                      style: AppTypography.subtitle,
                     ),
                     SizedBox(height: 2.h),
                     Text(
@@ -799,7 +798,7 @@ class _ScoreCalculationCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11.sp,
                         height: 1.35,
-                        color: p.inkMuted,
+                        color: p.textSecondary,
                       ),
                     ),
                   ],
@@ -848,13 +847,13 @@ class _ScoreCalculationCard extends StatelessWidget {
                     fontSize: 10.sp,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
-                    color: p.inkMuted,
+                    color: p.textSecondary,
                   ),
                 ),
                 SizedBox(height: 6.h),
                 Text(
                   '$impact x ${breakdown.effectiveConfidence.toStringAsFixed(2)} = $weighted -> $sign${breakdown.delta} poin',
-                  style: AppTypography.tagline,
+                  style: AppTypography.subtitle,
                 ),
               ],
             ),
@@ -872,7 +871,7 @@ class _ScoreCalculationCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 10.sp,
               height: 1.45,
-              color: p.inkMuted,
+              color: p.textSecondary,
             ),
           ),
         ],
@@ -906,7 +905,7 @@ class _FormulaLine extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11.sp,
                 height: 1.35,
-                color: p.inkMuted,
+                color: p.textSecondary,
               ),
             ),
           ),
@@ -919,7 +918,7 @@ class _FormulaLine extends StatelessWidget {
                 fontSize: 11.sp,
                 height: 1.35,
                 fontWeight: FontWeight.w700,
-                color: p.ink,
+                color: p.textPrimary,
               ),
             ),
           ),
@@ -977,10 +976,10 @@ class _NoteCard extends StatelessWidget {
               hintText: l10n.sessionNoteHint,
               hintStyle: TextStyle(
                 fontSize: 12.sp,
-                color: p.inkMuted.withValues(alpha: 0.7),
+                color: p.textSecondary.withValues(alpha: 0.7),
               ),
               filled: true,
-              fillColor: p.inputFill,
+              fillColor: p.surface2,
               isDense: true,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 14.w,
@@ -988,7 +987,7 @@ class _NoteCard extends StatelessWidget {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.md),
-                borderSide: BorderSide(color: p.hairline),
+                borderSide: BorderSide(color: p.divider),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.md),
@@ -1013,12 +1012,12 @@ class _NoteCard extends StatelessWidget {
                   : Icon(
                       Icons.save_outlined,
                       size: 16.sp,
-                      color: p.primary,
+                      color: p.primaryText,
                     ),
               label: Text(
                 savedTick ? l10n.noteSaved : l10n.saveNote,
                 style: TextStyle(
-                  color: p.primary,
+                  color: p.primaryText,
                   fontWeight: FontWeight.w600,
                   fontSize: 12.sp,
                 ),
@@ -1043,7 +1042,7 @@ class _HotlineCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
-        color: p.warningSurface,
+        color: p.warning.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(color: p.warning.withValues(alpha: 0.3)),
       ),
@@ -1058,7 +1057,7 @@ class _HotlineCard extends StatelessWidget {
             ),
             child: Icon(
               Icons.phone_in_talk_rounded,
-              color: Colors.white,
+              color: p.onPrimary,
               size: 20.sp,
             ),
           ),
@@ -1069,7 +1068,7 @@ class _HotlineCard extends StatelessWidget {
               children: [
                 Text(
                   l10n.needHelp,
-                  style: AppTypography.tagline,
+                  style: AppTypography.subtitle,
                 ),
                 SizedBox(height: 4.h),
                 Text(
@@ -1077,7 +1076,7 @@ class _HotlineCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11.sp,
                     height: 1.4,
-                    color: p.ink,
+                    color: p.textPrimary,
                   ),
                 ),
                 SizedBox(height: 10.h),
@@ -1114,7 +1113,7 @@ class _HotlineCard extends StatelessWidget {
           color: p.warning,
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: p.surface1,
       side: BorderSide(color: p.warning.withValues(alpha: 0.4)),
     );
   }
@@ -1146,7 +1145,7 @@ class _WeeklyChart extends StatelessWidget {
           if (entries.isEmpty)
             Text(
               l10n.noDataThisWeek,
-              style: TextStyle(fontSize: 12.sp, color: p.inkMuted),
+              style: AppTypography.caption.copyWith(color: p.textSecondary),
             )
           else
             ...entries.map(
@@ -1163,7 +1162,7 @@ class _WeeklyChart extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w600,
-                          color: p.inkMuted,
+                          color: p.textSecondary,
                         ),
                       ),
                     ),
@@ -1174,7 +1173,7 @@ class _WeeklyChart extends StatelessWidget {
                         child: LinearProgressIndicator(
                           value: e.value / maxCount,
                           minHeight: 7.h,
-                          backgroundColor: p.strawberry,
+                          backgroundColor: p.primarySoft,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             e.key.color,
                           ),
@@ -1189,7 +1188,7 @@ class _WeeklyChart extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w700,
-                          color: p.ink,
+                          color: p.textPrimary,
                         ),
                       ),
                     ),
@@ -1250,7 +1249,7 @@ class _SaranCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12.sp,
                         height: 1.45,
-                        color: p.ink,
+                        color: p.textPrimary,
                       ),
                     ),
                   ),
@@ -1283,14 +1282,14 @@ class _TeaserCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12.sp,
               height: 1.4,
-              color: p.inkMuted,
+              color: p.textSecondary,
             ),
           ),
           SizedBox(height: 12.h),
           SecondaryButton(
             text: l10n.loginRegister,
             icon: Icons.lock_rounded,
-            backgroundColor: p.matcha,
+            backgroundColor: p.secondarySoft,
             textColor: p.onPrimary,
             onPressed: () => context.goNamed(
               RouteNames.login,

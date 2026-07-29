@@ -3,6 +3,7 @@ import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
+import 'package:fem_psychmonitor/app/widgets/session_card.dart';
 import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/features/onboarding/utils/onboarding_result_persistence.dart';
 import 'package:fem_psychmonitor/features/onboarding/viewmodels/questionnaire_viewmodel.dart';
@@ -52,10 +53,7 @@ class _PsychResultPageState extends State<PsychResultPage> {
         elevation: 0,
         title: Text(
           l10n.mentalHealthResultTitle,
-          style: AppTypography.bodyStrong.copyWith(
-            fontSize: 18.0,
-            color: p.ink,
-          ),
+          style: AppTypography.subtitle.copyWith(color: p.textPrimary),
         ),
         centerTitle: true,
       ),
@@ -66,119 +64,96 @@ class _PsychResultPageState extends State<PsychResultPage> {
             builder: (context, viewModel, child) {
               final score = viewModel.psychScore ?? 0;
               final psychClass = viewModel.psychClass;
+              final emoji = score <= 25
+                  ? '😢'
+                  : score <= 50
+                      ? '😔'
+                      : score <= 75
+                          ? '😊'
+                          : '🥰';
 
               return SingleChildScrollView(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSpacing.pageX.w,
+                  vertical: AppSpacing.xl.h,
+                ),
                 child: Column(
                   children: [
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(24.w),
-                      decoration: BoxDecoration(
-                        color: p.surface,
-                        borderRadius: BorderRadius.circular(AppRadius.xl),
-                        border: Border.all(color: p.hairline),
-                      ),
+                    SessionCard(
                       child: Column(
                         children: [
                           Text(
-                            l10n.yourScore,
-                            style: TextStyle(
-                              fontSize: 13.sp,
-                              color: p.inkMuted,
-                            ),
+                            l10n.yourScore.toUpperCase(),
+                            style: AppTypography.label
+                                .copyWith(color: p.textSecondary),
                           ),
-                          SizedBox(height: 12.h),
-                          Text(
-                            score <= 25
-                                ? '😢'
-                                : score <= 50
-                                    ? '😔'
-                                    : score <= 75
-                                        ? '😊'
-                                        : '🥰',
-                            style: TextStyle(fontSize: 36.sp, height: 1.1),
-                          ),
-                          SizedBox(height: 4.h),
+                          SizedBox(height: AppSpacing.sm.h),
+                          Text(emoji, style: TextStyle(fontSize: 36.sp)),
+                          SizedBox(height: AppSpacing.xxs.h),
                           Text(
                             '$score / 100',
-                            style: AppTypography.heroDisplay.copyWith(
-                              color: p.ink,
-                            ),
+                            style: AppTypography.metric
+                                .copyWith(color: p.textPrimary),
                           ),
-                          SizedBox(height: 24.h),
+                          SizedBox(height: AppSpacing.xl.h),
                           if (psychClass != null) ...[
                             Container(
                               padding: EdgeInsets.symmetric(
-                                horizontal: 20.w,
-                                vertical: 8.h,
+                                horizontal: AppSpacing.lg.w,
+                                vertical: AppSpacing.xs.h,
                               ),
                               decoration: BoxDecoration(
-                                color: p.secondary.withValues(
-                                  alpha: 0.16,
-                                ),
+                                color: p.secondary.withValues(alpha: 0.14),
                                 borderRadius: AppRadius.chip,
                               ),
                               child: Text(
                                 psychClass.className.get(isEnglish),
-                                style: TextStyle(
-                                  color: p.secondary,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15.sp,
-                                ),
+                                style: AppTypography.bodyStrong
+                                    .copyWith(color: p.secondaryText),
                               ),
                             ),
-                            SizedBox(height: 16.h),
+                            SizedBox(height: AppSpacing.md.h),
                             SizedBox(
                               width: 280.w,
                               child: Text(
                                 psychClass.description.get(isEnglish),
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  height: 1.55,
-                                  color: p.inkMuted,
-                                ),
+                                style: AppTypography.body
+                                    .copyWith(color: p.textSecondary),
                               ),
                             ),
-                            SizedBox(height: 16.h),
+                            SizedBox(height: AppSpacing.md.h),
                             Container(
-                              padding: EdgeInsets.all(16.w),
+                              width: double.infinity,
+                              padding: EdgeInsets.all(AppSpacing.md.w),
                               decoration: BoxDecoration(
-                                color: p.strawberrySoft,
+                                color: p.primaryWash,
                                 borderRadius:
-                                    BorderRadius.circular(AppRadius.md),
+                                    BorderRadius.circular(AppRadius.md.r),
                               ),
                               child: Text(
                                 l10n.suggestionLabel(
                                   psychClass.recommendation.get(isEnglish),
                                 ),
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  color: p.ink,
-                                  fontWeight: FontWeight.w600,
-                                  height: 1.5,
-                                ),
+                                style: AppTypography.bodyStrong
+                                    .copyWith(color: p.textPrimary),
                               ),
                             ),
                           ],
                         ],
                       ),
                     ),
-                    SizedBox(height: 36.h),
+                    SizedBox(height: AppSpacing.xxl.h + 4.h),
                     const VoiceprintOrb(mode: VoiceprintMode.idle, size: 160),
-                    SizedBox(height: 36.h),
+                    SizedBox(height: AppSpacing.xxl.h + 4.h),
                     Text(
                       l10n.tryVoiceTestQuestion,
                       textAlign: TextAlign.center,
-                      style: AppTypography.bodyStrong.copyWith(
-                        fontSize: 18.0,
-                        color: p.ink,
-                      ),
+                      style: AppTypography.subtitle
+                          .copyWith(color: p.textPrimary),
                     ),
-                    SizedBox(height: 20.h),
+                    SizedBox(height: AppSpacing.lg.h),
                     PrimaryButton(
                       text: l10n.goToDashboard,
                       onPressed: () async {
@@ -192,38 +167,21 @@ class _PsychResultPageState extends State<PsychResultPage> {
                         context.goNamed(RouteNames.dashboard);
                       },
                     ),
-                    SizedBox(height: 12.h),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 52.h,
-                      child: OutlinedButton(
-                        onPressed: () async {
-                          final authVm = context.read<AuthViewModel>();
-                          if (!authVm.isAuthenticated) {
-                            context.goNamed(RouteNames.postAssessmentChoice);
-                            return;
-                          }
-                          await savePendingOnboardingResults(context);
-                          if (!context.mounted) return;
-                          context.goNamed(RouteNames.liveRecording);
-                        },
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: p.hairline),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppRadius.md),
-                          ),
-                        ),
-                        child: Text(
-                          l10n.tryVoiceTest,
-                          style: TextStyle(
-                            color: p.primary,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                      ),
+                    SizedBox(height: AppSpacing.sm.h),
+                    SecondaryButton(
+                      text: l10n.tryVoiceTest,
+                      onPressed: () async {
+                        final authVm = context.read<AuthViewModel>();
+                        if (!authVm.isAuthenticated) {
+                          context.goNamed(RouteNames.postAssessmentChoice);
+                          return;
+                        }
+                        await savePendingOnboardingResults(context);
+                        if (!context.mounted) return;
+                        context.goNamed(RouteNames.liveRecording);
+                      },
                     ),
-                    SizedBox(height: 24.h),
+                    SizedBox(height: AppSpacing.xl.h),
                   ],
                 ),
               );

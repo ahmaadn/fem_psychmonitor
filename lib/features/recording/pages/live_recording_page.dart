@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/app/config/app_palette.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
-import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/utils/formatter_utils.dart';
 import 'package:fem_psychmonitor/app/widgets/emotion_radar_chart.dart';
 import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
@@ -58,6 +58,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
 
   Future<void> _discardSession() async {
     final l10n = AppLocalizations.of(context)!;
+    final p = context.palette;
     final detector = context.read<EmotionDetector>();
     if (detector.isDetecting ||
         detector.isPaused ||
@@ -66,22 +67,32 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
       final bool? confirm = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
+          backgroundColor: p.surface1,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r),
+            borderRadius: BorderRadius.circular(AppRadius.lg.r),
           ),
-          title: Text(l10n.discardRecordingTitle),
-          content: Text(l10n.discardRecordingMessage),
+          title: Text(
+            l10n.discardRecordingTitle,
+            style: AppTypography.title.copyWith(color: p.textPrimary),
+          ),
+          content: Text(
+            l10n.discardRecordingMessage,
+            style: AppTypography.body.copyWith(color: p.textSecondary),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text(l10n.cancel,
-                  style: const TextStyle(color: AppColors.textSecondary)),
+              child: Text(
+                l10n.cancel,
+                style: AppTypography.button.copyWith(color: p.textSecondary),
+              ),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: Text(l10n.discard,
-                  style: const TextStyle(
-                      color: AppColors.warning, fontWeight: FontWeight.w600)),
+              child: Text(
+                l10n.discard,
+                style: AppTypography.button.copyWith(color: p.errorText),
+              ),
             ),
           ],
         ),
@@ -118,9 +129,12 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final p = context.palette;
     final detector = context.watch<EmotionDetector>();
 
-    final orbColor = detector.latest?.label.color ?? AppColors.primary;
+    final orbColor = detector.latest != null
+        ? p.emotionBase(detector.latest!.label)
+        : p.primary;
 
     return PopScope(
       canPop: false,
@@ -129,136 +143,124 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
         await _discardSession();
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: p.canvas,
         body: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                AppColors.background,
-                Color.lerp(AppColors.background, AppColors.lightStrawberryMilk, 0.45)!,
-              ],
-            ),
-          ),
+          decoration: BoxDecoration(gradient: p.canvasGradient),
           child: SafeArea(
             child: Column(
               children: [
                 Expanded(
                   child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(height: 8.h),
-                      Text(
-                        formatDuration(_elapsed),
-                        style: AppTypography.tagline,
-                      ),
-                      SizedBox(height: 6.h),
-                      Text(
-                        l10n.captureThoughts,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          height: 1.5,
-                          color: AppColors.textSecondary,
+                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(height: AppSpacing.xs.h),
+                        Text(
+                          formatDuration(_elapsed),
+                          style: AppTypography.title.copyWith(color: p.textPrimary),
                         ),
-                      ),
-                      SizedBox(height: 28.h),
-                      VoiceprintOrb(
-                        mode: VoiceprintMode.live,
-                        color: orbColor,
-                        size: 280,
-                        amplitudeStream: detector.onAmplitudeChanged,
-                      ),
-                      SizedBox(height: 24.h),
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 250),
-                        child: detector.latest != null
-                            ? EmotionBadge(result: detector.latest!)
-                            : SizedBox(
-                                key: const ValueKey('hint'),
-                                height: 24.h,
-                                child: Text(
-                                  l10n.startRecordToSee,
-                                  style: TextStyle(
-                                    color: AppColors.textSecondary
-                                        .withValues(alpha: 0.7),
-                                    fontSize: 12.sp,
+                        SizedBox(height: AppSpacing.xxs.h),
+                        Text(
+                          l10n.captureThoughts,
+                          textAlign: TextAlign.center,
+                          style: AppTypography.caption
+                              .copyWith(color: p.textSecondary),
+                        ),
+                        SizedBox(height: AppSpacing.xl.h),
+                        VoiceprintOrb(
+                          mode: VoiceprintMode.live,
+                          color: orbColor,
+                          size: 280,
+                          amplitudeStream: detector.onAmplitudeChanged,
+                        ),
+                        SizedBox(height: AppSpacing.xl.h),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 250),
+                          child: detector.latest != null
+                              ? EmotionBadge(result: detector.latest!)
+                              : SizedBox(
+                                  key: const ValueKey('hint'),
+                                  height: 24.h,
+                                  child: Text(
+                                    l10n.startRecordToSee,
+                                    style: AppTypography.caption.copyWith(
+                                      color: p.textTertiary,
+                                    ),
                                   ),
                                 ),
-                              ),
-                      ),
-                      if (detector.timeline.isNotEmpty) ...[
-                        SizedBox(height: 20.h),
-                        EmotionRadarChart(
-                          height: 200,
-                          title: 'Distribusi live',
-                          values: EmotionRadarChart.averageProbsFromResults(
-                            detector.timeline.map((e) => e.allProbs),
-                          ),
                         ),
-                      ],
-                      SizedBox(height: 16.h),
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 250),
-                        child: detector.isDetecting
-                            ? _VadPill(
-                                key: ValueKey(detector.isSpeaking),
-                                speaking: detector.isSpeaking,
-                                listeningLabel: l10n.vadListening,
-                                speechLabel: l10n.vadSpeechDetected,
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-                      SizedBox(height: 28.h),
-                      _buildPrimaryControl(context, detector),
-                      SizedBox(height: 20.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _GhostAction(
-                            label: l10n.discardLabel,
-                            icon: Icons.delete_outline_rounded,
-                            onTap: _discardSession,
-                          ),
-                          if (detector.isDetecting) ...[
-                            SizedBox(width: 16.w),
-                            _GhostAction(
-                              label: l10n.doneLabel,
-                              icon: Icons.check_rounded,
-                              filled: true,
-                              onTap: _finishSession,
+                        if (detector.timeline.isNotEmpty) ...[
+                          SizedBox(height: AppSpacing.lg.h),
+                          EmotionRadarChart(
+                            height: 200,
+                            title: 'Distribusi live',
+                            values: EmotionRadarChart.averageProbsFromResults(
+                              detector.timeline.map((e) => e.allProbs),
                             ),
-                          ],
+                          ),
                         ],
-                      ),
-                      if (detector.error != null) ...[
-                        SizedBox(height: 16.h),
-                        Text(detector.error!,
-                            style: TextStyle(
-                                fontSize: 12.sp, color: AppColors.warning)),
-                      ],
-                      if (detector.timeline.isNotEmpty) ...[
-                        SizedBox(height: 28.h),
-                        const Divider(color: AppColors.outline, height: 1),
-                        SizedBox(height: 20.h),
-                        ComponentTimeline(
-                          timeline: detector.timeline,
-                          title: l10n.overallEmotionDistribution,
-                          animateFromLastPercent: true,
-                          sortByFrequency: false,
-                          showAllEmotions: true,
+                        SizedBox(height: AppSpacing.md.h),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 250),
+                          child: detector.isDetecting
+                              ? _VadPill(
+                                  key: ValueKey(detector.isSpeaking),
+                                  speaking: detector.isSpeaking,
+                                  listeningLabel: l10n.vadListening,
+                                  speechLabel: l10n.vadSpeechDetected,
+                                )
+                              : const SizedBox.shrink(),
                         ),
-                      ],
-                      SizedBox(height: 24.h),
-                      InfoCard(
-                        title: l10n.privacyCheck,
-                        message: l10n.privacyCheckMessage,
-                        icon: Icons.shield_outlined,
-                      ),
-                      SizedBox(height: 32.h),
+                        SizedBox(height: AppSpacing.xl.h),
+                        _buildPrimaryControl(context, detector),
+                        SizedBox(height: AppSpacing.lg.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _GhostAction(
+                              label: l10n.discardLabel,
+                              icon: Icons.delete_outline_rounded,
+                              onTap: _discardSession,
+                            ),
+                            if (detector.isDetecting) ...[
+                              SizedBox(width: AppSpacing.md.w),
+                              _GhostAction(
+                                label: l10n.doneLabel,
+                                icon: Icons.check_rounded,
+                                filled: true,
+                                onTap: _finishSession,
+                              ),
+                            ],
+                          ],
+                        ),
+                        if (detector.error != null) ...[
+                          SizedBox(height: AppSpacing.md.h),
+                          Text(
+                            detector.error!,
+                            style: AppTypography.caption
+                                .copyWith(color: p.warningText),
+                          ),
+                        ],
+                        if (detector.timeline.isNotEmpty) ...[
+                          SizedBox(height: AppSpacing.xl.h),
+                          Divider(color: p.divider, height: 1),
+                          SizedBox(height: AppSpacing.lg.h),
+                          ComponentTimeline(
+                            timeline: detector.timeline,
+                            title: l10n.overallEmotionDistribution,
+                            animateFromLastPercent: true,
+                            sortByFrequency: false,
+                            showAllEmotions: true,
+                          ),
+                        ],
+                        SizedBox(height: AppSpacing.xl.h),
+                        InfoCard(
+                          title: l10n.privacyCheck,
+                          message: l10n.privacyCheckMessage,
+                          icon: Icons.shield_outlined,
+                        ),
+                        SizedBox(height: AppSpacing.xxl.h),
                       ],
                     ),
                   ),
@@ -272,8 +274,9 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
   }
 
   Widget _buildPrimaryControl(BuildContext context, EmotionDetector detector) {
+    final p = context.palette;
     final bool recording = detector.isDetecting && !detector.isPaused;
-    final Color color = recording ? AppColors.warning : AppColors.primary;
+    final Color color = recording ? p.warning : p.primaryFill;
     final IconData icon = !detector.isDetecting
         ? Icons.mic_rounded
         : detector.isPaused
@@ -290,8 +293,8 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
         }
       },
       child: Container(
-        width: 88.w,
-        height: 88.w,
+        width: 88.r,
+        height: 88.r,
         decoration: BoxDecoration(
           color: color,
           shape: BoxShape.circle,
@@ -303,7 +306,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
             ),
           ],
         ),
-        child: Icon(icon, color: Colors.white, size: 36.sp),
+        child: Icon(icon, color: p.onPrimary, size: 36.sp),
       ),
     );
   }
@@ -323,30 +326,36 @@ class _GhostAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = filled ? AppColors.primary : AppColors.textSecondary;
+    final p = context.palette;
+    final color = filled ? p.primaryText : p.textSecondary;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.md.w,
+          vertical: AppSpacing.xs.h + 2,
+        ),
         decoration: BoxDecoration(
           color: filled
-              ? AppColors.primary.withValues(alpha: 0.12)
+              ? p.primary.withValues(alpha: 0.12)
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(9999.r),
+          borderRadius: AppRadius.button,
           border: Border.all(
             color: filled
-                ? AppColors.primary.withValues(alpha: 0.4)
-                : AppColors.outline,
+                ? p.primary.withValues(alpha: 0.4)
+                : p.divider,
+            width: AppBorder.thin,
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, color: color, size: 16.sp),
-            SizedBox(width: 6.w),
-            Text(label,
-                style: TextStyle(
-                    fontSize: 12.sp, fontWeight: FontWeight.w600, color: color)),
+            SizedBox(width: AppSpacing.xxs.w + 2),
+            Text(
+              label,
+              style: AppTypography.label.copyWith(color: color),
+            ),
           ],
         ),
       ),
@@ -368,13 +377,17 @@ class _VadPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final p = context.palette;
     final label = speaking ? speechLabel : listeningLabel;
-    final color = speaking ? AppColors.primary : AppColors.textSecondary;
+    final color = speaking ? p.primaryText : p.textSecondary;
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm.w,
+        vertical: AppSpacing.xxs.h + 2,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: speaking ? 0.14 : 0.08),
-        borderRadius: BorderRadius.circular(9999.r),
+        borderRadius: AppRadius.chip,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -386,13 +399,11 @@ class _VadPill extends StatelessWidget {
             size: 12.sp,
             color: color,
           ),
-          SizedBox(width: 6.w),
-          Text(label,
-              style: TextStyle(
-                  fontSize: 10.sp,
-                  color: color,
-                  letterSpacing: 0.8,
-                  fontWeight: FontWeight.w600)),
+          SizedBox(width: AppSpacing.xxs.w + 2),
+          Text(
+            label,
+            style: AppTypography.label.copyWith(color: color),
+          ),
         ],
       ),
     );

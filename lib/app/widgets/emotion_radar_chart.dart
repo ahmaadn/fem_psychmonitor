@@ -1,4 +1,3 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
@@ -78,17 +77,17 @@ class EmotionRadarChart extends StatelessWidget {
               ],
               radarBackgroundColor: Colors.transparent,
               borderData: FlBorderData(show: false),
-              radarBorderData: BorderSide(color: p.hairline, width: 1),
+              radarBorderData: BorderSide(color: p.divider, width: 1),
               tickBorderData: BorderSide(
-                color: p.hairline.withValues(alpha: 0.6),
+                color: p.divider.withValues(alpha: 0.6),
               ),
-              gridBorderData: BorderSide(color: p.hairline, width: 1),
-              ticksTextStyle: AppTypography.microLegal.copyWith(
+              gridBorderData: BorderSide(color: p.divider, width: 1),
+              ticksTextStyle: AppTypography.micro.copyWith(
                 color: Colors.transparent,
               ),
               tickCount: 4,
-              titleTextStyle: AppTypography.finePrint.copyWith(
-                color: p.inkMuted,
+              titleTextStyle: AppTypography.caption.copyWith(
+                color: p.textSecondary,
               ),
               getTitle: (index, angle) {
                 final e = EmotionLabelType.values[index];

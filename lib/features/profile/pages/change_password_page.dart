@@ -1,4 +1,3 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
@@ -53,7 +52,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   Future<void> _save() async {
-    final p = context.palette;
     if (!_formKey.currentState!.validate()) return;
 
     final profileVm = context.read<ProfileViewModel>();
@@ -70,21 +68,21 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          backgroundColor: p.primary,
+          backgroundColor: p.primaryFill,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           content: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.check_circle_outline_rounded,
-                color: Colors.white,
+                color: p.onPrimary,
                 size: 18,
               ),
               SizedBox(width: AppSpacing.sm.w),
               Text(
                 l10n.passwordChanged,
-                style: AppTypography.bodyMd.copyWith(color: Colors.white),
+                style: AppTypography.caption.copyWith(color: p.onPrimary),
               ),
             ],
           ),
@@ -102,7 +100,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       case 1:
         return (label: l10n.veryWeak, color: p.warning);
       case 2:
-        return (label: l10n.weak, color: p.primaryFocus);
+        return (label: l10n.weak, color: p.primaryPressed);
       case 3:
         return (label: l10n.medium, color: p.secondary);
       default:
@@ -140,12 +138,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           width: 72.w,
                           height: 72.w,
                           decoration: BoxDecoration(
-                            color: p.strawberry,
+                            color: p.primarySoft,
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.lock_outline_rounded,
-                            color: p.primary,
+                            color: p.primaryText,
                             size: 34.sp,
                           ),
                         ),
@@ -154,8 +152,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       Center(
                         child: Text(
                           l10n.changeAccountPassword,
-                          style: AppTypography.bodySm.copyWith(
-                            color: p.inkMuted.withValues(
+                          style: AppTypography.caption.copyWith(
+                            color: p.textSecondary.withValues(
                               alpha: 0.7,
                             ),
                           ),
@@ -205,7 +203,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                     ),
                                     color: active
                                         ? info.color
-                                        : p.hairline,
+                                        : p.divider,
                                   ),
                                 ),
                               );
@@ -213,7 +211,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             SizedBox(width: AppSpacing.sm.w),
                             Text(
                               info.label,
-                              style: AppTypography.bodySm.copyWith(
+                              style: AppTypography.caption.copyWith(
                                 color: info.color,
                                 fontWeight: FontWeight.w600,
                               ),

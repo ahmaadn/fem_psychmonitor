@@ -1,8 +1,8 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
+import 'package:fem_psychmonitor/app/widgets/session_card.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:fem_psychmonitor/features/onboarding/models/psych_model.dart';
@@ -34,29 +34,21 @@ class CurrentAssessmentCard extends StatelessWidget {
     final hasPsych = psychScore != null || psychClass != null;
     final psychStatus = psychScore == null
         ? null
-        : _ScoreStatus.fromScore(psychScore, isEnglish: isEnglish);
+        : _ScoreStatus.fromScore(psychScore, p, isEnglish: isEnglish);
 
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(18.w),
-      decoration: BoxDecoration(
-        color: p.surface,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: p.hairline),
-      ),
+    return SessionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.currentAssessment, style: AppTypography.bodyStrong.copyWith(fontSize: 16.0)),
-          SizedBox(height: 12.h),
+          Text(
+            l10n.currentAssessment,
+            style: AppTypography.subtitle.copyWith(color: p.textPrimary),
+          ),
+          SizedBox(height: AppSpacing.sm.h),
           if (!hasPsych)
             Text(
               l10n.noAssessmentYet,
-              style: TextStyle(
-                fontSize: 12.sp,
-                height: 1.5,
-                color: p.inkMuted,
-              ),
+              style: AppTypography.body.copyWith(color: p.textSecondary),
             )
           else
             _MentalHealthTile(
@@ -94,12 +86,17 @@ class _ScoreStatus {
   final Color color;
   final String label;
 
-  factory _ScoreStatus.fromScore(int score, {required bool isEnglish}) {
+  /// Semantic bands only — never emotion palette for system score status.
+  factory _ScoreStatus.fromScore(
+    int score,
+    AppPalette p, {
+    required bool isEnglish,
+  }) {
     if (score >= 80) {
       return _ScoreStatus(
         emoji: '🌿',
         icon: Icons.eco_rounded,
-        color: AppColors.emotionHappiness,
+        color: p.successText,
         label: isEnglish ? 'Stable' : 'Stabil',
       );
     }
@@ -107,7 +104,7 @@ class _ScoreStatus {
       return _ScoreStatus(
         emoji: '🙂',
         icon: Icons.sentiment_satisfied_alt_rounded,
-        color: AppColors.primary,
+        color: p.infoText,
         label: isEnglish ? 'Fair' : 'Cukup',
       );
     }
@@ -115,14 +112,14 @@ class _ScoreStatus {
       return _ScoreStatus(
         emoji: '🫧',
         icon: Icons.water_drop_outlined,
-        color: AppColors.secondary,
+        color: p.warningText,
         label: isEnglish ? 'Vulnerable' : 'Rentan',
       );
     }
     return _ScoreStatus(
       emoji: '🛟',
       icon: Icons.health_and_safety_rounded,
-      color: AppColors.warning,
+      color: p.errorText,
       label: isEnglish ? 'Needs attention' : 'Butuh perhatian',
     );
   }
@@ -147,13 +144,13 @@ class _MentalHealthTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final score = _scoreFromText(scoreText);
-    final color = status?.color ?? p.primary;
+    final color = status?.color ?? p.primaryText;
 
     return Container(
-      padding: EdgeInsets.all(14.w),
+      padding: EdgeInsets.all(AppSpacing.sm.w + 2),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.09),
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderRadius: BorderRadius.circular(AppRadius.md.r),
         border: Border.all(color: color.withValues(alpha: 0.16)),
       ),
       child: Column(
@@ -162,8 +159,8 @@ class _MentalHealthTile extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 34.w,
-                height: 34.w,
+                width: 34.r,
+                height: 34.r,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.14),
                   shape: BoxShape.circle,
@@ -175,27 +172,18 @@ class _MentalHealthTile extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: AppSpacing.xs.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
-                        color: p.inkMuted,
-                      ),
+                      label.toUpperCase(),
+                      style: AppTypography.label.copyWith(color: p.textTertiary),
                     ),
                     Text(
                       status?.label ?? '',
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w700,
-                        color: color,
-                      ),
+                      style: AppTypography.bodyStrong.copyWith(color: color),
                     ),
                   ],
                 ),
@@ -207,42 +195,37 @@ class _MentalHealthTile extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 10.h),
+          SizedBox(height: AppSpacing.xs.h + 2),
           Text(
             scoreText,
-            style: AppTypography.tagline,
+            style: AppTypography.subtitle.copyWith(color: p.textPrimary),
           ),
           if (score != null) ...[
-            SizedBox(height: 8.h),
+            SizedBox(height: AppSpacing.xs.h),
             ClipRRect(
               borderRadius: AppRadius.chip,
               child: LinearProgressIndicator(
                 value: score / 100,
                 minHeight: 7.h,
-                backgroundColor: p.strawberry,
+                backgroundColor: p.surface3,
                 valueColor: AlwaysStoppedAnimation<Color>(color),
               ),
             ),
           ],
           if (calculationText != null) ...[
-            SizedBox(height: 8.h),
+            SizedBox(height: AppSpacing.xs.h),
             Text(
               calculationText!,
-              style: TextStyle(
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w700,
+              style: AppTypography.caption.copyWith(
                 color: color,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
-          SizedBox(height: 4.h),
+          SizedBox(height: AppSpacing.xxs.h),
           Text(
             footnote,
-            style: TextStyle(
-              fontSize: 10.sp,
-              height: 1.35,
-              color: p.inkMuted,
-            ),
+            style: AppTypography.caption.copyWith(color: p.textTertiary),
           ),
         ],
       ),

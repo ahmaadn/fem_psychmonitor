@@ -1,4 +1,3 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
@@ -58,8 +57,8 @@ class ProfileMenuItem extends StatelessWidget {
                       style: AppTypography.body.copyWith(
                         fontWeight: FontWeight.w600,
                         color: isDestructive
-                            ? p.primaryFocus
-                            : p.ink,
+                            ? p.primaryPressed
+                            : p.textPrimary,
                       ),
                     ),
                   ),
@@ -68,7 +67,7 @@ class ProfileMenuItem extends StatelessWidget {
                   else if (onTap != null)
                     Icon(
                       Icons.chevron_right_rounded,
-                      color: p.inkFaint,
+                      color: p.textTertiary,
                       size: 22.sp,
                     ),
                 ],
@@ -80,7 +79,7 @@ class ProfileMenuItem extends StatelessWidget {
           Divider(
             height: 1,
             thickness: AppBorder.thin,
-            color: p.hairline,
+            color: p.divider,
             indent: AppSpacing.md.w + 36.w + AppSpacing.md.w,
             endIndent: AppSpacing.md.w,
           ),

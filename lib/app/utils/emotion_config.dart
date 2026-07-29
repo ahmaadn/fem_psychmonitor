@@ -50,54 +50,57 @@ extension EmotionLabelTypeExtension on EmotionLabelType {
     }
   }
 
+  /// Theme-invariant base fill / chart / icon color (DESIGN.md §2.6).
   Color get color {
     switch (this) {
       case EmotionLabelType.happy:
-        return AppColors.emotionHappiness;
+        return AppColors.emotionHappy;
       case EmotionLabelType.sad:
-        return AppColors.emotionSadness;
+        return AppColors.emotionSad;
       case EmotionLabelType.anger:
         return AppColors.emotionAnger;
       case EmotionLabelType.fearful:
-        return AppColors.emotionFear;
+        return AppColors.emotionFearful;
       case EmotionLabelType.disgust:
         return AppColors.emotionDisgust;
       case EmotionLabelType.neutral:
-        return AppColors.emotionNetral;
+        return AppColors.emotionNeutral;
     }
   }
 
-  Color get surfaceColor {
-    switch (this) {
-      case EmotionLabelType.happy:
-        return AppColors.emotionHappinessSurface;
-      case EmotionLabelType.sad:
-        return AppColors.emotionSadnessSurface;
-      case EmotionLabelType.anger:
-        return AppColors.emotionAngerSurface;
-      case EmotionLabelType.fearful:
-        return AppColors.emotionFearSurface;
-      case EmotionLabelType.disgust:
-        return AppColors.emotionDisgustSurface;
-      case EmotionLabelType.neutral:
-        return AppColors.emotionNetralSurface;
-    }
-  }
+  /// Soft chip fill (~15% opacity of base).
+  Color get surfaceColor => color.withValues(alpha: 0.15);
 
-  Color get onColor {
+  /// Prefer [onColorFor] with theme brightness when possible.
+  Color get onColor => onColorFor(Brightness.light);
+
+  Color onColorFor(Brightness brightness) {
+    final dark = brightness == Brightness.dark;
     switch (this) {
-      case EmotionLabelType.anger:
-        return AppColors.onEmotionAnger;
-      case EmotionLabelType.sad:
-        return AppColors.onEmotionSadness;
       case EmotionLabelType.happy:
-        return AppColors.onEmotionHappiness;
-      case EmotionLabelType.disgust:
-        return AppColors.onEmotionDisgust;
+        return dark
+            ? AppColors.emotionHappyOnDark
+            : AppColors.emotionHappyOnLight;
+      case EmotionLabelType.sad:
+        return dark
+            ? AppColors.emotionSadOnDark
+            : AppColors.emotionSadOnLight;
+      case EmotionLabelType.anger:
+        return dark
+            ? AppColors.emotionAngerOnDark
+            : AppColors.emotionAngerOnLight;
       case EmotionLabelType.fearful:
-        return AppColors.onEmotionFear;
+        return dark
+            ? AppColors.emotionFearfulOnDark
+            : AppColors.emotionFearfulOnLight;
+      case EmotionLabelType.disgust:
+        return dark
+            ? AppColors.emotionDisgustOnDark
+            : AppColors.emotionDisgustOnLight;
       case EmotionLabelType.neutral:
-        return AppColors.onEmotionNetral;
+        return dark
+            ? AppColors.emotionNeutralOnDark
+            : AppColors.emotionNeutralOnLight;
     }
   }
 }

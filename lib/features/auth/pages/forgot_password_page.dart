@@ -1,5 +1,6 @@
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
@@ -33,7 +34,7 @@ class ForgotPasswordPage extends StatelessWidget {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_rounded,
-            color: p.inkMuted,
+            color: p.textSecondary,
             size: 22.sp,
           ),
           onPressed: () => _goBack(context),
@@ -43,22 +44,19 @@ class ForgotPasswordPage extends StatelessWidget {
         decoration: BoxDecoration(gradient: p.canvasGradient),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 8.h),
+                SizedBox(height: AppSpacing.xs.h),
                 const VoiceprintOrb(mode: VoiceprintMode.idle, size: 140),
-                SizedBox(height: 24.h),
+                SizedBox(height: AppSpacing.xl.h),
                 Text(
                   l10n.resetPassword,
                   textAlign: TextAlign.center,
-                  style: AppTypography.displayMd.copyWith(
-                    fontSize: 28.0,
-                    color: p.ink,
-                  ),
+                  style: AppTypography.display.copyWith(color: p.textPrimary),
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: AppSpacing.xs.h),
                 SizedBox(
                   width: 300.w,
                   child: Text(
@@ -66,19 +64,18 @@ class ForgotPasswordPage extends StatelessWidget {
                     'Jika Anda masih login di perangkat ini, gunakan Ganti password di Pengaturan. '
                     'Jika tidak, hubungi dukungan atau buat akun baru.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13.sp,
+                    style: AppTypography.caption.copyWith(
+                      color: p.textSecondary,
                       height: 1.55,
-                      color: p.inkMuted,
                     ),
                   ),
                 ),
-                SizedBox(height: 28.h),
+                SizedBox(height: AppSpacing.xxl.h - 4.h),
                 PrimaryButton(
                   text: l10n.back,
                   onPressed: () => context.goNamed(RouteNames.login),
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: AppSpacing.xl.h),
                 Center(
                   child: AuthFooterPrompt(
                     text: l10n.rememberPassword,
@@ -92,7 +89,7 @@ class ForgotPasswordPage extends StatelessWidget {
                     },
                   ),
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: AppSpacing.xl.h),
               ],
             ),
           ),

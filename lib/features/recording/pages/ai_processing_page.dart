@@ -1,8 +1,9 @@
-import 'dart:io';
+import 'package:fem_psychmonitor/app/utils/fs_support.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/data/models/detection_result_model.dart';
 import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
@@ -88,8 +89,7 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
         }
 
         final dominant = dominantFromResults(timeline);
-        final selfReport =
-            await _loadTodayMood(authVm.currentUser!.id);
+        final selfReport = await _loadTodayMood(authVm.currentUser!.id);
 
         final session = DetectionSessionModel(
           id: sessionId,
@@ -192,13 +192,7 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
   }
 
   Future<void> _cleanupTempAudio(String? path) async {
-    if (path == null || path.trim().isEmpty) return;
-    try {
-      final file = File(path);
-      if (await file.exists()) {
-        await file.delete();
-      }
-    } catch (_) {}
+    await deleteLocalPath(path);
   }
 
   @override
@@ -214,7 +208,7 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
         leading: IconButton(
           icon: Icon(
             Icons.close_rounded,
-            color: p.inkMuted,
+            color: p.textSecondary,
             size: 22.sp,
           ),
           onPressed: () {
@@ -224,12 +218,7 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
         ),
         title: Text(
           l10n.analysis,
-          style: TextStyle(
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1.0,
-            color: p.inkMuted,
-          ),
+          style: AppTypography.label.copyWith(color: p.textSecondary),
         ),
         centerTitle: true,
       ),
@@ -238,7 +227,10 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.pageX.w,
+                vertical: AppSpacing.xl.h,
+              ),
               child: _noSpeech
                   ? _buildNoSpeechState(context, l10n)
                   : _buildProcessingState(context, l10n),
@@ -251,32 +243,27 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
 
   Widget _buildProcessingState(BuildContext context, AppLocalizations l10n) {
     final p = context.palette;
+    final err = _processingError;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         VoiceprintOrb(
           mode: VoiceprintMode.idle,
-          color: _processingError == null
-              ? p.primary
-              : p.warning,
+          color: err == null ? p.primaryFill : p.warning,
           size: 240,
         ),
-        SizedBox(height: 40.h),
+        SizedBox(height: AppSpacing.xxl.h + 8.h),
         Text(
           l10n.analyzingEmotions,
-          style: AppTypography.displayMd.copyWith(fontSize: 28.0),
+          style: AppTypography.display.copyWith(color: p.textPrimary),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 12.h),
+        SizedBox(height: AppSpacing.sm.h),
         Text(
-          _processingError ?? l10n.compilingInsights,
+          err ?? l10n.compilingInsights,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 13.sp,
-            height: 1.5,
-            color: _processingError == null
-                ? p.inkMuted
-                : p.warning,
+          style: AppTypography.body.copyWith(
+            color: err == null ? p.textSecondary : p.warningText,
           ),
         ),
       ],
@@ -290,54 +277,30 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
       children: [
         VoiceprintOrb(
           mode: VoiceprintMode.static,
-          color: p.primary,
+          color: p.primaryFill,
           size: 200,
           confidence: 0.18,
         ),
-        SizedBox(height: 32.h),
+        SizedBox(height: AppSpacing.xxl.h),
         Text(
           l10n.noSpeechDetected,
-          style: AppTypography.tagline.copyWith(fontSize: 24.0),
+          style: AppTypography.title.copyWith(color: p.textPrimary),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 12.h),
+        SizedBox(height: AppSpacing.sm.h),
         SizedBox(
           width: 280.w,
           child: Text(
             l10n.noSpeechDetectedHint,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 13.sp,
-              height: 1.5,
-              color: p.inkMuted,
-            ),
+            style: AppTypography.body.copyWith(color: p.textSecondary),
           ),
         ),
-        SizedBox(height: 32.h),
-        GestureDetector(
-          onTap: () => context.goNamed(RouteNames.liveRecording),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
-            decoration: BoxDecoration(
-              color: p.primary,
-              borderRadius: AppRadius.chip,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.mic_rounded, color: Colors.white, size: 18.sp),
-                SizedBox(width: 8.w),
-                Text(
-                  l10n.tryRecordAgain,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
+        SizedBox(height: AppSpacing.xxl.h),
+        PrimaryButton(
+          text: l10n.tryRecordAgain,
+          prefixIcon: Icons.mic_rounded,
+          onPressed: () => context.goNamed(RouteNames.liveRecording),
         ),
       ],
     );

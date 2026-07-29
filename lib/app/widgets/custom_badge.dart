@@ -27,11 +27,11 @@ class CustomBadge extends StatelessWidget {
     final p = context.palette;
     return CustomBadge(
       text: text,
-      backgroundColor: p.strawberry,
-      textColor: p.primaryFocus,
-      borderColor: p.hairline,
+      backgroundColor: p.primarySoft,
+      textColor: p.primaryText,
+      borderColor: p.divider,
       icon: icon,
-      iconColor: p.primary,
+      iconColor: p.primaryText,
     );
   }
 
@@ -40,11 +40,11 @@ class CustomBadge extends StatelessWidget {
     final p = context.palette;
     return CustomBadge(
       text: text,
-      backgroundColor: p.matchaSoft,
-      textColor: p.secondary,
+      backgroundColor: p.secondaryWash,
+      textColor: p.secondaryText,
       borderColor: p.secondary.withValues(alpha: 0.25),
       icon: icon,
-      iconColor: p.secondary,
+      iconColor: p.secondaryText,
     );
   }
 
@@ -60,7 +60,7 @@ class CustomBadge extends StatelessWidget {
         color: backgroundColor,
         borderRadius: AppRadius.chip,
         border: Border.all(
-          color: borderColor ?? p.hairline,
+          color: borderColor ?? p.divider,
           width: AppBorder.thin,
         ),
       ),
@@ -73,11 +73,7 @@ class CustomBadge extends StatelessWidget {
           ],
           Text(
             text,
-            style: AppTypography.finePrint.copyWith(
-              color: textColor,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.2,
-            ),
+            style: AppTypography.label.copyWith(color: textColor),
           ),
         ],
       ),

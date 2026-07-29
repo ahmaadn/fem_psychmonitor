@@ -1,4 +1,3 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
@@ -13,7 +12,6 @@ class AppGuideSheet extends StatefulWidget {
   const AppGuideSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    final p = context.palette;
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -35,21 +33,21 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
     _GuideStep(
       icon: Icons.mic_rounded,
       iconColor: p.primary,
-      iconBg: p.strawberry,
+      iconBg: p.primarySoft,
       title: l10n.recordVoiceGuide,
       description: l10n.recordVoiceGuideDesc,
     ),
     _GuideStep(
       icon: Icons.insights_rounded,
-      iconColor: p.primaryFocus,
-      iconBg: p.strawberrySoft,
+      iconColor: p.primaryPressed,
+      iconBg: p.primaryWash,
       title: l10n.viewEmotionInsights,
       description: l10n.viewInsightsDesc,
     ),
     _GuideStep(
       icon: Icons.calendar_month_rounded,
       iconColor: p.primary,
-      iconBg: p.strawberry,
+      iconBg: p.primarySoft,
       title: l10n.monitorCycle,
       description: l10n.monitorCycleDesc,
     ),
@@ -69,7 +67,7 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
       builder: (_, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: p.surface,
+            color: p.surface1,
             borderRadius: AppRadius.sheet,
           ),
           child: Column(
@@ -80,7 +78,7 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                   width: 40.w,
                   height: 4.h,
                   decoration: BoxDecoration(
-                    color: p.hairline,
+                    color: p.divider,
                     borderRadius: AppRadius.chip,
                   ),
                 ),
@@ -98,7 +96,7 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                       width: 40.w,
                       height: 40.w,
                       decoration: BoxDecoration(
-                        color: p.strawberry,
+                        color: p.primarySoft,
                         borderRadius: AppRadius.tile,
                       ),
                       child: Icon(
@@ -112,11 +110,11 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n.appGuideTitle, style: AppTypography.h2),
+                          Text(l10n.appGuideTitle, style: AppTypography.subtitle),
                           Text(
                             l10n.stepsToStart(steps.length),
-                            style: AppTypography.bodySm.copyWith(
-                              color: p.inkMuted,
+                            style: AppTypography.caption.copyWith(
+                              color: p.textSecondary,
                             ),
                           ),
                         ],
@@ -126,7 +124,7 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                       onPressed: () => Navigator.of(context).pop(),
                       icon: Icon(
                         Icons.close_rounded,
-                        color: p.inkMuted,
+                        color: p.textSecondary,
                         size: 22.sp,
                       ),
                     ),
@@ -154,7 +152,7 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                           style: AppTypography.label.copyWith(
                             color: isSelected
                                 ? p.onPrimary
-                                : p.inkFaint,
+                                : p.textTertiary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -167,7 +165,7 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
               Divider(
                 height: 1,
                 thickness: AppBorder.thin,
-                color: p.hairline,
+                color: p.divider,
               ),
               // Content
               Expanded(
@@ -200,9 +198,9 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                         child: SecondaryButton(
                           text: l10n.previous,
                           onPressed: () => setState(() => _selectedStep--),
-                          backgroundColor: p.strawberry,
-                          textColor: p.primaryFocus,
-                          borderColor: p.hairline,
+                          backgroundColor: p.primarySoft,
+                          textColor: p.primaryPressed,
+                          borderColor: p.divider,
                         ),
                       ),
                       SizedBox(width: AppSpacing.md.w),
@@ -282,19 +280,19 @@ class _StepContent extends StatelessWidget {
           decoration: p.pillFill(step.iconBg),
           child: Text(
             l10n.stepOf(index + 1, totalSteps),
-            style: AppTypography.bodySm.copyWith(
+            style: AppTypography.caption.copyWith(
               color: step.iconColor,
               fontWeight: FontWeight.w600,
             ),
           ),
         ),
         SizedBox(height: AppSpacing.md.h),
-        Text(step.title, style: AppTypography.h2, textAlign: TextAlign.center),
+        Text(step.title, style: AppTypography.subtitle, textAlign: TextAlign.center),
         SizedBox(height: AppSpacing.sm.h),
         Text(
           step.description,
-          style: AppTypography.bodyMd.copyWith(
-            color: p.inkMuted,
+          style: AppTypography.caption.copyWith(
+            color: p.textSecondary,
             height: 1.7,
           ),
           textAlign: TextAlign.center,

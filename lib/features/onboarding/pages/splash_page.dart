@@ -89,19 +89,18 @@ class _SplashPageState extends State<SplashPage>
                         Text(
                           l10n.appName,
                           textAlign: TextAlign.center,
-                          style: AppTypography.heroDisplay.copyWith(
+                          style: AppTypography.display.copyWith(
                             fontSize: 36.0,
-                            color: p.ink,
+                            color: p.textPrimary,
                           ),
                         ),
                         SizedBox(height: 10.h),
                         Text(
                           l10n.appTagline,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13.sp,
+                          style: AppTypography.caption.copyWith(
+                            color: p.textSecondary,
                             height: 1.6,
-                            color: p.inkMuted,
                           ),
                         ),
                       ],
@@ -125,9 +124,9 @@ class _SplashPageState extends State<SplashPage>
                               child: LinearProgressIndicator(
                                 value: _progressController.value,
                                 minHeight: 5.h,
-                                backgroundColor: p.strawberry,
+                                backgroundColor: p.primarySoft,
                                 valueColor:
-                                    AlwaysStoppedAnimation(p.primary),
+                                    AlwaysStoppedAnimation(p.primaryFill),
                               ),
                             ),
                           ),
@@ -135,16 +134,14 @@ class _SplashPageState extends State<SplashPage>
                         SizedBox(height: 12.h),
                         Icon(
                           Icons.keyboard_arrow_up_rounded,
-                          color: p.inkMuted,
+                          color: p.textSecondary,
                           size: 22.sp,
                         ),
                         SizedBox(height: 2.h),
                         Text(
                           l10n.swipeUpToStart,
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            letterSpacing: 0.4,
-                            color: p.inkMuted,
+                          style: AppTypography.label.copyWith(
+                            color: p.textSecondary,
                           ),
                         ),
                       ],

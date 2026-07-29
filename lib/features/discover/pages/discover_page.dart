@@ -157,7 +157,7 @@ class _DiscoverPageState extends State<DiscoverPage>
       builder: (ctx) {
         return Container(
           decoration: BoxDecoration(
-            color: p.surface,
+            color: p.surface1,
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(AppRadius.xl),
             ),
@@ -169,7 +169,7 @@ class _DiscoverPageState extends State<DiscoverPage>
             builder: (_, controller) {
               if (sessions.isEmpty) {
                 return Padding(
-                  padding: EdgeInsets.all(24.w),
+                  padding: EdgeInsets.all(AppSpacing.pageX.w),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -178,19 +178,19 @@ class _DiscoverPageState extends State<DiscoverPage>
                         width: 36.w,
                         height: 4.h,
                         decoration: BoxDecoration(
-                          color: p.hairline,
+                          color: p.divider,
                           borderRadius: AppRadius.chip,
                         ),
                       ),
                       SizedBox(height: AppSpacing.md.h),
                       Text(
                         DateFormat.yMMMMd().format(day),
-                        style: AppTypography.tagline.copyWith(color: p.ink),
+                        style: AppTypography.subtitle.copyWith(color: p.textPrimary),
                       ),
                       SizedBox(height: AppSpacing.sm.h),
                       Text(
                         labels.emptyDay,
-                        style: AppTypography.caption.copyWith(color: p.inkMuted),
+                        style: AppTypography.caption.copyWith(color: p.textSecondary),
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: AppSpacing.lg.h),
@@ -223,14 +223,14 @@ class _DiscoverPageState extends State<DiscoverPage>
                       height: 4.h,
                       margin: EdgeInsets.only(bottom: AppSpacing.md.h),
                       decoration: BoxDecoration(
-                        color: p.hairline,
+                        color: p.divider,
                         borderRadius: AppRadius.chip,
                       ),
                     ),
                   ),
                   Text(
                     DateFormat.yMMMMd().format(day),
-                    style: AppTypography.tagline.copyWith(color: p.ink),
+                    style: AppTypography.subtitle.copyWith(color: p.textPrimary),
                   ),
                   SizedBox(height: AppSpacing.sm.h),
                   Wrap(
@@ -259,8 +259,8 @@ class _DiscoverPageState extends State<DiscoverPage>
                                 SizedBox(width: 4.w),
                                 Text(
                                   '${e.key.displayName}: ${e.value}',
-                                  style: AppTypography.finePrint
-                                      .copyWith(color: p.ink),
+                                  style: AppTypography.caption
+                                      .copyWith(color: p.textPrimary),
                                 ),
                               ],
                             ),
@@ -273,9 +273,9 @@ class _DiscoverPageState extends State<DiscoverPage>
                     (s) => Container(
                       margin: EdgeInsets.only(bottom: AppSpacing.xs.h),
                       decoration: BoxDecoration(
-                        color: p.surface,
+                        color: p.surface1,
                         borderRadius: AppRadius.card,
-                        border: Border.all(color: p.hairline),
+                        border: Border.all(color: p.divider),
                       ),
                       child: ListTile(
                         leading: Container(
@@ -294,15 +294,15 @@ class _DiscoverPageState extends State<DiscoverPage>
                         title: Text(
                           s.displayEmotion.displayName,
                           style:
-                              AppTypography.bodyStrong.copyWith(color: p.ink),
+                              AppTypography.bodyStrong.copyWith(color: p.textPrimary),
                         ),
                         subtitle: Text(
                           '${s.duration.inMinutes}m ${s.duration.inSeconds % 60}s · ${DateFormat.Hm().format(s.startedAt)}',
                           style:
-                              AppTypography.caption.copyWith(color: p.inkMuted),
+                              AppTypography.caption.copyWith(color: p.textSecondary),
                         ),
                         trailing: Icon(Icons.chevron_right_rounded,
-                            color: p.inkFaint, size: 18.sp),
+                            color: p.textTertiary, size: 18.sp),
                         onTap: () {
                           Navigator.pop(ctx);
                           context.pushNamed(
@@ -360,11 +360,11 @@ class _DiscoverHeader extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            p.strawberry,
-            Color.lerp(p.strawberry, p.matcha, 0.08)!,
+            p.primarySoft,
+            Color.lerp(p.primarySoft, p.secondarySoft, 0.08)!,
           ],
         ),
-        border: Border(bottom: BorderSide(color: p.hairline, width: AppBorder.thin)),
+        border: Border(bottom: BorderSide(color: p.divider, width: AppBorder.thin)),
       ),
       child: SafeArea(
         bottom: false,
@@ -380,7 +380,7 @@ class _DiscoverHeader extends StatelessWidget {
               ),
               child: Text(
                 labels.discover,
-                style: AppTypography.displayLg.copyWith(color: p.ink),
+                style: AppTypography.display.copyWith(color: p.textPrimary),
               ),
             ),
             SizedBox(height: AppSpacing.xs.h),
@@ -406,7 +406,7 @@ class _DiscoverHeader extends StatelessWidget {
                         Text(
                           '$year',
                           style: AppTypography.bodyStrong.copyWith(
-                            color: p.primaryFocus,
+                            color: p.primaryPressed,
                           ),
                         ),
                         SizedBox(width: AppSpacing.xs.w),
@@ -438,7 +438,7 @@ class _DiscoverHeader extends StatelessWidget {
                   indicatorSize: TabBarIndicatorSize.tab,
                   dividerColor: Colors.transparent,
                   indicator: BoxDecoration(
-                    color: p.primary,
+                    color: p.primaryText,
                     borderRadius: AppRadius.chip,
                     boxShadow: [
                       BoxShadow(
@@ -449,8 +449,8 @@ class _DiscoverHeader extends StatelessWidget {
                     ],
                   ),
                   labelColor: p.onPrimary,
-                  unselectedLabelColor: p.primaryFocus,
-                  labelStyle: AppTypography.captionStrong,
+                  unselectedLabelColor: p.primaryPressed,
+                  labelStyle: AppTypography.label,
                   tabs: [
                     Tab(text: labels.calendar),
                     Tab(text: labels.journal),
@@ -482,7 +482,7 @@ class _YearChevron extends StatelessWidget {
           color: p.primary.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
-        child: Icon(icon, color: p.primaryFocus, size: 16.sp),
+        child: Icon(icon, color: p.primaryPressed, size: 16.sp),
       ),
     );
   }
@@ -515,7 +515,7 @@ class _PrimaryPill extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [p.primary, p.primaryFocus],
+            colors: [p.primary, p.primaryPressed],
           ),
           borderRadius: BorderRadius.circular(AppRadius.pill),
           boxShadow: [
@@ -576,7 +576,7 @@ class _MonthBlock extends StatelessWidget {
             children: [
               Text(
                 DateFormat.MMMM().format(month),
-                style: AppTypography.bodyStrong.copyWith(color: p.ink),
+                style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
               ),
               SizedBox(width: AppSpacing.xs.w),
               if (trackedCount > 0)
@@ -586,13 +586,13 @@ class _MonthBlock extends StatelessWidget {
                     vertical: 2.h,
                   ),
                   decoration: BoxDecoration(
-                    color: p.strawberry,
+                    color: p.primarySoft,
                     borderRadius: AppRadius.chip,
                   ),
                   child: Text(
                     '$trackedCount',
-                    style: AppTypography.microLegal.copyWith(
-                      color: p.primaryFocus,
+                    style: AppTypography.label.copyWith(
+                      color: p.primaryPressed,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -626,22 +626,22 @@ class _MonthBlock extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: today
-                        ? p.strawberry
+                        ? p.primarySoft
                         : (emotion != null
                             ? emotion.surfaceColor
-                            : p.strawberrySoft.withValues(alpha: 0.5)),
+                            : p.primaryWash.withValues(alpha: 0.5)),
                     border: Border.all(
                       color: today
                           ? p.primary
                           : (emotion != null
-                              ? emotion.color.withValues(alpha: 0.4)
-                              : p.hairline),
+                              ? p.emotionBase(emotion).withValues(alpha: 0.4)
+                              : p.divider),
                       width: today ? AppBorder.thick : AppBorder.thin,
                     ),
                     boxShadow: emotion != null && !today
                         ? [
                             BoxShadow(
-                              color: emotion.color.withValues(alpha: 0.15),
+                              color: p.emotionBase(emotion).withValues(alpha: 0.15),
                               blurRadius: 4,
                               offset: const Offset(0, 1),
                             ),
@@ -657,20 +657,20 @@ class _MonthBlock extends StatelessWidget {
                       else
                         Text(
                           '$day',
-                          style: AppTypography.finePrint.copyWith(
+                          style: AppTypography.caption.copyWith(
                             fontWeight:
                                 today ? FontWeight.w700 : FontWeight.w500,
-                            color: today ? p.primaryFocus : p.inkMuted,
+                            color: today ? p.primaryPressed : p.textSecondary,
                           ),
                         ),
                       if (emotion != null)
                         Text(
                           '$day',
-                          style: AppTypography.microLegal.copyWith(
+                          style: AppTypography.label.copyWith(
                             fontWeight: today
                                 ? FontWeight.w700
                                 : FontWeight.w400,
-                            color: today ? p.primaryFocus : p.inkFaint,
+                            color: today ? p.primaryPressed : p.textTertiary,
                             height: 1,
                           ),
                         ),
@@ -681,7 +681,7 @@ class _MonthBlock extends StatelessWidget {
             },
           ),
           SizedBox(height: AppSpacing.xs.h),
-          Divider(color: p.hairline, height: 1),
+          Divider(color: p.divider, height: 1),
         ],
       ),
     );
@@ -735,13 +735,13 @@ class _JournalTab extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: sel
                           ? LinearGradient(
-                              colors: [p.primary, p.primaryFocus],
+                              colors: [p.primary, p.primaryPressed],
                             )
                           : null,
-                      color: sel ? null : p.surface,
+                      color: sel ? null : p.surface1,
                       borderRadius: AppRadius.chip,
                       border: Border.all(
-                        color: sel ? p.primaryFocus : p.hairline,
+                        color: sel ? p.primaryPressed : p.divider,
                         width: AppBorder.thin,
                       ),
                       boxShadow: sel
@@ -756,8 +756,8 @@ class _JournalTab extends StatelessWidget {
                     ),
                     child: Text(
                       e.value,
-                      style: AppTypography.captionStrong.copyWith(
-                        color: sel ? p.onPrimary : p.inkMuted,
+                      style: AppTypography.label.copyWith(
+                        color: sel ? p.onPrimary : p.textSecondary,
                       ),
                     ),
                   ),
@@ -791,13 +791,13 @@ class _JournalTab extends StatelessWidget {
             vertical: AppSpacing.xxs.h,
           ),
           decoration: BoxDecoration(
-            color: p.strawberry,
+            color: p.primarySoft,
             borderRadius: AppRadius.chip,
           ),
           child: Text(
             '${labels.recordingsCount}: ${sessions.length}',
-            style: AppTypography.finePrint.copyWith(
-              color: p.primaryFocus,
+            style: AppTypography.caption.copyWith(
+              color: p.primaryPressed,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -823,12 +823,12 @@ class _ChartSection extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(AppSpacing.md.w),
       decoration: BoxDecoration(
-        color: p.surface,
+        color: p.surface1,
         borderRadius: AppRadius.card,
-        border: Border.all(color: p.hairline, width: AppBorder.thin),
+        border: Border.all(color: p.divider, width: AppBorder.thin),
         boxShadow: [
           BoxShadow(
-            color: p.shadow,
+            color: p.shadowRaised,
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -843,15 +843,15 @@ class _ChartSection extends StatelessWidget {
                 width: 28.w,
                 height: 28.w,
                 decoration: BoxDecoration(
-                  color: p.strawberry,
+                  color: p.primarySoft,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: Icon(icon, color: p.primaryFocus, size: 14.sp),
+                child: Icon(icon, color: p.primaryPressed, size: 14.sp),
               ),
               SizedBox(width: AppSpacing.xs.w),
               Text(
                 title,
-                style: AppTypography.bodyStrong.copyWith(color: p.ink),
+                style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
               ),
             ],
           ),

@@ -19,9 +19,8 @@ class PageHeader extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          style: AppTypography.displayLg.copyWith(
-            color: p.primary,
-            fontWeight: FontWeight.w700,
+          style: AppTypography.display.copyWith(
+            color: p.primaryText,
           ),
         ),
         SizedBox(height: AppSpacing.sm.h),
@@ -29,8 +28,7 @@ class PageHeader extends StatelessWidget {
           subtitle,
           textAlign: TextAlign.center,
           style: AppTypography.body.copyWith(
-            color: p.inkMuted,
-            height: 1.45,
+            color: p.textSecondary,
           ),
         ),
       ],

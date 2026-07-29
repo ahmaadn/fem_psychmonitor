@@ -1,9 +1,11 @@
+import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+/// Primary pill — primary-500 fill, on-primary text (DESIGN.md §4).
 class PrimaryButton extends StatefulWidget {
   final String text;
   final VoidCallback onPressed;
@@ -33,6 +35,11 @@ class _PrimaryButtonState extends State<PrimaryButton> {
   Widget build(BuildContext context) {
     final p = context.palette;
     final disabled = widget.isDisabled || widget.isLoading;
+    final fill = disabled
+        ? (p.isDark ? p.surface2 : p.primaryDisabled)
+        : (_pressed ? p.primaryPressed : AppColors.primary500);
+    final fg = disabled ? p.textTertiary : AppColors.onPrimary;
+
     return GestureDetector(
       onTapDown: disabled ? null : (_) => setState(() => _pressed = true),
       onTapUp: disabled
@@ -42,49 +49,54 @@ class _PrimaryButtonState extends State<PrimaryButton> {
               widget.onPressed();
             },
       onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedScale(
-        scale: _pressed ? 0.95 : 1,
+      child: AnimatedContainer(
         duration: const Duration(milliseconds: 80),
-        child: Container(
-          width: double.infinity,
-          height: AppSpacing.touch.h,
-          alignment: Alignment.center,
-          decoration: p.pillFill(disabled ? p.strawberry : p.primary),
-          child: widget.isLoading
-              ? SizedBox(
-                  height: 22.h,
-                  width: 22.h,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(p.onPrimary),
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (widget.prefixIcon != null) ...[
-                      Icon(widget.prefixIcon, size: 18.sp, color: p.onPrimary),
-                      SizedBox(width: AppSpacing.xs.w),
-                    ],
-                    Text(
-                      widget.text,
-                      style: AppTypography.body.copyWith(
-                        color: disabled ? p.inkFaint : p.onPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (widget.suffixIcon != null) ...[
-                      SizedBox(width: AppSpacing.xs.w),
-                      Icon(widget.suffixIcon, size: 18.sp, color: p.onPrimary),
-                    ],
-                  ],
-                ),
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.buttonX.w,
+          vertical: AppSpacing.buttonY.h,
         ),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: AppRadius.button,
+        ),
+        child: widget.isLoading
+            ? SizedBox(
+                height: 22.h,
+                width: 22.h,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(fg),
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (widget.prefixIcon != null) ...[
+                    Icon(widget.prefixIcon, size: 18.sp, color: fg),
+                    SizedBox(width: AppSpacing.xs.w),
+                  ],
+                  Flexible(
+                    child: Text(
+                      widget.text,
+                      textAlign: TextAlign.center,
+                      style: AppTypography.button.copyWith(color: fg),
+                    ),
+                  ),
+                  if (widget.suffixIcon != null) ...[
+                    SizedBox(width: AppSpacing.xs.w),
+                    Icon(widget.suffixIcon, size: 18.sp, color: fg),
+                  ],
+                ],
+              ),
       ),
     );
   }
 }
 
+/// Secondary pill — transparent, 1.5px secondary-500 border, secondary text.
 class SecondaryButton extends StatefulWidget {
   final String text;
   final String? subText;
@@ -93,6 +105,7 @@ class SecondaryButton extends StatefulWidget {
   final Color? backgroundColor;
   final Color? textColor;
   final Color? borderColor;
+  final bool isDisabled;
 
   const SecondaryButton({
     super.key,
@@ -103,6 +116,7 @@ class SecondaryButton extends StatefulWidget {
     this.backgroundColor,
     this.textColor,
     this.borderColor,
+    this.isDisabled = false,
   });
 
   @override
@@ -115,17 +129,23 @@ class _SecondaryButtonState extends State<SecondaryButton> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final fg = widget.textColor ?? p.primary;
-    final border = widget.borderColor ?? p.primary;
+    final disabled = widget.isDisabled;
+    final fg = widget.textColor ??
+        (disabled ? p.textTertiary : p.secondaryText);
+    final border = widget.borderColor ??
+        (disabled ? p.divider : AppColors.secondary500);
+
     return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) {
-        setState(() => _pressed = false);
-        widget.onPressed();
-      },
+      onTapDown: disabled ? null : (_) => setState(() => _pressed = true),
+      onTapUp: disabled
+          ? null
+          : (_) {
+              setState(() => _pressed = false);
+              widget.onPressed();
+            },
       onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedScale(
-        scale: _pressed ? 0.95 : 1,
+      child: AnimatedOpacity(
+        opacity: _pressed ? 0.85 : 1,
         duration: const Duration(milliseconds: 80),
         child: Container(
           width: double.infinity,
@@ -135,9 +155,9 @@ class _SecondaryButtonState extends State<SecondaryButton> {
             horizontal: AppSpacing.buttonX.w,
           ),
           decoration: BoxDecoration(
-            color: widget.backgroundColor ?? p.surface,
+            color: widget.backgroundColor ?? Colors.transparent,
             borderRadius: AppRadius.button,
-            border: Border.all(color: border, width: AppBorder.thin),
+            border: Border.all(color: border, width: AppBorder.medium),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -150,10 +170,7 @@ class _SecondaryButtonState extends State<SecondaryButton> {
                 child: Text(
                   widget.text,
                   textAlign: TextAlign.center,
-                  style: AppTypography.body.copyWith(
-                    color: fg,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTypography.button.copyWith(color: fg),
                 ),
               ),
               if (widget.subText != null) ...[
@@ -161,13 +178,46 @@ class _SecondaryButtonState extends State<SecondaryButton> {
                 Text(
                   widget.subText!,
                   style: AppTypography.caption
-                      .copyWith(color: fg.withValues(alpha: 0.6)),
+                      .copyWith(color: fg.withValues(alpha: 0.7)),
                 ),
               ],
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Text button — primary-600 / primary-400, no fill.
+class AppTextButton extends StatelessWidget {
+  final String text;
+  final VoidCallback? onPressed;
+  final bool isDisabled;
+
+  const AppTextButton({
+    super.key,
+    required this.text,
+    this.onPressed,
+    this.isDisabled = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final disabled = isDisabled || onPressed == null;
+    return TextButton(
+      onPressed: disabled ? null : onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: p.primaryText,
+        disabledForegroundColor: p.textTertiary,
+        textStyle: AppTypography.button,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm.w,
+          vertical: AppSpacing.xs.h,
+        ),
+      ),
+      child: Text(text),
     );
   }
 }
@@ -200,6 +250,11 @@ class _MatchaButtonState extends State<MatchaButton> {
   Widget build(BuildContext context) {
     final p = context.palette;
     final disabled = widget.isDisabled || widget.isLoading;
+    final fill = disabled
+        ? (p.isDark ? p.surface2 : p.secondaryDisabled)
+        : (_pressed ? p.secondaryPressed : AppColors.secondary500);
+    final fg = disabled ? p.textTertiary : AppColors.onSecondary;
+
     return GestureDetector(
       onTapDown: disabled ? null : (_) => setState(() => _pressed = true),
       onTapUp: disabled
@@ -209,41 +264,40 @@ class _MatchaButtonState extends State<MatchaButton> {
               widget.onPressed();
             },
       onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedScale(
-        scale: _pressed ? 0.95 : 1,
+      child: AnimatedContainer(
         duration: const Duration(milliseconds: 80),
-        child: Container(
-          width: double.infinity,
-          height: AppSpacing.touch.h,
-          alignment: Alignment.center,
-          decoration: p.pillFill(disabled ? p.matchaSoft : p.secondary),
-          child: widget.isLoading
-              ? SizedBox(
-                  height: 22.h,
-                  width: 22.h,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(p.onSecondary),
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (widget.prefixIcon != null) ...[
-                      Icon(widget.prefixIcon,
-                          size: 18.sp, color: p.onSecondary),
-                      SizedBox(width: AppSpacing.xs.w),
-                    ],
-                    Text(
-                      widget.text,
-                      style: AppTypography.body.copyWith(
-                        color: disabled ? p.inkFaint : p.onSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.buttonX.w,
+          vertical: AppSpacing.buttonY.h,
         ),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: AppRadius.button,
+        ),
+        child: widget.isLoading
+            ? SizedBox(
+                height: 22.h,
+                width: 22.h,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(fg),
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (widget.prefixIcon != null) ...[
+                    Icon(widget.prefixIcon, size: 18.sp, color: fg),
+                    SizedBox(width: AppSpacing.xs.w),
+                  ],
+                  Text(
+                    widget.text,
+                    style: AppTypography.button.copyWith(color: fg),
+                  ),
+                ],
+              ),
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/app/widgets/session_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -33,13 +35,8 @@ class CalendarCard extends StatelessWidget {
       ),
     );
 
-    return Container(
-      padding: EdgeInsets.all(24.w),
-      decoration: BoxDecoration(
-        color: p.surface,
-        borderRadius: BorderRadius.circular(AppRadius.xxl),
-        border: Border.all(color: p.hairline),
-      ),
+    return SessionCard(
+      padding: EdgeInsets.all(AppSpacing.xl.w),
       child: Column(
         children: [
           Row(
@@ -47,10 +44,7 @@ class CalendarCard extends StatelessWidget {
             children: [
               Text(
                 currentMonthText,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: AppTypography.subtitle.copyWith(color: p.textPrimary),
               ),
               Row(
                 children: [
@@ -58,7 +52,7 @@ class CalendarCard extends StatelessWidget {
                     Icons.chevron_left_rounded,
                     onTap: () => datePickerController.backward?.call(),
                   ),
-                  SizedBox(width: 8.w),
+                  SizedBox(width: AppSpacing.xs.w),
                   _buildNavButton(
                     Icons.chevron_right_rounded,
                     onTap: () => datePickerController.forward?.call(),
@@ -67,7 +61,7 @@ class CalendarCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 24.h),
+          SizedBox(height: AppSpacing.xl.h),
           SizedBox(
             height: 280.h,
             child: SfDateRangePicker(
@@ -102,18 +96,15 @@ class CalendarCard extends StatelessWidget {
                 });
               },
               monthCellStyle: DateRangePickerMonthCellStyle(
-                textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w600,
-                ),
+                textStyle: AppTypography.label.copyWith(color: p.textPrimary),
               ),
               cellBuilder: _buildCalendarCell,
             ),
           ),
-          SizedBox(height: 24.h),
+          SizedBox(height: AppSpacing.xl.h),
           Wrap(
-            spacing: 16.w,
-            runSpacing: 12.h,
+            spacing: AppSpacing.md.w,
+            runSpacing: AppSpacing.sm.h,
             alignment: WrapAlignment.center,
             children: EmotionLabelType.values.map((emotion) {
               return _buildLegendItem(context, emotion: emotion);
@@ -142,30 +133,37 @@ class CalendarCard extends StatelessWidget {
         date.month == DateTime.now().month &&
         date.year == DateTime.now().year;
 
-    Color bgColor = emotion?.color ?? Colors.transparent;
-    Color textColor = emotion?.onColor ?? p.primary;
-    FontWeight fontWeight = FontWeight.w700;
+    Color bgColor = Colors.transparent;
+    Color textColor = p.textPrimary;
+    FontWeight fontWeight = FontWeight.w600;
+
+    if (emotion != null) {
+      bgColor = p.emotionBase(emotion).withValues(alpha: 0.22);
+      textColor = p.emotionText(emotion);
+      fontWeight = FontWeight.w700;
+    }
 
     if (isOutDate) {
-      textColor = Colors.grey.shade400;
+      textColor = p.textTertiary;
       fontWeight = FontWeight.w500;
     } else if (_isSameDate(date, selectedDate)) {
-      bgColor = Colors.transparent;
+      bgColor = p.primaryFill;
       textColor = p.onPrimary;
     }
 
     return Container(
-      margin: EdgeInsets.all(4.w),
+      margin: EdgeInsets.all(AppSpacing.xxs.w),
       decoration: BoxDecoration(
         color: bgColor,
         shape: BoxShape.circle,
-        border: isToday ? Border.all(color: p.primary, width: 2) : null,
+        border: isToday
+            ? Border.all(color: p.primaryText, width: AppBorder.thick)
+            : null,
       ),
       child: Center(
         child: Text(
           date.day.toString(),
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontSize: 12.sp,
+          style: AppTypography.label.copyWith(
             fontWeight: fontWeight,
             color: textColor,
           ),
@@ -189,11 +187,11 @@ class CalendarCard extends StatelessWidget {
             width: 32.w,
             height: 32.w,
             decoration: BoxDecoration(
-              color: p.surface,
+              color: p.surface1,
               shape: BoxShape.circle,
-              border: Border.all(color: p.hairline),
+              border: Border.all(color: p.divider),
             ),
-            child: Icon(icon, size: 20.sp, color: p.inkMuted),
+            child: Icon(icon, size: 20.sp, color: p.textSecondary),
           ),
         );
       },
@@ -209,21 +207,19 @@ class CalendarCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 8.w,
-          height: 8.w,
+          width: 8.r,
+          height: 8.r,
           decoration: BoxDecoration(
-            color: emotion.color,
+            color: p.emotionBase(emotion),
             shape: BoxShape.circle,
           ),
         ),
-        SizedBox(width: 6.w),
+        SizedBox(width: AppSpacing.xxs.w + 2),
         Text(
           emotion.label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          style: AppTypography.label.copyWith(
             fontSize: 9.sp,
-            color: p.primary.withAlpha(179),
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.5,
+            color: p.emotionText(emotion),
           ),
         ),
       ],
