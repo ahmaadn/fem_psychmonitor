@@ -103,8 +103,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         text: theme.mode == ThemeMode.dark
                             ? (isEn ? 'Dark' : 'Gelap')
                             : theme.mode == ThemeMode.system
-                                ? 'System'
-                                : (isEn ? 'Light' : 'Terang'),
+                            ? 'System'
+                            : (isEn ? 'Light' : 'Terang'),
                       ),
                       onTap: () async {
                         final next = switch (theme.mode) {
@@ -127,8 +127,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _SettingsTile(
                       icon: Icons.person_outline_rounded,
                       label: isEn ? 'Edit profile' : 'Edit profil',
-                      onTap: () =>
-                          context.pushNamed(RouteNames.editProfile),
+                      onTap: () => context.pushNamed(RouteNames.editProfile),
                     ),
                     if (!isGuest)
                       _SettingsTile(
@@ -212,9 +211,10 @@ class _SettingsPageState extends State<SettingsPage> {
                               onChanged: privacy.setStoreTempAudio,
                             ),
                             Divider(
-                                color: context.palette.divider,
-                                height: 1,
-                                indent: 56.w),
+                              color: context.palette.divider,
+                              height: 1,
+                              indent: 56.w,
+                            ),
                             _PrivacySwitch(
                               icon: Icons.bar_chart_rounded,
                               label: isEn
@@ -263,9 +263,7 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: p.surface1,
-        shape: RoundedRectangleBorder(
-          borderRadius: AppRadius.card,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.card),
         content: Text(
           message,
           style: AppTypography.body.copyWith(color: p.textPrimary),
@@ -351,14 +349,7 @@ class _SettingsIdentityHeader extends StatelessWidget {
         bottom: AppSpacing.lg.h,
       ),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            p.primarySoft,
-            Color.lerp(p.primarySoft, p.primary, 0.15)!,
-          ],
-        ),
+        color: p.surface1,
         border: Border(
           bottom: BorderSide(color: p.divider, width: AppBorder.thin),
         ),
@@ -375,25 +366,14 @@ class _SettingsIdentityHeader extends StatelessWidget {
                 height: 56.w,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [p.primary, p.primaryPressed],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: p.primary.withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  color: p.primarySoft,
+                  border: Border.all(color: p.primaryText, width: AppBorder.thin),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   initial,
                   style: AppTypography.title.copyWith(
-                    color: p.onPrimary,
-                    fontSize: 22.sp,
+                    color: p.primaryText,
                     height: 1,
                   ),
                 ),
@@ -407,19 +387,23 @@ class _SettingsIdentityHeader extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
+                      style: AppTypography.bodyStrong.copyWith(
+                        color: p.textPrimary,
+                      ),
                     ),
                     SizedBox(height: 2.h),
                     Text(
                       subtitle,
-                      style: AppTypography.caption.copyWith(color: p.textSecondary),
+                      style: AppTypography.caption.copyWith(
+                        color: p.textSecondary,
+                      ),
                     ),
                     if (sc != null) ...[
                       SizedBox(height: 4.h),
                       Text(
                         '${_scoreEmoji(sc)} $sc · ${_scoreLabel(sc, isEn)}',
                         style: AppTypography.label.copyWith(
-                          color: p.primaryPressed,
+                          color: p.primaryText,
                         ),
                       ),
                     ],
@@ -436,12 +420,12 @@ class _SettingsIdentityHeader extends StatelessWidget {
                     color: p.surface1.withValues(alpha: 0.75),
                     borderRadius: AppRadius.card,
                     border: Border.all(
-                      color: p.primary.withValues(alpha: 0.2),
+                      color: p.primaryFill.withValues(alpha: 0.2),
                     ),
                   ),
                   child: Icon(
                     Icons.edit_outlined,
-                    color: p.primaryPressed,
+                    color: p.primaryText,
                     size: 18.sp,
                   ),
                 ),
@@ -467,13 +451,15 @@ class _SettingsIdentityHeader extends StatelessWidget {
                       color: p.surface1.withValues(alpha: 0.7),
                       borderRadius: AppRadius.chip,
                       border: Border.all(
-                        color: p.primary.withValues(alpha: 0.2),
+                        color: p.primaryFill.withValues(alpha: 0.2),
                         width: AppBorder.thin,
                       ),
                     ),
                     child: Text(
                       '${t.code} ${ocean!.scoreOf(t).toStringAsFixed(1)} · ${isEn ? level.labelEn : level.labelId}',
-                      style: AppTypography.caption.copyWith(color: p.textPrimary),
+                      style: AppTypography.caption.copyWith(
+                        color: p.textPrimary,
+                      ),
                     ),
                   );
                 }).toList(),
@@ -511,10 +497,10 @@ class _SettingsSection extends StatelessWidget {
               width: 22.w,
               height: 22.w,
               decoration: BoxDecoration(
-                color: p.primarySoft,
+                color: p.surface2,
                 borderRadius: BorderRadius.circular(AppRadius.xs),
               ),
-              child: Icon(icon, color: p.primaryPressed, size: 11.sp),
+              child: Icon(icon, color: p.textPrimary, size: 11.sp),
             ),
             SizedBox(width: AppSpacing.xs.w),
             Text(
@@ -545,11 +531,7 @@ class _SettingsSection extends StatelessWidget {
                 children: [
                   entry.value,
                   if (!isLast)
-                    Divider(
-                      color: p.divider,
-                      height: 1,
-                      indent: 56.w,
-                    ),
+                    Divider(color: p.divider, height: 1, indent: 56.w),
                 ],
               );
             }).toList(),
@@ -580,11 +562,11 @@ class _SettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final iconColor = danger ? p.primaryPressed : p.textSecondary;
-    final labelColor = danger ? p.primaryPressed : p.textPrimary;
+    final iconColor = danger ? p.errorText : p.textSecondary;
+    final labelColor = danger ? p.errorText : p.textPrimary;
     final iconBg = danger
-        ? p.primary.withValues(alpha: 0.1)
-        : p.primarySoft;
+        ? p.error.withValues(alpha: 0.1)
+        : p.surface2;
 
     return ListTile(
       leading: Container(
@@ -596,11 +578,9 @@ class _SettingsTile extends StatelessWidget {
         ),
         child: Icon(icon, color: iconColor, size: 16.sp),
       ),
-      title: Text(
-        label,
-        style: AppTypography.body.copyWith(color: labelColor),
-      ),
-      trailing: trailing ??
+      title: Text(label, style: AppTypography.body.copyWith(color: labelColor)),
+      trailing:
+          trailing ??
           Icon(Icons.chevron_right_rounded, color: p.textTertiary, size: 18.sp),
       onTap: onTap,
       minLeadingWidth: 0,
@@ -631,7 +611,7 @@ class _PrivacySwitch extends StatelessWidget {
         width: 34.w,
         height: 34.w,
         decoration: BoxDecoration(
-          color: p.primarySoft,
+          color: p.surface2,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: Icon(icon, color: p.textSecondary, size: 16.sp),
@@ -641,8 +621,8 @@ class _PrivacySwitch extends StatelessWidget {
         style: AppTypography.body.copyWith(color: p.textPrimary),
       ),
       value: value,
-      activeThumbColor: p.primaryText,
-      activeTrackColor: p.primary.withValues(alpha: 0.35),
+      activeThumbColor: p.onPrimary,
+      activeTrackColor: p.primaryFill,
       inactiveThumbColor: p.textTertiary,
       inactiveTrackColor: p.divider,
       onChanged: onChanged,
@@ -665,12 +645,12 @@ class _ValueBadge extends StatelessWidget {
         vertical: AppSpacing.xxs.h,
       ),
       decoration: BoxDecoration(
-        color: p.primarySoft,
+        color: p.surface2,
         borderRadius: AppRadius.chip,
       ),
       child: Text(
         text,
-        style: AppTypography.label.copyWith(color: p.primaryPressed),
+        style: AppTypography.label.copyWith(color: p.textSecondary),
       ),
     );
   }

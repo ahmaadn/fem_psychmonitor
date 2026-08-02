@@ -28,7 +28,11 @@ class PsychTestPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_rounded, color: p.textSecondary, size: 22.sp),
+          icon: Icon(
+            Icons.arrow_back_rounded,
+            color: p.textSecondary,
+            size: 22.sp,
+          ),
           onPressed: () => context.pop(),
         ),
         title: Text(
@@ -36,13 +40,12 @@ class PsychTestPage extends StatelessWidget {
           style: AppTypography.bodyStrong.copyWith(
             fontSize: 18.0,
             color: p.textPrimary,
-
           ),
         ),
         centerTitle: true,
       ),
       body: DecoratedBox(
-        decoration: BoxDecoration(gradient: p.canvasGradient),
+        decoration: BoxDecoration(color: p.canvas),
         child: SafeArea(
           child: Consumer<QuestionnaireViewModel>(
             builder: (context, viewModel, child) {
@@ -69,8 +72,9 @@ class PsychTestPage extends StatelessWidget {
                       itemCount: questions.length,
                       itemBuilder: (context, index) {
                         final question = questions[index];
-                        final selectedOption =
-                            viewModel.getSelectedPsychOption(index);
+                        final selectedOption = viewModel.getSelectedPsychOption(
+                          index,
+                        );
 
                         return Container(
                           margin: EdgeInsets.only(bottom: 16.h),
@@ -89,15 +93,17 @@ class PsychTestPage extends StatelessWidget {
                                   vertical: 4.h,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: p.secondary.withValues(alpha: 0.16),
-                                  borderRadius:
-                                      BorderRadius.circular(AppRadius.sm),
+                                  color: p.secondaryFill.withValues(
+                                    alpha: 0.16,
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.sm,
+                                  ),
                                 ),
                                 child: Text(
                                   question.category.get(isEnglish),
-                                  style: TextStyle(
-                                    color: p.secondary,
-                                    fontSize: 11.sp,
+                                  style: AppTypography.caption.copyWith(
+                                    color: p.secondaryText,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -105,41 +111,43 @@ class PsychTestPage extends StatelessWidget {
                               SizedBox(height: 12.h),
                               Text(
                                 "${index + 1}. ${question.question.get(isEnglish)}",
-                                style: AppTypography.label.copyWith(
-                                  fontSize: 15.0,
+                                style: AppTypography.bodyStrong.copyWith(
                                   color: p.textPrimary,
                                 ),
                               ),
-                              SizedBox(height: 16.h),
+                              SizedBox(height: AppSpacing.md.h),
                               ...question.options.map((option) {
                                 final isSelected = selectedOption == option;
                                 return Padding(
-                                  padding: EdgeInsets.only(bottom: 10.h),
+                                  padding: EdgeInsets.only(bottom: AppSpacing.xs.h),
                                   child: GestureDetector(
                                     onTap: () => viewModel.answerPsychQuestion(
                                       index,
                                       option,
                                     ),
                                     child: AnimatedContainer(
-                                      duration:
-                                          const Duration(milliseconds: 200),
+                                      duration: const Duration(
+                                        milliseconds: 200,
+                                      ),
                                       width: double.infinity,
                                       padding: EdgeInsets.symmetric(
-                                        horizontal: 16.w,
-                                        vertical: 14.h,
+                                        horizontal: AppSpacing.md.w,
+                                        vertical: AppSpacing.buttonY.h,
                                       ),
                                       decoration: BoxDecoration(
                                         color: isSelected
-                                            ? p.primary.withValues(alpha: 0.08)
+                                            ? p.primaryWash
                                             : p.surface2,
                                         borderRadius: BorderRadius.circular(
                                           AppRadius.md,
                                         ),
                                         border: Border.all(
                                           color: isSelected
-                                              ? p.primary
+                                              ? p.primaryText
                                               : p.divider,
-                                          width: isSelected ? 1.5 : 1,
+                                          width: isSelected
+                                              ? AppBorder.medium
+                                              : AppBorder.thin,
                                         ),
                                       ),
                                       child: Row(
@@ -149,17 +157,17 @@ class PsychTestPage extends StatelessWidget {
                                                 ? Icons.radio_button_checked
                                                 : Icons.radio_button_off,
                                             color: isSelected
-                                                ? p.primary
+                                                ? p.primaryText
                                                 : p.textSecondary,
-                                            size: 20.sp,
+                                            size: AppSpacing.lg.sp,
                                           ),
-                                          SizedBox(width: 12.w),
+                                          SizedBox(width: AppSpacing.sm.w),
                                           Expanded(
                                             child: Text(
                                               option.answer.get(isEnglish),
-                                              style: TextStyle(
+                                              style: AppTypography.label.copyWith(
                                                 color: isSelected
-                                                    ? p.primary
+                                                    ? p.primaryText
                                                     : p.textPrimary,
                                                 fontWeight: isSelected
                                                     ? FontWeight.w600

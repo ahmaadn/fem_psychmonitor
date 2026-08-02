@@ -7,10 +7,7 @@ import 'package:go_router/go_router.dart';
 class MainLayout extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
-  const MainLayout({
-    super.key,
-    required this.navigationShell,
-  });
+  const MainLayout({super.key, required this.navigationShell});
 
   void _onTabTapped(int index) {
     navigationShell.goBranch(

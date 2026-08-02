@@ -63,7 +63,7 @@ class _SplashPageState extends State<SplashPage>
     return Scaffold(
       backgroundColor: p.canvas,
       body: DecoratedBox(
-        decoration: BoxDecoration(gradient: p.canvasGradient),
+        decoration: BoxDecoration(color: p.canvas),
         child: GestureDetector(
           onVerticalDragEnd: (d) {
             if ((d.primaryVelocity ?? 0) < 0) _navigateBasedOnAuth();
@@ -76,15 +76,15 @@ class _SplashPageState extends State<SplashPage>
                 children: [
                   const Spacer(),
                   ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: 320.w,
-                    ),
+                    constraints: BoxConstraints(maxWidth: 320.w),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const VoiceprintOrb(
-                            mode: VoiceprintMode.idle, size: 220),
+                          mode: VoiceprintMode.idle,
+                          size: 220,
+                        ),
                         SizedBox(height: 32.h),
                         Text(
                           l10n.appName,
@@ -108,9 +108,7 @@ class _SplashPageState extends State<SplashPage>
                   ),
                   const Spacer(),
                   ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: 320.w,
-                    ),
+                    constraints: BoxConstraints(maxWidth: 320.w),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -124,9 +122,10 @@ class _SplashPageState extends State<SplashPage>
                               child: LinearProgressIndicator(
                                 value: _progressController.value,
                                 minHeight: 5.h,
-                                backgroundColor: p.primarySoft,
-                                valueColor:
-                                    AlwaysStoppedAnimation(p.primaryFill),
+                                backgroundColor: p.surface3,
+                                valueColor: AlwaysStoppedAnimation(
+                                  p.primaryFill,
+                                ),
                               ),
                             ),
                           ),

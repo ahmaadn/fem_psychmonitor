@@ -84,7 +84,7 @@ class RecordingTimeline extends StatelessWidget {
     final segmentWidgets = timeline.isEmpty
         ? [
             Expanded(
-              child: Container(color: p.primary.withValues(alpha: 0.2)),
+              child: Container(color: p.primaryFill.withValues(alpha: 0.2)),
             ),
           ]
         : segments
@@ -107,7 +107,7 @@ class RecordingTimeline extends StatelessWidget {
                 Icon(
                   Icons.schedule_rounded,
                   size: 20.sp,
-                  color: p.primary.withValues(alpha: 0.8),
+                  color: p.primaryText.withValues(alpha: 0.8),
                 ),
                 SizedBox(width: 8.w),
                 Text(
@@ -123,7 +123,7 @@ class RecordingTimeline extends StatelessWidget {
               totalLabel,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontSize: 14.sp,
-                color: p.primary.withValues(alpha: 0.6),
+                color: p.primaryText.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -145,7 +145,7 @@ class RecordingTimeline extends StatelessWidget {
               AppLocalizations.of(context)!.startTimeLabel,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontSize: 10.sp,
-                color: p.primary.withValues(alpha: 0.5),
+                color: p.primaryText.withValues(alpha: 0.5),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -153,7 +153,7 @@ class RecordingTimeline extends StatelessWidget {
               AppLocalizations.of(context)!.endTimeLabel,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontSize: 10.sp,
-                color: p.primary.withValues(alpha: 0.5),
+                color: p.primaryText.withValues(alpha: 0.5),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -203,9 +203,7 @@ class ComponentTimeline extends StatelessWidget {
       }
       emotionPercentages = {
         for (final label in EmotionLabelType.values)
-          label: count == 0
-              ? 0
-              : ((acc[label.index] / count) * 100).round(),
+          label: count == 0 ? 0 : ((acc[label.index] / count) * 100).round(),
       };
       if (!showAllEmotions) {
         emotionPercentages.removeWhere((_, v) => v == 0);
@@ -288,11 +286,13 @@ class ComponentTimeline extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(emotion.emoji, style: TextStyle(fontSize: 18.sp)),
+                Text(emotion.emoji, style: AppTypography.emojiMd),
                 SizedBox(width: AppSpacing.xs.w),
                 Text(
                   emotion.displayName,
-                  style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
+                  style: AppTypography.bodyStrong.copyWith(
+                    color: p.textPrimary,
+                  ),
                 ),
               ],
             ),
@@ -306,9 +306,7 @@ class ComponentTimeline extends StatelessWidget {
         LinearProgressBar(
           lineHeight: 8.h,
           percent: percentage / 100,
-          duration: Duration(
-            milliseconds: animateFromLastPercent ? 500 : 1000,
-          ),
+          duration: Duration(milliseconds: animateFromLastPercent ? 500 : 1000),
           animateFromLastPercent: animateFromLastPercent,
           backgroundColor: p.surface3,
           progressColor: base,

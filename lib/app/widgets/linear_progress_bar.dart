@@ -63,7 +63,7 @@ class _LinearProgressBarState extends State<LinearProgressBar>
     final p = context.palette;
     final clamped = widget.percent.clamp(0.0, 1.0);
     final progress = widget.progressColor ?? p.primary;
-    final track = widget.backgroundColor ?? p.primarySoft;
+    final track = widget.backgroundColor ?? p.surface3;
 
     return ClipRRect(
       borderRadius: BorderRadius.all(widget.barRadius),

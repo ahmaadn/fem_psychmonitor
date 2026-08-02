@@ -27,7 +27,7 @@ class OnboardingPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: p.canvas,
       body: DecoratedBox(
-        decoration: BoxDecoration(gradient: p.canvasGradient),
+        decoration: BoxDecoration(color: p.canvas),
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) => SingleChildScrollView(
@@ -92,8 +92,9 @@ class OnboardingPage extends StatelessWidget {
                           Text(
                             l10n.welcomeToApp,
                             textAlign: TextAlign.center,
-                            style: AppTypography.display
-                                .copyWith(color: p.textPrimary),
+                            style: AppTypography.display.copyWith(
+                              color: p.textPrimary,
+                            ),
                           ),
                           SizedBox(height: AppSpacing.xs.h),
                           SizedBox(
@@ -101,8 +102,9 @@ class OnboardingPage extends StatelessWidget {
                             child: Text(
                               l10n.chooseSignInMethod,
                               textAlign: TextAlign.center,
-                              style: AppTypography.body
-                                  .copyWith(color: p.textSecondary),
+                              style: AppTypography.body.copyWith(
+                                color: p.textSecondary,
+                              ),
                             ),
                           ),
                         ],

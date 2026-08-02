@@ -194,12 +194,14 @@ class AppTextButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
   final bool isDisabled;
+  final Color? color;
 
   const AppTextButton({
     super.key,
     required this.text,
     this.onPressed,
     this.isDisabled = false,
+    this.color,
   });
 
   @override
@@ -209,7 +211,7 @@ class AppTextButton extends StatelessWidget {
     return TextButton(
       onPressed: disabled ? null : onPressed,
       style: TextButton.styleFrom(
-        foregroundColor: p.primaryText,
+        foregroundColor: disabled ? p.textTertiary : (color ?? p.primaryText),
         disabledForegroundColor: p.textTertiary,
         textStyle: AppTypography.button,
         padding: EdgeInsets.symmetric(

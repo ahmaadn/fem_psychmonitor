@@ -47,7 +47,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
 
   final Brightness brightness;
 
-  /// primary-500 fill (light) / primary-400 interactive (dark ColorScheme map).
+  /// primary-500 fill (light) / theme-safe primary text and icon color (dark).
   final Color primary;
   final Color primaryText;
   final Color primaryPressed;
@@ -131,7 +131,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     primaryWash: AppColors.primary50,
     onPrimary: AppColors.onPrimary,
     secondary: AppColors.secondary500,
-    secondaryText: AppColors.secondary600,
+    secondaryText: AppColors.secondary700,
     secondaryPressed: AppColors.secondary700,
     secondaryDisabled: AppColors.secondary300,
     secondarySoft: AppColors.secondary100,
@@ -155,21 +155,21 @@ class AppPalette extends ThemeExtension<AppPalette> {
     infoText: AppColors.infoOnLight,
     emotion: _emotionBase,
     emotionOnSurface: _emotionOnLight,
-    shadowRaised: Color(0x142B211F),
-    shadowFloating: Color(0x242B211F),
+    shadowRaised: Color(0x142B0E12),
+    shadowFloating: Color(0x242B0E12),
   );
 
   static const AppPalette dark = AppPalette(
     brightness: Brightness.dark,
-    primary: AppColors.primary400,
-    primaryText: AppColors.primary400,
+    primary: AppColors.primary300,
+    primaryText: AppColors.primary300,
     primaryPressed: AppColors.primary500,
     primaryDisabled: AppColors.primary800,
     primarySoft: AppColors.primary800,
     primaryWash: AppColors.primary900,
     onPrimary: AppColors.canvasDark,
-    secondary: AppColors.secondary400,
-    secondaryText: AppColors.secondary400,
+    secondary: AppColors.secondary300,
+    secondaryText: AppColors.secondary300,
     secondaryPressed: AppColors.secondary500,
     secondaryDisabled: AppColors.secondary800,
     secondarySoft: AppColors.secondary800,
@@ -198,37 +198,34 @@ class AppPalette extends ThemeExtension<AppPalette> {
   );
 
   /// Fill color for brand primary buttons (always seed -500 on light; seed on dark fills).
-  Color get primaryFill =>
-      isDark ? AppColors.primary500 : AppColors.primary500;
+  Color get primaryFill => AppColors.primary500;
 
   Color get secondaryFill => AppColors.secondary500;
 
+  /// Solid canvas only — do not blend primaryWash into page backgrounds.
   LinearGradient get canvasGradient => LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          canvas,
-          Color.lerp(canvas, primaryWash, isDark ? 0.35 : 0.45)!,
-        ],
-      );
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [canvas, canvas],
+  );
 
   LinearGradient get strawberryGradient => LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          primarySoft,
-          Color.lerp(primarySoft, primary, isDark ? 0.22 : 0.12)!,
-        ],
-      );
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      primarySoft,
+      Color.lerp(primarySoft, primaryFill, isDark ? 0.22 : 0.12)!,
+    ],
+  );
 
   LinearGradient get matchaGradient => LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          secondarySoft,
-          Color.lerp(secondarySoft, secondary, isDark ? 0.2 : 0.1)!,
-        ],
-      );
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      secondarySoft,
+      Color.lerp(secondarySoft, secondaryFill, isDark ? 0.2 : 0.1)!,
+    ],
+  );
 
   List<BoxShadow> get cardShadow => isDark
       ? const <BoxShadow>[]
@@ -241,12 +238,12 @@ class AppPalette extends ThemeExtension<AppPalette> {
         ];
 
   List<BoxShadow> get floatingShadow => [
-        BoxShadow(
-          color: shadowFloating,
-          offset: const Offset(0, 8),
-          blurRadius: 24,
-        ),
-      ];
+    BoxShadow(
+      color: shadowFloating,
+      offset: const Offset(0, 8),
+      blurRadius: 24,
+    ),
+  ];
 
   BoxDecoration card({
     Color? color,
@@ -259,10 +256,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
       color: color ?? surface1,
       borderRadius: BorderRadius.circular(radius),
       border: useBorder
-          ? Border.all(
-              color: borderColor ?? divider,
-              width: AppBorder.thin,
-            )
+          ? Border.all(color: borderColor ?? divider, width: AppBorder.thin)
           : null,
       boxShadow: elevated ? cardShadow : null,
     );
@@ -273,12 +267,12 @@ class AppPalette extends ThemeExtension<AppPalette> {
       gradient: strawberryGradient,
       borderRadius: BorderRadius.circular(radius),
       border: Border.all(
-        color: primary.withValues(alpha: isDark ? 0.28 : 0.18),
+        color: primaryFill.withValues(alpha: isDark ? 0.28 : 0.18),
         width: AppBorder.thin,
       ),
       boxShadow: [
         BoxShadow(
-          color: primary.withValues(alpha: isDark ? 0.18 : 0.12),
+          color: primaryFill.withValues(alpha: isDark ? 0.18 : 0.12),
           offset: const Offset(0, 8),
           blurRadius: 22,
         ),
@@ -291,7 +285,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
       gradient: matchaGradient,
       borderRadius: BorderRadius.circular(radius),
       border: Border.all(
-        color: secondary.withValues(alpha: isDark ? 0.28 : 0.16),
+        color: secondaryFill.withValues(alpha: isDark ? 0.28 : 0.16),
         width: AppBorder.thin,
       ),
     );
@@ -307,7 +301,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
 
   BoxDecoration chip({required bool selected, bool useMatcha = false}) {
     final fill = selected
-        ? (useMatcha ? secondary : primary)
+        ? (useMatcha ? secondaryFill : primaryFill)
         : surface2;
     final edge = selected
         ? (useMatcha ? secondaryPressed : primaryPressed)
@@ -339,7 +333,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
       color: color ?? primarySoft,
       shape: BoxShape.circle,
       border: Border.all(
-        color: borderColor ?? primary.withValues(alpha: 0.28),
+        color: borderColor ?? primaryFill.withValues(alpha: 0.28),
         width: AppBorder.thin,
       ),
     );
@@ -352,7 +346,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
       BorderSide(color: AppColors.primary500, width: AppBorder.medium);
 
   BorderSide get primarySide =>
-      BorderSide(color: primary, width: AppBorder.thin);
+      BorderSide(color: primaryFill, width: AppBorder.thin);
 
   BorderSide get secondarySide =>
       BorderSide(color: AppColors.secondary500, width: AppBorder.medium);
@@ -360,11 +354,11 @@ class AppPalette extends ThemeExtension<AppPalette> {
   ColorScheme toColorScheme() {
     if (isDark) {
       return ColorScheme.dark(
-        primary: AppColors.primary400,
+        primary: AppColors.primary300,
         onPrimary: AppColors.canvasDark,
         primaryContainer: AppColors.primary800,
         onPrimaryContainer: AppColors.textPrimaryDark,
-        secondary: AppColors.secondary400,
+        secondary: AppColors.secondary300,
         onSecondary: AppColors.canvasDark,
         secondaryContainer: AppColors.secondary800,
         onSecondaryContainer: AppColors.textPrimaryDark,
@@ -479,9 +473,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
       Map<EmotionLabelType, Color> a,
       Map<EmotionLabelType, Color> b,
     ) {
-      return {
-        for (final e in EmotionLabelType.values) e: l(a[e]!, b[e]!),
-      };
+      return {for (final e in EmotionLabelType.values) e: l(a[e]!, b[e]!)};
     }
 
     return AppPalette(

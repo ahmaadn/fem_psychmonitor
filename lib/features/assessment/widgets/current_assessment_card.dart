@@ -168,7 +168,7 @@ class _MentalHealthTile extends StatelessWidget {
                 child: Center(
                   child: Text(
                     status?.emoji ?? '♡',
-                    style: TextStyle(fontSize: 18.sp),
+                    style: AppTypography.emojiMd,
                   ),
                 ),
               ),
@@ -179,7 +179,9 @@ class _MentalHealthTile extends StatelessWidget {
                   children: [
                     Text(
                       label.toUpperCase(),
-                      style: AppTypography.label.copyWith(color: p.textTertiary),
+                      style: AppTypography.label.copyWith(
+                        color: p.textTertiary,
+                      ),
                     ),
                     Text(
                       status?.label ?? '',

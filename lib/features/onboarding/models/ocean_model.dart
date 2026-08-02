@@ -6,20 +6,20 @@ extension OceanTraitX on OceanTrait {
   String get code => name.toUpperCase();
 
   String get labelId => switch (this) {
-        OceanTrait.o => 'Keterbukaan',
-        OceanTrait.c => 'Kehati-hatian',
-        OceanTrait.e => 'Ekstraversi',
-        OceanTrait.a => 'Keramahan',
-        OceanTrait.n => 'Neurotisisme',
-      };
+    OceanTrait.o => 'Keterbukaan',
+    OceanTrait.c => 'Kehati-hatian',
+    OceanTrait.e => 'Ekstraversi',
+    OceanTrait.a => 'Keramahan',
+    OceanTrait.n => 'Neurotisisme',
+  };
 
   String get labelEn => switch (this) {
-        OceanTrait.o => 'Openness',
-        OceanTrait.c => 'Conscientiousness',
-        OceanTrait.e => 'Extraversion',
-        OceanTrait.a => 'Agreeableness',
-        OceanTrait.n => 'Neuroticism',
-      };
+    OceanTrait.o => 'Openness',
+    OceanTrait.c => 'Conscientiousness',
+    OceanTrait.e => 'Extraversion',
+    OceanTrait.a => 'Agreeableness',
+    OceanTrait.n => 'Neuroticism',
+  };
 
   String label(bool isEnglish) => isEnglish ? labelEn : labelId;
 
@@ -46,15 +46,15 @@ enum TraitLevel { low, neutral, high }
 extension TraitLevelX on TraitLevel {
   String get key => name;
   String get labelId => switch (this) {
-        TraitLevel.low => 'Rendah',
-        TraitLevel.neutral => 'Netral',
-        TraitLevel.high => 'Tinggi',
-      };
+    TraitLevel.low => 'Rendah',
+    TraitLevel.neutral => 'Netral',
+    TraitLevel.high => 'Tinggi',
+  };
   String get labelEn => switch (this) {
-        TraitLevel.low => 'Low',
-        TraitLevel.neutral => 'Neutral',
-        TraitLevel.high => 'High',
-      };
+    TraitLevel.low => 'Low',
+    TraitLevel.neutral => 'Neutral',
+    TraitLevel.high => 'High',
+  };
 }
 
 class OceanQuestion {
@@ -105,12 +105,12 @@ class OceanScores {
   });
 
   double scoreOf(OceanTrait t) => switch (t) {
-        OceanTrait.o => o,
-        OceanTrait.c => c,
-        OceanTrait.e => e,
-        OceanTrait.a => a,
-        OceanTrait.n => n,
-      };
+    OceanTrait.o => o,
+    OceanTrait.c => c,
+    OceanTrait.e => e,
+    OceanTrait.a => a,
+    OceanTrait.n => n,
+  };
 
   TraitLevel levelOf(OceanTrait t) => levelForScore(scoreOf(t));
 
@@ -120,13 +120,7 @@ class OceanScores {
     return TraitLevel.high;
   }
 
-  Map<String, double> toMap() => {
-        'O': o,
-        'C': c,
-        'E': e,
-        'A': a,
-        'N': n,
-      };
+  Map<String, double> toMap() => {'O': o, 'C': c, 'E': e, 'A': a, 'N': n};
 
   factory OceanScores.fromMap(Map<String, dynamic>? map) {
     if (map == null) {
@@ -147,12 +141,8 @@ OceanScores computeOceanScores(
   List<OceanQuestion> questions,
   Map<int, int> answers,
 ) {
-  final sums = <OceanTrait, double>{
-    for (final t in OceanTrait.values) t: 0,
-  };
-  final counts = <OceanTrait, int>{
-    for (final t in OceanTrait.values) t: 0,
-  };
+  final sums = <OceanTrait, double>{for (final t in OceanTrait.values) t: 0};
+  final counts = <OceanTrait, int>{for (final t in OceanTrait.values) t: 0};
 
   for (final q in questions) {
     final raw = answers[q.id];

@@ -2,10 +2,7 @@ class LocalizedString {
   final String id;
   final String en;
 
-  LocalizedString({
-    required this.id,
-    required this.en,
-  });
+  LocalizedString({required this.id, required this.en});
 
   factory LocalizedString.fromJson(Map<String, dynamic> json) {
     return LocalizedString(
@@ -15,10 +12,7 @@ class LocalizedString {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'en': en,
-    };
+    return {'id': id, 'en': en};
   }
 
   String get(bool isEnglish) {

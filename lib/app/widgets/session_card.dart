@@ -81,9 +81,9 @@ class MoodCheckInCard extends StatelessWidget {
               color: base.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(AppRadius.md.r),
             ),
-            child: Text(
+              child: Text(
               emotion.emoji,
-              style: TextStyle(fontSize: 20.sp),
+              style: AppTypography.emojiLg,
             ),
           ),
           SizedBox(width: AppSpacing.sm.w),
@@ -111,10 +111,7 @@ class MoodCheckInCard extends StatelessWidget {
           else if (confidence != null)
             Text(
               '${(confidence! * 100).round()}%',
-              style: AppTypography.metric.copyWith(
-                color: onE,
-                fontSize: 22.sp,
-              ),
+              style: AppTypography.metric.copyWith(color: onE),
             ),
         ],
       ),

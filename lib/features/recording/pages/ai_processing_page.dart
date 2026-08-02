@@ -178,10 +178,7 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
     final classKey = psychClassKeyForScore(updatedScore);
 
     await profileVm.updateProfile(
-      user.copyWith(
-        psychScore: updatedScore,
-        psychClass: classKey,
-      ),
+      user.copyWith(psychScore: updatedScore, psychClass: classKey),
       l10n,
     );
     await ScoreLogRepository().append(
@@ -206,11 +203,7 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
-            Icons.close_rounded,
-            color: p.textSecondary,
-            size: 22.sp,
-          ),
+          icon: Icon(Icons.close_rounded, color: p.textSecondary, size: 22.sp),
           onPressed: () {
             if (context.canPop()) context.pop();
             context.goNamed(RouteNames.home);
@@ -223,7 +216,7 @@ class _AiProcessingPageState extends State<AiProcessingPage> {
         centerTitle: true,
       ),
       body: DecoratedBox(
-        decoration: BoxDecoration(gradient: p.canvasGradient),
+        decoration: BoxDecoration(color: p.canvas),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(

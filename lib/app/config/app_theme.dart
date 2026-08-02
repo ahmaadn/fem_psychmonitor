@@ -52,7 +52,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: p.primaryFill,
-          foregroundColor: AppColors.onPrimary,
+          foregroundColor: p.onPrimary,
           disabledBackgroundColor: p.isDark ? p.surface2 : p.primaryDisabled,
           disabledForegroundColor: tertiary,
           elevation: 0,
@@ -69,7 +69,7 @@ class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: p.secondaryFill,
-          foregroundColor: AppColors.onSecondary,
+          foregroundColor: p.onSecondary,
           elevation: 0,
           minimumSize: const Size(0, AppSpacing.touch),
           padding: const EdgeInsets.symmetric(
@@ -83,10 +83,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: p.secondaryText,
-          side: BorderSide(
-            color: AppColors.secondary500,
-            width: AppBorder.medium,
-          ),
+          side: BorderSide(color: p.secondaryFill, width: AppBorder.medium),
           minimumSize: const Size(0, AppSpacing.touch),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.buttonX,
@@ -104,7 +101,7 @@ class AppTheme {
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: p.primaryFill,
-        foregroundColor: AppColors.onPrimary,
+        foregroundColor: p.onPrimary,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -112,11 +109,10 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: p.surface2,
-        selectedColor: p.isDark ? p.primarySoft : AppColors.primary100,
+        selectedColor: p.primarySoft,
         secondarySelectedColor: p.secondarySoft,
         labelStyle: AppTypography.label.copyWith(color: onSurface),
-        secondaryLabelStyle:
-            AppTypography.label.copyWith(color: AppColors.onPrimary),
+        secondaryLabelStyle: AppTypography.label.copyWith(color: p.primaryText),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.sm,
           vertical: AppSpacing.xs,
@@ -143,24 +139,15 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.field,
-          borderSide: BorderSide(
-            color: AppColors.primary500,
-            width: AppBorder.medium,
-          ),
+          borderSide: BorderSide(color: p.primaryFill, width: AppBorder.medium),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: AppRadius.field,
-          borderSide: BorderSide(
-            color: p.error,
-            width: AppBorder.medium,
-          ),
+          borderSide: BorderSide(color: p.error, width: AppBorder.medium),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: AppRadius.field,
-          borderSide: BorderSide(
-            color: p.error,
-            width: AppBorder.thick,
-          ),
+          borderSide: BorderSide(color: p.error, width: AppBorder.thick),
         ),
         hintStyle: AppTypography.body.copyWith(color: tertiary),
       ),
@@ -193,9 +180,7 @@ class AppTheme {
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
-          return IconThemeData(
-            color: selected ? p.primaryText : tertiary,
-          );
+          return IconThemeData(color: selected ? p.primaryText : tertiary);
         }),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(

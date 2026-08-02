@@ -99,7 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
       body: DecoratedBox(
-        decoration: BoxDecoration(gradient: p.canvasGradient),
+        decoration: BoxDecoration(color: p.canvas),
         child: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w),

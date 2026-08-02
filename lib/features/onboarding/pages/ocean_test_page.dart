@@ -39,7 +39,7 @@ class OceanTestPage extends StatelessWidget {
       return Scaffold(
         backgroundColor: p.canvas,
         body: DecoratedBox(
-          decoration: BoxDecoration(gradient: p.canvasGradient),
+          decoration: BoxDecoration(color: p.canvas),
           child: const Center(child: CircularProgressIndicator()),
         ),
       );
@@ -49,7 +49,7 @@ class OceanTestPage extends StatelessWidget {
       return Scaffold(
         backgroundColor: p.canvas,
         body: DecoratedBox(
-          decoration: BoxDecoration(gradient: p.canvasGradient),
+          decoration: BoxDecoration(color: p.canvas),
           child: Center(
             child: Text(
               isEn ? 'No questions loaded' : 'Pertanyaan belum dimuat',
@@ -76,10 +76,13 @@ class OceanTestPage extends StatelessWidget {
         ),
       ),
       body: DecoratedBox(
-        decoration: BoxDecoration(gradient: p.canvasGradient),
+        decoration: BoxDecoration(color: p.canvas),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSpacing.pageX.w,
+              vertical: 16.h,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -87,8 +90,8 @@ class OceanTestPage extends StatelessWidget {
                   value: progress,
                   minHeight: 6,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
-                  backgroundColor: p.primaryWash,
-                  color: p.primaryText,
+                  backgroundColor: p.surface3,
+                  color: p.primaryFill,
                 ),
                 SizedBox(height: 8.h),
                 Text(
@@ -121,10 +124,10 @@ class OceanTestPage extends StatelessWidget {
                             vertical: 14.h,
                           ),
                           decoration: BoxDecoration(
-                            color: isSel ? p.primary : p.surface1,
+                            color: isSel ? p.primaryFill : p.surface1,
                             borderRadius: BorderRadius.circular(AppRadius.pill),
                             border: Border.all(
-                              color: isSel ? p.primaryPressed : p.divider,
+                              color: isSel ? p.primaryFill : p.divider,
                               width: isSel ? 2 : 1,
                             ),
                           ),
@@ -151,8 +154,8 @@ class OceanTestPage extends StatelessWidget {
                     if (vm.currentOceanIndex > 0) SizedBox(width: 12.w),
                     Expanded(
                       child: PrimaryButton(
-                        text: vm.currentOceanIndex ==
-                                vm.oceanQuestions.length - 1
+                        text:
+                            vm.currentOceanIndex == vm.oceanQuestions.length - 1
                             ? (isEn ? 'Finish' : 'Selesai')
                             : (isEn ? 'Next' : 'Lanjut'),
                         isDisabled: selected == null,

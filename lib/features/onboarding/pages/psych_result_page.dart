@@ -58,7 +58,7 @@ class _PsychResultPageState extends State<PsychResultPage> {
         centerTitle: true,
       ),
       body: DecoratedBox(
-        decoration: BoxDecoration(gradient: p.canvasGradient),
+        decoration: BoxDecoration(color: p.canvas),
         child: SafeArea(
           child: Consumer<QuestionnaireViewModel>(
             builder: (context, viewModel, child) {
@@ -67,10 +67,10 @@ class _PsychResultPageState extends State<PsychResultPage> {
               final emoji = score <= 25
                   ? '😢'
                   : score <= 50
-                      ? '😔'
-                      : score <= 75
-                          ? '😊'
-                          : '🥰';
+                  ? '😔'
+                  : score <= 75
+                  ? '😊'
+                  : '🥰';
 
               return SingleChildScrollView(
                 padding: EdgeInsets.symmetric(
@@ -84,16 +84,18 @@ class _PsychResultPageState extends State<PsychResultPage> {
                         children: [
                           Text(
                             l10n.yourScore.toUpperCase(),
-                            style: AppTypography.label
-                                .copyWith(color: p.textSecondary),
+                            style: AppTypography.label.copyWith(
+                              color: p.textSecondary,
+                            ),
                           ),
                           SizedBox(height: AppSpacing.sm.h),
-                          Text(emoji, style: TextStyle(fontSize: 36.sp)),
+                          Text(emoji, style: AppTypography.emojiXl),
                           SizedBox(height: AppSpacing.xxs.h),
                           Text(
                             '$score / 100',
-                            style: AppTypography.metric
-                                .copyWith(color: p.textPrimary),
+                            style: AppTypography.metric.copyWith(
+                              color: p.textPrimary,
+                            ),
                           ),
                           SizedBox(height: AppSpacing.xl.h),
                           if (psychClass != null) ...[
@@ -103,13 +105,14 @@ class _PsychResultPageState extends State<PsychResultPage> {
                                 vertical: AppSpacing.xs.h,
                               ),
                               decoration: BoxDecoration(
-                                color: p.secondary.withValues(alpha: 0.14),
+                                color: p.secondaryFill.withValues(alpha: 0.14),
                                 borderRadius: AppRadius.chip,
                               ),
                               child: Text(
                                 psychClass.className.get(isEnglish),
-                                style: AppTypography.bodyStrong
-                                    .copyWith(color: p.secondaryText),
+                                style: AppTypography.bodyStrong.copyWith(
+                                  color: p.secondaryText,
+                                ),
                               ),
                             ),
                             SizedBox(height: AppSpacing.md.h),
@@ -118,8 +121,9 @@ class _PsychResultPageState extends State<PsychResultPage> {
                               child: Text(
                                 psychClass.description.get(isEnglish),
                                 textAlign: TextAlign.center,
-                                style: AppTypography.body
-                                    .copyWith(color: p.textSecondary),
+                                style: AppTypography.body.copyWith(
+                                  color: p.textSecondary,
+                                ),
                               ),
                             ),
                             SizedBox(height: AppSpacing.md.h),
@@ -127,17 +131,19 @@ class _PsychResultPageState extends State<PsychResultPage> {
                               width: double.infinity,
                               padding: EdgeInsets.all(AppSpacing.md.w),
                               decoration: BoxDecoration(
-                                color: p.primaryWash,
-                                borderRadius:
-                                    BorderRadius.circular(AppRadius.md.r),
+                                color: p.surface2,
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.md.r,
+                                ),
                               ),
                               child: Text(
                                 l10n.suggestionLabel(
                                   psychClass.recommendation.get(isEnglish),
                                 ),
                                 textAlign: TextAlign.center,
-                                style: AppTypography.bodyStrong
-                                    .copyWith(color: p.textPrimary),
+                                style: AppTypography.bodyStrong.copyWith(
+                                  color: p.textPrimary,
+                                ),
                               ),
                             ),
                           ],
@@ -150,8 +156,9 @@ class _PsychResultPageState extends State<PsychResultPage> {
                     Text(
                       l10n.tryVoiceTestQuestion,
                       textAlign: TextAlign.center,
-                      style: AppTypography.subtitle
-                          .copyWith(color: p.textPrimary),
+                      style: AppTypography.subtitle.copyWith(
+                        color: p.textPrimary,
+                      ),
                     ),
                     SizedBox(height: AppSpacing.lg.h),
                     PrimaryButton(

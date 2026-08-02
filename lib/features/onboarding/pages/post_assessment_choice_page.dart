@@ -46,7 +46,7 @@ class _PostAssessmentChoicePageState extends State<PostAssessmentChoicePage> {
     return Scaffold(
       backgroundColor: p.canvas,
       body: DecoratedBox(
-        decoration: BoxDecoration(gradient: p.canvasGradient),
+        decoration: BoxDecoration(color: p.canvas),
         child: SafeArea(
           child: Padding(
             padding: EdgeInsets.all(AppSpacing.pageX.w),

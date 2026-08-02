@@ -57,7 +57,7 @@ class _PermissionsPageState extends State<PermissionsPage> {
       extendBodyBehindAppBar: true,
       appBar: CustomAppBar(title: l10n.permissionsTitle, showBackButton: true),
       body: DecoratedBox(
-        decoration: BoxDecoration(gradient: p.canvasGradient),
+        decoration: BoxDecoration(color: p.canvas),
         child: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(
@@ -101,8 +101,9 @@ class _PermissionsPageState extends State<PermissionsPage> {
                 ),
                 SizedBox(height: AppSpacing.xl.h),
                 PrimaryButton(
-                  text:
-                      allGranted ? l10n.startRecording : l10n.requestPermission,
+                  text: allGranted
+                      ? l10n.startRecording
+                      : l10n.requestPermission,
                   onPressed: allGranted
                       ? () {
                           context.goNamed(RouteNames.liveRecording);

@@ -7,8 +7,10 @@ import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/utils/mental_health_score.dart';
 import 'package:fem_psychmonitor/app/utils/recommendation_engine.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
+import 'package:fem_psychmonitor/app/widgets/app_bottom_sheet.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/app/widgets/emotion_radar_chart.dart';
+import 'package:fem_psychmonitor/app/widgets/session_card.dart';
 import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
 import 'package:fem_psychmonitor/data/repositories/recommendation_repository.dart';
@@ -139,164 +141,161 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
-            Icons.close_rounded,
-            color: p.textSecondary,
-            size: 22.sp,
-          ),
+          icon: Icon(Icons.close_rounded, color: p.textSecondary, size: 22.sp),
           onPressed: () {
             if (context.canPop()) context.pop();
           },
         ),
       ),
       body: DecoratedBox(
-        decoration: BoxDecoration(gradient: p.canvasGradient),
+        decoration: BoxDecoration(color: p.canvas),
         child: SafeArea(
           child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 8.h),
-              _Hero(
-                dominant: dominant,
-                confidence: dominantConfidence,
-                isCorrected: session?.correctedEmotion != null,
-                summaryText: summaryText,
-              ),
-              SizedBox(height: 24.h),
-              if (!widget.isTeaser && session != null) ...[
-                Builder(builder: (context) {
-                  final canCorrect = isTodayLocal(session.startedAt);
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _CorrectionButton(
-                        corrected: session.correctedEmotion != null,
-                        enabled: canCorrect,
-                        onTap: canCorrect
-                            ? () => _showCorrectionSheet(context, session)
-                            : () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Koreksi emosi hanya bisa dilakukan pada hari yang sama dengan rekaman.',
-                                    ),
-                                  ),
-                                );
-                              },
-                      ),
-                      if (!canCorrect)
-                        Padding(
-                          padding: EdgeInsets.only(top: 6.h),
-                          child: Text(
-                            'Koreksi hanya tersedia di hari yang sama.',
-                            style: AppTypography.caption.copyWith(
-                              color: p.textTertiary,
-                            ),
-                            textAlign: TextAlign.center,
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: AppSpacing.xs.h),
+                _Hero(
+                  dominant: dominant,
+                  confidence: dominantConfidence,
+                  isCorrected: session?.correctedEmotion != null,
+                  summaryText: summaryText,
+                ),
+                SizedBox(height: AppSpacing.xl.h),
+                if (!widget.isTeaser && session != null) ...[
+                  Builder(
+                    builder: (context) {
+                      final canCorrect = isTodayLocal(session.startedAt);
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _CorrectionButton(
+                            corrected: session.correctedEmotion != null,
+                            enabled: canCorrect,
+                            onTap: canCorrect
+                                ? () => _showCorrectionSheet(context, session)
+                                : () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Koreksi emosi hanya bisa dilakukan pada hari yang sama dengan rekaman.',
+                                        ),
+                                      ),
+                                    );
+                                  },
                           ),
-                        ),
-                    ],
-                  );
-                }),
-                SizedBox(height: 16.h),
-              ],
-              if (!widget.isTeaser &&
-                  session != null &&
-                  _noteController != null)
-                _NoteCard(
-                  controller: _noteController!,
-                  saving: _isSavingNote,
-                  savedTick: _noteSavedTick,
-                  onChanged: (_) {
-                    if (_noteSavedTick) setState(() => _noteSavedTick = false);
-                  },
-                  onSave: () => _saveNote(session),
-                ),
-              if (!widget.isTeaser && session != null) ...[
-                SizedBox(height: 16.h),
-                _ScoreCalculationCard(session: session),
-              ],
-              if (session?.selfReportEmotion != null) ...[
-                SizedBox(height: 12.h),
-                Text(
-                  'Self-report: ${session!.selfReportEmotion!.emoji} ${session.selfReportEmotion!.displayName}',
-                  style: AppTypography.caption
-                      .copyWith(color: p.textSecondary),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-              SizedBox(height: 16.h),
-              _SectionCard(
-                child: EmotionRadarChart(
-                  title: 'Distribusi emosi',
-                  values: session?.averageProbs ??
-                      (detector.latest?.allProbs ??
-                          List.filled(EmotionLabelType.values.length, 0)),
-                ),
-              ),
-              SizedBox(height: 16.h),
-              if (showHotline) ...[
-                _HotlineCard(onCall: (n) => _launchHotline(context, l10n, n)),
-                SizedBox(height: 16.h),
-                _WeeklyChart(chart: _weeklyChart),
-                SizedBox(height: 16.h),
-              ],
-              _SectionCard(child: RecordingTimeline(timeline: timeline)),
-              SizedBox(height: 16.h),
-              ComponentTimeline(
-                timeline: timeline,
-                title: l10n.emotionComponent,
-              ),
-              SizedBox(height: 16.h),
-              if (_saranResult != null && _saranResult!.items.isNotEmpty) ...[
-                _SaranCard(
-                    tips: _saranResult!.items.map((e) => e.text).toList()),
-                SizedBox(height: 16.h),
-              ],
-              SecondaryButton(
-                text: l10n.retakeRecording,
-                subText: l10n.retakeRecordingSub,
-                icon: Icons.replay_rounded,
-                onPressed: () => context.goNamed(RouteNames.liveRecording),
-              ),
-              if (!widget.isTeaser && session != null) ...[
-                SizedBox(height: 12.h),
-                TextButton(
-                  onPressed: () => _confirmDelete(session),
-                  child: Text(
-                    'Hapus rekaman ini',
-                    style: AppTypography.label.copyWith(
-                      color: p.warning,
-                    ),
+                          if (!canCorrect)
+                            Padding(
+                              padding: EdgeInsets.only(top: AppSpacing.xxs.h),
+                              child: Text(
+                                'Koreksi hanya tersedia di hari yang sama.',
+                                style: AppTypography.caption.copyWith(
+                                  color: p.textTertiary,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
-                ),
-              ],
-              if (widget.isTeaser) ...[
-                SizedBox(height: 16.h),
-                const _TeaserCard(),
-              ],
-              if (!widget.isTeaser) ...[
-                SizedBox(height: 16.h),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w),
-                  child: Text(
-                    l10n.disclaimer,
+                  SizedBox(height: AppSpacing.md.h),
+                ],
+                if (!widget.isTeaser &&
+                    session != null &&
+                    _noteController != null)
+                  _NoteCard(
+                    controller: _noteController!,
+                    saving: _isSavingNote,
+                    savedTick: _noteSavedTick,
+                    onChanged: (_) {
+                      if (_noteSavedTick) {
+                        setState(() => _noteSavedTick = false);
+                      }
+                    },
+                    onSave: () => _saveNote(session),
+                  ),
+                if (!widget.isTeaser && session != null) ...[
+                  SizedBox(height: AppSpacing.md.h),
+                  _ScoreCalculationCard(session: session),
+                ],
+                if (session?.selfReportEmotion != null) ...[
+                  SizedBox(height: AppSpacing.sm.h),
+                  Text(
+                    'Self-report: ${session!.selfReportEmotion!.emoji} ${session.selfReportEmotion!.displayName}',
+                    style: AppTypography.caption.copyWith(
+                      color: p.textSecondary,
+                    ),
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.w500,
-                      color: p.textSecondary.withValues(alpha: 0.8),
-                      height: 1.5,
-                    ),
+                  ),
+                ],
+                SizedBox(height: AppSpacing.md.h),
+                SessionCard(
+                  child: EmotionRadarChart(
+                    title: 'Distribusi emosi',
+                    values:
+                        session?.averageProbs ??
+                        (detector.latest?.allProbs ??
+                            List.filled(EmotionLabelType.values.length, 0)),
                   ),
                 ),
+                SizedBox(height: AppSpacing.md.h),
+                if (showHotline) ...[
+                  _HotlineCard(onCall: (n) => _launchHotline(context, l10n, n)),
+                  SizedBox(height: AppSpacing.md.h),
+                  _WeeklyChart(chart: _weeklyChart),
+                  SizedBox(height: AppSpacing.md.h),
+                ],
+                SessionCard(child: RecordingTimeline(timeline: timeline)),
+                SizedBox(height: AppSpacing.md.h),
+                ComponentTimeline(
+                  timeline: timeline,
+                  title: l10n.emotionComponent,
+                ),
+                SizedBox(height: AppSpacing.md.h),
+                if (_saranResult != null && _saranResult!.items.isNotEmpty) ...[
+                  _SaranCard(
+                    tips: _saranResult!.items.map((e) => e.text).toList(),
+                  ),
+                  SizedBox(height: AppSpacing.md.h),
+                ],
+                SecondaryButton(
+                  text: l10n.retakeRecording,
+                  subText: l10n.retakeRecordingSub,
+                  icon: Icons.replay_rounded,
+                  onPressed: () => context.goNamed(RouteNames.liveRecording),
+                ),
+                if (!widget.isTeaser && session != null) ...[
+                  SizedBox(height: AppSpacing.sm.h),
+                  AppTextButton(
+                    text: 'Hapus rekaman ini',
+                    color: p.warning,
+                    onPressed: () => _confirmDelete(session),
+                  ),
+                ],
+                if (widget.isTeaser) ...[
+                  SizedBox(height: AppSpacing.md.h),
+                  const _TeaserCard(),
+                ],
+                if (!widget.isTeaser) ...[
+                  SizedBox(height: AppSpacing.md.h),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs.w),
+                    child: Text(
+                      l10n.disclaimer,
+                      textAlign: TextAlign.center,
+                      style: AppTypography.micro.copyWith(
+                        color: p.textSecondary.withValues(alpha: 0.8),
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                ],
+                SizedBox(height: AppSpacing.huge.h),
               ],
-              SizedBox(height: 48.h),
-            ],
+            ),
           ),
-        ),
         ),
       ),
     );
@@ -339,7 +338,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
               'Hapus',
-              style: TextStyle(color: p.warning),
+              style: AppTypography.button.copyWith(color: p.warning),
             ),
           ),
         ],
@@ -359,9 +358,9 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
         context.goNamed(RouteNames.discover);
       }
     } else if (detectionVm.error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(detectionVm.error!)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(detectionVm.error!)));
     }
   }
 
@@ -385,52 +384,41 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
         session.correctedEmotion ?? session.dominantEmotion;
     final detectionVm = context.read<DetectionViewModel>();
 
-    final result = await showModalBottomSheet<EmotionLabelType>(
+    final result = await showAppBottomSheet<EmotionLabelType>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: p.surface1,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (innerContext, setSheetState) {
             final bottomInset = MediaQuery.viewInsetsOf(innerContext).bottom;
             return SafeArea(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 16.h + bottomInset),
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.xl.w,
+                  AppSpacing.md.h,
+                  AppSpacing.xl.w,
+                  AppSpacing.md.h + bottomInset,
+                ),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Center(
-                        child: Container(
-                          width: 40.w,
-                          height: 4.h,
-                          decoration: BoxDecoration(
-                            color: p.divider,
-                            borderRadius: BorderRadius.circular(AppRadius.xs),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 12.h),
+                      const AppSheetHandle(),
+                      SizedBox(height: AppSpacing.sm.h),
                       Text(
                         'Koreksi Hasil Emosi',
                         style: AppTypography.subtitle,
                       ),
-                      SizedBox(height: 6.h),
+                      SizedBox(height: AppSpacing.xxs.h),
                       Text(
                         'Pilih emosi yang menurutmu paling akurat mendeskripsikan rekaman ini.',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: p.textSecondary,
-                        ),
+                        style: AppTypography.caption
+                            .copyWith(color: p.textSecondary),
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: AppSpacing.sm.h),
                       Wrap(
-                        spacing: 8.w,
-                        runSpacing: 8.h,
+                        spacing: AppSpacing.xs.w,
+                        runSpacing: AppSpacing.xs.h,
                         children: EmotionLabelType.values.map((e) {
                           final selected = e == picked;
                           return ChoiceChip(
@@ -438,20 +426,16 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                             selected: selected,
                             onSelected: (_) => setSheetState(() => picked = e),
                             selectedColor: e.color,
-                            labelStyle: TextStyle(
-                              color: selected
-                                  ? p.onPrimary
-                                  : p.textPrimary,
-                              fontWeight: FontWeight.w600,
+                            labelStyle: AppTypography.bodyStrong.copyWith(
+                              color: selected ? p.onPrimary : p.textPrimary,
                             ),
                           );
                         }).toList(),
                       ),
-                      SizedBox(height: 16.h),
+                      SizedBox(height: AppSpacing.md.h),
                       PrimaryButton(
                         text: 'Simpan Koreksi',
-                        onPressed: () =>
-                            Navigator.of(innerContext).pop(picked),
+                        onPressed: () => Navigator.of(innerContext).pop(picked),
                       ),
                     ],
                   ),
@@ -522,10 +506,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
     final classKey = psychClassKeyForScore(updatedScore);
 
     await profileVm.updateProfile(
-      user.copyWith(
-        psychScore: updatedScore,
-        psychClass: classKey,
-      ),
+      user.copyWith(psychScore: updatedScore, psychClass: classKey),
       l10n,
     );
     await ScoreLogRepository().append(
@@ -588,13 +569,10 @@ class _Hero extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 20.w),
-      decoration: BoxDecoration(
-        color: p.primaryWash,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: p.divider),
+    return SessionCard(
+      padding: EdgeInsets.symmetric(
+        vertical: AppSpacing.xxl.h,
+        horizontal: AppSpacing.lg.w,
       ),
       child: Column(
         children: [
@@ -603,32 +581,29 @@ class _Hero extends StatelessWidget {
             children: [
               Text(
                 l10n.analysisResult,
-                style: TextStyle(
-                  fontSize: 11.sp,
-                  fontWeight: FontWeight.w700,
+                style: AppTypography.tabLabel.copyWith(
                   letterSpacing: 1.2,
                   color: p.textSecondary,
                 ),
               ),
               if (isCorrected)
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xs.w,
+                    vertical: AppSpacing.xxs.h,
+                  ),
                   decoration: BoxDecoration(
-                    color: p.secondary.withValues(alpha: 0.16),
+                    color: p.secondarySoft,
                     borderRadius: AppRadius.chip,
                   ),
                   child: Text(
                     'Dikoreksi',
-                    style: TextStyle(
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.w700,
-                      color: p.secondary,
-                    ),
+                    style: AppTypography.badge.copyWith(color: p.secondaryText),
                   ),
                 ),
             ],
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: AppSpacing.sm.h),
           VoiceprintOrb(
             mode: VoiceprintMode.static,
             color: p.emotionBase(dominant),
@@ -637,34 +612,26 @@ class _Hero extends StatelessWidget {
             centerTop: '${(confidence * 100).round()}%',
             centerBottom: l10n.confidence.toUpperCase(),
           ),
-          SizedBox(height: 12.h),
-          Text(dominant.emoji, style: TextStyle(fontSize: 40.sp, height: 1)),
-          SizedBox(height: 6.h),
-          Text(
-            dominant.displayName,
-            style: AppTypography.subtitle,
-          ),
-          SizedBox(height: 4.h),
+          SizedBox(height: AppSpacing.sm.h),
+          Text(dominant.emoji, style: AppTypography.emojiHero),
+          SizedBox(height: AppSpacing.xxs.h),
+          Text(dominant.displayName, style: AppTypography.subtitle),
+          SizedBox(height: AppSpacing.xxs.h),
           Text(
             l10n.dominantEmotionLabel(dominant.displayName),
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 11.sp,
+            style: AppTypography.caption.copyWith(
               color: p.textSecondary,
               height: 1.4,
             ),
           ),
-          SizedBox(height: 12.h),
-          SizedBox(
-            width: 280.w,
-            child: Text(
-              summaryText,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12.sp,
-                height: 1.5,
-                color: p.textSecondary,
-              ),
+          SizedBox(height: AppSpacing.sm.h),
+          Text(
+            summaryText,
+            textAlign: TextAlign.center,
+            style: AppTypography.caption.copyWith(
+              height: 1.5,
+              color: p.textSecondary,
             ),
           ),
         ],
@@ -690,57 +657,39 @@ class _CorrectionButton extends StatelessWidget {
     return Opacity(
       opacity: enabled ? 1 : 0.5,
       child: GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 14.h),
-        decoration: BoxDecoration(
-          color: p.surface1,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: p.divider),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.edit_outlined, size: 18.sp, color: p.primaryText),
-            SizedBox(width: 10.w),
-            Expanded(
-              child: Text(
-                corrected ? 'Ubah Koreksi' : 'Koreksi Hasil Emosi',
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w600,
-                  color: p.primaryText,
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.md.w,
+            vertical: AppSpacing.buttonY.h,
+          ),
+          decoration: p.card(radius: AppRadius.md),
+          child: Row(
+            children: [
+              Icon(
+                Icons.edit_outlined,
+                size: AppSpacing.lg.sp,
+                color: p.primaryText,
+              ),
+              SizedBox(width: AppSpacing.xs.w),
+              Expanded(
+                child: Text(
+                  corrected ? 'Ubah Koreksi' : 'Koreksi Hasil Emosi',
+                  style: AppTypography.caption.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: p.primaryText,
+                  ),
                 ),
               ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: p.textSecondary,
-              size: 20.sp,
-            ),
-          ],
+              Icon(
+                Icons.chevron_right_rounded,
+                color: p.textSecondary,
+                size: AppSpacing.lg.sp,
+              ),
+            ],
+          ),
         ),
       ),
-      ),
-    );
-  }
-}
-
-// ───────────────────────── Section card ─────────────────────────
-class _SectionCard extends StatelessWidget {
-  final Widget child;
-  const _SectionCard({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    return Container(
-      padding: EdgeInsets.all(18.w),
-      decoration: BoxDecoration(
-        color: p.surface1,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: p.divider),
-      ),
-      child: child,
     );
   }
 }
@@ -764,26 +713,26 @@ class _ScoreCalculationCard extends StatelessWidget {
     final weighted = breakdown.weightedImpact.toStringAsFixed(2);
     final impact = _formatNumber(breakdown.impactWeight);
 
-    return _SectionCard(
+    return SessionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                width: 36.w,
-                height: 36.w,
+                width: AppSpacing.xxxl.w,
+                height: AppSpacing.xxxl.w,
                 decoration: BoxDecoration(
-                  color: p.primaryFill.withValues(alpha: 0.14),
+                  color: p.primarySoft,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.calculate_rounded,
                   color: p.primaryText,
-                  size: 19.sp,
+                  size: AppSpacing.sm.sp,
                 ),
               ),
-              SizedBox(width: 10.w),
+              SizedBox(width: AppSpacing.xs.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -792,11 +741,10 @@ class _ScoreCalculationCard extends StatelessWidget {
                       'Perhitungan Skor Sesi Ini',
                       style: AppTypography.subtitle,
                     ),
-                    SizedBox(height: 2.h),
+                    SizedBox(height: AppSpacing.xxs.h),
                     Text(
                       'Menjelaskan dampak rekaman ini ke skor mental health.',
-                      style: TextStyle(
-                        fontSize: 11.sp,
+                      style: AppTypography.caption.copyWith(
                         height: 1.35,
                         color: p.textSecondary,
                       ),
@@ -806,7 +754,7 @@ class _ScoreCalculationCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: AppSpacing.md.h),
           _FormulaLine(
             label: 'Emosi yang dipakai',
             value:
@@ -827,30 +775,23 @@ class _ScoreCalculationCard extends StatelessWidget {
             label: 'Bobot emosi',
             value: '${breakdown.emotion.displayName} = $impact',
           ),
-          SizedBox(height: 10.h),
+          SizedBox(height: AppSpacing.xs.h),
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(14.w),
+            padding: EdgeInsets.all(AppSpacing.sm.w),
             decoration: BoxDecoration(
-              color: p.primary.withValues(alpha: 0.07),
+              color: p.primaryWash,
               borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(
-                color: p.primary.withValues(alpha: 0.12),
-              ),
+              border: Border.all(color: p.primarySoft),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Rumus dampak',
-                  style: TextStyle(
-                    fontSize: 10.sp,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
-                    color: p.textSecondary,
-                  ),
+                  style: AppTypography.badge.copyWith(color: p.textSecondary),
                 ),
-                SizedBox(height: 6.h),
+                SizedBox(height: AppSpacing.xxs.h),
                 Text(
                   '$impact x ${breakdown.effectiveConfidence.toStringAsFixed(2)} = $weighted -> $sign${breakdown.delta} poin',
                   style: AppTypography.subtitle,
@@ -859,17 +800,16 @@ class _ScoreCalculationCard extends StatelessWidget {
             ),
           ),
           if (currentScore != null) ...[
-            SizedBox(height: 12.h),
+            SizedBox(height: AppSpacing.sm.h),
             _FormulaLine(
               label: 'Estimasi pada skor saat ini',
               value: '$currentScore + ($sign${breakdown.delta})',
             ),
           ],
-          SizedBox(height: 10.h),
+          SizedBox(height: AppSpacing.xs.h),
           Text(
             'Catatan: hasil koreksi user mengganti emosi yang dipakai. Jika dikoreksi, confidence efektif minimal 65% agar koreksi user tetap berpengaruh pada skor.',
-            style: TextStyle(
-              fontSize: 10.sp,
+            style: AppTypography.micro.copyWith(
               height: 1.45,
               color: p.textSecondary,
             ),
@@ -895,27 +835,25 @@ class _FormulaLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     return Padding(
-      padding: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.only(bottom: AppSpacing.xs.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Text(
               label,
-              style: TextStyle(
-                fontSize: 11.sp,
+              style: AppTypography.caption.copyWith(
                 height: 1.35,
                 color: p.textSecondary,
               ),
             ),
           ),
-          SizedBox(width: 12.w),
+          SizedBox(width: AppSpacing.sm.w),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 11.sp,
+              style: AppTypography.caption.copyWith(
                 height: 1.35,
                 fontWeight: FontWeight.w700,
                 color: p.textPrimary,
@@ -947,7 +885,7 @@ class _NoteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
-    return _SectionCard(
+    return SessionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -955,17 +893,17 @@ class _NoteCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.edit_note_rounded,
-                color: p.secondary,
-                size: 20.sp,
+                color: p.secondaryText,
+                size: AppSpacing.lg.sp,
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: AppSpacing.xs.w),
               Text(
                 l10n.sessionNoteTitle,
-                style: AppTypography.bodyStrong.copyWith(fontSize: 16.0),
+                style: AppTypography.bodyStrong,
               ),
             ],
           ),
-          SizedBox(height: 10.h),
+          SizedBox(height: AppSpacing.xs.h),
           TextField(
             controller: controller,
             minLines: 2,
@@ -974,16 +912,15 @@ class _NoteCard extends StatelessWidget {
             onChanged: onChanged,
             decoration: InputDecoration(
               hintText: l10n.sessionNoteHint,
-              hintStyle: TextStyle(
-                fontSize: 12.sp,
+              hintStyle: AppTypography.caption.copyWith(
                 color: p.textSecondary.withValues(alpha: 0.7),
               ),
               filled: true,
               fillColor: p.surface2,
               isDense: true,
               contentPadding: EdgeInsets.symmetric(
-                horizontal: 14.w,
-                vertical: 12.h,
+                horizontal: AppSpacing.sm.w,
+                vertical: AppSpacing.sm.h,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.md),
@@ -992,35 +929,31 @@ class _NoteCard extends StatelessWidget {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.md),
                 borderSide: BorderSide(
-                  color: p.primary.withValues(alpha: 0.5),
+                  color: p.primaryFill.withValues(alpha: 0.5),
                   width: 2,
                 ),
               ),
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppSpacing.xs.h),
           Align(
             alignment: Alignment.centerRight,
             child: TextButton.icon(
               onPressed: saving ? null : onSave,
               icon: saving
                   ? SizedBox(
-                      width: 14.sp,
-                      height: 14.sp,
+                      width: AppSpacing.sm.sp,
+                      height: AppSpacing.sm.sp,
                       child: const CircularProgressIndicator(strokeWidth: 2),
                     )
                   : Icon(
                       Icons.save_outlined,
-                      size: 16.sp,
+                      size: AppSpacing.lg.sp,
                       color: p.primaryText,
                     ),
               label: Text(
                 savedTick ? l10n.noteSaved : l10n.saveNote,
-                style: TextStyle(
-                  color: p.primaryText,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12.sp,
-                ),
+                style: AppTypography.label.copyWith(color: p.primaryText),
               ),
             ),
           ),
@@ -1040,7 +973,7 @@ class _HotlineCard extends StatelessWidget {
     final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     return Container(
-      padding: EdgeInsets.all(18.w),
+      padding: EdgeInsets.all(AppSpacing.card.r),
       decoration: BoxDecoration(
         color: p.warning.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -1050,38 +983,29 @@ class _HotlineCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.all(10.w),
-            decoration: BoxDecoration(
-              color: p.warning,
-              shape: BoxShape.circle,
-            ),
+            padding: EdgeInsets.all(AppSpacing.xs.w),
+            decoration: BoxDecoration(color: p.warning, shape: BoxShape.circle),
             child: Icon(
               Icons.phone_in_talk_rounded,
               color: p.onPrimary,
-              size: 20.sp,
+              size: AppSpacing.lg.sp,
             ),
           ),
-          SizedBox(width: 14.w),
+          SizedBox(width: AppSpacing.sm.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  l10n.needHelp,
-                  style: AppTypography.subtitle,
-                ),
-                SizedBox(height: 4.h),
+                Text(l10n.needHelp, style: AppTypography.subtitle),
+                SizedBox(height: AppSpacing.xxs.h),
                 Text(
                   l10n.hotlineDesc,
-                  style: TextStyle(
-                    fontSize: 11.sp,
-                    height: 1.4,
-                    color: p.textPrimary,
-                  ),
+                  style: AppTypography.caption
+                      .copyWith(color: p.textPrimary, height: 1.4),
                 ),
-                SizedBox(height: 10.h),
+                SizedBox(height: AppSpacing.xs.h),
                 Wrap(
-                  spacing: 8.w,
+                  spacing: AppSpacing.xs.w,
                   children: [
                     _hotline(context, l10n, '119', l10n.emergencyHealthService),
                     _hotline(context, l10n, '119', l10n.mentalHealthService),
@@ -1104,11 +1028,10 @@ class _HotlineCard extends StatelessWidget {
     final p = context.palette;
     return ActionChip(
       onPressed: () => onCall(dial),
-      avatar: Icon(Icons.call, size: 14.sp, color: p.warning),
+      avatar: Icon(Icons.call, size: AppSpacing.sm.sp, color: p.warning),
       label: Text(
         '$dial · $label',
-        style: TextStyle(
-          fontSize: 11.sp,
+        style: AppTypography.caption.copyWith(
           fontWeight: FontWeight.w600,
           color: p.warning,
         ),
@@ -1133,15 +1056,15 @@ class _WeeklyChart extends StatelessWidget {
     final maxCount = entries.isEmpty
         ? 1
         : entries.map((e) => e.value).reduce((a, b) => a > b ? a : b);
-    return _SectionCard(
+    return SessionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             l10n.weeklyEmotionDistribution,
-            style: AppTypography.bodyStrong.copyWith(fontSize: 16.0),
+            style: AppTypography.bodyStrong,
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: AppSpacing.md.h),
           if (entries.isEmpty)
             Text(
               l10n.noDataThisWeek,
@@ -1150,43 +1073,41 @@ class _WeeklyChart extends StatelessWidget {
           else
             ...entries.map(
               (e) => Padding(
-                padding: EdgeInsets.only(bottom: 8.h),
+                padding: EdgeInsets.only(bottom: AppSpacing.xs.h),
                 child: Row(
                   children: [
-                    Text(e.key.emoji, style: TextStyle(fontSize: 14.sp)),
-                    SizedBox(width: 8.w),
+                    Text(e.key.emoji, style: AppTypography.emojiSm),
+                    SizedBox(width: AppSpacing.xs.w),
                     SizedBox(
-                      width: 56.w,
+                      width: AppSpacing.xxl.w,
                       child: Text(
                         e.key.displayName,
-                        style: TextStyle(
-                          fontSize: 11.sp,
+                        style: AppTypography.caption.copyWith(
                           fontWeight: FontWeight.w600,
                           color: p.textSecondary,
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    SizedBox(width: AppSpacing.xs.w),
                     Expanded(
                       child: ClipRRect(
                         borderRadius: AppRadius.chip,
                         child: LinearProgressIndicator(
                           value: e.value / maxCount,
-                          minHeight: 7.h,
-                          backgroundColor: p.primarySoft,
+                          minHeight: AppSpacing.xxs.h,
+                          backgroundColor: p.surface3,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             e.key.color,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    SizedBox(width: AppSpacing.xs.w),
                     SizedBox(
-                      width: 20.w,
+                      width: AppSpacing.xl.w,
                       child: Text(
                         '${e.value}',
-                        style: TextStyle(
-                          fontSize: 11.sp,
+                        style: AppTypography.caption.copyWith(
                           fontWeight: FontWeight.w700,
                           color: p.textPrimary,
                         ),
@@ -1212,7 +1133,7 @@ class _SaranCard extends StatelessWidget {
     final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
     if (tips.isEmpty) return const SizedBox.shrink();
-    return _SectionCard(
+    return SessionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1220,34 +1141,36 @@ class _SaranCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.tips_and_updates_outlined,
-                color: p.secondary,
-                size: 18.sp,
+                color: p.secondaryText,
+                size: AppSpacing.lg.sp,
               ),
-              SizedBox(width: 8.w),
-              Text(l10n.tipsForYou, style: AppTypography.bodyStrong.copyWith(fontSize: 16.0)),
+              SizedBox(width: AppSpacing.xs.w),
+              Text(
+                l10n.tipsForYou,
+                style: AppTypography.bodyStrong,
+              ),
             ],
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppSpacing.xs.h),
           ...tips.map(
             (t) => Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.h),
+              padding: EdgeInsets.symmetric(vertical: AppSpacing.xxs.h),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(top: 6.h),
+                    padding: EdgeInsets.only(top: AppSpacing.xxs.h),
                     child: Icon(
                       Icons.circle,
-                      size: 4.sp,
-                      color: p.secondary,
+                      size: AppSpacing.xxs.sp,
+                      color: p.secondaryText,
                     ),
                   ),
-                  SizedBox(width: 8.w),
+                  SizedBox(width: AppSpacing.xs.w),
                   Expanded(
                     child: Text(
                       t,
-                      style: TextStyle(
-                        fontSize: 12.sp,
+                      style: AppTypography.caption.copyWith(
                         height: 1.45,
                         color: p.textPrimary,
                       ),
@@ -1271,21 +1194,21 @@ class _TeaserCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
-    return _SectionCard(
+    return SessionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.wantFullResults, style: AppTypography.bodyStrong.copyWith(fontSize: 16.0)),
-          SizedBox(height: 6.h),
+          Text(
+            l10n.wantFullResults,
+            style: AppTypography.bodyStrong,
+          ),
+          SizedBox(height: AppSpacing.xxs.h),
           Text(
             l10n.loginRegisterForFull,
-            style: TextStyle(
-              fontSize: 12.sp,
-              height: 1.4,
-              color: p.textSecondary,
-            ),
+            style: AppTypography.caption
+                .copyWith(height: 1.4, color: p.textSecondary),
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: AppSpacing.sm.h),
           SecondaryButton(
             text: l10n.loginRegister,
             icon: Icons.lock_rounded,

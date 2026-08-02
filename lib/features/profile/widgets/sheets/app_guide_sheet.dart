@@ -1,6 +1,7 @@
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/widgets/app_bottom_sheet.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
@@ -12,10 +13,8 @@ class AppGuideSheet extends StatefulWidget {
   const AppGuideSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    return showModalBottomSheet(
+    return showAppBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (_) => const AppGuideSheet(),
     );
   }
@@ -30,28 +29,28 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
   List<_GuideStep> _buildSteps(AppLocalizations l10n) {
     final p = context.palette;
     return [
-    _GuideStep(
-      icon: Icons.mic_rounded,
-      iconColor: p.primary,
-      iconBg: p.primarySoft,
-      title: l10n.recordVoiceGuide,
-      description: l10n.recordVoiceGuideDesc,
-    ),
-    _GuideStep(
-      icon: Icons.insights_rounded,
-      iconColor: p.primaryPressed,
-      iconBg: p.primaryWash,
-      title: l10n.viewEmotionInsights,
-      description: l10n.viewInsightsDesc,
-    ),
-    _GuideStep(
-      icon: Icons.calendar_month_rounded,
-      iconColor: p.primary,
-      iconBg: p.primarySoft,
-      title: l10n.monitorCycle,
-      description: l10n.monitorCycleDesc,
-    ),
-  ];
+      _GuideStep(
+        icon: Icons.mic_rounded,
+        iconColor: p.textPrimary,
+        iconBg: p.surface2,
+        title: l10n.recordVoiceGuide,
+        description: l10n.recordVoiceGuideDesc,
+      ),
+      _GuideStep(
+        icon: Icons.insights_rounded,
+        iconColor: p.textPrimary,
+        iconBg: p.surface2,
+        title: l10n.viewEmotionInsights,
+        description: l10n.viewInsightsDesc,
+      ),
+      _GuideStep(
+        icon: Icons.calendar_month_rounded,
+        iconColor: p.textPrimary,
+        iconBg: p.surface2,
+        title: l10n.monitorCycle,
+        description: l10n.monitorCycleDesc,
+      ),
+    ];
   }
 
   @override
@@ -65,23 +64,11 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
       minChildSize: 0.5,
       maxChildSize: 0.95,
       builder: (_, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: p.surface1,
-            borderRadius: AppRadius.sheet,
-          ),
-          child: Column(
+        return Column(
             children: [
               Padding(
                 padding: EdgeInsets.only(top: AppSpacing.sm.h),
-                child: Container(
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: p.divider,
-                    borderRadius: AppRadius.chip,
-                  ),
-                ),
+                child: const AppSheetHandle(),
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(
@@ -96,12 +83,12 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                       width: 40.w,
                       height: 40.w,
                       decoration: BoxDecoration(
-                        color: p.primarySoft,
+                        color: p.surface2,
                         borderRadius: AppRadius.tile,
                       ),
                       child: Icon(
                         Icons.menu_book_rounded,
-                        color: p.primary,
+                        color: p.textPrimary,
                         size: 22.sp,
                       ),
                     ),
@@ -110,7 +97,10 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n.appGuideTitle, style: AppTypography.subtitle),
+                          Text(
+                            l10n.appGuideTitle,
+                            style: AppTypography.subtitle,
+                          ),
                           Text(
                             l10n.stepsToStart(steps.length),
                             style: AppTypography.caption.copyWith(
@@ -150,9 +140,7 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                         child: Text(
                           '${i + 1}',
                           style: AppTypography.label.copyWith(
-                            color: isSelected
-                                ? p.onPrimary
-                                : p.textTertiary,
+                            color: isSelected ? p.onPrimary : p.textTertiary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -162,11 +150,7 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                 ),
               ),
               SizedBox(height: AppSpacing.sm.h),
-              Divider(
-                height: 1,
-                thickness: AppBorder.thin,
-                color: p.divider,
-              ),
+              Divider(height: 1, thickness: AppBorder.thin, color: p.divider),
               // Content
               Expanded(
                 child: SingleChildScrollView(
@@ -198,9 +182,6 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                         child: SecondaryButton(
                           text: l10n.previous,
                           onPressed: () => setState(() => _selectedStep--),
-                          backgroundColor: p.primarySoft,
-                          textColor: p.primaryPressed,
-                          borderColor: p.divider,
                         ),
                       ),
                       SizedBox(width: AppSpacing.md.w),
@@ -223,8 +204,7 @@ class _AppGuideSheetState extends State<AppGuideSheet> {
                 ),
               ),
             ],
-          ),
-        );
+          );
       },
     );
   }
@@ -287,7 +267,11 @@ class _StepContent extends StatelessWidget {
           ),
         ),
         SizedBox(height: AppSpacing.md.h),
-        Text(step.title, style: AppTypography.subtitle, textAlign: TextAlign.center),
+        Text(
+          step.title,
+          style: AppTypography.subtitle,
+          textAlign: TextAlign.center,
+        ),
         SizedBox(height: AppSpacing.sm.h),
         Text(
           step.description,

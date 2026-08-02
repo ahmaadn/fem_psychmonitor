@@ -182,95 +182,82 @@ class _HomePageState extends State<HomePage>
       // Scaffold transparan — gradient dihandle oleh DecoratedBox di bawah
       backgroundColor: Colors.transparent,
       body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            // Satu gradient utuh: canvas → strawberry (40%) → canvas lagi
-            // supaya hero menyatu dengan body tanpa seam
-            colors: [
-              p.canvas,
-              Color.lerp(p.canvas, p.primarySoft, p.isDark ? 0.45 : 0.65)!,
-              p.canvas,
-            ],
-            stops: const [0.0, 0.28, 0.7],
-          ),
-        ),
+        decoration: BoxDecoration(color: p.canvas),
         child: RefreshIndicator(
-        color: p.primaryFill,
-        backgroundColor: p.surface1,
-        onRefresh: () async {
-          await homeVm.loadStats();
-          await _loadMoodAndSaran();
-        },
-        child: CustomScrollView(
-          slivers: [
-            // ── Hero header ──────────────────────────────────────────────
-            SliverToBoxAdapter(
-              child: _HeroHeader(
-                greetingTime: _greetingTime(isEn),
-                greetingIcon: _greetingIcon(),
-                name: name,
-                score: score,
-                scoreLabel: _scoreLabel(score, isEn),
-                scoreEmoji: _scoreEmoji(score),
-                scoreColor: scoreColor,
-                mood: mood,
-                isEn: isEn,
-                pulseAnim: _pulseAnim,
-                onMoodTap: _pickMood,
+          color: p.primaryFill,
+          backgroundColor: p.surface1,
+          onRefresh: () async {
+            await homeVm.loadStats();
+            await _loadMoodAndSaran();
+          },
+          child: CustomScrollView(
+            slivers: [
+              // ── Hero header ──────────────────────────────────────────────
+              SliverToBoxAdapter(
+                child: _HeroHeader(
+                  greetingTime: _greetingTime(isEn),
+                  greetingIcon: _greetingIcon(),
+                  name: name,
+                  score: score,
+                  scoreLabel: _scoreLabel(score, isEn),
+                  scoreEmoji: _scoreEmoji(score),
+                  scoreColor: scoreColor,
+                  mood: mood,
+                  isEn: isEn,
+                  pulseAnim: _pulseAnim,
+                  onMoodTap: _pickMood,
+                ),
               ),
-            ),
 
-            // ── Body content ─────────────────────────────────────────────
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(
-                AppSpacing.pageX.w,
-                AppSpacing.md.h,
-                AppSpacing.pageX.w,
-                80.h,
-              ),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  // [6] Support banner jika skor rentan/butuh perhatian
-                  if (showSupportBanner) ...[
-                    _SupportBanner(isEn: isEn, score: score),
+              // ── Body content ─────────────────────────────────────────────
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.pageX.w,
+                  AppSpacing.md.h,
+                  AppSpacing.pageX.w,
+                  80.h,
+                ),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    // [6] Support banner jika skor rentan/butuh perhatian
+                    if (showSupportBanner) ...[
+                      _SupportBanner(isEn: isEn, score: score),
+                      SizedBox(height: AppSpacing.md.h),
+                    ],
+
+                    // [3] Stat row — hanya 2 card: checkin + streak
+                    _StatRow(
+                      todayCount: todayCount,
+                      streakDays: streakDays,
+                      isEn: isEn,
+                    ),
                     SizedBox(height: AppSpacing.md.h),
-                  ],
 
-                  // [3] Stat row — hanya 2 card: checkin + streak
-                  _StatRow(
-                    todayCount: todayCount,
-                    streakDays: streakDays,
-                    isEn: isEn,
-                  ),
-                  SizedBox(height: AppSpacing.md.h),
+                    // Week strip
+                    _WeekStrip(
+                      checkins: stats?.weeklyCheckins ?? const [],
+                      isEn: isEn,
+                    ),
+                    SizedBox(height: AppSpacing.lg.h),
 
-                  // Week strip
-                  _WeekStrip(
-                    checkins: stats?.weeklyCheckins ?? const [],
-                    isEn: isEn,
-                  ),
-                  SizedBox(height: AppSpacing.lg.h),
+                    // [4] Hanya Voice CTA, tidak ada aksi cepat lagi
+                    _VoiceCheckinCTA(
+                      isEn: isEn,
+                      mood: mood,
+                      onTap: () => context.goNamed(RouteNames.liveRecording),
+                      onMoodTap: _pickMood,
+                    ),
+                    SizedBox(height: AppSpacing.lg.h),
 
-                  // [4] Hanya Voice CTA, tidak ada aksi cepat lagi
-                  _VoiceCheckinCTA(
-                    isEn: isEn,
-                    mood: mood,
-                    onTap: () => context.goNamed(RouteNames.liveRecording),
-                    onMoodTap: _pickMood,
-                  ),
-                  SizedBox(height: AppSpacing.lg.h),
-
-                  // [5] Section: For you — diperbagus
-                  _ForYouHeader(isEn: isEn),
-                  SizedBox(height: AppSpacing.sm.h),
-                  _RecommendationSection(saran: _saran, isEn: isEn),
-                ]),
+                    // [5] Section: For you — diperbagus
+                    _ForYouHeader(isEn: isEn),
+                    SizedBox(height: AppSpacing.sm.h),
+                    _RecommendationSection(saran: _saran, isEn: isEn),
+                  ]),
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
         ),
       ),
     );
@@ -334,12 +321,12 @@ class _HeroHeader extends StatelessWidget {
                     width: 32.w,
                     height: 32.w,
                     decoration: BoxDecoration(
-                      color: p.primary.withValues(alpha: 0.15),
+                      color: p.surface2,
                       borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                     child: Icon(
                       greetingIcon,
-                      color: p.primaryPressed,
+                      color: p.textSecondary,
                       size: 16.sp,
                     ),
                   ),
@@ -347,7 +334,7 @@ class _HeroHeader extends StatelessWidget {
                   Text(
                     greetingTime,
                     style: AppTypography.label.copyWith(
-                      color: p.primaryText,
+                      color: p.textSecondary,
                       letterSpacing: 0.2,
                     ),
                   ),
@@ -482,26 +469,23 @@ class _HeroHeader extends StatelessWidget {
                     vertical: AppSpacing.xs.h,
                   ),
                   decoration: BoxDecoration(
-                    color: p.surface1.withValues(alpha: 0.9),
+                    color: mood != null
+                        ? p.emotionBase(mood!).withValues(alpha: 0.12)
+                        : p.surface1,
                     borderRadius: AppRadius.chip,
                     border: Border.all(
-                      color: p.primary.withValues(alpha: 0.25),
+                      color: mood != null
+                          ? p.emotionBase(mood!).withValues(alpha: 0.35)
+                          : p.divider,
                       width: AppBorder.thin,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: p.primary.withValues(alpha: 0.08),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         mood?.emoji ?? '💭',
-                        style: TextStyle(fontSize: 16.sp),
+                        style: AppTypography.emojiMd,
                       ),
                       SizedBox(width: AppSpacing.xs.w),
                       Text(
@@ -511,7 +495,9 @@ class _HeroHeader extends StatelessWidget {
                                   : 'Merasa ${mood!.displayName.toLowerCase()}')
                             : (isEn ? 'Set your mood' : 'Atur moodmu'),
                         style: AppTypography.label.copyWith(
-                          color: p.textPrimary,
+                          color: mood != null
+                              ? p.emotionText(mood!)
+                              : p.textPrimary,
                         ),
                       ),
                       SizedBox(width: AppSpacing.xs.w),
@@ -525,23 +511,6 @@ class _HeroHeader extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ),
-
-        // Dekoratif orb kecil — warna primer saja, tidak terlalu mencolok
-        Positioned(
-          right: -20.w,
-          top: MediaQuery.paddingOf(context).top,
-          child: Opacity(
-            opacity: 0.09,
-            child: Container(
-              width: 120.w,
-              height: 120.w,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: p.primaryFill,
-              ),
-            ),
           ),
         ),
       ],
@@ -586,7 +555,7 @@ class _ScoreRing extends StatelessWidget {
               child: Center(
                 child: Text(
                   emoji,
-                  style: TextStyle(fontSize: 32.sp, height: 1),
+                  style: AppTypography.emojiXl,
                 ),
               ),
             ),
@@ -674,27 +643,16 @@ class _SupportBanner extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(AppSpacing.md.w),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isAttention
-                ? [p.primarySoft, p.primaryWash]
-                : [p.warning.withValues(alpha: 0.12), p.surface1],
-          ),
+          color: isAttention
+              ? p.error.withValues(alpha: 0.1)
+              : p.warning.withValues(alpha: 0.1),
           borderRadius: AppRadius.card,
           border: Border.all(
             color: isAttention
-                ? p.primary.withValues(alpha: 0.4)
-                : p.warning.withValues(alpha: 0.4),
+                ? p.error.withValues(alpha: 0.35)
+                : p.warning.withValues(alpha: 0.35),
             width: AppBorder.thin,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: p.shadowRaised,
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
         ),
         child: Row(
           children: [
@@ -703,7 +661,7 @@ class _SupportBanner extends StatelessWidget {
               height: 44.w,
               decoration: BoxDecoration(
                 color: isAttention
-                    ? p.primary.withValues(alpha: 0.15)
+                    ? p.error.withValues(alpha: 0.15)
                     : p.warning.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
@@ -711,7 +669,7 @@ class _SupportBanner extends StatelessWidget {
                 isAttention
                     ? Icons.favorite_rounded
                     : Icons.support_agent_rounded,
-                color: isAttention ? p.primary : p.warning,
+                color: isAttention ? p.errorText : p.warning,
                 size: 22.sp,
               ),
             ),
@@ -729,7 +687,7 @@ class _SupportBanner extends StatelessWidget {
                               ? 'Kamu tidak sendirian'
                               : 'Bantuan tersedia'),
                     style: AppTypography.bodyStrong.copyWith(
-                      color: isAttention ? p.primaryText : p.warningText,
+                      color: isAttention ? p.errorText : p.warningText,
                     ),
                   ),
                   SizedBox(height: 2.h),
@@ -737,14 +695,16 @@ class _SupportBanner extends StatelessWidget {
                     isEn
                         ? 'Tap to call free helpline 119'
                         : 'Ketuk untuk hubungi hotline 119',
-                    style: AppTypography.caption.copyWith(color: p.textSecondary),
+                    style: AppTypography.caption.copyWith(
+                      color: p.textSecondary,
+                    ),
                   ),
                 ],
               ),
             ),
             Icon(
               Icons.phone_rounded,
-              color: isAttention ? p.primary : p.warning,
+              color: isAttention ? p.errorText : p.warning,
               size: 18.sp,
             ),
           ],
@@ -778,8 +738,8 @@ class _StatRow extends StatelessWidget {
             label: isEn ? 'Today' : 'Hari ini',
             sub: isEn ? 'check-in' : 'cek-in',
             icon: Icons.mic_rounded,
-            accent: p.primary,
-            iconBg: p.primarySoft,
+            accent: p.textPrimary,
+            iconBg: p.surface2,
           ),
         ),
         SizedBox(width: AppSpacing.sm.w),
@@ -860,20 +820,17 @@ class _BigStatCard extends StatelessWidget {
                 ),
               ),
               if (suffix != null) ...[
-                SizedBox(width: 3.w),
-                Text(suffix!, style: TextStyle(fontSize: 14.sp)),
+                SizedBox(width: AppSpacing.xxs.w),
+                Text(suffix!, style: AppTypography.emojiSm),
               ],
             ],
           ),
-          SizedBox(height: 2.h),
+          SizedBox(height: AppSpacing.xxs.h),
           Text(
             label,
             style: AppTypography.label.copyWith(color: p.textSecondary),
           ),
-          Text(
-            sub,
-            style: AppTypography.label.copyWith(color: p.textTertiary),
-          ),
+          Text(sub, style: AppTypography.label.copyWith(color: p.textTertiary)),
         ],
       ),
     );
@@ -913,13 +870,13 @@ class _WeekStrip extends StatelessWidget {
                 vertical: 2.h,
               ),
               decoration: BoxDecoration(
-                color: p.primarySoft,
+                color: p.secondarySoft,
                 borderRadius: AppRadius.chip,
               ),
               child: Text(
                 '$checked/7',
                 style: AppTypography.label.copyWith(
-                  color: p.primaryText,
+                  color: p.secondaryText,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -940,15 +897,16 @@ class _WeekStrip extends StatelessWidget {
                 date.day == now.day;
             final emotion = checkin?.dominantEmotion;
             final bubbleSize = isToday ? 42.w : 36.w;
-            final emotionColor =
-                emotion != null ? p.emotionBase(emotion) : p.primary;
+            final emotionColor = emotion != null
+                ? p.emotionBase(emotion)
+                : null;
 
             return Column(
               children: [
                 Text(
                   days[i],
                   style: AppTypography.label.copyWith(
-                    color: isToday ? p.primaryText : p.textTertiary,
+                    color: isToday ? p.textPrimary : p.textTertiary,
                     fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
                   ),
                 ),
@@ -957,21 +915,19 @@ class _WeekStrip extends StatelessWidget {
                   width: bubbleSize,
                   height: bubbleSize,
                   decoration: BoxDecoration(
-                    color: isChecked
+                    color: isChecked && emotionColor != null
                         ? emotionColor.withValues(alpha: 0.15)
-                        : (isToday
-                              ? p.primary.withValues(alpha: 0.08)
-                              : p.primaryWash),
+                        : p.surface3,
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: isToday
-                          ? p.primary
-                          : (isChecked
+                          ? p.primaryText
+                          : (isChecked && emotionColor != null
                                 ? emotionColor.withValues(alpha: 0.45)
                                 : p.divider),
                       width: isToday ? AppBorder.thick : AppBorder.thin,
                     ),
-                    boxShadow: isChecked
+                    boxShadow: isChecked && emotionColor != null
                         ? [
                             BoxShadow(
                               color: emotionColor.withValues(alpha: 0.2),
@@ -985,14 +941,16 @@ class _WeekStrip extends StatelessWidget {
                   child: isChecked
                       ? Text(
                           emotion?.emoji ?? '✓',
-                          style: TextStyle(fontSize: isToday ? 17.sp : 14.sp),
+                          style: isToday
+                              ? AppTypography.emojiLg
+                              : AppTypography.emojiSm,
                         )
                       : Icon(
                           isToday
                               ? Icons.radio_button_unchecked_rounded
                               : Icons.circle_outlined,
                           size: isToday ? 13.sp : 10.sp,
-                          color: isToday ? p.primary : p.textTertiary,
+                          color: isToday ? p.textPrimary : p.textTertiary,
                         ),
                 ),
               ],
@@ -1037,14 +995,14 @@ class _VoiceCheckinCTA extends StatelessWidget {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [
-                  p.primary,
-                  Color.lerp(p.primary, p.primaryPressed, 0.4)!,
+                  p.primaryFill,
+                  Color.lerp(p.primaryFill, p.primaryPressed, 0.4)!,
                 ],
               ),
               borderRadius: AppRadius.card,
               boxShadow: [
                 BoxShadow(
-                  color: p.primary.withValues(alpha: 0.35),
+                  color: p.primaryFill.withValues(alpha: 0.35),
                   blurRadius: 18,
                   offset: const Offset(0, 6),
                 ),
@@ -1112,7 +1070,7 @@ class _VoiceCheckinCTA extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Text(mood?.emoji ?? '💭', style: TextStyle(fontSize: 18.sp)),
+                Text(mood?.emoji ?? '💭', style: AppTypography.emojiMd),
                 SizedBox(width: AppSpacing.xs.w),
                 Expanded(
                   child: Text(
@@ -1121,8 +1079,9 @@ class _VoiceCheckinCTA extends StatelessWidget {
                               ? 'Feeling ${mood!.displayName.toLowerCase()} today'
                               : 'Hari ini merasa ${mood!.displayName.toLowerCase()}')
                         : (isEn ? 'How do you feel?' : 'Bagaimana perasaanmu?'),
-                    style:
-                        AppTypography.caption.copyWith(color: p.textSecondary),
+                    style: AppTypography.caption.copyWith(
+                      color: p.textSecondary,
+                    ),
                   ),
                 ),
                 Text(
@@ -1153,16 +1112,12 @@ class _ForYouHeader extends StatelessWidget {
           width: 28.w,
           height: 28.w,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [p.primary, p.primaryPressed],
-            ),
+            color: p.secondarySoft,
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           child: Icon(
             Icons.auto_awesome_rounded,
-            color: p.onPrimary,
+            color: p.secondaryText,
             size: 13.sp,
           ),
         ),
@@ -1172,7 +1127,7 @@ class _ForYouHeader extends StatelessWidget {
           style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
         ),
         SizedBox(width: AppSpacing.xxs.w),
-        Text('✨', style: TextStyle(fontSize: 14.sp)),
+        Text('✨', style: AppTypography.emojiSm),
       ],
     );
   }
@@ -1256,10 +1211,7 @@ class _RecommendationSection extends StatelessWidget {
                     color: p.warning.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
-                  child: Icon(
-                    Icons.favorite_rounded,
-                    color: p.warning,
-                  ),
+                  child: Icon(Icons.favorite_rounded, color: p.warning),
                 ),
                 SizedBox(width: AppSpacing.sm.w),
                 Expanded(
@@ -1308,14 +1260,17 @@ class _RecommendationSection extends StatelessWidget {
 
     // Normal recommendations — [5] tampilan diperbagus
     // Pakai horizontal scroll card untuk kesan "feed personal"
-    final tipEmojis = ['🌱', '🫧', '🪷', '☀️', '🫶'];
+    final tipEmojis = ['🌱', '💧', '🌸', '☀️', '💝'];
     // warna accent bergantian: strawberry dan matcha
     final accentPairs = [
-      (bg: p.primarySoft, icon: p.primaryPressed),
-      (bg: p.secondarySoft, icon: p.secondary),
-      (bg: p.secondaryWash, icon: p.secondary),
-      (bg: p.primaryWash, icon: p.primaryPressed),
-      (bg: Color.lerp(p.primarySoft, p.secondarySoft, 0.5)!, icon: p.secondaryPressed),
+      (bg: p.secondarySoft, icon: p.secondaryText),
+      (bg: p.primarySoft, icon: p.primaryText),
+      (bg: p.secondaryWash, icon: p.secondaryText),
+      (bg: p.surface2, icon: p.textPrimary),
+      (
+        bg: Color.lerp(p.primarySoft, p.secondarySoft, 0.5)!,
+        icon: p.secondaryText,
+      ),
     ];
 
     return Column(
@@ -1354,7 +1309,7 @@ class _RecommendationSection extends StatelessWidget {
                     ),
                   ),
                   alignment: Alignment.center,
-                  child: Text(emoji, style: TextStyle(fontSize: 22.sp)),
+                  child: Text(emoji, style: AppTypography.emojiLg),
                 ),
                 // Teks rekomendasi
                 Expanded(

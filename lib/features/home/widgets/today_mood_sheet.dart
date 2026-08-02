@@ -3,6 +3,7 @@ import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/utils/date_utils.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/app/widgets/app_bottom_sheet.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/app/widgets/emotion_chip.dart';
 import 'package:fem_psychmonitor/data/local/database_helper.dart';
@@ -17,11 +18,8 @@ Future<EmotionLabelType?> showTodayMoodSheet(
   EmotionLabelType? initial,
   String? title,
 }) {
-  final p = context.palette;
-  return showModalBottomSheet<EmotionLabelType>(
+  return showAppBottomSheet<EmotionLabelType>(
     context: context,
-    backgroundColor: p.surface1,
-    shape: const RoundedRectangleBorder(borderRadius: AppRadius.sheet),
     builder: (ctx) {
       EmotionLabelType? sel = initial;
       return StatefulBuilder(
@@ -37,15 +35,8 @@ Future<EmotionLabelType?> showTodayMoodSheet(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 40.w,
-                  height: 4.h,
-                  margin: EdgeInsets.only(bottom: AppSpacing.md.h),
-                  decoration: BoxDecoration(
-                    color: sheetP.divider,
-                    borderRadius: AppRadius.chip,
-                  ),
-                ),
+                const AppSheetHandle(),
+                SizedBox(height: AppSpacing.md.h),
                 Text(
                   title ?? 'Aku merasa hari ini',
                   style: AppTypography.subtitle.copyWith(
@@ -87,17 +78,13 @@ Future<void> persistDailyMood({
   final db = await DatabaseHelper.instance.database;
   final now = DateTime.now().millisecondsSinceEpoch;
   final key = dateKeyLocal(day ?? DateTime.now());
-  await db.insert(
-    AppTables.dailyMoods,
-    {
-      'user_id': userId,
-      'date': key,
-      'emotion': emotion.name,
-      'created_at': now,
-      'updated_at': now,
-    },
-    conflictAlgorithm: ConflictAlgorithm.replace,
-  );
+  await db.insert(AppTables.dailyMoods, {
+    'user_id': userId,
+    'date': key,
+    'emotion': emotion.name,
+    'created_at': now,
+    'updated_at': now,
+  }, conflictAlgorithm: ConflictAlgorithm.replace);
 }
 
 Future<EmotionLabelType?> loadDailyMood(String userId, {DateTime? day}) async {

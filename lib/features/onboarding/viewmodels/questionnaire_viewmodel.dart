@@ -8,7 +8,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
   final QuestionRepository? _questionRepo;
 
   QuestionnaireViewModel({QuestionRepository? questionRepo})
-      : _questionRepo = questionRepo;
+    : _questionRepo = questionRepo;
 
   List<OceanQuestion> _oceanQuestions = [];
   PsychData? _psychData;
@@ -117,15 +117,16 @@ class QuestionnaireViewModel extends ChangeNotifier {
     }
 
     final maxRawScore = _psychData!.assessment.scoringSystem.totalMaxScore;
-    final displayMaxScore = _psychData!.assessment.scoringSystem.displayMaxScore;
+    final displayMaxScore =
+        _psychData!.assessment.scoringSystem.displayMaxScore;
 
     final calculatedRiskScore = maxRawScore == 0
         ? 0.0
         : (totalRawScore / maxRawScore) * displayMaxScore;
     _psychScore = (displayMaxScore - calculatedRiskScore).round().clamp(
-          0,
-          displayMaxScore,
-        );
+      0,
+      displayMaxScore,
+    );
 
     for (var pClass in _psychData!.assessment.scoringSystem.classes) {
       final rangeParts = pClass.scoreRange.split('-');

@@ -42,7 +42,8 @@ class _ProfilePageState extends State<ProfilePage> {
     final user = profileVm.user ?? auth.currentUser;
     final ocean = user?.oceanScores;
     final score = user?.psychScore;
-    final classKey = user?.psychClass ??
+    final classKey =
+        user?.psychClass ??
         (score != null ? psychClassKeyForScore(score) : null);
     final initial = (user?.fullName.isNotEmpty == true)
         ? user!.fullName[0].toUpperCase()
@@ -111,7 +112,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         final vm = context.read<ProfileViewModel>();
                         await Navigator.of(context).push(
                           MaterialPageRoute(
-                              builder: (_) => const EditProfilePage()),
+                            builder: (_) => const EditProfilePage(),
+                          ),
                         );
                         if (mounted) {
                           vm.loadProfile();
@@ -161,7 +163,7 @@ class _ProfileHero extends StatelessWidget {
     if (s <= 25) return p.error;
     if (s <= 50) return p.warning;
     if (s <= 75) return p.secondaryText;
-    return p.secondary;
+    return p.secondaryText;
   }
 
   String _classLabel(String? key, bool isEn) {
@@ -178,7 +180,7 @@ class _ProfileHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final sc = score;
-    final scoreColor = sc != null ? _scoreColor(sc, p) : p.primary;
+    final scoreColor = sc != null ? _scoreColor(sc, p) : p.primaryText;
 
     return Container(
       width: double.infinity,
@@ -188,16 +190,7 @@ class _ProfileHero extends StatelessWidget {
         right: AppSpacing.pageX.w,
         bottom: AppSpacing.xl.h,
       ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            p.primarySoft,
-            Color.lerp(p.primarySoft, scoreColor, 0.1)!,
-          ],
-        ),
-      ),
+      decoration: BoxDecoration(color: p.surface1),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -210,27 +203,14 @@ class _ProfileHero extends StatelessWidget {
                 height: 68.w,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      p.primary,
-                      p.primaryPressed,
-                    ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: p.primary.withValues(alpha: 0.35),
-                      blurRadius: 16,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  color: p.primarySoft,
+                  border: Border.all(color: p.primaryText, width: AppBorder.thin),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   initial,
                   style: AppTypography.title.copyWith(
-                    color: p.onPrimary,
+                    color: p.primaryText,
                     height: 1,
                   ),
                 ),
@@ -270,12 +250,12 @@ class _ProfileHero extends StatelessWidget {
                     color: p.surface1.withValues(alpha: 0.8),
                     borderRadius: AppRadius.card,
                     border: Border.all(
-                      color: p.primary.withValues(alpha: 0.2),
+                      color: p.primaryFill.withValues(alpha: 0.2),
                     ),
                   ),
                   child: Icon(
                     Icons.edit_outlined,
-                    color: p.primaryPressed,
+                    color: p.primaryText,
                     size: 18.sp,
                   ),
                 ),
@@ -336,10 +316,10 @@ class _ProfileHero extends StatelessWidget {
                         child: LinearProgressIndicator(
                           value: sc / 100,
                           minHeight: 6.h,
-                          backgroundColor:
-                              p.primary.withValues(alpha: 0.15),
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(scoreColor),
+                          backgroundColor: p.primaryFill.withValues(
+                            alpha: 0.15,
+                          ),
+                          valueColor: AlwaysStoppedAnimation<Color>(scoreColor),
                         ),
                       ),
                     ],
@@ -366,15 +346,15 @@ class _OceanGrid extends StatelessWidget {
     final p = context.palette;
     final traits = OceanTrait.values;
     final traitFills = [
-      p.primarySoft,
       p.secondarySoft,
+      p.primarySoft,
       p.info.withValues(alpha: 0.15),
       p.emotionBase(EmotionLabelType.fearful).withValues(alpha: 0.15),
       p.surface2,
     ];
     final traitBorders = [
-      p.primary,
-      p.secondary,
+      p.secondaryFill,
+      p.primaryFill,
       p.info,
       p.emotionBase(EmotionLabelType.fearful),
       p.textTertiary,
@@ -406,9 +386,7 @@ class _OceanGrid extends StatelessWidget {
             children: [
               Text(
                 t.code,
-                style: AppTypography.label.copyWith(
-                  color: traitBorders[i],
-                ),
+                style: AppTypography.label.copyWith(color: traitBorders[i]),
               ),
               SizedBox(height: 2.h),
               Text(
@@ -443,10 +421,10 @@ class _SectionHeader extends StatelessWidget {
           width: 24.w,
           height: 24.w,
           decoration: BoxDecoration(
-            color: p.primarySoft,
+            color: p.surface2,
             borderRadius: BorderRadius.circular(AppRadius.xs),
           ),
-          child: Icon(icon, color: p.primaryPressed, size: 12.sp),
+          child: Icon(icon, color: p.textSecondary, size: 12.sp),
         ),
         SizedBox(width: AppSpacing.xs.w),
         Text(
@@ -491,12 +469,12 @@ class _ActionCard extends StatelessWidget {
                   width: 36.w,
                   height: 36.w,
                   decoration: BoxDecoration(
-                    color: p.primarySoft,
+                    color: p.surface2,
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   child: Icon(
                     entry.value.icon,
-                    color: p.primaryPressed,
+                    color: p.textSecondary,
                     size: 16.sp,
                   ),
                 ),
@@ -524,11 +502,5 @@ class _ActionItem {
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
-  const _ActionItem({
-    required this.icon,
-    required this.label,
-    this.onTap,
-  });
+  const _ActionItem({required this.icon, required this.label, this.onTap});
 }
-
-

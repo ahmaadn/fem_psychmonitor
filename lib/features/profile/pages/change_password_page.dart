@@ -100,9 +100,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       case 1:
         return (label: l10n.veryWeak, color: p.warning);
       case 2:
-        return (label: l10n.weak, color: p.primaryPressed);
+        return (label: l10n.weak, color: p.primaryText);
       case 3:
-        return (label: l10n.medium, color: p.secondary);
+        return (label: l10n.medium, color: p.secondaryText);
       default:
         return (label: l10n.strong, color: p.success);
     }
@@ -138,12 +138,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           width: 72.w,
                           height: 72.w,
                           decoration: BoxDecoration(
-                            color: p.primarySoft,
+                            color: p.surface2,
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.lock_outline_rounded,
-                            color: p.primaryText,
+                            color: p.textSecondary,
                             size: 34.sp,
                           ),
                         ),
@@ -153,9 +153,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         child: Text(
                           l10n.changeAccountPassword,
                           style: AppTypography.caption.copyWith(
-                            color: p.textSecondary.withValues(
-                              alpha: 0.7,
-                            ),
+                            color: p.textSecondary.withValues(alpha: 0.7),
                           ),
                         ),
                       ),
@@ -201,9 +199,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                     borderRadius: BorderRadius.circular(
                                       AppRadius.full,
                                     ),
-                                    color: active
-                                        ? info.color
-                                        : p.divider,
+                                    color: active ? info.color : p.divider,
                                   ),
                                 ),
                               );

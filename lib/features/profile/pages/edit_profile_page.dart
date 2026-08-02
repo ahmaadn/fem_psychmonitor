@@ -3,6 +3,7 @@ import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/utils/fs_support.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
+import 'package:fem_psychmonitor/app/widgets/app_bottom_sheet.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_app_bar.dart';
 import 'package:fem_psychmonitor/app/widgets/custom_text_field.dart';
@@ -71,8 +72,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (picked == null) return;
 
       final ext = path_util.extension(picked.path);
-      final fileName =
-          'avatar_${DateTime.now().millisecondsSinceEpoch}$ext';
+      final fileName = 'avatar_${DateTime.now().millisecondsSinceEpoch}$ext';
       final saved = await persistPickedImagePath(picked.path, fileName);
 
       if (mounted) {
@@ -87,14 +87,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   /// US-04: bottom sheet offering gallery / camera source selection.
   Future<void> _showAvatarSourceSheet() async {
-    final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
-    final source = await showModalBottomSheet<ImageSource>(
+    final source = await showAppBottomSheet<ImageSource>(
       context: context,
-      backgroundColor: p.surface1,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      isScrollControlled: false,
       builder: (sheetContext) {
         return SafeArea(
           child: Padding(
@@ -102,6 +98,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                const AppSheetHandle(),
+                SizedBox(height: AppSpacing.sm.h),
                 Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: AppSpacing.relaxed.w,
@@ -110,7 +108,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       l10n.tapToChangePhoto,
-                      style: AppTypography.subtitle.copyWith(fontSize: 15.sp),
+                      style: AppTypography.subtitle,
                     ),
                   ),
                 ),
@@ -118,8 +116,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ListTile(
                   leading: const Icon(Icons.photo_outlined),
                   title: Text(l10n.gallery),
-                  onTap: () => Navigator.of(sheetContext)
-                      .pop(ImageSource.gallery),
+                  onTap: () =>
+                      Navigator.of(sheetContext).pop(ImageSource.gallery),
                 ),
                 ListTile(
                   leading: const Icon(Icons.camera_alt_outlined),
@@ -141,8 +139,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   /// US-04: present the system date picker and stage the picked DOB.
   Future<void> _pickDateOfBirth() async {
     final now = DateTime.now();
-    final initial = _dateOfBirth ??
-        DateTime(now.year - 20, now.month, now.day);
+    final initial = _dateOfBirth ?? DateTime(now.year - 20, now.month, now.day);
     final picked = await showDatePicker(
       context: context,
       initialDate: initial,
@@ -160,11 +157,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final p = context.palette;
     final url = _avatarUrl;
     if (url == null || url.isEmpty) {
-      return Icon(
-        Icons.person_rounded,
-        color: p.divider,
-        size: 52.sp,
-      );
+      return Icon(Icons.person_rounded, color: p.divider, size: 52.sp);
     }
     // Asset paths (default avatar) start with 'assets/'.
     if (url.startsWith('assets/')) {
@@ -196,7 +189,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          backgroundColor: palette.primary,
+          backgroundColor: palette.primaryFill,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.md),
           ),
@@ -210,8 +203,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               SizedBox(width: AppSpacing.sm.w),
               Text(
                 l10n.profileSaved,
-                style:
-                    AppTypography.caption.copyWith(color: palette.onPrimary),
+                style: AppTypography.caption.copyWith(color: palette.onPrimary),
               ),
             ],
           ),
@@ -249,17 +241,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               height: 96.w,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: p.primarySoft,
+                                color: p.surface2,
                                 border: Border.all(
-                                  color: p.primary.withValues(
-                                    alpha: 0.2,
-                                  ),
+                                  color: p.divider,
                                   width: 3,
                                 ),
                               ),
-                              child: ClipOval(
-                                child: _avatarAvatarContent(),
-                              ),
+                              child: ClipOval(child: _avatarAvatarContent()),
                             ),
                             Positioned(
                               bottom: 0,
@@ -303,9 +291,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         child: Text(
                           l10n.tapToChangePhoto,
                           style: AppTypography.caption.copyWith(
-                            color: p.textSecondary.withValues(
-                              alpha: 0.6,
-                            ),
+                            color: p.textSecondary.withValues(alpha: 0.6),
                           ),
                         ),
                       ),

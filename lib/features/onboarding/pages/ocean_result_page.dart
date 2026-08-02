@@ -34,7 +34,7 @@ class OceanResultPage extends StatelessWidget {
         ),
       ),
       body: DecoratedBox(
-        decoration: BoxDecoration(gradient: p.canvasGradient),
+        decoration: BoxDecoration(color: p.canvas),
         child: SafeArea(
           child: Padding(
             padding: EdgeInsets.all(AppSpacing.pageX.w),
@@ -72,13 +72,15 @@ class OceanResultPage extends StatelessWidget {
                                   children: [
                                     Text(
                                       t.label(isEn),
-                                      style: AppTypography.bodyStrong
-                                          .copyWith(color: p.textPrimary),
+                                      style: AppTypography.bodyStrong.copyWith(
+                                        color: p.textPrimary,
+                                      ),
                                     ),
                                     Text(
                                       isEn ? level.labelEn : level.labelId,
-                                      style: AppTypography.label
-                                          .copyWith(color: p.primaryText),
+                                      style: AppTypography.label.copyWith(
+                                        color: p.primaryText,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -97,8 +99,9 @@ class OceanResultPage extends StatelessWidget {
                                 SizedBox(height: AppSpacing.xxs.h),
                                 Text(
                                   s.toStringAsFixed(2),
-                                  style: AppTypography.caption
-                                      .copyWith(color: p.textTertiary),
+                                  style: AppTypography.caption.copyWith(
+                                    color: p.textTertiary,
+                                  ),
                                 ),
                               ],
                             ),

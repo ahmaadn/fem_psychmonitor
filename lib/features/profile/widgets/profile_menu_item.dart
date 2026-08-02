@@ -56,9 +56,7 @@ class ProfileMenuItem extends StatelessWidget {
                       title,
                       style: AppTypography.body.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: isDestructive
-                            ? p.primaryPressed
-                            : p.textPrimary,
+                        color: isDestructive ? p.primaryPressed : p.textPrimary,
                       ),
                     ),
                   ),

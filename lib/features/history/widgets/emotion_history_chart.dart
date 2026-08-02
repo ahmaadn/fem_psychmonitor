@@ -65,8 +65,10 @@ class EmotionHistoryChart extends StatelessWidget {
                         padding: EdgeInsets.only(top: AppSpacing.xxs.h + 2),
                         child: Text(
                           '${d.day}/${d.month}',
-                          style: AppTypography.label
-                              .copyWith(color: p.textSecondary, fontSize: 9.sp),
+                          style: AppTypography.label.copyWith(
+                            color: p.textSecondary,
+                            fontSize: 9.sp,
+                          ),
                         ),
                       );
                     },
@@ -84,13 +86,7 @@ class EmotionHistoryChart extends StatelessWidget {
           spacing: AppSpacing.xs.w + 2,
           runSpacing: AppSpacing.xxs.h + 2,
           children: emotions
-              .map(
-                (e) => _legendChip(
-                  p.emotionBase(e),
-                  e.displayName,
-                  p,
-                ),
-              )
+              .map((e) => _legendChip(p.emotionBase(e), e.displayName, p))
               .toList(),
         ),
       ],
@@ -111,11 +107,7 @@ class EmotionHistoryChart extends StatelessWidget {
         final count = point.counts[e] ?? 0;
         if (count > 0) {
           rods.add(
-            BarChartRodStackItem(
-              running,
-              running + count,
-              p.emotionBase(e),
-            ),
+            BarChartRodStackItem(running, running + count, p.emotionBase(e)),
           );
           running += count;
         }

@@ -6,10 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class ProfileMenuGroup extends StatelessWidget {
   final List<Widget> items;
 
-  const ProfileMenuGroup({
-    super.key,
-    required this.items,
-  });
+  const ProfileMenuGroup({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {

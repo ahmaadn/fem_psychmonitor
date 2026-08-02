@@ -38,7 +38,7 @@ class EmotionBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (showEmoji) ...[
-            Text(emotion.emoji, style: TextStyle(fontSize: 12.sp)),
+            Text(emotion.emoji, style: AppTypography.emojiSm),
             SizedBox(width: AppSpacing.xxs.w),
           ],
           Text(

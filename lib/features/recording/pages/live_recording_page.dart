@@ -43,8 +43,9 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
     await detector.startDetection(saveToFile: true);
     if (!mounted) return;
     if (detector.error != null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(detector.error!)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(detector.error!)));
       return;
     }
     _ticker?.cancel();
@@ -134,7 +135,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
 
     final orbColor = detector.latest != null
         ? p.emotionBase(detector.latest!.label)
-        : p.primary;
+        : p.primaryFill;
 
     return PopScope(
       canPop: false,
@@ -145,27 +146,32 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
       child: Scaffold(
         backgroundColor: p.canvas,
         body: DecoratedBox(
-          decoration: BoxDecoration(gradient: p.canvasGradient),
+          decoration: BoxDecoration(color: p.canvas),
           child: SafeArea(
             child: Column(
               children: [
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.pageX.w,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(height: AppSpacing.xs.h),
                         Text(
                           formatDuration(_elapsed),
-                          style: AppTypography.title.copyWith(color: p.textPrimary),
+                          style: AppTypography.title.copyWith(
+                            color: p.textPrimary,
+                          ),
                         ),
                         SizedBox(height: AppSpacing.xxs.h),
                         Text(
                           l10n.captureThoughts,
                           textAlign: TextAlign.center,
-                          style: AppTypography.caption
-                              .copyWith(color: p.textSecondary),
+                          style: AppTypography.caption.copyWith(
+                            color: p.textSecondary,
+                          ),
                         ),
                         SizedBox(height: AppSpacing.xl.h),
                         VoiceprintOrb(
@@ -238,8 +244,9 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                           SizedBox(height: AppSpacing.md.h),
                           Text(
                             detector.error!,
-                            style: AppTypography.caption
-                                .copyWith(color: p.warningText),
+                            style: AppTypography.caption.copyWith(
+                              color: p.warningText,
+                            ),
                           ),
                         ],
                         if (detector.timeline.isNotEmpty) ...[
@@ -280,8 +287,8 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
     final IconData icon = !detector.isDetecting
         ? Icons.mic_rounded
         : detector.isPaused
-            ? Icons.play_arrow_rounded
-            : Icons.pause_rounded;
+        ? Icons.play_arrow_rounded
+        : Icons.pause_rounded;
     return GestureDetector(
       onTap: () {
         if (!detector.isDetecting) {
@@ -337,13 +344,11 @@ class _GhostAction extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: filled
-              ? p.primary.withValues(alpha: 0.12)
+              ? p.primaryFill.withValues(alpha: 0.12)
               : Colors.transparent,
           borderRadius: AppRadius.button,
           border: Border.all(
-            color: filled
-                ? p.primary.withValues(alpha: 0.4)
-                : p.divider,
+            color: filled ? p.primaryFill.withValues(alpha: 0.4) : p.divider,
             width: AppBorder.thin,
           ),
         ),
@@ -352,10 +357,7 @@ class _GhostAction extends StatelessWidget {
           children: [
             Icon(icon, color: color, size: 16.sp),
             SizedBox(width: AppSpacing.xxs.w + 2),
-            Text(
-              label,
-              style: AppTypography.label.copyWith(color: color),
-            ),
+            Text(label, style: AppTypography.label.copyWith(color: color)),
           ],
         ),
       ),
@@ -393,17 +395,12 @@ class _VadPill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            speaking
-                ? Icons.record_voice_over_rounded
-                : Icons.hearing_rounded,
+            speaking ? Icons.record_voice_over_rounded : Icons.hearing_rounded,
             size: 12.sp,
             color: color,
           ),
           SizedBox(width: AppSpacing.xxs.w + 2),
-          Text(
-            label,
-            style: AppTypography.label.copyWith(color: color),
-          ),
+          Text(label, style: AppTypography.label.copyWith(color: color)),
         ],
       ),
     );

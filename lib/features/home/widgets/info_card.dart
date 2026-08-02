@@ -32,7 +32,9 @@ class InfoCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
+                  style: AppTypography.bodyStrong.copyWith(
+                    color: p.textPrimary,
+                  ),
                 ),
               ),
             ],

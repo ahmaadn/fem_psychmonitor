@@ -32,6 +32,9 @@ class AppSpacing {
   static const double buttonX = 24.0;
   static const double touch = 48.0;
   static const double navHeight = 60.0;
+
+  /// Sheet drag-handle width (layout, not the 4dp spacing scale).
+  static const double sheetHandleW = 40.0;
 }
 
 /// Radii (DESIGN.md §4–5): cards 16–20, inputs 12, pills full.
@@ -50,8 +53,9 @@ class AppRadius {
   static const double xxxl = 32.0;
 
   static final BorderRadius card = BorderRadius.circular(lg);
-  static const BorderRadius sheet =
-      BorderRadius.vertical(top: Radius.circular(xl));
+  static const BorderRadius sheet = BorderRadius.vertical(
+    top: Radius.circular(xl),
+  );
   static final BorderRadius field = BorderRadius.circular(md);
   static final BorderRadius chip = BorderRadius.circular(pill);
   static final BorderRadius button = BorderRadius.circular(pill);

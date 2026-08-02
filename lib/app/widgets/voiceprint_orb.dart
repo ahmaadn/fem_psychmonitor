@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 import 'dart:async';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
+import 'package:fem_psychmonitor/app/config/app_spacing.dart';
+import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -134,23 +136,19 @@ class _VoiceprintOrbState extends State<VoiceprintOrb>
                         if (widget.centerTop != null)
                           Text(
                             widget.centerTop!,
-                            style: TextStyle(
+                            style: AppTypography.metric.copyWith(
                               fontSize: 36.sp,
                               fontWeight: FontWeight.w600,
-                              height: 1.0,
-                              letterSpacing: -1.0,
                               color: p.textPrimary,
                             ),
                           ),
                         if (widget.centerTop != null &&
                             widget.centerBottom != null)
-                          SizedBox(height: 4.h),
+                          SizedBox(height: AppSpacing.xxs.h),
                         if (widget.centerBottom != null)
                           Text(
                             widget.centerBottom!,
-                            style: TextStyle(
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.w600,
+                            style: AppTypography.badge.copyWith(
                               letterSpacing: 1.2,
                               color: p.textSecondary,
                             ),

@@ -43,20 +43,20 @@ class _RealtimeWaveVisualizerState extends State<RealtimeWaveVisualizer> {
 
   void _initStream() {
     _streamController ??= StreamController<Amplitude>.broadcast();
-    
+
     _sub = widget.amplitudeStream.listen((amp) {
       if (!mounted) return;
       // Amplifikasi nilai agar terlihat lebih dinamis
       // Menggunakan square root untuk mengangkat nilai amplitudo kecil
-      double visualAmp = sqrt(amp) * 3.5; 
+      double visualAmp = sqrt(amp) * 3.5;
 
       // Berikan nilai minimum saat hening agar tetap ada animasi riak kecil
       visualAmp = max(0.05, visualAmp.clamp(0.0, 1.0));
-      
+
       // Mengubah ke format Amplitude dari waveform_flutter
       _streamController?.add(Amplitude(current: visualAmp, max: 1.0));
     });
-    
+
     _waveformStream = _streamController!.stream;
   }
 
@@ -78,7 +78,7 @@ class _RealtimeWaveVisualizerState extends State<RealtimeWaveVisualizer> {
           barBuilder: (animation, amplitude) {
             // Hitung tinggi berdasarkan amplitude (0.05 - 1.0) dikalikan dengan tinggi maksimum container
             final barHeight = max(4.0, amplitude.current * widget.height);
-            
+
             return SizeTransition(
               sizeFactor: animation,
               axis: Axis.horizontal,
@@ -90,7 +90,9 @@ class _RealtimeWaveVisualizerState extends State<RealtimeWaveVisualizer> {
                     height: barHeight,
                     decoration: BoxDecoration(
                       color: widget.waveColor,
-                      borderRadius: BorderRadius.circular(4.0), // Rounded corners sesuai desain
+                      borderRadius: BorderRadius.circular(
+                        4.0,
+                      ), // Rounded corners sesuai desain
                     ),
                   ),
                 ),

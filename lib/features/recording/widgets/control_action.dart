@@ -34,9 +34,9 @@ class ControlAction extends StatelessWidget {
               color: bgColor,
               borderRadius: BorderRadius.circular(AppRadius.xl),
               boxShadow: [
-                if (bgColor == p.primary)
+                if (bgColor == p.primaryFill)
                   BoxShadow(
-                    color: p.primary.withValues(alpha: 0.3),
+                    color: p.primaryFill.withValues(alpha: 0.3),
                     blurRadius: 15,
                     offset: const Offset(0, 5),
                   ),
@@ -46,12 +46,7 @@ class ControlAction extends StatelessWidget {
           ),
         ),
         SizedBox(height: AppSpacing.sm.h),
-        Text(
-          label,
-          style: AppTypography.label.copyWith(
-            color: p.primaryText,
-          ),
-        ),
+        Text(label, style: AppTypography.label.copyWith(color: p.primaryText)),
       ],
     );
   }

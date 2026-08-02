@@ -1,6 +1,7 @@
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/widgets/app_bottom_sheet.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
@@ -12,10 +13,8 @@ class TermsSheet extends StatelessWidget {
   const TermsSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    return showModalBottomSheet(
+    return showAppBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (_) => const TermsSheet(),
     );
   }
@@ -49,25 +48,11 @@ class TermsSheet extends StatelessWidget {
       minChildSize: 0.5,
       maxChildSize: 0.95,
       builder: (_, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: p.surface1,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(AppRadius.lg),
-            ),
-          ),
-          child: Column(
+        return Column(
             children: [
               Padding(
                 padding: EdgeInsets.only(top: AppSpacing.md.h),
-                child: Container(
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: p.divider,
-                    borderRadius: BorderRadius.circular(AppRadius.full),
-                  ),
-                ),
+                child: const AppSheetHandle(),
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(
@@ -82,12 +67,12 @@ class TermsSheet extends StatelessWidget {
                       width: 40.w,
                       height: 40.w,
                       decoration: BoxDecoration(
-                        color: p.primarySoft,
+                        color: p.surface2,
                         borderRadius: AppRadius.tile,
                       ),
                       child: Icon(
                         Icons.description_outlined,
-                        color: p.primary,
+                        color: p.textPrimary,
                         size: 22.sp,
                       ),
                     ),
@@ -96,7 +81,10 @@ class TermsSheet extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n.termsSheetTitle, style: AppTypography.subtitle),
+                          Text(
+                            l10n.termsSheetTitle,
+                            style: AppTypography.subtitle,
+                          ),
                           Text(
                             l10n.termsUpdatedDate,
                             style: AppTypography.caption.copyWith(
@@ -117,11 +105,7 @@ class TermsSheet extends StatelessWidget {
                   ],
                 ),
               ),
-              Divider(
-                height: 1,
-                thickness: AppBorder.thin,
-                color: p.divider,
-              ),
+              Divider(height: 1, thickness: AppBorder.thin, color: p.divider),
               Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
@@ -132,8 +116,8 @@ class TermsSheet extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.all(AppSpacing.md.w),
                         decoration: p.card(
-                          color: p.primarySoft,
-                          borderColor: p.primary.withValues(alpha: 0.25),
+                          color: p.surface2,
+                          borderColor: p.divider,
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,14 +125,14 @@ class TermsSheet extends StatelessWidget {
                             Icon(
                               Icons.info_outline_rounded,
                               size: 18.sp,
-                              color: p.primaryPressed,
+                              color: p.textPrimary,
                             ),
                             SizedBox(width: AppSpacing.sm.w),
                             Expanded(
                               child: Text(
                                 l10n.termsReadCarefully,
                                 style: AppTypography.caption.copyWith(
-                                  color: p.primaryPressed,
+                                  color: p.primaryText,
                                   fontWeight: FontWeight.w500,
                                   height: 1.5,
                                 ),
@@ -166,12 +150,10 @@ class TermsSheet extends StatelessWidget {
                       }),
                       Container(
                         padding: EdgeInsets.all(AppSpacing.md.w),
-                        decoration: BoxDecoration(
-                          color: p.primary.withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(AppRadius.md),
-                          border: Border.all(
-                            color: p.primary.withValues(alpha: 0.15),
-                          ),
+                        decoration: p.card(
+                          color: p.primaryWash,
+                          borderColor: p.primarySoft,
+                          radius: AppRadius.md,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,13 +163,13 @@ class TermsSheet extends StatelessWidget {
                                 Icon(
                                   Icons.mail_outline_rounded,
                                   size: 16.sp,
-                                  color: p.primary,
+                                  color: p.primaryText,
                                 ),
                                 SizedBox(width: AppSpacing.xs.w),
                                 Text(
                                   l10n.contactUs,
                                   style: AppTypography.caption.copyWith(
-                                    color: p.primary,
+                                    color: p.primaryText,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -222,8 +204,7 @@ class TermsSheet extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        );
+          );
       },
     );
   }

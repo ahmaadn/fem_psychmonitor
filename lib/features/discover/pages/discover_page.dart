@@ -3,7 +3,10 @@ import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/app/widgets/app_bottom_sheet.dart';
+import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/app/widgets/mental_score_line_chart.dart';
+import 'package:fem_psychmonitor/app/widgets/session_card.dart';
 import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
 import 'package:fem_psychmonitor/data/repositories/detection_repository.dart';
 import 'package:fem_psychmonitor/data/repositories/score_log_repository.dart';
@@ -110,10 +113,7 @@ class _DiscoverPageState extends State<DiscoverPage>
                 // Calendar tab
                 ListView.builder(
                   controller: _monthScroll,
-                  padding: EdgeInsets.only(
-                    top: AppSpacing.xs.h,
-                    bottom: 80.h,
-                  ),
+                  padding: EdgeInsets.only(top: AppSpacing.xs.h, bottom: 80.h),
                   itemCount: _months.length,
                   itemBuilder: (context, index) {
                     return _MonthBlock(
@@ -150,19 +150,10 @@ class _DiscoverPageState extends State<DiscoverPage>
     if (!mounted) return;
     final p = context.palette;
     final labels = _DiscoverL10n.of(context);
-    showModalBottomSheet(
+    showAppBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (ctx) {
-        return Container(
-          decoration: BoxDecoration(
-            color: p.surface1,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(AppRadius.xl),
-            ),
-          ),
-          child: DraggableScrollableSheet(
+        return DraggableScrollableSheet(
             expand: false,
             initialChildSize: 0.5,
             maxChildSize: 0.9,
@@ -173,28 +164,24 @@ class _DiscoverPageState extends State<DiscoverPage>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Handle
-                      Container(
-                        width: 36.w,
-                        height: 4.h,
-                        decoration: BoxDecoration(
-                          color: p.divider,
-                          borderRadius: AppRadius.chip,
-                        ),
-                      ),
+                      const AppSheetHandle(),
                       SizedBox(height: AppSpacing.md.h),
                       Text(
                         DateFormat.yMMMMd().format(day),
-                        style: AppTypography.subtitle.copyWith(color: p.textPrimary),
+                        style: AppTypography.subtitle.copyWith(
+                          color: p.textPrimary,
+                        ),
                       ),
                       SizedBox(height: AppSpacing.sm.h),
                       Text(
                         labels.emptyDay,
-                        style: AppTypography.caption.copyWith(color: p.textSecondary),
+                        style: AppTypography.caption.copyWith(
+                          color: p.textSecondary,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: AppSpacing.lg.h),
-                      _PrimaryPill(
+                      PrimaryPill(
                         label: labels.iFeelToday,
                         onTap: () async {
                           Navigator.pop(ctx);
@@ -208,34 +195,30 @@ class _DiscoverPageState extends State<DiscoverPage>
 
               final counts = <EmotionLabelType, int>{};
               for (final s in sessions) {
-                counts[s.displayEmotion] =
-                    (counts[s.displayEmotion] ?? 0) + 1;
+                counts[s.displayEmotion] = (counts[s.displayEmotion] ?? 0) + 1;
               }
 
               return ListView(
                 controller: controller,
-                padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 32.h),
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.lg.w,
+                  AppSpacing.sm.h,
+                  AppSpacing.lg.w,
+                  AppSpacing.xxl.h,
+                ),
                 children: [
-                  // Handle
-                  Center(
-                    child: Container(
-                      width: 36.w,
-                      height: 4.h,
-                      margin: EdgeInsets.only(bottom: AppSpacing.md.h),
-                      decoration: BoxDecoration(
-                        color: p.divider,
-                        borderRadius: AppRadius.chip,
-                      ),
-                    ),
-                  ),
+                  const AppSheetHandle(),
+                  SizedBox(height: AppSpacing.md.h),
                   Text(
                     DateFormat.yMMMMd().format(day),
-                    style: AppTypography.subtitle.copyWith(color: p.textPrimary),
+                    style: AppTypography.subtitle.copyWith(
+                      color: p.textPrimary,
+                    ),
                   ),
                   SizedBox(height: AppSpacing.sm.h),
                   Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
+                    spacing: AppSpacing.xxs.w,
+                    runSpacing: AppSpacing.xxs.h,
                     children: counts.entries
                         .map(
                           (e) => Container(
@@ -254,13 +237,16 @@ class _DiscoverPageState extends State<DiscoverPage>
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(e.key.emoji,
-                                    style: TextStyle(fontSize: 12.sp)),
-                                SizedBox(width: 4.w),
+                                Text(
+                                  e.key.emoji,
+                                  style: AppTypography.emojiSm,
+                                ),
+                                SizedBox(width: AppSpacing.xxs.w),
                                 Text(
                                   '${e.key.displayName}: ${e.value}',
-                                  style: AppTypography.caption
-                                      .copyWith(color: p.textPrimary),
+                                  style: AppTypography.caption.copyWith(
+                                    color: p.textPrimary,
+                                  ),
                                 ),
                               ],
                             ),
@@ -288,21 +274,26 @@ class _DiscoverPageState extends State<DiscoverPage>
                           alignment: Alignment.center,
                           child: Text(
                             s.displayEmotion.emoji,
-                            style: TextStyle(fontSize: 18.sp),
+                            style: AppTypography.emojiMd,
                           ),
                         ),
                         title: Text(
                           s.displayEmotion.displayName,
-                          style:
-                              AppTypography.bodyStrong.copyWith(color: p.textPrimary),
+                          style: AppTypography.bodyStrong.copyWith(
+                            color: p.textPrimary,
+                          ),
                         ),
                         subtitle: Text(
                           '${s.duration.inMinutes}m ${s.duration.inSeconds % 60}s · ${DateFormat.Hm().format(s.startedAt)}',
-                          style:
-                              AppTypography.caption.copyWith(color: p.textSecondary),
+                          style: AppTypography.caption.copyWith(
+                            color: p.textSecondary,
+                          ),
                         ),
-                        trailing: Icon(Icons.chevron_right_rounded,
-                            color: p.textTertiary, size: 18.sp),
+                        trailing: Icon(
+                          Icons.chevron_right_rounded,
+                          color: p.textTertiary,
+                          size: 18.sp,
+                        ),
                         onTap: () {
                           Navigator.pop(ctx);
                           context.pushNamed(
@@ -316,8 +307,7 @@ class _DiscoverPageState extends State<DiscoverPage>
                 ],
               );
             },
-          ),
-        );
+          );
       },
     );
   }
@@ -356,15 +346,10 @@ class _DiscoverHeader extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            p.primarySoft,
-            Color.lerp(p.primarySoft, p.secondarySoft, 0.08)!,
-          ],
+        color: p.surface1,
+        border: Border(
+          bottom: BorderSide(color: p.divider, width: AppBorder.thin),
         ),
-        border: Border(bottom: BorderSide(color: p.divider, width: AppBorder.thin)),
       ),
       child: SafeArea(
         bottom: false,
@@ -394,8 +379,9 @@ class _DiscoverHeader extends StatelessWidget {
                   opacity: isCalendar ? 1.0 : 0.0,
                   duration: const Duration(milliseconds: 200),
                   child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.pageX.w,
+                    ),
                     child: Row(
                       children: [
                         _YearChevron(
@@ -406,7 +392,7 @@ class _DiscoverHeader extends StatelessWidget {
                         Text(
                           '$year',
                           style: AppTypography.bodyStrong.copyWith(
-                            color: p.primaryPressed,
+                            color: p.primaryText,
                           ),
                         ),
                         SizedBox(width: AppSpacing.xs.w),
@@ -425,12 +411,11 @@ class _DiscoverHeader extends StatelessWidget {
 
             // Tab bar
             Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w),
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w),
               child: Container(
-                padding: EdgeInsets.all(3.w),
+                padding: EdgeInsets.all(AppSpacing.xxs.w),
                 decoration: BoxDecoration(
-                  color: p.primary.withValues(alpha: 0.12),
+                  color: p.surface2,
                   borderRadius: AppRadius.chip,
                 ),
                 child: TabBar(
@@ -438,18 +423,11 @@ class _DiscoverHeader extends StatelessWidget {
                   indicatorSize: TabBarIndicatorSize.tab,
                   dividerColor: Colors.transparent,
                   indicator: BoxDecoration(
-                    color: p.primaryText,
+                    color: p.primarySoft,
                     borderRadius: AppRadius.chip,
-                    boxShadow: [
-                      BoxShadow(
-                        color: p.primary.withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
                   ),
-                  labelColor: p.onPrimary,
-                  unselectedLabelColor: p.primaryPressed,
+                  labelColor: p.primaryText,
+                  unselectedLabelColor: p.textTertiary,
                   labelStyle: AppTypography.label,
                   tabs: [
                     Tab(text: labels.calendar),
@@ -479,14 +457,16 @@ class _YearChevron extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(AppSpacing.xxs.w),
         decoration: BoxDecoration(
-          color: p.primary.withValues(alpha: 0.12),
+          color: p.primaryFill.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
-        child: Icon(icon, color: p.primaryPressed, size: 16.sp),
+        child: Icon(icon, color: p.primaryText, size: 16.sp),
       ),
     );
   }
 }
+
+// ── Primary Pill ─────────────────────────────────────────────────────────────
 
 // ── Primary Pill ─────────────────────────────────────────────────────────────
 
@@ -496,43 +476,8 @@ class PrimaryPill extends StatelessWidget {
   const PrimaryPill({super.key, required this.label, required this.onTap});
 
   @override
-  Widget build(BuildContext context) => _PrimaryPill(label: label, onTap: onTap);
-}
-
-class _PrimaryPill extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  const _PrimaryPill({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(vertical: 13.h),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [p.primary, p.primaryPressed],
-          ),
-          borderRadius: BorderRadius.circular(AppRadius.pill),
-          boxShadow: [
-            BoxShadow(
-              color: p.primary.withValues(alpha: 0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Text(
-          label,
-          style: AppTypography.bodyStrong.copyWith(color: p.onPrimary),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      PrimaryButton(text: label, onPressed: onTap);
 }
 
 // ── Month Block ──────────────────────────────────────────────────────────────
@@ -568,7 +513,11 @@ class _MonthBlock extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
-          AppSpacing.pageX.w, AppSpacing.sm.h, AppSpacing.pageX.w, 0),
+        AppSpacing.pageX.w,
+        AppSpacing.sm.h,
+        AppSpacing.pageX.w,
+        0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -586,13 +535,13 @@ class _MonthBlock extends StatelessWidget {
                     vertical: 2.h,
                   ),
                   decoration: BoxDecoration(
-                    color: p.primarySoft,
+                    color: p.secondarySoft,
                     borderRadius: AppRadius.chip,
                   ),
                   child: Text(
                     '$trackedCount',
                     style: AppTypography.label.copyWith(
-                      color: p.primaryPressed,
+                      color: p.secondaryText,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -626,22 +575,24 @@ class _MonthBlock extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: today
-                        ? p.primarySoft
+                        ? p.surface3
                         : (emotion != null
-                            ? emotion.surfaceColor
-                            : p.primaryWash.withValues(alpha: 0.5)),
+                              ? emotion.surfaceColor
+                              : p.surface2),
                     border: Border.all(
                       color: today
-                          ? p.primary
+                          ? p.primaryText
                           : (emotion != null
-                              ? p.emotionBase(emotion).withValues(alpha: 0.4)
-                              : p.divider),
+                                ? p.emotionBase(emotion).withValues(alpha: 0.4)
+                                : p.divider),
                       width: today ? AppBorder.thick : AppBorder.thin,
                     ),
                     boxShadow: emotion != null && !today
                         ? [
                             BoxShadow(
-                              color: p.emotionBase(emotion).withValues(alpha: 0.15),
+                              color: p
+                                  .emotionBase(emotion)
+                                  .withValues(alpha: 0.15),
                               blurRadius: 4,
                               offset: const Offset(0, 1),
                             ),
@@ -652,15 +603,15 @@ class _MonthBlock extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (emotion != null)
-                        Text(emotion.emoji,
-                            style: TextStyle(fontSize: 11.sp))
+                        Text(emotion.emoji, style: AppTypography.emojiSm)
                       else
                         Text(
                           '$day',
                           style: AppTypography.caption.copyWith(
-                            fontWeight:
-                                today ? FontWeight.w700 : FontWeight.w500,
-                            color: today ? p.primaryPressed : p.textSecondary,
+                            fontWeight: today
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                            color: today ? p.primaryText : p.textSecondary,
                           ),
                         ),
                       if (emotion != null)
@@ -670,7 +621,7 @@ class _MonthBlock extends StatelessWidget {
                             fontWeight: today
                                 ? FontWeight.w700
                                 : FontWeight.w400,
-                            color: today ? p.primaryPressed : p.textTertiary,
+                            color: today ? p.primaryText : p.textTertiary,
                             height: 1,
                           ),
                         ),
@@ -714,7 +665,11 @@ class _JournalTab extends StatelessWidget {
 
     return ListView(
       padding: EdgeInsets.fromLTRB(
-          AppSpacing.pageX.w, AppSpacing.md.h, AppSpacing.pageX.w, 80.h),
+        AppSpacing.pageX.w,
+        AppSpacing.md.h,
+        AppSpacing.pageX.w,
+        80.h,
+      ),
       children: [
         // Period chips
         SingleChildScrollView(
@@ -733,31 +688,17 @@ class _JournalTab extends StatelessWidget {
                       vertical: AppSpacing.xs.h,
                     ),
                     decoration: BoxDecoration(
-                      gradient: sel
-                          ? LinearGradient(
-                              colors: [p.primary, p.primaryPressed],
-                            )
-                          : null,
-                      color: sel ? null : p.surface1,
+                      color: sel ? p.primarySoft : p.surface1,
                       borderRadius: AppRadius.chip,
                       border: Border.all(
-                        color: sel ? p.primaryPressed : p.divider,
+                        color: sel ? p.primaryText : p.divider,
                         width: AppBorder.thin,
                       ),
-                      boxShadow: sel
-                          ? [
-                              BoxShadow(
-                                color: p.primary.withValues(alpha: 0.25),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                          : null,
                     ),
                     child: Text(
                       e.value,
                       style: AppTypography.label.copyWith(
-                        color: sel ? p.onPrimary : p.textSecondary,
+                        color: sel ? p.primaryText : p.textSecondary,
                       ),
                     ),
                   ),
@@ -791,13 +732,13 @@ class _JournalTab extends StatelessWidget {
             vertical: AppSpacing.xxs.h,
           ),
           decoration: BoxDecoration(
-            color: p.primarySoft,
+            color: p.surface2,
             borderRadius: AppRadius.chip,
           ),
           child: Text(
             '${labels.recordingsCount}: ${sessions.length}',
             style: AppTypography.caption.copyWith(
-              color: p.primaryPressed,
+              color: p.textPrimary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -820,33 +761,21 @@ class _ChartSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return Container(
-      padding: EdgeInsets.all(AppSpacing.md.w),
-      decoration: BoxDecoration(
-        color: p.surface1,
-        borderRadius: AppRadius.card,
-        border: Border.all(color: p.divider, width: AppBorder.thin),
-        boxShadow: [
-          BoxShadow(
-            color: p.shadowRaised,
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return SessionCard(
+      elevated: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                width: 28.w,
-                height: 28.w,
+                width: AppSpacing.xxl.w,
+                height: AppSpacing.xxl.w,
                 decoration: BoxDecoration(
-                  color: p.primarySoft,
+                  color: p.surface2,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: Icon(icon, color: p.primaryPressed, size: 14.sp),
+                child: Icon(icon, color: p.textPrimary, size: AppSpacing.sm.sp),
               ),
               SizedBox(width: AppSpacing.xs.w),
               Text(
@@ -877,8 +806,9 @@ class _DiscoverL10n {
   String get discover => isEn ? 'Discover' : 'Jelajah';
   String get calendar => isEn ? 'Calendar' : 'Kalender';
   String get journal => isEn ? 'Journal' : 'Jurnal';
-  String get emptyDay =>
-      isEn ? 'No recordings on this date.' : 'Belum ada rekaman di tanggal ini.';
+  String get emptyDay => isEn
+      ? 'No recordings on this date.'
+      : 'Belum ada rekaman di tanggal ini.';
   String get iFeelToday => isEn ? 'I feel today…' : 'Aku merasa hari ini…';
   String get emotionDistribution =>
       isEn ? 'Emotion distribution' : 'Distribusi emosi';
