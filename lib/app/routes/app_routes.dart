@@ -42,14 +42,16 @@ class AppRouter {
         final assessed = authVm.hasCompletedAssessment;
         final loc = state.matchedLocation;
 
-        final isPublic = loc == '/' ||
+        final isPublic =
+            loc == '/' ||
             loc == '/onboarding' ||
             loc.startsWith('/auth') ||
             loc.startsWith('/ocean') ||
             loc.startsWith('/psych') ||
             loc == '/post-assessment-choice';
 
-        final isShell = _shellLocations.contains(loc) ||
+        final isShell =
+            _shellLocations.contains(loc) ||
             loc.startsWith('/discover') ||
             loc == '/live-recording' ||
             loc.startsWith('/recording');
@@ -64,7 +66,7 @@ class AppRouter {
           return '/dashboard';
         }
 
-            if (authed &&
+        if (authed &&
             !assessed &&
             (loc == '/dashboard' ||
                 loc == '/discover' ||
@@ -86,7 +88,7 @@ class AppRouter {
         GoRoute(
           path: '/',
           name: RouteNames.splash,
-          builder: (_, __) => const SplashPage(),
+          builder: (_, _) => const SplashPage(),
         ),
         GoRoute(
           path: '/onboarding',
@@ -99,34 +101,35 @@ class AppRouter {
         GoRoute(
           path: '/ocean-test',
           name: RouteNames.oceanTest,
-          builder: (_, __) => const OceanTestPage(),
+          builder: (_, _) => const OceanTestPage(),
         ),
         GoRoute(
           path: '/ocean-result',
           name: RouteNames.oceanResult,
-          builder: (_, __) => const OceanResultPage(),
+          builder: (_, _) => const OceanResultPage(),
         ),
         GoRoute(
           path: '/psych-test',
           name: RouteNames.psychTest,
-          builder: (_, __) => const PsychTestPage(),
+          builder: (_, _) => const PsychTestPage(),
         ),
         GoRoute(
           path: '/psych-result',
           name: RouteNames.psychResult,
-          builder: (_, __) => const PsychResultPage(),
+          builder: (_, _) => const PsychResultPage(),
         ),
         GoRoute(
           path: '/post-assessment-choice',
           name: RouteNames.postAssessmentChoice,
-          builder: (_, __) => const PostAssessmentChoicePage(),
+          builder: (_, _) => const PostAssessmentChoicePage(),
         ),
         GoRoute(
           path: '/auth/register',
           name: RouteNames.register,
           builder: (_, state) {
-            final returnTo =
-                state.extra is String ? state.extra as String : null;
+            final returnTo = state.extra is String
+                ? state.extra as String
+                : null;
             return RegisterPage(returnTo: returnTo);
           },
         ),
@@ -134,15 +137,16 @@ class AppRouter {
           path: '/auth/login',
           name: RouteNames.login,
           builder: (_, state) {
-            final returnTo =
-                state.extra is String ? state.extra as String : null;
+            final returnTo = state.extra is String
+                ? state.extra as String
+                : null;
             return LoginPage(returnTo: returnTo);
           },
         ),
         GoRoute(
           path: '/auth/forgot-password',
           name: RouteNames.forgotPassword,
-          builder: (_, __) => const ForgotPasswordPage(),
+          builder: (_, _) => const ForgotPasswordPage(),
         ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {
@@ -154,7 +158,7 @@ class AppRouter {
                 GoRoute(
                   path: '/dashboard',
                   name: RouteNames.dashboard,
-                  builder: (_, __) => const HomePage(),
+                  builder: (_, _) => const HomePage(),
                 ),
               ],
             ),
@@ -163,14 +167,15 @@ class AppRouter {
                 GoRoute(
                   path: '/discover',
                   name: RouteNames.discover,
-                  builder: (_, __) => const DiscoverPage(),
+                  builder: (_, _) => const DiscoverPage(),
                   routes: [
                     GoRoute(
                       path: 'analysis-result',
                       name: RouteNames.analysisResult,
                       builder: (_, state) {
-                        final sessionId =
-                            state.extra is String ? state.extra as String : null;
+                        final sessionId = state.extra is String
+                            ? state.extra as String
+                            : null;
                         return AnalysisResultPage(sessionId: sessionId);
                       },
                     ),
@@ -183,17 +188,17 @@ class AppRouter {
                 GoRoute(
                   path: '/settings',
                   name: RouteNames.settings,
-                  builder: (_, __) => const SettingsPage(),
+                  builder: (_, _) => const SettingsPage(),
                   routes: [
                     GoRoute(
                       path: 'edit-profile',
                       name: RouteNames.editProfile,
-                      builder: (_, __) => const EditProfilePage(),
+                      builder: (_, _) => const EditProfilePage(),
                     ),
                     GoRoute(
                       path: 'change-password',
                       name: RouteNames.changePassword,
-                      builder: (_, __) => const ChangePasswordPage(),
+                      builder: (_, _) => const ChangePasswordPage(),
                     ),
                   ],
                 ),
@@ -201,38 +206,30 @@ class AppRouter {
             ),
           ],
         ),
-        GoRoute(
-          path: '/profile',
-          redirect: (_, __) => '/settings',
-        ),
+        GoRoute(path: '/profile', redirect: (_, _) => '/settings'),
         GoRoute(
           path: '/live-recording',
           name: RouteNames.liveRecording,
-          builder: (_, __) => const LiveRecordingPage(),
+          builder: (_, _) => const LiveRecordingPage(),
         ),
         GoRoute(
           path: '/recording/processing',
           name: RouteNames.recordingProcessing,
           builder: (_, state) {
-            final uploadedPath =
-                state.extra is String ? state.extra as String : null;
+            final uploadedPath = state.extra is String
+                ? state.extra as String
+                : null;
             return AiProcessingPage(uploadedAudioPath: uploadedPath);
           },
         ),
         GoRoute(
           path: '/recording/analysis-teaser',
           name: RouteNames.analysisResultTeaser,
-          builder: (_, __) => const AnalysisResultPage(isTeaser: true),
+          builder: (_, _) => const AnalysisResultPage(isTeaser: true),
         ),
         // Legacy path aliases
-        GoRoute(
-          path: '/home',
-          redirect: (_, __) => '/dashboard',
-        ),
-        GoRoute(
-          path: '/history',
-          redirect: (_, __) => '/discover',
-        ),
+        GoRoute(path: '/home', redirect: (_, _) => '/dashboard'),
+        GoRoute(path: '/history', redirect: (_, _) => '/discover'),
       ],
     );
   }

@@ -2,6 +2,7 @@ import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -32,7 +33,7 @@ class EmotionBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(r.label.emoji, style: AppTypography.emojiMd),
+          EmotionEmoji(asset: r.label.emojiAsset, size: 18),
           SizedBox(width: AppSpacing.xs.w),
           Container(
             width: AppSpacing.xs.w,

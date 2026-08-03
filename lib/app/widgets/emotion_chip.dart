@@ -2,6 +2,7 @@ import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -38,7 +39,7 @@ class EmotionBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (showEmoji) ...[
-            Text(emotion.emoji, style: AppTypography.emojiSm),
+            EmotionEmoji(asset: emotion.emojiAsset, size: compact ? 14 : 16),
             SizedBox(width: AppSpacing.xxs.w),
           ],
           Text(
@@ -109,14 +110,21 @@ class _EmotionChipState extends State<EmotionChip> {
               width: AppBorder.thin,
             ),
           ),
-          child: Text(
-            widget.showLabel
-                ? '${widget.emotion.emoji} ${widget.emotion.label}'
-                : widget.emotion.emoji,
-            style: AppTypography.label.copyWith(
-              color: selected ? onE : p.textPrimary,
-              letterSpacing: selected ? 0.4 : 0.1,
-            ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              EmotionEmoji(asset: widget.emotion.emojiAsset, size: 18),
+              if (widget.showLabel) ...[
+                SizedBox(width: AppSpacing.xxs.w),
+                Text(
+                  widget.emotion.label,
+                  style: AppTypography.label.copyWith(
+                    color: selected ? onE : p.textPrimary,
+                    letterSpacing: selected ? 0.4 : 0.1,
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
       ),

@@ -9,6 +9,7 @@ import 'package:fem_psychmonitor/app/utils/recommendation_engine.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:fem_psychmonitor/app/widgets/app_bottom_sheet.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
+import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
 import 'package:fem_psychmonitor/app/widgets/emotion_radar_chart.dart';
 import 'package:fem_psychmonitor/app/widgets/session_card.dart';
 import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
@@ -222,12 +223,27 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                 ],
                 if (session?.selfReportEmotion != null) ...[
                   SizedBox(height: AppSpacing.sm.h),
-                  Text(
-                    'Self-report: ${session!.selfReportEmotion!.emoji} ${session.selfReportEmotion!.displayName}',
-                    style: AppTypography.caption.copyWith(
-                      color: p.textSecondary,
-                    ),
-                    textAlign: TextAlign.center,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Self-report: ',
+                        style: AppTypography.caption.copyWith(
+                          color: p.textSecondary,
+                        ),
+                      ),
+                      EmotionEmoji(
+                        asset: session!.selfReportEmotion!.emojiAsset,
+                        size: 14,
+                      ),
+                      SizedBox(width: AppSpacing.xxs.w),
+                      Text(
+                        session.selfReportEmotion!.displayName,
+                        style: AppTypography.caption.copyWith(
+                          color: p.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
                 SizedBox(height: AppSpacing.md.h),
@@ -422,7 +438,14 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                         children: EmotionLabelType.values.map((e) {
                           final selected = e == picked;
                           return ChoiceChip(
-                            label: Text('${e.emoji} ${e.displayName}'),
+                            label: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                EmotionEmoji(asset: e.emojiAsset, size: 16),
+                                SizedBox(width: AppSpacing.xxs.w),
+                                Text(e.displayName),
+                              ],
+                            ),
                             selected: selected,
                             onSelected: (_) => setSheetState(() => picked = e),
                             selectedColor: e.color,
@@ -613,7 +636,7 @@ class _Hero extends StatelessWidget {
             centerBottom: l10n.confidence.toUpperCase(),
           ),
           SizedBox(height: AppSpacing.sm.h),
-          Text(dominant.emoji, style: AppTypography.emojiHero),
+          EmotionEmoji(asset: dominant.emojiAsset, size: 40),
           SizedBox(height: AppSpacing.xxs.h),
           Text(dominant.displayName, style: AppTypography.subtitle),
           SizedBox(height: AppSpacing.xxs.h),
@@ -757,8 +780,8 @@ class _ScoreCalculationCard extends StatelessWidget {
           SizedBox(height: AppSpacing.md.h),
           _FormulaLine(
             label: 'Emosi yang dipakai',
-            value:
-                '${breakdown.emotion.emoji} ${breakdown.emotion.displayName}',
+            value: breakdown.emotion.displayName,
+            valueEmojiAsset: breakdown.emotion.emojiAsset,
           ),
           _FormulaLine(label: 'Confidence model', value: '$confidencePercent%'),
           if (breakdown.isCorrected)
@@ -826,10 +849,17 @@ class _ScoreCalculationCard extends StatelessWidget {
 }
 
 class _FormulaLine extends StatelessWidget {
-  const _FormulaLine({required this.label, required this.value});
+  const _FormulaLine({
+    required this.label,
+    required this.value,
+    this.valueEmojiAsset,
+  });
 
   final String label;
   final String value;
+
+  /// Optional raster emoji rendered before [value].
+  final String? valueEmojiAsset;
 
   @override
   Widget build(BuildContext context) {
@@ -850,14 +880,26 @@ class _FormulaLine extends StatelessWidget {
           ),
           SizedBox(width: AppSpacing.sm.w),
           Flexible(
-            child: Text(
-              value,
-              textAlign: TextAlign.right,
-              style: AppTypography.caption.copyWith(
-                height: 1.35,
-                fontWeight: FontWeight.w700,
-                color: p.textPrimary,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (valueEmojiAsset != null) ...[
+                  EmotionEmoji(asset: valueEmojiAsset!, size: 14),
+                  SizedBox(width: AppSpacing.xxs.w),
+                ],
+                Flexible(
+                  child: Text(
+                    value,
+                    textAlign: TextAlign.right,
+                    style: AppTypography.caption.copyWith(
+                      height: 1.35,
+                      fontWeight: FontWeight.w700,
+                      color: p.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -1076,7 +1118,7 @@ class _WeeklyChart extends StatelessWidget {
                 padding: EdgeInsets.only(bottom: AppSpacing.xs.h),
                 child: Row(
                   children: [
-                    Text(e.key.emoji, style: AppTypography.emojiSm),
+                    EmotionEmoji(asset: e.key.emojiAsset, size: 14),
                     SizedBox(width: AppSpacing.xs.w),
                     SizedBox(
                       width: AppSpacing.xxl.w,

@@ -2,6 +2,7 @@ import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -81,10 +82,7 @@ class MoodCheckInCard extends StatelessWidget {
               color: base.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(AppRadius.md.r),
             ),
-              child: Text(
-              emotion.emoji,
-              style: AppTypography.emojiLg,
-            ),
+            child: EmotionEmoji(asset: emotion.emojiAsset, size: 22),
           ),
           SizedBox(width: AppSpacing.sm.w),
           Expanded(

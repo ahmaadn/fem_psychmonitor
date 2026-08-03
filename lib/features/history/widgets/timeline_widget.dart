@@ -2,6 +2,7 @@ import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
 import 'package:fem_psychmonitor/app/widgets/linear_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
@@ -286,7 +287,7 @@ class ComponentTimeline extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(emotion.emoji, style: AppTypography.emojiMd),
+                EmotionEmoji(asset: emotion.emojiAsset, size: 18),
                 SizedBox(width: AppSpacing.xs.w),
                 Text(
                   emotion.displayName,

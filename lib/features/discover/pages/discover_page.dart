@@ -5,6 +5,7 @@ import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/widgets/app_bottom_sheet.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
+import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
 import 'package:fem_psychmonitor/app/widgets/mental_score_line_chart.dart';
 import 'package:fem_psychmonitor/app/widgets/session_card.dart';
 import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
@@ -237,9 +238,9 @@ class _DiscoverPageState extends State<DiscoverPage>
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  e.key.emoji,
-                                  style: AppTypography.emojiSm,
+                                EmotionEmoji(
+                                  asset: e.key.emojiAsset,
+                                  size: 14,
                                 ),
                                 SizedBox(width: AppSpacing.xxs.w),
                                 Text(
@@ -272,9 +273,9 @@ class _DiscoverPageState extends State<DiscoverPage>
                             borderRadius: AppRadius.tile,
                           ),
                           alignment: Alignment.center,
-                          child: Text(
-                            s.displayEmotion.emoji,
-                            style: AppTypography.emojiMd,
+                          child: EmotionEmoji(
+                            asset: s.displayEmotion.emojiAsset,
+                            size: 18,
                           ),
                         ),
                         title: Text(
@@ -603,7 +604,7 @@ class _MonthBlock extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (emotion != null)
-                        Text(emotion.emoji, style: AppTypography.emojiSm)
+                        EmotionEmoji(asset: emotion.emojiAsset, size: 14)
                       else
                         Text(
                           '$day',
