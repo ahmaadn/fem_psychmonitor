@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
@@ -28,36 +26,18 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> {
   EmotionLabelType? _todayMood;
   RecommendationResult? _saran;
-  late AnimationController _pulseCtrl;
-  late Animation<double> _pulseAnim;
 
   @override
   void initState() {
     super.initState();
-    _pulseCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
-    _pulseAnim = Tween<double>(
-      begin: 0.95,
-      end: 1.05,
-    ).animate(CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       context.read<HomeViewModel>().loadStats();
       context.read<ProfileViewModel>().loadProfile();
       await _loadMoodAndSaran();
     });
-  }
-
-  @override
-  void dispose() {
-    _pulseCtrl.dispose();
-    super.dispose();
   }
 
   Future<void> _loadMoodAndSaran() async {
@@ -203,7 +183,6 @@ class _HomePageState extends State<HomePage>
                   scoreColor: scoreColor,
                   mood: mood,
                   isEn: isEn,
-                  pulseAnim: _pulseAnim,
                   onMoodTap: _pickMood,
                 ),
               ),
@@ -276,7 +255,6 @@ class _HeroHeader extends StatelessWidget {
     required this.scoreColor,
     required this.mood,
     required this.isEn,
-    required this.pulseAnim,
     required this.onMoodTap,
   });
 
@@ -289,7 +267,6 @@ class _HeroHeader extends StatelessWidget {
   final Color scoreColor;
   final EmotionLabelType? mood;
   final bool isEn;
-  final Animation<double> pulseAnim;
   final VoidCallback onMoodTap;
 
   @override
@@ -360,7 +337,6 @@ class _HeroHeader extends StatelessWidget {
               ),
               SizedBox(height: AppSpacing.lg.h),
 
-              // [2] Score panel — sekarang card putih di atas bg strawberry,
               // tidak ada warna kontras yang membentur gradient hero
               Container(
                 padding: EdgeInsets.all(AppSpacing.md.w),
@@ -379,13 +355,8 @@ class _HeroHeader extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Score ring
-                    _ScoreRing(
-                      score: score,
-                      emotion: scoreEmoji,
-                      color: scoreColor,
-                      pulseAnim: pulseAnim,
-                    ),
+                    // Score emoji (tanpa ring)
+                    _ScoreEmoji(emotion: scoreEmoji),
                     SizedBox(width: AppSpacing.md.w),
 
                     // Score details
@@ -484,7 +455,7 @@ class _HeroHeader extends StatelessWidget {
                     children: [
                       EmotionEmoji(
                         asset: mood?.emojiAsset ?? 'assets/emoji/netral.png',
-                        size: 22,
+                        size: 28,
                       ),
                       SizedBox(width: AppSpacing.xs.w),
                       Text(
@@ -517,107 +488,26 @@ class _HeroHeader extends StatelessWidget {
   }
 }
 
-// ── Score Ring ───────────────────────────────────────────────────────────────
+// ── Score Emoji ──────────────────────────────────────────────────────────────
 
-class _ScoreRing extends StatelessWidget {
-  const _ScoreRing({
-    required this.score,
-    required this.emotion,
-    required this.color,
-    required this.pulseAnim,
-  });
+class _ScoreEmoji extends StatelessWidget {
+  const _ScoreEmoji({required this.emotion});
 
-  final int score;
   final EmotionLabelType? emotion;
-  final Color color;
-  final Animation<double> pulseAnim;
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
-    final size = 88.w;
-
-    return AnimatedBuilder(
-      animation: pulseAnim,
-      builder: (_, _) {
-        return Transform.scale(
-          scale: pulseAnim.value,
-          child: SizedBox(
-            width: size,
-            height: size,
-            child: CustomPaint(
-              painter: _RingPainter(
-                progress: score / 100,
-                trackColor: p.divider,
-                progressColor: color,
-              ),
-              child: Center(
-                child: EmotionEmoji(
-                  asset: emotion?.emojiAsset ?? 'assets/emoji/netral.png',
-                  size: 36,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+    return SizedBox(
+      width: 88.w,
+      height: 88.w,
+      child: Center(
+        child: EmotionEmoji(
+          asset: emotion?.emojiAsset ?? 'assets/emoji/netral.png',
+          size: 76,
+        ),
+      ),
     );
   }
-}
-
-class _RingPainter extends CustomPainter {
-  _RingPainter({
-    required this.progress,
-    required this.trackColor,
-    required this.progressColor,
-  });
-
-  final double progress;
-  final Color trackColor;
-  final Color progressColor;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-    final radius = (size.width / 2) - 6;
-    const strokeW = 5.0;
-    final rect = Rect.fromCircle(center: Offset(cx, cy), radius: radius);
-
-    canvas.drawArc(
-      rect,
-      -math.pi / 2,
-      2 * math.pi,
-      false,
-      Paint()
-        ..color = trackColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeW
-        ..strokeCap = StrokeCap.round,
-    );
-
-    final sweepAngle = 2 * math.pi * progress;
-    final gradient = SweepGradient(
-      startAngle: -math.pi / 2,
-      endAngle: -math.pi / 2 + sweepAngle,
-      colors: [progressColor.withValues(alpha: 0.55), progressColor],
-    );
-    canvas.drawArc(
-      rect,
-      -math.pi / 2,
-      sweepAngle,
-      false,
-      Paint()
-        ..shader = gradient.createShader(rect)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeW
-        ..strokeCap = StrokeCap.round,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_RingPainter old) =>
-      old.progress != progress || old.progressColor != progressColor;
 }
 
 // ── Support Banner ────────────────────────────────────────────────────────────
@@ -938,12 +828,16 @@ class _WeekStrip extends StatelessWidget {
                   ),
                   alignment: Alignment.center,
                   child: isChecked
-                      ? Text(
-                          emotion?.emoji ?? '✓',
-                          style: isToday
-                              ? AppTypography.emojiLg
-                              : AppTypography.emojiSm,
-                        )
+                      ? (emotion != null
+                            ? EmotionEmoji(
+                                asset: emotion.emojiAsset,
+                                size: isToday ? 28 : 24,
+                              )
+                            : Icon(
+                                Icons.check_rounded,
+                                size: isToday ? 20.sp : 16.sp,
+                                color: p.textSecondary,
+                              ))
                       : Icon(
                           isToday
                               ? Icons.radio_button_unchecked_rounded
@@ -1069,7 +963,9 @@ class _VoiceCheckinCTA extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Text(mood?.emoji ?? '💭', style: AppTypography.emojiMd),
+                mood != null
+                    ? EmotionEmoji(asset: mood!.emojiAsset, size: 26)
+                    : Text('💭', style: AppTypography.emojiLg),
                 SizedBox(width: AppSpacing.xs.w),
                 Expanded(
                   child: Text(
