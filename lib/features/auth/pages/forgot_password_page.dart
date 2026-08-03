@@ -3,7 +3,7 @@ import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
-import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
+import 'package:fem_psychmonitor/app/widgets/app_logo.dart';
 import 'package:fem_psychmonitor/features/auth/widgets/auth_footer_prompt.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
@@ -49,7 +49,16 @@ class ForgotPasswordPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: AppSpacing.xs.h),
-                const VoiceprintOrb(mode: VoiceprintMode.idle, size: 140),
+                const AppLogo(size: 120),
+                SizedBox(height: AppSpacing.sm.h),
+                Text(
+                  l10n.appName,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.subtitle.copyWith(
+                    color: p.primaryText,
+                    letterSpacing: 0.5,
+                  ),
+                ),
                 SizedBox(height: AppSpacing.xl.h),
                 Text(
                   l10n.resetPassword,
