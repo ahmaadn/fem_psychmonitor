@@ -2,7 +2,7 @@ import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
-import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
+import 'package:fem_psychmonitor/app/widgets/app_logo.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
@@ -81,10 +81,7 @@ class _SplashPageState extends State<SplashPage>
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const VoiceprintOrb(
-                          mode: VoiceprintMode.idle,
-                          size: 220,
-                        ),
+                        const AppLogo(size: 160),
                         SizedBox(height: 32.h),
                         Text(
                           l10n.appName,

@@ -8,6 +8,7 @@ import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/utils/mental_health_score.dart';
 import 'package:fem_psychmonitor/app/utils/recommendation_engine.dart';
+import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
 import 'package:fem_psychmonitor/data/models/emotion_summary_model.dart';
 import 'package:fem_psychmonitor/data/repositories/recommendation_repository.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
@@ -140,11 +141,9 @@ class _HomePageState extends State<HomePage>
     return p.successText;
   }
 
-  String _scoreEmoji(int score) {
-    if (score <= 25) return '😢';
-    if (score <= 50) return '😔';
-    if (score <= 75) return '😊';
-    return '🥰';
+  EmotionLabelType? _scoreEmoji(int score) {
+    if (score <= 50) return EmotionLabelType.sad;
+    return EmotionLabelType.happy;
   }
 
   bool _isToday(DateTime d) {
@@ -286,7 +285,7 @@ class _HeroHeader extends StatelessWidget {
   final String name;
   final int score;
   final String scoreLabel;
-  final String scoreEmoji;
+  final EmotionLabelType? scoreEmoji;
   final Color scoreColor;
   final EmotionLabelType? mood;
   final bool isEn;
@@ -383,7 +382,7 @@ class _HeroHeader extends StatelessWidget {
                     // Score ring
                     _ScoreRing(
                       score: score,
-                      emoji: scoreEmoji,
+                      emotion: scoreEmoji,
                       color: scoreColor,
                       pulseAnim: pulseAnim,
                     ),
@@ -483,9 +482,9 @@ class _HeroHeader extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        mood?.emoji ?? '💭',
-                        style: AppTypography.emojiMd,
+                      EmotionEmoji(
+                        asset: mood?.emojiAsset ?? 'assets/emoji/netral.png',
+                        size: 22,
                       ),
                       SizedBox(width: AppSpacing.xs.w),
                       Text(
@@ -523,13 +522,13 @@ class _HeroHeader extends StatelessWidget {
 class _ScoreRing extends StatelessWidget {
   const _ScoreRing({
     required this.score,
-    required this.emoji,
+    required this.emotion,
     required this.color,
     required this.pulseAnim,
   });
 
   final int score;
-  final String emoji;
+  final EmotionLabelType? emotion;
   final Color color;
   final Animation<double> pulseAnim;
 
@@ -553,9 +552,9 @@ class _ScoreRing extends StatelessWidget {
                 progressColor: color,
               ),
               child: Center(
-                child: Text(
-                  emoji,
-                  style: AppTypography.emojiXl,
+                child: EmotionEmoji(
+                  asset: emotion?.emojiAsset ?? 'assets/emoji/netral.png',
+                  size: 36,
                 ),
               ),
             ),

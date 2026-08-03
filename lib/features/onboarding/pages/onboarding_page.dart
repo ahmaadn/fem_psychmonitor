@@ -4,7 +4,7 @@ import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/app/widgets/segmented_control.dart';
-import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
+import 'package:fem_psychmonitor/app/widgets/app_logo.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:fem_psychmonitor/features/onboarding/viewmodels/questionnaire_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -84,16 +84,24 @@ class OnboardingPage extends StatelessWidget {
                       ),
                       Column(
                         children: [
-                          const VoiceprintOrb(
-                            mode: VoiceprintMode.idle,
-                            size: 200,
-                          ),
+                          const AppLogo(size: 140),
                           SizedBox(height: AppSpacing.xxl.h - 4.h),
                           Text(
                             l10n.welcomeToApp,
                             textAlign: TextAlign.center,
                             style: AppTypography.display.copyWith(
                               color: p.textPrimary,
+                            ),
+                          ),
+                          SizedBox(height: AppSpacing.xs.h),
+                          SizedBox(
+                            width: 300.w,
+                            child: Text(
+                              l10n.onboardingHeadline,
+                              textAlign: TextAlign.center,
+                              style: AppTypography.title.copyWith(
+                                color: p.primaryText,
+                              ),
                             ),
                           ),
                           SizedBox(height: AppSpacing.xs.h),
@@ -130,6 +138,8 @@ class OnboardingPage extends StatelessWidget {
                               SizedBox(height: AppSpacing.sm.h),
                               SecondaryButton(
                                 text: l10n.signIn,
+                                textColor: p.primaryText,
+                                borderColor: p.primary,
                                 onPressed: () =>
                                     context.goNamed(RouteNames.login),
                               ),

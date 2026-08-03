@@ -16,6 +16,19 @@ extension EmotionLabelTypeExtension on EmotionLabelType {
     return emojis[index];
   }
 
+  /// Path to the raster emoji asset shipped under `assets/emoji/`.
+  String get emojiAsset {
+    const paths = [
+      'assets/emoji/bahagia.png', // happy
+      'assets/emoji/sedih.png', // sad
+      'assets/emoji/marah.png', // anger
+      'assets/emoji/takut.png', // fearful
+      'assets/emoji/jijik.png', // disgust
+      'assets/emoji/netral.png', // neutral
+    ];
+    return paths[index];
+  }
+
   String get label {
     switch (this) {
       case EmotionLabelType.happy:

@@ -122,6 +122,12 @@ abstract class AppLocalizations {
   /// **'Welcome to FemMonitor'**
   String get welcomeToApp;
 
+  /// No description provided for @onboardingHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Understand your emotions, one voice at a time.'**
+  String get onboardingHeadline;
+
   /// No description provided for @chooseSignInMethod.
   ///
   /// In en, this message translates to:

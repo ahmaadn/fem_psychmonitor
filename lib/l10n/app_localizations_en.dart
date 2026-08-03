@@ -22,6 +22,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeToApp => 'Welcome to FemMonitor';
 
   @override
+  String get onboardingHeadline =>
+      'Understand your emotions, one voice at a time.';
+
+  @override
   String get chooseSignInMethod =>
       'Choose how to sign in and start monitoring your emotions and cycle.';
 

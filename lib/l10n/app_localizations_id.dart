@@ -22,6 +22,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get welcomeToApp => 'Selamat datang di FemMonitor';
 
   @override
+  String get onboardingHeadline =>
+      'Pahami emosimu, satu suara dalam satu waktu.';
+
+  @override
   String get chooseSignInMethod =>
       'Pilih cara masuk untuk mulai memantau emosi dan siklusmu.';
 
