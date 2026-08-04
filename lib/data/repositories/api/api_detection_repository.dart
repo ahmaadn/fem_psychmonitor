@@ -37,7 +37,9 @@ class ApiDetectionRepository extends DetectionRepository {
     DetectionSessionModel session,
   ) async {
     if (!_isEnabled) return session;
-    // TODO(server): POST {baseUrl}/sessions with session.toJson()
+    // TODO(server): PUT {baseUrl}/sessions/{id} with session.toJson().
+    // The server owns the id (client supplies it), so PUT makes the
+    // retried-sync case idempotent by construction.
     throw UnimplementedError('ApiDetectionRepository requires a live server');
   }
 

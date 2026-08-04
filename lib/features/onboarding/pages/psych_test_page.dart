@@ -93,7 +93,7 @@ class PsychTestPage extends StatelessWidget {
                                   vertical: 4.h,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: p.secondaryFill.withValues(
+                                  color: p.primaryFill.withValues(
                                     alpha: 0.16,
                                   ),
                                   borderRadius: BorderRadius.circular(
@@ -103,7 +103,7 @@ class PsychTestPage extends StatelessWidget {
                                 child: Text(
                                   question.category.get(isEnglish),
                                   style: AppTypography.caption.copyWith(
-                                    color: p.secondaryText,
+                                    color: p.primaryText,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),

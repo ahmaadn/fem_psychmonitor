@@ -30,28 +30,30 @@ class AppColors {
   static const Color secondary900 = Color(0xFF0B321B);
 
   // ── Light surfaces ──────────────────────────────────────────────────
-  static const Color canvasLight = Color(0xFFFFF7F8);
-  static const Color surfaceLight1 = Color(0xFFFDEEF0);
-  static const Color surfaceLight2 = Color(0xFFFBE3E6);
-  static const Color surfaceLight3 = Color(0xFFF6D0D5);
-  static const Color dividerLight = Color(0xFFF2C2C8);
+  // static const Color canvasLight = Color(0xFFFFF7F8);
+  static const Color canvasLight = Color(0xFFFCFCFC);
+  static const Color surfaceLight1 = Color(0xFFF6F6F6);
+  static const Color surfaceLight2 = Color(0xFFEFEFEF);
+  static const Color surfaceLight3 = Color(0xFFE3E3E3);
+  static const Color dividerLight = Color(0xFFE0E0E0);
 
   // ── Dark surfaces ───────────────────────────────────────────────────
-  static const Color canvasDark = Color(0xFF1A0C0F);
-  static const Color surfaceDark1 = Color(0xFF24141A);
-  static const Color surfaceDark2 = Color(0xFF301B22);
-  static const Color surfaceDark3 = Color(0xFF3D242C);
-  static const Color dividerDark = Color(0xFF4A2E36);
+  // static const Color canvasDark = Color(0xFF1A0C0F);
+  static const Color canvasDark = Color(0xFF141414);
+  static const Color surfaceDark1 = Color(0xFF1E1E1E);
+  static const Color surfaceDark2 = Color(0xFF272727);
+  static const Color surfaceDark3 = Color(0xFF333333);
+  static const Color dividerDark = Color(0xFF3A3A3A);
 
   // ── Text ────────────────────────────────────────────────────────────
-  static const Color textPrimaryLight = Color(0xFF2B0E12);
-  static const Color textSecondaryLight = Color(0xFF6E3A40);
-  static const Color textTertiaryLight = Color(0xFFA17178);
-  static const Color textPrimaryDark = Color(0xFFF9E9EA);
-  static const Color textSecondaryDark = Color(0xFFD6BCC0);
-  static const Color textTertiaryDark = Color(0xFFA8878C);
+  static const Color textPrimaryLight = Color(0xFF1A1A1A);
+  static const Color textSecondaryLight = Color(0xFF5C5C5C);
+  static const Color textTertiaryLight = Color(0xFF8A8A8A);
+  static const Color textPrimaryDark = Color(0xFFF5F5F5);
+  static const Color textSecondaryDark = Color(0xFFC7C7C7);
+  static const Color textTertiaryDark = Color(0xFF999999);
   static const Color onPrimary = Color(0xFFFFFFFF);
-  static const Color onSecondary = Color(0xFF1A0C0F);
+  static const Color onSecondary = Color(0xFF141414);
 
   // ── Semantics ───────────────────────────────────────────────────────
   static const Color success = Color(0xFF1FAD9A);

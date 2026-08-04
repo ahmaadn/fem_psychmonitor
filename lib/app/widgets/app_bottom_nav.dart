@@ -30,10 +30,8 @@ class AppBottomNav extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: p.surface1,
-        border: Border(
-          top: BorderSide(color: p.divider, width: 0.5),
-        ),
+        color: p.canvas,
+        border: Border(top: BorderSide(color: p.divider, width: 0.5)),
       ),
       child: SafeArea(
         top: false,

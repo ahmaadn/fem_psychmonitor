@@ -3,6 +3,33 @@ import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:flutter/material.dart';
 
+/// Row categories for the List / Settings Icon Chip Color Assignment system
+/// (DESIGN.md §4).
+///
+/// A list of icon chips must draw from **at least three** families, chosen by
+/// what the row actually does — never default every row to [primary] just
+/// because it is the brand color. The same row type gets the same family
+/// everywhere it appears, so pick from this enum rather than freehand.
+enum IconChipFamily {
+  /// Identity / profile actions — "Edit profil".
+  primary,
+
+  /// Preferences / appearance — "Tema", "Bahasa".
+  secondary,
+
+  /// Informational / neutral utility — help, licence, support links.
+  info,
+
+  /// Caution / resets — "Asesmen ulang", "Reset data".
+  warning,
+
+  /// Destructive — "Hapus akun", "Keluar".
+  error,
+
+  /// Positive / completed state.
+  success,
+}
+
 /// Theme-aware Strawberry Match tokens (DESIGN.md §2 / §7).
 /// Access: `context.palette`.
 @immutable
@@ -94,6 +121,31 @@ class AppPalette extends ThemeExtension<AppPalette> {
   Color emotionBase(EmotionLabelType e) => emotion[e]!;
   Color emotionText(EmotionLabelType e) => emotionOnSurface[e]!;
 
+  /// Base (fill-source) color for a list/settings icon chip (DESIGN.md §4).
+  Color iconChipBase(IconChipFamily family) => switch (family) {
+    IconChipFamily.primary => primaryFill,
+    IconChipFamily.secondary => secondaryFill,
+    IconChipFamily.info => info,
+    IconChipFamily.warning => warning,
+    IconChipFamily.error => error,
+    IconChipFamily.success => success,
+  };
+
+  /// Text-safe on-light/on-dark step for a chip's glyph (DESIGN.md §4).
+  /// Never render the raw base as an icon color.
+  Color iconChipIcon(IconChipFamily family) => switch (family) {
+    IconChipFamily.primary => primaryText,
+    IconChipFamily.secondary => secondaryText,
+    IconChipFamily.info => infoText,
+    IconChipFamily.warning => warningText,
+    IconChipFamily.error => errorText,
+    IconChipFamily.success => successText,
+  };
+
+  /// Chip fill: base color at 12–15% opacity, same rule as the Emotion Chip.
+  Color iconChipFill(IconChipFamily family) =>
+      iconChipBase(family).withValues(alpha: isDark ? 0.18 : 0.13);
+
   static const Map<EmotionLabelType, Color> _emotionBase = {
     EmotionLabelType.happy: AppColors.emotionHappy,
     EmotionLabelType.sad: AppColors.emotionSad,
@@ -155,8 +207,10 @@ class AppPalette extends ThemeExtension<AppPalette> {
     infoText: AppColors.infoOnLight,
     emotion: _emotionBase,
     emotionOnSurface: _emotionOnLight,
-    shadowRaised: Color(0x142B0E12),
-    shadowFloating: Color(0x242B0E12),
+    // Neutral shadow — DESIGN.md §6. Previously 0x..2B0E12 (crimson-tinted),
+    // which re-introduced a red wash under every card on the new neutral canvas.
+    shadowRaised: Color(0x14000000),
+    shadowFloating: Color(0x24000000),
   );
 
   static const AppPalette dark = AppPalette(

@@ -79,6 +79,8 @@ class _PostAssessmentChoicePageState extends State<PostAssessmentChoicePage> {
                 SizedBox(height: 12.h),
                 SecondaryButton(
                   text: isEn ? 'Create account' : 'Buat akun',
+                  textColor: p.primaryText,
+                  borderColor: p.primary,
                   onPressed: () => context.pushNamed(RouteNames.register),
                 ),
               ],

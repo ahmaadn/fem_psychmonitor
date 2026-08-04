@@ -108,6 +108,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     _ActionItem(
                       icon: Icons.edit_outlined,
                       label: l10n.editProfile,
+                      chip: IconChipFamily.primary,
                       onTap: () async {
                         final vm = context.read<ProfileViewModel>();
                         await Navigator.of(context).push(
@@ -124,6 +125,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       _ActionItem(
                         icon: Icons.lock_outline,
                         label: l10n.changePassword,
+                        chip: IconChipFamily.primary,
                         onTap: () =>
                             context.pushNamed(RouteNames.changePassword),
                       ),
@@ -469,12 +471,12 @@ class _ActionCard extends StatelessWidget {
                   width: 36.w,
                   height: 36.w,
                   decoration: BoxDecoration(
-                    color: p.surface2,
+                    color: p.iconChipFill(entry.value.chip),
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   child: Icon(
                     entry.value.icon,
-                    color: p.textSecondary,
+                    color: p.iconChipIcon(entry.value.chip),
                     size: 16.sp,
                   ),
                 ),
@@ -502,5 +504,14 @@ class _ActionItem {
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
-  const _ActionItem({required this.icon, required this.label, this.onTap});
+
+  /// Icon-chip color family, assigned by row category (DESIGN.md §4).
+  final IconChipFamily chip;
+
+  const _ActionItem({
+    required this.icon,
+    required this.label,
+    required this.chip,
+    this.onTap,
+  });
 }

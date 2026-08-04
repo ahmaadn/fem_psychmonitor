@@ -114,6 +114,8 @@ class _PermissionsPageState extends State<PermissionsPage> {
                 SecondaryButton(
                   text: l10n.skipForNow,
                   icon: Icons.skip_next,
+                  textColor: p.primaryText,
+                  borderColor: p.primary,
                   onPressed: () {
                     context.goNamed(RouteNames.liveRecording);
                   },

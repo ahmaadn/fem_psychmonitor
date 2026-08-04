@@ -254,7 +254,7 @@ class _LiveRecordingPageState extends State<LiveRecordingPage> {
                           Divider(color: p.divider, height: 1),
                           SizedBox(height: AppSpacing.lg.h),
                           ComponentTimeline(
-                            timeline: detector.timeline,
+                          timeline: detector.timeline,
                             title: l10n.overallEmotionDistribution,
                             animateFromLastPercent: true,
                             sortByFrequency: false,

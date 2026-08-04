@@ -2,9 +2,10 @@ import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
+import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
+import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
 import 'package:fem_psychmonitor/app/widgets/session_card.dart';
-import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/features/onboarding/utils/onboarding_result_persistence.dart';
 import 'package:fem_psychmonitor/features/onboarding/viewmodels/questionnaire_viewmodel.dart';
 import 'package:fem_psychmonitor/l10n/app_localizations.dart';
@@ -64,13 +65,13 @@ class _PsychResultPageState extends State<PsychResultPage> {
             builder: (context, viewModel, child) {
               final score = viewModel.psychScore ?? 0;
               final psychClass = viewModel.psychClass;
-              final emoji = score <= 25
-                  ? '😢'
+              final emojiAsset = score <= 25
+                  ? EmotionLabelType.sad.emojiAsset
                   : score <= 50
-                  ? '😔'
+                  ? EmotionLabelType.sad.emojiAsset
                   : score <= 75
-                  ? '😊'
-                  : '🥰';
+                  ? EmotionLabelType.happy.emojiAsset
+                  : EmotionLabelType.happy.emojiAsset;
 
               return SingleChildScrollView(
                 padding: EdgeInsets.symmetric(
@@ -89,7 +90,7 @@ class _PsychResultPageState extends State<PsychResultPage> {
                             ),
                           ),
                           SizedBox(height: AppSpacing.sm.h),
-                          Text(emoji, style: AppTypography.emojiXl),
+                          EmotionEmoji(asset: emojiAsset, size: 56),
                           SizedBox(height: AppSpacing.xxs.h),
                           Text(
                             '$score / 100',
@@ -151,8 +152,6 @@ class _PsychResultPageState extends State<PsychResultPage> {
                       ),
                     ),
                     SizedBox(height: AppSpacing.xxl.h + 4.h),
-                    const VoiceprintOrb(mode: VoiceprintMode.idle, size: 160),
-                    SizedBox(height: AppSpacing.xxl.h + 4.h),
                     Text(
                       l10n.tryVoiceTestQuestion,
                       textAlign: TextAlign.center,
@@ -177,6 +176,8 @@ class _PsychResultPageState extends State<PsychResultPage> {
                     SizedBox(height: AppSpacing.sm.h),
                     SecondaryButton(
                       text: l10n.tryVoiceTest,
+                      textColor: p.primaryText,
+                      borderColor: p.primary,
                       onPressed: () async {
                         final authVm = context.read<AuthViewModel>();
                         if (!authVm.isAuthenticated) {

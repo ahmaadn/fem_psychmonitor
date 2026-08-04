@@ -87,6 +87,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _SettingsTile(
                       icon: Icons.language_rounded,
                       label: isEn ? 'Language' : 'Bahasa',
+                      chip: IconChipFamily.info,
                       trailing: _ValueBadge(text: isEn ? 'EN' : 'ID'),
                       onTap: () async {
                         if (isEn) {
@@ -99,6 +100,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _SettingsTile(
                       icon: Icons.dark_mode_rounded,
                       label: isEn ? 'Theme' : 'Tema',
+                      chip: IconChipFamily.secondary,
                       trailing: _ValueBadge(
                         text: theme.mode == ThemeMode.dark
                             ? (isEn ? 'Dark' : 'Gelap')
@@ -127,18 +129,21 @@ class _SettingsPageState extends State<SettingsPage> {
                     _SettingsTile(
                       icon: Icons.person_outline_rounded,
                       label: isEn ? 'Edit profile' : 'Edit profil',
+                      chip: IconChipFamily.primary,
                       onTap: () => context.pushNamed(RouteNames.editProfile),
                     ),
                     if (!isGuest)
                       _SettingsTile(
                         icon: Icons.lock_rounded,
                         label: isEn ? 'Change password' : 'Ganti password',
+                        chip: IconChipFamily.primary,
                         onTap: () =>
                             context.pushNamed(RouteNames.changePassword),
                       ),
                     _SettingsTile(
                       icon: Icons.replay_rounded,
                       label: isEn ? 'Retake assessment' : 'Asesmen ulang',
+                      chip: IconChipFamily.warning,
                       onTap: () {
                         context
                             .read<QuestionnaireViewModel>()
@@ -149,6 +154,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _SettingsTile(
                       icon: Icons.cleaning_services_rounded,
                       label: isEn ? 'Reset data' : 'Reset data',
+                      chip: IconChipFamily.warning,
                       onTap: () async {
                         final ok = await _confirm(
                           context,
@@ -165,7 +171,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _SettingsTile(
                       icon: Icons.delete_forever_rounded,
                       label: isEn ? 'Delete account' : 'Hapus akun',
-                      danger: true,
+                      chip: IconChipFamily.error,
                       onTap: () async {
                         final ok = await _confirm(
                           context,
@@ -182,7 +188,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _SettingsTile(
                       icon: Icons.logout_rounded,
                       label: isEn ? 'Log out' : 'Keluar',
-                      danger: true,
+                      chip: IconChipFamily.error,
                       onTap: () async {
                         await auth.logout();
                         if (!context.mounted) return;
@@ -207,6 +213,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               label: isEn
                                   ? 'Keep temp audio after analysis'
                                   : 'Simpan audio sementara setelah analisis',
+                              chip: IconChipFamily.warning,
                               value: privacy.storeTempAudio,
                               onChanged: privacy.setStoreTempAudio,
                             ),
@@ -220,6 +227,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               label: isEn
                                   ? 'Anonymous analytics (stub)'
                                   : 'Analitik anonim (stub)',
+                              chip: IconChipFamily.secondary,
                               value: privacy.analytics,
                               onChanged: privacy.setAnalytics,
                             ),
@@ -230,16 +238,19 @@ class _SettingsPageState extends State<SettingsPage> {
                     _SettingsTile(
                       icon: Icons.menu_book_rounded,
                       label: isEn ? 'How to use' : 'Cara pakai',
+                      chip: IconChipFamily.info,
                       onTap: () => AppGuideSheet.show(context),
                     ),
                     _SettingsTile(
                       icon: Icons.gavel_rounded,
                       label: isEn ? 'Licence' : 'Lisensi',
+                      chip: IconChipFamily.info,
                       onTap: () => TermsSheet.show(context),
                     ),
                     _SettingsTile(
                       icon: Icons.support_agent_rounded,
                       label: isEn ? 'Need help' : 'Butuh bantuan',
+                      chip: IconChipFamily.info,
                       onTap: () async {
                         final uri = Uri.parse('tel:119');
                         if (await canLaunchUrl(uri)) {
@@ -548,35 +559,34 @@ class _SettingsTile extends StatelessWidget {
   const _SettingsTile({
     required this.icon,
     required this.label,
+    required this.chip,
     this.trailing,
     this.onTap,
-    this.danger = false,
   });
 
   final IconData icon;
   final String label;
+
+  /// Icon-chip color family, assigned by row category (DESIGN.md §4).
+  final IconChipFamily chip;
   final Widget? trailing;
   final VoidCallback? onTap;
-  final bool danger;
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    final iconColor = danger ? p.errorText : p.textSecondary;
-    final labelColor = danger ? p.errorText : p.textPrimary;
-    final iconBg = danger
-        ? p.error.withValues(alpha: 0.1)
-        : p.surface2;
+    final isDestructive = chip == IconChipFamily.error;
+    final labelColor = isDestructive ? p.errorText : p.textPrimary;
 
     return ListTile(
       leading: Container(
         width: 34.w,
         height: 34.w,
         decoration: BoxDecoration(
-          color: iconBg,
+          color: p.iconChipFill(chip),
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
-        child: Icon(icon, color: iconColor, size: 16.sp),
+        child: Icon(icon, color: p.iconChipIcon(chip), size: 16.sp),
       ),
       title: Text(label, style: AppTypography.body.copyWith(color: labelColor)),
       trailing:
@@ -596,12 +606,16 @@ class _PrivacySwitch extends StatelessWidget {
     required this.label,
     required this.value,
     required this.onChanged,
+    required this.chip,
   });
 
   final IconData icon;
   final String label;
   final bool value;
   final ValueChanged<bool> onChanged;
+
+  /// Privacy toggles are preference rows (DESIGN.md §4).
+  final IconChipFamily chip;
 
   @override
   Widget build(BuildContext context) {
@@ -611,10 +625,10 @@ class _PrivacySwitch extends StatelessWidget {
         width: 34.w,
         height: 34.w,
         decoration: BoxDecoration(
-          color: p.surface2,
+          color: p.iconChipFill(chip),
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
-        child: Icon(icon, color: p.textSecondary, size: 16.sp),
+        child: Icon(icon, color: p.iconChipIcon(chip), size: 16.sp),
       ),
       title: Text(
         label,

@@ -148,6 +148,8 @@ class OceanTestPage extends StatelessWidget {
                       Expanded(
                         child: SecondaryButton(
                           text: isEn ? 'Back' : 'Kembali',
+                          textColor: p.primaryText,
+                          borderColor: p.primary,
                           onPressed: vm.previousOceanQuestion,
                         ),
                       ),

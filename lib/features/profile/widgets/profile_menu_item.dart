@@ -7,28 +7,28 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class ProfileMenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
-  final Color iconColor;
-  final Color iconBackgroundColor;
+
+  /// Icon-chip color family, assigned by row category (DESIGN.md §4).
+  /// A menu group must draw from at least three families — never all `primary`.
+  final IconChipFamily chip;
   final VoidCallback? onTap;
   final Widget? trailing;
-  final bool isDestructive;
   final bool showBorder;
 
   const ProfileMenuItem({
     super.key,
     required this.icon,
     required this.title,
-    required this.iconColor,
-    required this.iconBackgroundColor,
+    required this.chip,
     this.onTap,
     this.trailing,
-    this.isDestructive = false,
     this.showBorder = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
+    final isDestructive = chip == IconChipFamily.error;
     return Column(
       children: [
         Material(
@@ -45,10 +45,14 @@ class ProfileMenuItem extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.all(AppSpacing.xs.w),
                     decoration: p.circle(
-                      color: iconBackgroundColor,
+                      color: p.iconChipFill(chip),
                       borderColor: Colors.transparent,
                     ),
-                    child: Icon(icon, color: iconColor, size: 20.sp),
+                    child: Icon(
+                      icon,
+                      color: p.iconChipIcon(chip),
+                      size: 20.sp,
+                    ),
                   ),
                   SizedBox(width: AppSpacing.md.w),
                   Expanded(
@@ -56,7 +60,7 @@ class ProfileMenuItem extends StatelessWidget {
                       title,
                       style: AppTypography.body.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: isDestructive ? p.primaryPressed : p.textPrimary,
+                        color: isDestructive ? p.errorText : p.textPrimary,
                       ),
                     ),
                   ),

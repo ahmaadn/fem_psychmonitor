@@ -279,6 +279,8 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                 SecondaryButton(
                   text: l10n.retakeRecording,
                   subText: l10n.retakeRecordingSub,
+                  textColor: p.primaryText,
+                  borderColor: p.primary,
                   icon: Icons.replay_rounded,
                   onPressed: () => context.goNamed(RouteNames.liveRecording),
                 ),
@@ -428,8 +430,9 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                       SizedBox(height: AppSpacing.xxs.h),
                       Text(
                         'Pilih emosi yang menurutmu paling akurat mendeskripsikan rekaman ini.',
-                        style: AppTypography.caption
-                            .copyWith(color: p.textSecondary),
+                        style: AppTypography.caption.copyWith(
+                          color: p.textSecondary,
+                        ),
                       ),
                       SizedBox(height: AppSpacing.sm.h),
                       Wrap(
@@ -752,7 +755,7 @@ class _ScoreCalculationCard extends StatelessWidget {
                 child: Icon(
                   Icons.calculate_rounded,
                   color: p.primaryText,
-                  size: AppSpacing.sm.sp,
+                  size: AppSpacing.md.sp,
                 ),
               ),
               SizedBox(width: AppSpacing.xs.w),
@@ -933,16 +936,9 @@ class _NoteCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.edit_note_rounded,
-                color: p.secondaryText,
-                size: AppSpacing.lg.sp,
-              ),
+              Icon(Icons.edit_note_rounded, size: AppSpacing.lg.sp),
               SizedBox(width: AppSpacing.xs.w),
-              Text(
-                l10n.sessionNoteTitle,
-                style: AppTypography.bodyStrong,
-              ),
+              Text(l10n.sessionNoteTitle, style: AppTypography.bodyStrong),
             ],
           ),
           SizedBox(height: AppSpacing.xs.h),
@@ -1042,8 +1038,10 @@ class _HotlineCard extends StatelessWidget {
                 SizedBox(height: AppSpacing.xxs.h),
                 Text(
                   l10n.hotlineDesc,
-                  style: AppTypography.caption
-                      .copyWith(color: p.textPrimary, height: 1.4),
+                  style: AppTypography.caption.copyWith(
+                    color: p.textPrimary,
+                    height: 1.4,
+                  ),
                 ),
                 SizedBox(height: AppSpacing.xs.h),
                 Wrap(
@@ -1102,10 +1100,7 @@ class _WeeklyChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.weeklyEmotionDistribution,
-            style: AppTypography.bodyStrong,
-          ),
+          Text(l10n.weeklyEmotionDistribution, style: AppTypography.bodyStrong),
           SizedBox(height: AppSpacing.md.h),
           if (entries.isEmpty)
             Text(
@@ -1183,14 +1178,11 @@ class _SaranCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.tips_and_updates_outlined,
-                color: p.secondaryText,
+                color: p.primaryText,
                 size: AppSpacing.lg.sp,
               ),
               SizedBox(width: AppSpacing.xs.w),
-              Text(
-                l10n.tipsForYou,
-                style: AppTypography.bodyStrong,
-              ),
+              Text(l10n.tipsForYou, style: AppTypography.bodyStrong),
             ],
           ),
           SizedBox(height: AppSpacing.xs.h),
@@ -1240,15 +1232,14 @@ class _TeaserCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.wantFullResults,
-            style: AppTypography.bodyStrong,
-          ),
+          Text(l10n.wantFullResults, style: AppTypography.bodyStrong),
           SizedBox(height: AppSpacing.xxs.h),
           Text(
             l10n.loginRegisterForFull,
-            style: AppTypography.caption
-                .copyWith(height: 1.4, color: p.textSecondary),
+            style: AppTypography.caption.copyWith(
+              height: 1.4,
+              color: p.textSecondary,
+            ),
           ),
           SizedBox(height: AppSpacing.sm.h),
           SecondaryButton(
