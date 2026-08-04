@@ -13,6 +13,7 @@ import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/home_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:fem_psychmonitor/features/home/widgets/today_mood_sheet.dart';
+import 'package:fem_psychmonitor/features/onboarding/models/ocean_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -338,8 +339,9 @@ class _HeroHeader extends StatelessWidget {
                                 Text(
                                   isEn ? 'MENTAL HEALTH' : 'KESEHATAN MENTAL',
                                   style: AppTypography.label.copyWith(
-                                    color: p.onPrimaryFill
-                                        .withValues(alpha: 0.78),
+                                    color: p.onPrimaryFill.withValues(
+                                      alpha: 0.78,
+                                    ),
                                     letterSpacing: 0.8,
                                   ),
                                 ),
@@ -361,8 +363,9 @@ class _HeroHeader extends StatelessWidget {
                                     Text(
                                       '/ 100',
                                       style: AppTypography.caption.copyWith(
-                                        color: p.onPrimaryFill
-                                            .withValues(alpha: 0.68),
+                                        color: p.onPrimaryFill.withValues(
+                                          alpha: 0.68,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -374,8 +377,9 @@ class _HeroHeader extends StatelessWidget {
                                     vertical: 4.h,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: p.onPrimaryFill
-                                        .withValues(alpha: 0.20),
+                                    color: p.onPrimaryFill.withValues(
+                                      alpha: 0.20,
+                                    ),
                                     borderRadius: AppRadius.chip,
                                   ),
                                   child: Row(
@@ -413,7 +417,8 @@ class _HeroHeader extends StatelessWidget {
                             ),
                             alignment: Alignment.center,
                             child: EmotionEmoji(
-                              asset: scoreEmoji?.emojiAsset ??
+                              asset:
+                                  scoreEmoji?.emojiAsset ??
                                   'assets/emoji/netral.png',
                               size: 54,
                             ),
@@ -426,8 +431,9 @@ class _HeroHeader extends StatelessWidget {
                         child: LinearProgressIndicator(
                           value: score / 100,
                           minHeight: 6.h,
-                          backgroundColor: p.onPrimaryFill
-                              .withValues(alpha: 0.24),
+                          backgroundColor: p.onPrimaryFill.withValues(
+                            alpha: 0.24,
+                          ),
                           valueColor: AlwaysStoppedAnimation<Color>(
                             p.onPrimaryFill,
                           ),
@@ -956,13 +962,24 @@ class _VoiceCheckinCTA extends StatelessWidget {
                 Container(
                   width: 44.w,
                   height: 44.w,
+                  // decoration: BoxDecoration(
+                  //   color: p.onPrimary.withValues(alpha: 0.2),
+                  //   shape: BoxShape.circle,
+                  // ),
                   decoration: BoxDecoration(
-                    color: p.onPrimary.withValues(alpha: 0.2),
+                    gradient: p.strawberryGradientBold,
                     shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: p.primaryFill.withValues(alpha: 0.34),
+                        offset: const Offset(0, 2),
+                        blurRadius: 8,
+                      ),
+                    ],
                   ),
                   child: Icon(
                     Icons.graphic_eq_rounded,
-                    color: p.onPrimary,
+                    color: p.onPrimaryFill,
                     size: 22.sp,
                   ),
                 ),
@@ -974,13 +991,13 @@ class _VoiceCheckinCTA extends StatelessWidget {
                       Text(
                         isEn ? 'Start voice check-in' : 'Mulai cek-in suara',
                         style: AppTypography.bodyStrong.copyWith(
-                          color: p.onPrimary,
+                          color: p.onPrimaryFill,
                         ),
                       ),
                       Text(
                         isEn ? 'Speak your feelings' : 'Ungkapkan perasaanmu',
                         style: AppTypography.caption.copyWith(
-                          color: p.onPrimary.withValues(alpha: 0.75),
+                          color: p.onPrimaryFill.withValues(alpha: 0.75),
                         ),
                       ),
                     ],
@@ -1057,13 +1074,14 @@ class _ForYouHeader extends StatelessWidget {
           width: 28.w,
           height: 28.w,
           decoration: BoxDecoration(
-            color: p.secondarySoft,
+            color: p.iconChipFill(IconChipFamily.secondary),
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
+          alignment: Alignment.center,
           child: Icon(
             Icons.auto_awesome_rounded,
             color: p.secondaryText,
-            size: 13.sp,
+            size: 15.sp,
           ),
         ),
         SizedBox(width: AppSpacing.xs.w),
@@ -1071,8 +1089,6 @@ class _ForYouHeader extends StatelessWidget {
           isEn ? 'For you' : 'Untukmu',
           style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
         ),
-        SizedBox(width: AppSpacing.xxs.w),
-        Text('✨', style: AppTypography.emojiSm),
       ],
     );
   }
@@ -1089,60 +1105,76 @@ class _RecommendationSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
 
-    // Loading state
+    // Loading state — skeletons matching the real card shape, so the section
+    // does not visibly jump in height when the tips land.
     if (saran == null) {
-      return Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: AppSpacing.md.w,
-          vertical: AppSpacing.lg.h,
-        ),
-        decoration: BoxDecoration(
-          color: p.surface1,
-          borderRadius: AppRadius.card,
-          border: Border.all(color: p.divider),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 16.w,
-              height: 16.w,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: p.primaryText,
+      return Column(
+        children: List.generate(3, (i) {
+          return Padding(
+            padding: EdgeInsets.only(bottom: AppSpacing.sm.h),
+            child: Container(
+              padding: EdgeInsets.all(AppSpacing.md.w),
+              decoration: p.card(elevated: true),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40.w,
+                    height: 40.w,
+                    decoration: BoxDecoration(
+                      color: p.surface3,
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                  ),
+                  SizedBox(width: AppSpacing.sm.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 9.h,
+                          width: 72.w,
+                          decoration: BoxDecoration(
+                            color: p.surface3,
+                            borderRadius: AppRadius.chip,
+                          ),
+                        ),
+                        SizedBox(height: AppSpacing.xs.h),
+                        Container(
+                          height: 11.h,
+                          decoration: BoxDecoration(
+                            color: p.surface3,
+                            borderRadius: AppRadius.chip,
+                          ),
+                        ),
+                        SizedBox(height: AppSpacing.xxs.h),
+                        FractionallySizedBox(
+                          widthFactor: i.isEven ? 0.62 : 0.45,
+                          child: Container(
+                            height: 11.h,
+                            decoration: BoxDecoration(
+                              color: p.surface3,
+                              borderRadius: AppRadius.chip,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(width: AppSpacing.sm.w),
-            Text(
-              isEn ? 'Loading suggestions…' : 'Memuat saran…',
-              style: AppTypography.caption.copyWith(color: p.textSecondary),
-            ),
-          ],
-        ),
+          );
+        }),
       );
     }
 
     if (saran!.safetyTriggered) {
       return Container(
         padding: EdgeInsets.all(AppSpacing.md.w),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [p.warning.withValues(alpha: 0.12), p.surface1],
-          ),
-          borderRadius: AppRadius.card,
-          border: Border.all(
-            color: p.warning.withValues(alpha: 0.4),
-            width: AppBorder.thin,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: p.shadowRaised,
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
+        decoration: p.card(
+          color: p.warning.withValues(alpha: p.isDark ? 0.16 : 0.10),
+          borderColor: p.warning.withValues(alpha: 0.40),
+          elevated: true,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1150,13 +1182,19 @@ class _RecommendationSection extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 36.w,
-                  height: 36.w,
+                  width: 40.w,
+                  height: 40.w,
                   decoration: BoxDecoration(
-                    color: p.warning.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                    color: p.iconChipFill(IconChipFamily.warning),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
-                  child: Icon(Icons.favorite_rounded, color: p.warning),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.favorite_rounded,
+                    // text-safe step, never the raw base as a glyph color
+                    color: p.warningText,
+                    size: 20.sp,
+                  ),
                 ),
                 SizedBox(width: AppSpacing.sm.w),
                 Expanded(
@@ -1178,19 +1216,24 @@ class _RecommendationSection extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '• ',
-                      style: AppTypography.caption.copyWith(
-                        color: p.warning,
-                        fontWeight: FontWeight.w700,
+                    Padding(
+                      padding: EdgeInsets.only(top: 6.h),
+                      child: Container(
+                        width: 5.w,
+                        height: 5.w,
+                        decoration: BoxDecoration(
+                          color: p.warningText,
+                          shape: BoxShape.circle,
+                        ),
                       ),
                     ),
+                    SizedBox(width: AppSpacing.xs.w),
                     Expanded(
                       child: Text(
                         i.text,
-                        style: AppTypography.caption.copyWith(
+                        style: AppTypography.body.copyWith(
                           color: p.textPrimary,
-                          height: 1.5,
+                          height: 1.45,
                         ),
                       ),
                     ),
@@ -1203,80 +1246,100 @@ class _RecommendationSection extends StatelessWidget {
       );
     }
 
-    // Normal recommendations — [5] tampilan diperbagus
-    // Pakai horizontal scroll card untuk kesan "feed personal"
-    final tipEmojis = ['🌱', '💧', '🌸', '☀️', '💝'];
-    // warna accent bergantian: strawberry dan matcha
-    final accentPairs = [
-      (bg: p.secondarySoft, icon: p.secondaryText),
-      (bg: p.primarySoft, icon: p.primaryText),
-      (bg: p.secondaryWash, icon: p.secondaryText),
-      (bg: p.surface2, icon: p.textPrimary),
-      (
-        bg: Color.lerp(p.primarySoft, p.secondarySoft, 0.5)!,
-        icon: p.secondaryText,
-      ),
-    ];
-
+    // Normal recommendations — one card per tip.
+    // Chip family/icon are derived from the tip's OCEAN trait (SaranItem.trait),
+    // not the list index, so the same trait always reads the same way and the
+    // list draws from several color families (DESIGN.md §4 icon-chip system).
     return Column(
-      children: saran!.items.asMap().entries.map((entry) {
-        final i = entry.value;
-        final idx = entry.key % tipEmojis.length;
-        final emoji = tipEmojis[idx];
-        final accent = accentPairs[idx];
+      children: saran!.items.map((item) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: AppSpacing.sm.h),
+          child: _RecommendationCard(item: item, isEn: isEn),
+        );
+      }).toList(),
+    );
+  }
+}
 
-        return Container(
-          margin: EdgeInsets.only(bottom: AppSpacing.sm.h),
-          decoration: BoxDecoration(
-            color: p.surface1,
-            borderRadius: AppRadius.card,
-            border: Border.all(color: p.divider, width: AppBorder.thin),
-            boxShadow: [
-              BoxShadow(
-                color: p.shadowRaised,
-                blurRadius: 10,
-                offset: const Offset(0, 3),
-              ),
-            ],
+// ── Recommendation Card ───────────────────────────────────────────────────────
+
+class _RecommendationCard extends StatelessWidget {
+  const _RecommendationCard({required this.item, required this.isEn});
+
+  final SaranItem item;
+  final bool isEn;
+
+  /// Trait → icon-chip family. Deliberately spans several families so a list of
+  /// tips never renders as one repeated brand color (DESIGN.md §4).
+  IconChipFamily get _family => switch (item.trait) {
+    OceanTrait.o => IconChipFamily.info, // curiosity / exploration
+    OceanTrait.c => IconChipFamily.success, // routine / follow-through
+    OceanTrait.e => IconChipFamily.primary, // social energy
+    OceanTrait.a => IconChipFamily.secondary, // connection / warmth
+    OceanTrait.n => IconChipFamily.warning, // emotional regulation
+    null => IconChipFamily.secondary, // neutral default tips
+  };
+
+  IconData get _icon => switch (item.trait) {
+    OceanTrait.o => Icons.explore_rounded,
+    OceanTrait.c => Icons.task_alt_rounded,
+    OceanTrait.e => Icons.groups_rounded,
+    OceanTrait.a => Icons.volunteer_activism_rounded,
+    OceanTrait.n => Icons.self_improvement_rounded,
+    null => Icons.spa_rounded,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final family = _family;
+    final trait = item.trait;
+
+    return Container(
+      padding: EdgeInsets.all(AppSpacing.md.w),
+      decoration: p.card(elevated: true),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Icon chip — base at 12–15% fill, glyph in the text-safe step
+          Container(
+            width: 40.w,
+            height: 40.w,
+            decoration: BoxDecoration(
+              color: p.iconChipFill(family),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+            ),
+            alignment: Alignment.center,
+            child: Icon(_icon, color: p.iconChipIcon(family), size: 20.sp),
           ),
-          child: IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+          SizedBox(width: AppSpacing.sm.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // [5] accent strip di sisi kiri + emoji
-                Container(
-                  width: 52.w,
-                  decoration: BoxDecoration(
-                    color: accent.bg,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(AppRadius.lg),
-                      bottomLeft: Radius.circular(AppRadius.lg),
+                if (trait != null) ...[
+                  Text(
+                    trait.label(isEn).toUpperCase(),
+                    style: AppTypography.label.copyWith(
+                      color: p.iconChipIcon(family),
+                      letterSpacing: 0.6,
                     ),
                   ),
-                  alignment: Alignment.center,
-                  child: Text(emoji, style: AppTypography.emojiLg),
-                ),
-                // Teks rekomendasi
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md.w,
-                      vertical: AppSpacing.sm.h + 2,
-                    ),
-                    child: Text(
-                      i.text,
-                      style: AppTypography.caption.copyWith(
-                        color: p.textPrimary,
-                        height: 1.55,
-                      ),
-                    ),
+                  SizedBox(height: AppSpacing.xxs.h),
+                ],
+                Text(
+                  item.text,
+                  style: AppTypography.body.copyWith(
+                    color: p.textPrimary,
+                    height: 1.45,
                   ),
                 ),
               ],
             ),
           ),
-        );
-      }).toList(),
+        ],
+      ),
     );
   }
 }
