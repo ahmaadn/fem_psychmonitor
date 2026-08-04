@@ -254,6 +254,14 @@ class AppPalette extends ThemeExtension<AppPalette> {
   /// Fill color for brand primary buttons (always seed -500 on light; seed on dark fills).
   Color get primaryFill => AppColors.primary500;
 
+  /// Text/icon color on a [primaryFill] surface.
+  ///
+  /// [primaryFill] is theme-invariant (always `primary-500` crimson), so its
+  /// on-color must be theme-invariant too. Do **not** use [onPrimary] here:
+  /// on dark theme that token resolves to `canvas-dark` (#141414), which is
+  /// paired with the light `primary-300` fill and fails contrast on crimson.
+  Color get onPrimaryFill => AppColors.onPrimary;
+
   Color get secondaryFill => AppColors.secondary500;
 
   /// Solid canvas only — do not blend primaryWash into page backgrounds.
@@ -329,6 +337,34 @@ class AppPalette extends ThemeExtension<AppPalette> {
           color: primaryFill.withValues(alpha: isDark ? 0.18 : 0.12),
           offset: const Offset(0, 8),
           blurRadius: 22,
+        ),
+      ],
+    );
+  }
+
+  /// Saturated brand gradient — `primary-500` seed into `primary-700`.
+  ///
+  /// Unlike [strawberryGradient] (a pale `primary-100`-based wash), this is a
+  /// true brand fill, so anything drawn on it must use [onPrimaryFill].
+  LinearGradient get strawberryGradientBold => LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color.lerp(primaryFill, AppColors.primary400, isDark ? 0.0 : 0.14)!,
+      Color.lerp(primaryFill, AppColors.primary700, isDark ? 0.85 : 0.65)!,
+    ],
+  );
+
+  /// High-emphasis brand panel — hero surfaces that must read as brand-red.
+  BoxDecoration panelStrawberryBold({double radius = AppRadius.lg}) {
+    return BoxDecoration(
+      gradient: strawberryGradientBold,
+      borderRadius: BorderRadius.circular(radius),
+      boxShadow: [
+        BoxShadow(
+          color: primaryFill.withValues(alpha: isDark ? 0.30 : 0.34),
+          offset: const Offset(0, 10),
+          blurRadius: 26,
         ),
       ],
     );

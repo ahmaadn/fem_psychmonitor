@@ -114,13 +114,6 @@ class _HomePageState extends State<HomePage> {
     };
   }
 
-  Color _scoreColor(int score, AppPalette p) {
-    if (score <= 25) return p.errorText;
-    if (score <= 50) return p.warningText;
-    if (score <= 75) return p.infoText;
-    return p.successText;
-  }
-
   EmotionLabelType? _scoreEmoji(int score) {
     if (score <= 50) return EmotionLabelType.sad;
     return EmotionLabelType.happy;
@@ -154,7 +147,6 @@ class _HomePageState extends State<HomePage> {
             .where((d) => d.isCheckedIn && _isToday(d.date))
             .length ??
         0;
-    final scoreColor = _scoreColor(score, p);
     final showSupportBanner = _needsSupport(score);
 
     return Scaffold(
@@ -180,7 +172,6 @@ class _HomePageState extends State<HomePage> {
                   score: score,
                   scoreLabel: _scoreLabel(score, isEn),
                   scoreEmoji: _scoreEmoji(score),
-                  scoreColor: scoreColor,
                   mood: mood,
                   isEn: isEn,
                   onMoodTap: _pickMood,
@@ -252,7 +243,6 @@ class _HeroHeader extends StatelessWidget {
     required this.score,
     required this.scoreLabel,
     required this.scoreEmoji,
-    required this.scoreColor,
     required this.mood,
     required this.isEn,
     required this.onMoodTap,
@@ -264,7 +254,6 @@ class _HeroHeader extends StatelessWidget {
   final int score;
   final String scoreLabel;
   final EmotionLabelType? scoreEmoji;
-  final Color scoreColor;
   final EmotionLabelType? mood;
   final bool isEn;
   final VoidCallback onMoodTap;
@@ -273,238 +262,299 @@ class _HeroHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
 
-    // [2] bg hero sekarang solid canvas + surface, bukan gradient beraneka warna
-    // score ring container juga pakai warna yang serasi
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.only(
-            top: MediaQuery.paddingOf(context).top + AppSpacing.md.h,
-            left: AppSpacing.pageX.w,
-            right: AppSpacing.pageX.w,
-            bottom: AppSpacing.xl.h,
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.only(
+        top: MediaQuery.paddingOf(context).top + AppSpacing.md.h,
+        left: AppSpacing.pageX.w,
+        right: AppSpacing.pageX.w,
+        bottom: AppSpacing.lg.h,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Greeting — on canvas, not wrapped in a card ─────────────
+          _GreetingChip(icon: greetingIcon, label: greetingTime),
+          SizedBox(height: AppSpacing.md.h),
+
+          // Name + subtitle — on canvas, neutral text tokens
+          Text(
+            name.isEmpty ? (isEn ? 'Welcome back' : 'Selamat datang') : name,
+            style: AppTypography.display.copyWith(
+              color: p.textPrimary,
+              height: 1.1,
+            ),
           ),
-          // Transparan — gradient sudah dihandle Scaffold satu level atas
-          color: Colors.transparent,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // [1] Greeting dengan icon waktu
-              Row(
-                children: [
-                  Container(
-                    width: 32.w,
-                    height: 32.w,
+          SizedBox(height: AppSpacing.xxs.h),
+          Text(
+            isEn ? 'How is your heart today?' : 'Bagaimana hatimu hari ini?',
+            style: AppTypography.body.copyWith(color: p.textSecondary),
+          ),
+          SizedBox(height: AppSpacing.lg.h),
+
+          // ── Score block — the only part inside the brand card ───────
+          Container(
+            width: double.infinity,
+            decoration: p.panelStrawberryBold(radius: AppRadius.xxl),
+            child: Stack(
+              children: [
+                // Decorative blobs — onPrimaryFill at low alpha
+                Positioned(
+                  right: -32.w,
+                  top: -30.w,
+                  child: Container(
+                    width: 132.w,
+                    height: 132.w,
                     decoration: BoxDecoration(
-                      color: p.surface2,
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                    ),
-                    child: Icon(
-                      greetingIcon,
-                      color: p.textSecondary,
-                      size: 16.sp,
+                      shape: BoxShape.circle,
+                      color: p.onPrimaryFill.withValues(alpha: 0.10),
                     ),
                   ),
-                  SizedBox(width: AppSpacing.xs.w),
-                  Text(
-                    greetingTime,
-                    style: AppTypography.label.copyWith(
-                      color: p.textSecondary,
-                      letterSpacing: 0.2,
+                ),
+                Positioned(
+                  left: -28.w,
+                  bottom: -36.w,
+                  child: Container(
+                    width: 104.w,
+                    height: 104.w,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: p.onPrimaryFill.withValues(alpha: 0.07),
                     ),
                   ),
-                ],
-              ),
-              SizedBox(height: AppSpacing.xs.h),
-
-              // Name
-              Text(
-                name.isEmpty
-                    ? (isEn ? 'Welcome back' : 'Selamat datang')
-                    : name,
-                style: AppTypography.display.copyWith(
-                  color: p.textPrimary,
-                  height: 1.1,
                 ),
-              ),
-              SizedBox(height: AppSpacing.xxs.h),
-              Text(
-                isEn
-                    ? 'How is your heart today?'
-                    : 'Bagaimana hatimu hari ini?',
-                style: AppTypography.body.copyWith(color: p.textSecondary),
-              ),
-              SizedBox(height: AppSpacing.lg.h),
-
-              // tidak ada warna kontras yang membentur gradient hero
-              Container(
-                padding: EdgeInsets.all(AppSpacing.md.w),
-                decoration: BoxDecoration(
-                  color: p.surface1,
-                  borderRadius: AppRadius.card,
-                  border: Border.all(color: p.divider, width: AppBorder.thin),
-                  boxShadow: [
-                    BoxShadow(
-                      color: p.shadowRaised,
-                      blurRadius: 16,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Score emoji (tanpa ring)
-                    _ScoreEmoji(emotion: scoreEmoji),
-                    SizedBox(width: AppSpacing.md.w),
-
-                    // Score details
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                Padding(
+                  padding: EdgeInsets.all(AppSpacing.lg.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            isEn ? 'Mental health' : 'Kesehatan mental',
-                            style: AppTypography.caption.copyWith(
-                              color: p.textSecondary,
-                              letterSpacing: 0.3,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  isEn ? 'MENTAL HEALTH' : 'KESEHATAN MENTAL',
+                                  style: AppTypography.label.copyWith(
+                                    color: p.onPrimaryFill
+                                        .withValues(alpha: 0.78),
+                                    letterSpacing: 0.8,
+                                  ),
+                                ),
+                                SizedBox(height: AppSpacing.xs.h),
+                                Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.baseline,
+                                  textBaseline: TextBaseline.alphabetic,
+                                  children: [
+                                    Text(
+                                      '$score',
+                                      style: AppTypography.metric.copyWith(
+                                        color: p.onPrimaryFill,
+                                        fontSize: 44.sp,
+                                        height: 1.0,
+                                      ),
+                                    ),
+                                    SizedBox(width: 4.w),
+                                    Text(
+                                      '/ 100',
+                                      style: AppTypography.caption.copyWith(
+                                        color: p.onPrimaryFill
+                                            .withValues(alpha: 0.68),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: AppSpacing.sm.h),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.sm.w,
+                                    vertical: 4.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: p.onPrimaryFill
+                                        .withValues(alpha: 0.20),
+                                    borderRadius: AppRadius.chip,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width: 6.w,
+                                        height: 6.w,
+                                        decoration: BoxDecoration(
+                                          color: p.onPrimaryFill,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                      SizedBox(width: 6.w),
+                                      Text(
+                                        scoreLabel,
+                                        style: AppTypography.caption.copyWith(
+                                          color: p.onPrimaryFill,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 2.h),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.baseline,
-                            textBaseline: TextBaseline.alphabetic,
-                            children: [
-                              Text(
-                                '$score',
-                                style: AppTypography.metric.copyWith(
-                                  color: p.textPrimary,
-                                  height: 1.0,
-                                ),
-                              ),
-                              SizedBox(width: 4.w),
-                              Text(
-                                '/ 100',
-                                style: AppTypography.caption.copyWith(
-                                  color: p.textTertiary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: AppSpacing.xxs.h),
+                          SizedBox(width: AppSpacing.sm.w),
                           Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: AppSpacing.sm.w,
-                              vertical: 3.h,
-                            ),
+                            width: 76.w,
+                            height: 76.w,
                             decoration: BoxDecoration(
-                              color: scoreColor.withValues(alpha: 0.15),
-                              borderRadius: AppRadius.chip,
+                              color: p.onPrimaryFill.withValues(alpha: 0.18),
+                              shape: BoxShape.circle,
                             ),
-                            child: Text(
-                              scoreLabel,
-                              style: AppTypography.caption.copyWith(
-                                color: scoreColor,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: AppSpacing.sm.h),
-                          ClipRRect(
-                            borderRadius: AppRadius.chip,
-                            child: LinearProgressIndicator(
-                              value: score / 100,
-                              minHeight: 5.h,
-                              backgroundColor: p.divider,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                scoreColor,
-                              ),
+                            alignment: Alignment.center,
+                            child: EmotionEmoji(
+                              asset: scoreEmoji?.emojiAsset ??
+                                  'assets/emoji/netral.png',
+                              size: 54,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: AppSpacing.md.h),
-
-              // Mood chip
-              GestureDetector(
-                onTap: onMoodTap,
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md.w,
-                    vertical: AppSpacing.xs.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: mood != null
-                        ? p.emotionBase(mood!).withValues(alpha: 0.12)
-                        : p.surface1,
-                    borderRadius: AppRadius.chip,
-                    border: Border.all(
-                      color: mood != null
-                          ? p.emotionBase(mood!).withValues(alpha: 0.35)
-                          : p.divider,
-                      width: AppBorder.thin,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      EmotionEmoji(
-                        asset: mood?.emojiAsset ?? 'assets/emoji/netral.png',
-                        size: 28,
-                      ),
-                      SizedBox(width: AppSpacing.xs.w),
-                      Text(
-                        mood != null
-                            ? (isEn
-                                  ? 'Feeling ${mood!.displayName.toLowerCase()}'
-                                  : 'Merasa ${mood!.displayName.toLowerCase()}')
-                            : (isEn ? 'Set your mood' : 'Atur moodmu'),
-                        style: AppTypography.label.copyWith(
-                          color: mood != null
-                              ? p.emotionText(mood!)
-                              : p.textPrimary,
+                      SizedBox(height: AppSpacing.md.h),
+                      ClipRRect(
+                        borderRadius: AppRadius.chip,
+                        child: LinearProgressIndicator(
+                          value: score / 100,
+                          minHeight: 6.h,
+                          backgroundColor: p.onPrimaryFill
+                              .withValues(alpha: 0.24),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            p.onPrimaryFill,
+                          ),
                         ),
-                      ),
-                      SizedBox(width: AppSpacing.xs.w),
-                      Icon(
-                        Icons.chevron_right_rounded,
-                        size: 14.sp,
-                        color: p.textTertiary,
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+
+          SizedBox(height: AppSpacing.md.h),
+
+          // ── Mood chip ───────────────────────────────────────────────
+          GestureDetector(
+            onTap: onMoodTap,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.md.w,
+                vertical: AppSpacing.xs.h,
+              ),
+              decoration: BoxDecoration(
+                color: mood != null
+                    ? p.emotionBase(mood!).withValues(alpha: 0.12)
+                    : p.surface1,
+                borderRadius: AppRadius.chip,
+                border: Border.all(
+                  color: mood != null
+                      ? p.emotionBase(mood!).withValues(alpha: 0.35)
+                      : p.divider,
+                  width: AppBorder.thin,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  EmotionEmoji(
+                    asset: mood?.emojiAsset ?? 'assets/emoji/netral.png',
+                    size: 28,
+                  ),
+                  SizedBox(width: AppSpacing.xs.w),
+                  Text(
+                    mood != null
+                        ? (isEn
+                              ? 'Feeling ${mood!.displayName.toLowerCase()}'
+                              : 'Merasa ${mood!.displayName.toLowerCase()}')
+                        : (isEn ? 'Set your mood' : 'Atur moodmu'),
+                    style: AppTypography.label.copyWith(
+                      color: mood != null
+                          ? p.emotionText(mood!)
+                          : p.textPrimary,
+                    ),
+                  ),
+                  SizedBox(width: AppSpacing.xs.w),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 14.sp,
+                    color: p.textTertiary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-// ── Score Emoji ──────────────────────────────────────────────────────────────
+// ── Greeting Chip ────────────────────────────────────────────────────────────
 
-class _ScoreEmoji extends StatelessWidget {
-  const _ScoreEmoji({required this.emotion});
+/// Time-of-day pill: tonal brand wash, ringed glyph, brand-tinted label.
+class _GreetingChip extends StatelessWidget {
+  const _GreetingChip({required this.icon, required this.label});
 
-  final EmotionLabelType? emotion;
+  final IconData icon;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 88.w,
-      height: 88.w,
-      child: Center(
-        child: EmotionEmoji(
-          asset: emotion?.emojiAsset ?? 'assets/emoji/netral.png',
-          size: 76,
+    final p = context.palette;
+
+    return Container(
+      padding: EdgeInsets.only(
+        left: AppSpacing.xxs.w,
+        right: AppSpacing.sm.w,
+        top: AppSpacing.xxs.h,
+        bottom: AppSpacing.xxs.h,
+      ),
+      decoration: BoxDecoration(
+        color: p.primaryWash,
+        borderRadius: AppRadius.chip,
+        border: Border.all(
+          color: p.primaryFill.withValues(alpha: p.isDark ? 0.30 : 0.20),
+          width: AppBorder.thin,
         ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Ringed glyph — brand fill disc, on-fill icon
+          Container(
+            width: 30.w,
+            height: 30.w,
+            decoration: BoxDecoration(
+              gradient: p.strawberryGradientBold,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: p.primaryFill.withValues(alpha: 0.34),
+                  offset: const Offset(0, 2),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            child: Icon(icon, color: p.onPrimaryFill, size: 16.sp),
+          ),
+          SizedBox(width: AppSpacing.xs.w),
+          Text(
+            label,
+            style: AppTypography.bodyStrong.copyWith(
+              color: p.primaryText,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ],
       ),
     );
   }
