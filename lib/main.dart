@@ -32,10 +32,17 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load intl date symbols for both supported locales so DateFormat.MMMM /
+  // .E / .yMMMMd render Indonesian month and weekday names on the Discover
+  // calendar instead of falling back to English.
+  await initializeDateFormatting('en_US');
+  await initializeDateFormatting('id_ID');
 
   final localeProvider = LocaleProvider();
   await localeProvider.loadSavedLocale();

@@ -89,7 +89,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sad => 'Sad';
 
   @override
+  String get anger => 'Anger';
+
+  @override
+  String get fearful => 'Fearful';
+
+  @override
+  String get disgust => 'Disgust';
+
+  @override
   String get neutral => 'Neutral';
+
+  @override
+  String get discoverTitle => 'Discover';
+
+  @override
+  String get discoverCalendarTab => 'Calendar';
+
+  @override
+  String get discoverJournalTab => 'Journal';
+
+  @override
+  String get discoverEmptyDay => 'No recordings on this date.';
+
+  @override
+  String get discoverRecordMoodCta => 'I feel today…';
+
+  @override
+  String get discoverEmotionDistribution => 'Emotion distribution';
+
+  @override
+  String get discoverScoreHistory => 'Mental score history';
+
+  @override
+  String get discoverRecordingsLabel => 'Recordings';
+
+  @override
+  String get discoverPrevYear => 'Previous year';
+
+  @override
+  String get discoverNextYear => 'Next year';
+
+  @override
+  String get discoverNoData => 'No data';
 
   @override
   String get angry => 'Angry';

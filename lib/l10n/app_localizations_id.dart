@@ -89,7 +89,49 @@ class AppLocalizationsId extends AppLocalizations {
   String get sad => 'Sedih';
 
   @override
+  String get anger => 'Marah';
+
+  @override
+  String get fearful => 'Takut';
+
+  @override
+  String get disgust => 'Jijik';
+
+  @override
   String get neutral => 'Netral';
+
+  @override
+  String get discoverTitle => 'Jelajah';
+
+  @override
+  String get discoverCalendarTab => 'Kalender';
+
+  @override
+  String get discoverJournalTab => 'Jurnal';
+
+  @override
+  String get discoverEmptyDay => 'Belum ada rekaman di tanggal ini.';
+
+  @override
+  String get discoverRecordMoodCta => 'Aku merasa hari ini…';
+
+  @override
+  String get discoverEmotionDistribution => 'Distribusi emosi';
+
+  @override
+  String get discoverScoreHistory => 'Riwayat skor mental';
+
+  @override
+  String get discoverRecordingsLabel => 'Rekaman';
+
+  @override
+  String get discoverPrevYear => 'Tahun sebelumnya';
+
+  @override
+  String get discoverNextYear => 'Tahun berikutnya';
+
+  @override
+  String get discoverNoData => 'Belum ada data';
 
   @override
   String get angry => 'Marah';

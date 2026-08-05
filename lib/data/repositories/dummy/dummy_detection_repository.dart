@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/data/models/calendar_day_summary.dart';
 import 'package:fem_psychmonitor/data/models/detection_result_model.dart';
 import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
 import 'package:fem_psychmonitor/data/models/emotion_summary_model.dart';
@@ -74,6 +75,27 @@ class DummyDetectionRepository implements DetectionRepository {
       }
     }
     return data;
+  }
+
+  @override
+  Future<Map<DateTime, CalendarDaySummary>> getCalendarSummaries({
+    required int year,
+    required int month,
+  }) async {
+    final Map<DateTime, Map<EmotionLabelType, int>> counts = {};
+    for (final session in _sessions) {
+      if (session.startedAt.year == year && session.startedAt.month == month) {
+        final dateKey = DateTime(year, month, session.startedAt.day);
+        final emotion = session.displayEmotion;
+        counts
+            .putIfAbsent(dateKey, () => {})
+            .update(emotion, (v) => v + 1, ifAbsent: () => 1);
+      }
+    }
+    return {
+      for (final e in counts.entries)
+        e.key: CalendarDaySummary(date: e.key, counts: e.value),
+    };
   }
 
   @override

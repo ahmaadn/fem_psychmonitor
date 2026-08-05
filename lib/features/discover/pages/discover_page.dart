@@ -1,26 +1,26 @@
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
-import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
-import 'package:fem_psychmonitor/app/config/app_typography.dart';
-import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
-import 'package:fem_psychmonitor/app/widgets/app_bottom_sheet.dart';
-import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
-import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
-import 'package:fem_psychmonitor/app/widgets/mental_score_line_chart.dart';
-import 'package:fem_psychmonitor/app/widgets/session_card.dart';
-import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
-import 'package:fem_psychmonitor/data/repositories/detection_repository.dart';
-import 'package:fem_psychmonitor/data/repositories/score_log_repository.dart';
+import 'package:fem_psychmonitor/data/models/calendar_day_summary.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/history_viewmodel.dart';
-import 'package:fem_psychmonitor/features/history/widgets/emotion_history_chart.dart';
+import 'package:fem_psychmonitor/features/discover/widgets/calendar_month_block.dart';
+import 'package:fem_psychmonitor/features/discover/widgets/day_detail_sheet.dart';
+import 'package:fem_psychmonitor/features/discover/widgets/discover_header.dart';
+import 'package:fem_psychmonitor/features/discover/widgets/emotion_legend_strip.dart';
+import 'package:fem_psychmonitor/features/discover/widgets/journal_tab.dart';
 import 'package:fem_psychmonitor/features/home/widgets/today_mood_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+/// Discover / Jelajah screen.
+///
+/// Two tabs:
+/// - **Calendar**: 12-month view where each day shows the dominant emotion
+///   recorded on that day (the most-frequent label among that day's
+///   recordings — see [CalendarDaySummary.dominant]). Tapping a day opens a
+///   sheet with that day's full breakdown and a list of its recordings.
+/// - **Journal**: charts over a 7d / 1m / 6m / 1y window.
 class DiscoverPage extends StatefulWidget {
   const DiscoverPage({super.key});
 
@@ -46,25 +46,60 @@ class _DiscoverPageState extends State<DiscoverPage>
     _months = List.generate(12, (i) => DateTime(_year, i + 1));
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
       final vm = context.read<HistoryViewModel>();
       final userId = context.read<AuthViewModel>().currentUser?.id;
       vm.setUserId(userId);
       vm.loadHistory();
-      await _loadYearMonths(vm);
+      await vm.loadCalendarYear(_year);
       vm.loadChartSeries(days: _periodDays);
-      if (_monthScroll.hasClients && _year == now.year) {
-        final idx = (now.month - 1).clamp(0, 11);
+      if (!mounted || !_monthScroll.hasClients) return;
+      if (_year == now.year) {
+        final target = _offsetForMonth(now.month - 1);
         _monthScroll.jumpTo(
-          (idx * 280.0).clamp(0, _monthScroll.position.maxScrollExtent),
+          target.clamp(0, _monthScroll.position.maxScrollExtent),
         );
+      } else {
+        _monthScroll.jumpTo(0);
       }
     });
   }
 
-  Future<void> _loadYearMonths(HistoryViewModel vm) async {
-    for (final m in _months) {
-      await vm.loadCalendar(m.year, m.month);
+  /// Approximate scroll offset of month [index] within the calendar list.
+  ///
+  /// Month blocks are not a fixed height — a month can span five or six
+  /// week rows depending on where the 1st falls — so summing per-month
+  /// heights lands far closer than multiplying by a single constant.
+  double _offsetForMonth(int index) {
+    var offset = 0.0;
+    for (var i = 0; i < index.clamp(0, 11); i++) {
+      offset += _monthBlockHeight(DateTime(_year, i + 1));
     }
+    return offset;
+  }
+
+  /// Mirrors the layout in `CalendarMonthBlock`: header + weekday row +
+  /// N week rows of `AspectRatio(0.86)` cells + trailing spacing/divider.
+  double _monthBlockHeight(DateTime month) {
+    final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
+    final startWeekday = DateTime(month.year, month.month, 1).weekday % 7;
+    final rows = ((startWeekday + daysInMonth) / 7).ceil();
+
+    // Cell width = (usable width - 6 gutters) / 7; height = width / 0.86.
+    final usable =
+        MediaQuery.sizeOf(context).width - (AppSpacing.pageX.w * 2);
+    final cellW = (usable - (AppSpacing.xxs.w * 6)) / 7;
+    final cellH = cellW / 0.86;
+
+    return AppSpacing.md.h + // top padding
+        28.h + // month header
+        AppSpacing.xs.h +
+        16.h + // weekday header
+        AppSpacing.xxs.h +
+        (rows * cellH) +
+        ((rows - 1) * AppSpacing.xxs.h) +
+        AppSpacing.md.h +
+        AppBorder.thin;
   }
 
   Future<void> _loadYear(int year) async {
@@ -73,10 +108,9 @@ class _DiscoverPageState extends State<DiscoverPage>
       _months = List.generate(12, (i) => DateTime(year, i + 1));
     });
     final vm = context.read<HistoryViewModel>();
-    await _loadYearMonths(vm);
-    if (_monthScroll.hasClients) {
-      _monthScroll.jumpTo(0);
-    }
+    await vm.loadCalendarYear(year);
+    if (!mounted || !_monthScroll.hasClients) return;
+    _monthScroll.jumpTo(0);
   }
 
   @override
@@ -90,43 +124,29 @@ class _DiscoverPageState extends State<DiscoverPage>
   Widget build(BuildContext context) {
     final p = context.palette;
     final historyVm = context.watch<HistoryViewModel>();
-    final labels = _DiscoverL10n.of(context);
 
     return Scaffold(
       backgroundColor: p.canvas,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ── Header area with gradient ─────────────────────────────────
-          _DiscoverHeader(
+          DiscoverHeader(
             year: _year,
-            labels: labels,
             tabs: _tabs,
             onPrevYear: () => _loadYear(_year - 1),
             onNextYear: () => _loadYear(_year + 1),
           ),
-
-          // ── Tab content ───────────────────────────────────────────────
           Expanded(
             child: TabBarView(
               controller: _tabs,
               children: [
-                // Calendar tab
-                ListView.builder(
-                  controller: _monthScroll,
-                  padding: EdgeInsets.only(top: AppSpacing.xs.h, bottom: 80.h),
-                  itemCount: _months.length,
-                  itemBuilder: (context, index) {
-                    return _MonthBlock(
-                      month: _months[index],
-                      emotions: historyVm.calendarEmotions,
-                      onDayTap: _openDaySheet,
-                    );
-                  },
+                _CalendarTab(
+                  months: _months,
+                  summaries: historyVm.calendarSummaries,
+                  scrollController: _monthScroll,
+                  onDayTap: _openDaySheet,
                 ),
-
-                // Journal tab
-                _JournalTab(
+                JournalTab(
                   periodDays: _periodDays,
                   onPeriodChanged: (d) {
                     setState(() => _periodDays = d);
@@ -135,7 +155,6 @@ class _DiscoverPageState extends State<DiscoverPage>
                   series: historyVm.chartSeries,
                   scoreSeries: historyVm.scoreSeries,
                   sessions: historyVm.sessions,
-                  labels: labels,
                 ),
               ],
             ),
@@ -146,676 +165,74 @@ class _DiscoverPageState extends State<DiscoverPage>
   }
 
   Future<void> _openDaySheet(DateTime day) async {
+    if (!mounted) return;
     final vm = context.read<HistoryViewModel>();
     final sessions = await vm.loadSessionsForDate(day);
     if (!mounted) return;
-    final p = context.palette;
-    final labels = _DiscoverL10n.of(context);
-    showAppBottomSheet(
+    final summary =
+        vm.calendarSummaries[DateTime(day.year, day.month, day.day)];
+    await showDayDetailSheet(
       context: context,
-      builder: (ctx) {
-        return DraggableScrollableSheet(
-            expand: false,
-            initialChildSize: 0.5,
-            maxChildSize: 0.9,
-            builder: (_, controller) {
-              if (sessions.isEmpty) {
-                return Padding(
-                  padding: EdgeInsets.all(AppSpacing.pageX.w),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const AppSheetHandle(),
-                      SizedBox(height: AppSpacing.md.h),
-                      Text(
-                        DateFormat.yMMMMd().format(day),
-                        style: AppTypography.subtitle.copyWith(
-                          color: p.textPrimary,
-                        ),
-                      ),
-                      SizedBox(height: AppSpacing.sm.h),
-                      Text(
-                        labels.emptyDay,
-                        style: AppTypography.caption.copyWith(
-                          color: p.textSecondary,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: AppSpacing.lg.h),
-                      PrimaryPill(
-                        label: labels.iFeelToday,
-                        onTap: () async {
-                          Navigator.pop(ctx);
-                          await _pickMoodForDay(day);
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              final counts = <EmotionLabelType, int>{};
-              for (final s in sessions) {
-                counts[s.displayEmotion] = (counts[s.displayEmotion] ?? 0) + 1;
-              }
-
-              return ListView(
-                controller: controller,
-                padding: EdgeInsets.fromLTRB(
-                  AppSpacing.lg.w,
-                  AppSpacing.sm.h,
-                  AppSpacing.lg.w,
-                  AppSpacing.xxl.h,
-                ),
-                children: [
-                  const AppSheetHandle(),
-                  SizedBox(height: AppSpacing.md.h),
-                  Text(
-                    DateFormat.yMMMMd().format(day),
-                    style: AppTypography.subtitle.copyWith(
-                      color: p.textPrimary,
-                    ),
-                  ),
-                  SizedBox(height: AppSpacing.sm.h),
-                  Wrap(
-                    spacing: AppSpacing.xxs.w,
-                    runSpacing: AppSpacing.xxs.h,
-                    children: counts.entries
-                        .map(
-                          (e) => Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: AppSpacing.sm.w,
-                              vertical: AppSpacing.xxs.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: e.key.surfaceColor,
-                              borderRadius: AppRadius.chip,
-                              border: Border.all(
-                                color: e.key.color.withValues(alpha: 0.3),
-                                width: AppBorder.thin,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                EmotionEmoji(
-                                  asset: e.key.emojiAsset,
-                                  size: 14,
-                                ),
-                                SizedBox(width: AppSpacing.xxs.w),
-                                Text(
-                                  '${e.key.displayName}: ${e.value}',
-                                  style: AppTypography.caption.copyWith(
-                                    color: p.textPrimary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                  SizedBox(height: AppSpacing.sm.h),
-                  ...sessions.map(
-                    (s) => Container(
-                      margin: EdgeInsets.only(bottom: AppSpacing.xs.h),
-                      decoration: BoxDecoration(
-                        color: p.surface1,
-                        borderRadius: AppRadius.card,
-                        border: Border.all(color: p.divider),
-                      ),
-                      child: ListTile(
-                        leading: Container(
-                          width: 40.w,
-                          height: 40.w,
-                          decoration: BoxDecoration(
-                            color: s.displayEmotion.surfaceColor,
-                            borderRadius: AppRadius.tile,
-                          ),
-                          alignment: Alignment.center,
-                          child: EmotionEmoji(
-                            asset: s.displayEmotion.emojiAsset,
-                            size: 18,
-                          ),
-                        ),
-                        title: Text(
-                          s.displayEmotion.displayName,
-                          style: AppTypography.bodyStrong.copyWith(
-                            color: p.textPrimary,
-                          ),
-                        ),
-                        subtitle: Text(
-                          '${s.duration.inMinutes}m ${s.duration.inSeconds % 60}s · ${DateFormat.Hm().format(s.startedAt)}',
-                          style: AppTypography.caption.copyWith(
-                            color: p.textSecondary,
-                          ),
-                        ),
-                        trailing: Icon(
-                          Icons.chevron_right_rounded,
-                          color: p.textTertiary,
-                          size: 18.sp,
-                        ),
-                        onTap: () {
-                          Navigator.pop(ctx);
-                          context.pushNamed(
-                            RouteNames.analysisResult,
-                            extra: s.id,
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
+      day: day,
+      summary: summary,
+      sessions: sessions,
+      onPickMood: () async {
+        Navigator.pop(context);
+        await _pickMoodForDay(day);
       },
     );
   }
 
   Future<void> _pickMoodForDay(DateTime day) async {
+    if (!mounted) return;
     final user = context.read<AuthViewModel>().currentUser;
     if (user == null) return;
     final selected = await showTodayMoodSheet(context);
     if (selected == null || !mounted) return;
     await persistDailyMood(userId: user.id, emotion: selected, day: day);
     if (!mounted) return;
-    await context.read<HistoryViewModel>().loadCalendar(day.year, day.month);
+    await context.read<HistoryViewModel>().loadCalendarYear(day.year);
   }
 }
 
-// ── Discover Header ──────────────────────────────────────────────────────────
-
-class _DiscoverHeader extends StatelessWidget {
-  const _DiscoverHeader({
-    required this.year,
-    required this.labels,
-    required this.tabs,
-    required this.onPrevYear,
-    required this.onNextYear,
-  });
-
-  final int year;
-  final _DiscoverL10n labels;
-  final TabController tabs;
-  final VoidCallback onPrevYear;
-  final VoidCallback onNextYear;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: p.surface1,
-        border: Border(
-          bottom: BorderSide(color: p.divider, width: AppBorder.thin),
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                AppSpacing.pageX.w,
-                AppSpacing.md.h,
-                AppSpacing.pageX.w,
-                0,
-              ),
-              child: Text(
-                labels.discover,
-                style: AppTypography.display.copyWith(color: p.textPrimary),
-              ),
-            ),
-            SizedBox(height: AppSpacing.xs.h),
-
-            // Year navigator (only visible in calendar tab)
-            AnimatedBuilder(
-              animation: tabs,
-              builder: (_, _) {
-                final isCalendar = tabs.index == 0;
-                return AnimatedOpacity(
-                  opacity: isCalendar ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 200),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppSpacing.pageX.w,
-                    ),
-                    child: Row(
-                      children: [
-                        _YearChevron(
-                          icon: Icons.chevron_left_rounded,
-                          onTap: onPrevYear,
-                        ),
-                        SizedBox(width: AppSpacing.xs.w),
-                        Text(
-                          '$year',
-                          style: AppTypography.bodyStrong.copyWith(
-                            color: p.primaryText,
-                          ),
-                        ),
-                        SizedBox(width: AppSpacing.xs.w),
-                        _YearChevron(
-                          icon: Icons.chevron_right_rounded,
-                          onTap: onNextYear,
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            SizedBox(height: AppSpacing.sm.h),
-
-            // Tab bar
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSpacing.pageX.w),
-              child: Container(
-                padding: EdgeInsets.all(AppSpacing.xxs.w),
-                decoration: BoxDecoration(
-                  color: p.surface2,
-                  borderRadius: AppRadius.chip,
-                ),
-                child: TabBar(
-                  controller: tabs,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  dividerColor: Colors.transparent,
-                  indicator: BoxDecoration(
-                    color: p.primarySoft,
-                    borderRadius: AppRadius.chip,
-                  ),
-                  labelColor: p.primaryText,
-                  unselectedLabelColor: p.textTertiary,
-                  labelStyle: AppTypography.label,
-                  tabs: [
-                    Tab(text: labels.calendar),
-                    Tab(text: labels.journal),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: AppSpacing.sm.h),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _YearChevron extends StatelessWidget {
-  const _YearChevron({required this.icon, required this.onTap});
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(AppSpacing.xxs.w),
-        decoration: BoxDecoration(
-          color: p.primaryFill.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-        ),
-        child: Icon(icon, color: p.primaryText, size: 16.sp),
-      ),
-    );
-  }
-}
-
-// ── Primary Pill ─────────────────────────────────────────────────────────────
-
-// ── Primary Pill ─────────────────────────────────────────────────────────────
-
-class PrimaryPill extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  const PrimaryPill({super.key, required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) =>
-      PrimaryButton(text: label, onPressed: onTap);
-}
-
-// ── Month Block ──────────────────────────────────────────────────────────────
-
-class _MonthBlock extends StatelessWidget {
-  final DateTime month;
-  final Map<DateTime, EmotionLabelType> emotions;
-  final ValueChanged<DateTime> onDayTap;
-
-  const _MonthBlock({
-    required this.month,
-    required this.emotions,
+class _CalendarTab extends StatelessWidget {
+  const _CalendarTab({
+    required this.months,
+    required this.summaries,
+    required this.scrollController,
     required this.onDayTap,
   });
 
-  bool _isToday(DateTime d) {
-    final n = DateTime.now();
-    return d.year == n.year && d.month == n.month && d.day == n.day;
-  }
+  final List<DateTime> months;
+  final Map<DateTime, CalendarDaySummary> summaries;
+  final ScrollController scrollController;
+  final ValueChanged<DateTime> onDayTap;
 
   @override
   Widget build(BuildContext context) {
-    final p = context.palette;
-    final first = DateTime(month.year, month.month, 1);
-    final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
-    final startWeekday = first.weekday % 7; // Sun=0
-
-    // Count mood-tracked days in this month
-    final trackedCount = List.generate(daysInMonth, (i) {
-      final d = DateTime(month.year, month.month, i + 1);
-      return emotions.containsKey(d);
-    }).where((v) => v).length;
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.pageX.w,
-        AppSpacing.sm.h,
-        AppSpacing.pageX.w,
-        0,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                DateFormat.MMMM().format(month),
-                style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
-              ),
-              SizedBox(width: AppSpacing.xs.w),
-              if (trackedCount > 0)
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSpacing.xs.w,
-                    vertical: 2.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: p.secondarySoft,
-                    borderRadius: AppRadius.chip,
-                  ),
-                  child: Text(
-                    '$trackedCount',
-                    style: AppTypography.label.copyWith(
-                      color: p.secondaryText,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          SizedBox(height: AppSpacing.xs.h),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 7,
-              mainAxisSpacing: 3,
-              crossAxisSpacing: 3,
-              childAspectRatio: 1,
-            ),
-            itemCount: startWeekday + daysInMonth,
-            itemBuilder: (context, index) {
-              if (index < startWeekday) return const SizedBox.shrink();
-              final day = index - startWeekday + 1;
-              final date = DateTime(month.year, month.month, day);
-              final key = DateTime(date.year, date.month, date.day);
-              final emotion = emotions[key];
-              final today = _isToday(date);
-
-              return InkWell(
-                borderRadius: BorderRadius.circular(AppRadius.full),
-                onTap: () => onDayTap(date),
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: today
-                        ? p.surface3
-                        : (emotion != null
-                              ? emotion.surfaceColor
-                              : p.surface2),
-                    border: Border.all(
-                      color: today
-                          ? p.primaryText
-                          : (emotion != null
-                                ? p.emotionBase(emotion).withValues(alpha: 0.4)
-                                : p.divider),
-                      width: today ? AppBorder.thick : AppBorder.thin,
-                    ),
-                    boxShadow: emotion != null && !today
-                        ? [
-                            BoxShadow(
-                              color: p
-                                  .emotionBase(emotion)
-                                  .withValues(alpha: 0.15),
-                              blurRadius: 4,
-                              offset: const Offset(0, 1),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (emotion != null)
-                        EmotionEmoji(asset: emotion.emojiAsset, size: 14)
-                      else
-                        Text(
-                          '$day',
-                          style: AppTypography.caption.copyWith(
-                            fontWeight: today
-                                ? FontWeight.w700
-                                : FontWeight.w500,
-                            color: today ? p.primaryText : p.textSecondary,
-                          ),
-                        ),
-                      if (emotion != null)
-                        Text(
-                          '$day',
-                          style: AppTypography.label.copyWith(
-                            fontWeight: today
-                                ? FontWeight.w700
-                                : FontWeight.w400,
-                            color: today ? p.primaryText : p.textTertiary,
-                            height: 1,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-          SizedBox(height: AppSpacing.xs.h),
-          Divider(color: p.divider, height: 1),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Journal Tab ──────────────────────────────────────────────────────────────
-
-class _JournalTab extends StatelessWidget {
-  final int periodDays;
-  final ValueChanged<int> onPeriodChanged;
-  final List<EmotionSeriesPoint> series;
-  final List<ScoreSeriesPoint> scoreSeries;
-  final List<DetectionSessionModel> sessions;
-  final _DiscoverL10n labels;
-
-  const _JournalTab({
-    required this.periodDays,
-    required this.onPeriodChanged,
-    required this.series,
-    required this.scoreSeries,
-    required this.sessions,
-    required this.labels,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    final periods = {7: '7d', 30: '1m', 180: '6m', 365: '1y'};
-
-    return ListView(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.pageX.w,
-        AppSpacing.md.h,
-        AppSpacing.pageX.w,
-        80.h,
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Period chips
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: periods.entries.map((e) {
-              final sel = periodDays == e.key;
-              return Padding(
-                padding: EdgeInsets.only(right: AppSpacing.xs.w),
-                child: GestureDetector(
-                  onTap: () => onPeriodChanged(e.key),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md.w,
-                      vertical: AppSpacing.xs.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: sel ? p.primarySoft : p.surface1,
-                      borderRadius: AppRadius.chip,
-                      border: Border.all(
-                        color: sel ? p.primaryText : p.divider,
-                        width: AppBorder.thin,
-                      ),
-                    ),
-                    child: Text(
-                      e.value,
-                      style: AppTypography.label.copyWith(
-                        color: sel ? p.primaryText : p.textSecondary,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-        SizedBox(height: AppSpacing.lg.h),
-
-        // Emotion distribution
-        _ChartSection(
-          title: labels.emotionDistribution,
-          icon: Icons.bar_chart_rounded,
-          child: EmotionHistoryChart(series: series, days: periodDays),
-        ),
-        SizedBox(height: AppSpacing.md.h),
-
-        // Score history
-        _ChartSection(
-          title: labels.scoreHistory,
-          icon: Icons.show_chart_rounded,
-          child: MentalScoreLineChart(series: scoreSeries),
-        ),
-        SizedBox(height: AppSpacing.sm.h),
-
-        // Recordings count badge
-        Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: AppSpacing.sm.w,
-            vertical: AppSpacing.xxs.h,
-          ),
-          decoration: BoxDecoration(
-            color: p.surface2,
-            borderRadius: AppRadius.chip,
-          ),
-          child: Text(
-            '${labels.recordingsCount}: ${sessions.length}',
-            style: AppTypography.caption.copyWith(
-              color: p.textPrimary,
-              fontWeight: FontWeight.w600,
+        SizedBox(height: AppSpacing.xs.h),        const EmotionLegendStrip(),
+        SizedBox(height: AppSpacing.xs.h),
+        Expanded(
+          child: ListView.builder(
+            controller: scrollController,
+            padding: EdgeInsets.only(top: AppSpacing.xs.h, bottom: 80.h),
+            // Months are tall and mostly static; isolating each one keeps a
+            // scroll from repainting every other month in the viewport.
+            addRepaintBoundaries: true,
+            itemCount: months.length,
+            itemBuilder: (context, index) => RepaintBoundary(
+              child: CalendarMonthBlock(
+                month: months[index],
+                summaries: summaries,
+                onDayTap: onDayTap,
+              ),
             ),
           ),
         ),
       ],
     );
   }
-}
-
-class _ChartSection extends StatelessWidget {
-  const _ChartSection({
-    required this.title,
-    required this.icon,
-    required this.child,
-  });
-  final String title;
-  final IconData icon;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    return SessionCard(
-      elevated: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: AppSpacing.xxl.w,
-                height: AppSpacing.xxl.w,
-                decoration: BoxDecoration(
-                  color: p.surface2,
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child: Icon(icon, color: p.textPrimary, size: AppSpacing.sm.sp),
-              ),
-              SizedBox(width: AppSpacing.xs.w),
-              Text(
-                title,
-                style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
-              ),
-            ],
-          ),
-          SizedBox(height: AppSpacing.md.h),
-          child,
-        ],
-      ),
-    );
-  }
-}
-
-// ── L10n ─────────────────────────────────────────────────────────────────────
-
-class _DiscoverL10n {
-  final bool isEn;
-  const _DiscoverL10n(this.isEn);
-
-  static _DiscoverL10n of(BuildContext context) {
-    final code = Localizations.localeOf(context).languageCode;
-    return _DiscoverL10n(code != 'id');
-  }
-
-  String get discover => isEn ? 'Discover' : 'Jelajah';
-  String get calendar => isEn ? 'Calendar' : 'Kalender';
-  String get journal => isEn ? 'Journal' : 'Jurnal';
-  String get emptyDay => isEn
-      ? 'No recordings on this date.'
-      : 'Belum ada rekaman di tanggal ini.';
-  String get iFeelToday => isEn ? 'I feel today…' : 'Aku merasa hari ini…';
-  String get emotionDistribution =>
-      isEn ? 'Emotion distribution' : 'Distribusi emosi';
-  String get scoreHistory =>
-      isEn ? 'Mental score history' : 'Riwayat skor mental';
-  String get recordingsCount => isEn ? 'Recordings' : 'Rekaman';
-  String get loadPrevYear => isEn ? '← Prev year' : '← Tahun lalu';
-  String get loadNextYear => isEn ? 'Next year →' : 'Tahun depan →';
 }

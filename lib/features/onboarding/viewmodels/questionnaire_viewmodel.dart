@@ -36,7 +36,10 @@ class QuestionnaireViewModel extends ChangeNotifier {
   int get currentOceanIndex => _currentOceanIndex;
   final Map<int, int> _oceanAnswers = {}; // questionId -> 1..5
 
-  final Map<int, PsychOption> _psychAnswers = {};
+  final Map<int, PsychOption> _psychAnswers = {}; // questionIndex -> chosen option
+
+  int _currentPsychIndex = 0;
+  int get currentPsychIndex => _currentPsychIndex;
 
   Future<void> initData() async {
     _isLoading = true;
@@ -103,9 +106,56 @@ class QuestionnaireViewModel extends ChangeNotifier {
     return _psychAnswers[questionIndex];
   }
 
+  int get psychTotalQuestions =>
+      _psychData?.assessment.questions.length ?? 0;
+
   bool isPsychTestComplete() {
     if (_psychData == null) return false;
     return _psychAnswers.length == _psychData!.assessment.questions.length;
+  }
+
+  void nextPsychQuestion() {
+    final total = psychTotalQuestions;
+    if (total == 0) return;
+    if (_currentPsychIndex < total - 1) {
+      _currentPsychIndex++;
+      notifyListeners();
+    }
+  }
+
+  void previousPsychQuestion() {
+    if (_currentPsychIndex > 0) {
+      _currentPsychIndex--;
+      notifyListeners();
+    }
+  }
+
+  void goToPsychIndex(int index) {
+    final total = psychTotalQuestions;
+    if (total == 0) return;
+    if (index >= 0 && index < total) {
+      _currentPsychIndex = index;
+      notifyListeners();
+    }
+  }
+
+  /// Reset cursor to the first unanswered question (or 0 if none answered).
+  void resetPsychCursor() {
+    final total = psychTotalQuestions;
+    if (total == 0) {
+      _currentPsychIndex = 0;
+      notifyListeners();
+      return;
+    }
+    final firstUnanswered = _psychAnswers.keys
+        .where((i) => i >= 0 && i < total)
+        .fold<int>(0, (acc, i) => i > acc ? i : acc);
+    _currentPsychIndex = _psychAnswers.length >= total
+        ? total - 1
+        : firstUnanswered < total - 1
+            ? firstUnanswered
+            : 0;
+    notifyListeners();
   }
 
   void calculatePsychResult() {
@@ -155,6 +205,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
     _oceanAnswers.clear();
     _psychAnswers.clear();
     _currentOceanIndex = 0;
+    _currentPsychIndex = 0;
     _oceanScores = null;
     _psychScore = null;
     _psychClass = null;

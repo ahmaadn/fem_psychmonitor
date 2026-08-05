@@ -4,6 +4,7 @@ import 'package:fem_psychmonitor/data/local/sync_queue_helper.dart';
 import 'package:fem_psychmonitor/data/local/tables/app_tables.dart';
 import 'package:fem_psychmonitor/data/local/tables/detection_row.dart';
 import 'package:fem_psychmonitor/data/local/tables/user_row.dart';
+import 'package:fem_psychmonitor/data/models/calendar_day_summary.dart';
 import 'package:fem_psychmonitor/data/models/detection_result_model.dart';
 import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
 import 'package:fem_psychmonitor/data/models/emotion_summary_model.dart';
@@ -133,6 +134,15 @@ class SqliteDetectionRepository extends DetectionRepository
     int year,
     int month,
   ) async {
+    final summaries = await getCalendarSummaries(year: year, month: month);
+    return {for (final e in summaries.entries) e.key: e.value.dominant};
+  }
+
+  @override
+  Future<Map<DateTime, CalendarDaySummary>> getCalendarSummaries({
+    required int year,
+    required int month,
+  }) async {
     final db = await DatabaseHelper.instance.database;
     final userId = await _currentUserId(db);
     if (userId == null) return {};
@@ -159,8 +169,8 @@ class SqliteDetectionRepository extends DetectionRepository
       orderBy: '${DetectionSessionRow.colStartedAt} ASC',
     );
 
-    // Majority emotion per local day (PLAN Discover calendar dots).
-    final counts = <DateTime, Map<EmotionLabelType, int>>{};
+    // Per-day majority (PLAN Discover calendar dots).
+    final perDay = <DateTime, Map<EmotionLabelType, int>>{};
     for (final row in rows) {
       final startedAt = DateTime.fromMillisecondsSinceEpoch(
         row[DetectionSessionRow.colStartedAt] as int,
@@ -173,25 +183,14 @@ class SqliteDetectionRepository extends DetectionRepository
             (corrected ?? row[DetectionSessionRow.colDominantEmotion]),
         orElse: () => EmotionLabelType.neutral,
       );
-      final dayMap = counts.putIfAbsent(dateKey, () => {});
+      final dayMap = perDay.putIfAbsent(dateKey, () => {});
       dayMap[emotion] = (dayMap[emotion] ?? 0) + 1;
     }
 
-    final data = <DateTime, EmotionLabelType>{};
-    for (final entry in counts.entries) {
-      EmotionLabelType best = EmotionLabelType.neutral;
-      var bestCount = -1;
-      for (final e in EmotionLabelType.values) {
-        final c = entry.value[e];
-        if (c == null) continue;
-        if (c > bestCount || (c == bestCount && e.index > best.index)) {
-          best = e;
-          bestCount = c;
-        }
-      }
-      data[entry.key] = best;
-    }
-    return data;
+    return {
+      for (final entry in perDay.entries)
+        entry.key: CalendarDaySummary(date: entry.key, counts: entry.value),
+    };
   }
 
   @override

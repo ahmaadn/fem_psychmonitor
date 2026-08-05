@@ -445,59 +445,6 @@ class _HeroHeader extends StatelessWidget {
               ],
             ),
           ),
-
-          SizedBox(height: AppSpacing.md.h),
-
-          // ── Mood chip ───────────────────────────────────────────────
-          GestureDetector(
-            onTap: onMoodTap,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.md.w,
-                vertical: AppSpacing.xs.h,
-              ),
-              decoration: BoxDecoration(
-                color: mood != null
-                    ? p.emotionBase(mood!).withValues(alpha: 0.12)
-                    : p.surface1,
-                borderRadius: AppRadius.chip,
-                border: Border.all(
-                  color: mood != null
-                      ? p.emotionBase(mood!).withValues(alpha: 0.35)
-                      : p.divider,
-                  width: AppBorder.thin,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  EmotionEmoji(
-                    asset: mood?.emojiAsset ?? 'assets/emoji/netral.png',
-                    size: 28,
-                  ),
-                  SizedBox(width: AppSpacing.xs.w),
-                  Text(
-                    mood != null
-                        ? (isEn
-                              ? 'Feeling ${mood!.displayName.toLowerCase()}'
-                              : 'Merasa ${mood!.displayName.toLowerCase()}')
-                        : (isEn ? 'Set your mood' : 'Atur moodmu'),
-                    style: AppTypography.label.copyWith(
-                      color: mood != null
-                          ? p.emotionText(mood!)
-                          : p.textPrimary,
-                    ),
-                  ),
-                  SizedBox(width: AppSpacing.xs.w),
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    size: 14.sp,
-                    color: p.textTertiary,
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );

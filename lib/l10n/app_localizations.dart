@@ -248,11 +248,95 @@ abstract class AppLocalizations {
   /// **'Sad'**
   String get sad;
 
+  /// No description provided for @anger.
+  ///
+  /// In en, this message translates to:
+  /// **'Anger'**
+  String get anger;
+
+  /// No description provided for @fearful.
+  ///
+  /// In en, this message translates to:
+  /// **'Fearful'**
+  String get fearful;
+
+  /// No description provided for @disgust.
+  ///
+  /// In en, this message translates to:
+  /// **'Disgust'**
+  String get disgust;
+
   /// No description provided for @neutral.
   ///
   /// In en, this message translates to:
   /// **'Neutral'**
   String get neutral;
+
+  /// No description provided for @discoverTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover'**
+  String get discoverTitle;
+
+  /// No description provided for @discoverCalendarTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get discoverCalendarTab;
+
+  /// No description provided for @discoverJournalTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal'**
+  String get discoverJournalTab;
+
+  /// No description provided for @discoverEmptyDay.
+  ///
+  /// In en, this message translates to:
+  /// **'No recordings on this date.'**
+  String get discoverEmptyDay;
+
+  /// No description provided for @discoverRecordMoodCta.
+  ///
+  /// In en, this message translates to:
+  /// **'I feel today…'**
+  String get discoverRecordMoodCta;
+
+  /// No description provided for @discoverEmotionDistribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Emotion distribution'**
+  String get discoverEmotionDistribution;
+
+  /// No description provided for @discoverScoreHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Mental score history'**
+  String get discoverScoreHistory;
+
+  /// No description provided for @discoverRecordingsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recordings'**
+  String get discoverRecordingsLabel;
+
+  /// No description provided for @discoverPrevYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous year'**
+  String get discoverPrevYear;
+
+  /// No description provided for @discoverNextYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Next year'**
+  String get discoverNextYear;
+
+  /// No description provided for @discoverNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get discoverNoData;
 
   /// No description provided for @angry.
   ///

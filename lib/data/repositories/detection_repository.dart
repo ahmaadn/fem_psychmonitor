@@ -1,4 +1,5 @@
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/data/models/calendar_day_summary.dart';
 import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
 import 'package:fem_psychmonitor/data/models/emotion_summary_model.dart';
 
@@ -29,6 +30,24 @@ abstract class DetectionRepository {
     int year,
     int month,
   );
+
+  /// Get per-day emotion summaries for calendar view.
+  ///
+  /// Default-implemented on top of [getCalendarEmotions] (loses the count
+  /// detail). The SQLite override preserves [CalendarDaySummary.counts] for
+  /// tile display — the calendar UI uses [CalendarDaySummary.dominant] for
+  /// the emoji, but reads [CalendarDaySummary.dominantCount] / `.total` to
+  /// show how decisive the dominant emotion was on that day.
+  Future<Map<DateTime, CalendarDaySummary>> getCalendarSummaries({
+    required int year,
+    required int month,
+  }) async {
+    final labels = await getCalendarEmotions(year, month);
+    return {
+      for (final entry in labels.entries)
+        entry.key: CalendarDaySummary(date: entry.key, counts: {entry.value: 1}),
+    };
+  }
 
   /// Get aggregated stats for the home screen.
   Future<HomeStats> getHomeStats();

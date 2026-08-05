@@ -271,6 +271,27 @@ class AppPalette extends ThemeExtension<AppPalette> {
     colors: [canvas, canvas],
   );
 
+  /// Vertical brand-to-canvas wash for page headers.
+  ///
+  /// A brand-red tint at the top that dissolves into [canvas] at the bottom,
+  /// so the header melts into the page body instead of reading as a separate
+  /// bar. Derived by lerping [canvas] toward [primaryFill] rather than using a
+  /// fixed ramp step, which guarantees the bottom stop matches the page
+  /// background exactly on both themes.
+  ///
+  /// The tint is kept light enough that [textPrimary] still passes contrast on
+  /// top of it — do not raise the lerp factor without re-checking header text.
+  LinearGradient get brandFadeGradient => LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      Color.lerp(canvas, primaryFill, isDark ? 0.26 : 0.20)!,
+      Color.lerp(canvas, primaryFill, isDark ? 0.08 : 0.06)!,
+      canvas,
+    ],
+    stops: const [0.0, 0.55, 1.0],
+  );
+
   LinearGradient get strawberryGradient => LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
