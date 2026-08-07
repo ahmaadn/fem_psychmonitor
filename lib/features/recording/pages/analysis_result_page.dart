@@ -11,6 +11,7 @@ import 'package:fem_psychmonitor/app/widgets/app_bottom_sheet.dart';
 import 'package:fem_psychmonitor/app/widgets/button_widget.dart';
 import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
 import 'package:fem_psychmonitor/app/widgets/emotion_radar_chart.dart';
+import 'package:fem_psychmonitor/app/widgets/recommendation_card.dart';
 import 'package:fem_psychmonitor/app/widgets/session_card.dart';
 import 'package:fem_psychmonitor/app/widgets/voiceprint_orb.dart';
 import 'package:fem_psychmonitor/data/models/detection_session_model.dart';
@@ -115,6 +116,7 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
   Widget build(BuildContext context) {
     final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
+    final isEn = context.watch<LocaleProvider>().isEnglish;
     final detector = context.watch<EmotionDetector>();
     final detectionVm = context.watch<DetectionViewModel>();
 
@@ -137,10 +139,15 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
 
     return Scaffold(
       backgroundColor: p.canvas,
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: p.canvas,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
+        centerTitle: true,
+        title: Text(
+          l10n.analysisResult,
+          style: AppTypography.subtitle.copyWith(color: p.textPrimary),
+        ),
         leading: IconButton(
           icon: Icon(Icons.close_rounded, color: p.textSecondary, size: 22.sp),
           onPressed: () {
@@ -271,17 +278,18 @@ class _AnalysisResultPageState extends State<AnalysisResultPage> {
                 ),
                 SizedBox(height: AppSpacing.md.h),
                 if (_saranResult != null && _saranResult!.items.isNotEmpty) ...[
-                  _SaranCard(
-                    tips: _saranResult!.items.map((e) => e.text).toList(),
+                  ForYouHeader(isEn: isEn),
+                  SizedBox(height: AppSpacing.sm.h),
+                  RecommendationSection(
+                    saran: _saranResult,
+                    isEn: isEn,
+                    showSkeleton: false,
                   ),
-                  SizedBox(height: AppSpacing.md.h),
+                  SizedBox(height: AppSpacing.xs.h),
                 ],
-                SecondaryButton(
+                PrimaryButton(
                   text: l10n.retakeRecording,
-                  subText: l10n.retakeRecordingSub,
-                  textColor: p.primaryText,
-                  borderColor: p.primary,
-                  icon: Icons.replay_rounded,
+                  prefixIcon: Icons.replay_rounded,
                   onPressed: () => context.goNamed(RouteNames.liveRecording),
                 ),
                 if (!widget.isTeaser && session != null) ...[
@@ -595,10 +603,25 @@ class _Hero extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.palette;
     final l10n = AppLocalizations.of(context)!;
-    return SessionCard(
+    return Container(
       padding: EdgeInsets.symmetric(
         vertical: AppSpacing.xxl.h,
         horizontal: AppSpacing.lg.w,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            p.emotionBase(dominant).withValues(alpha: 0.08),
+            p.emotionBase(dominant).withValues(alpha: 0.03),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(AppRadius.lg.r),
+        border: Border.all(
+          color: p.emotionBase(dominant).withValues(alpha: 0.2),
+          width: AppBorder.thin,
+        ),
       ),
       child: Column(
         children: [
@@ -629,18 +652,27 @@ class _Hero extends StatelessWidget {
                 ),
             ],
           ),
-          SizedBox(height: AppSpacing.sm.h),
-          VoiceprintOrb(
-            mode: VoiceprintMode.static,
-            color: p.emotionBase(dominant),
-            size: 220,
-            confidence: confidence,
-            centerTop: '${(confidence * 100).round()}%',
-            centerBottom: l10n.confidence.toUpperCase(),
+          SizedBox(height: AppSpacing.lg.h),
+          EmotionEmoji(asset: dominant.emojiAsset, size: 96),
+          SizedBox(height: AppSpacing.md.h),
+          Text(
+            '${(confidence * 100).round()}%',
+            style: AppTypography.metric.copyWith(
+              fontSize: 44.sp,
+              fontWeight: FontWeight.w700,
+              color: p.textPrimary,
+              height: 1.0,
+            ),
           ),
-          SizedBox(height: AppSpacing.sm.h),
-          EmotionEmoji(asset: dominant.emojiAsset, size: 40),
           SizedBox(height: AppSpacing.xxs.h),
+          Text(
+            l10n.confidence.toUpperCase(),
+            style: AppTypography.label.copyWith(
+              letterSpacing: 1.0,
+              color: p.textSecondary,
+            ),
+          ),
+          SizedBox(height: AppSpacing.md.h),
           Text(dominant.displayName, style: AppTypography.subtitle),
           SizedBox(height: AppSpacing.xxs.h),
           Text(
@@ -737,6 +769,8 @@ class _ScoreCalculationCard extends StatelessWidget {
     final confidencePercent = (breakdown.modelConfidence * 100).round();
     final effectivePercent = (breakdown.effectiveConfidence * 100).round();
     final weighted = breakdown.weightedImpact.toStringAsFixed(2);
+    final delta = breakdown.delta.toStringAsFixed(2);
+    final appliedDelta = breakdown.delta.round();
     final impact = _formatNumber(breakdown.impactWeight);
 
     return SessionCard(
@@ -819,7 +853,7 @@ class _ScoreCalculationCard extends StatelessWidget {
                 ),
                 SizedBox(height: AppSpacing.xxs.h),
                 Text(
-                  '$impact x ${breakdown.effectiveConfidence.toStringAsFixed(2)} = $weighted -> $sign${breakdown.delta} poin',
+                  '$impact x ${breakdown.effectiveConfidence.toStringAsFixed(2)} = $weighted -> $sign$delta poin',
                   style: AppTypography.subtitle,
                 ),
               ],
@@ -829,7 +863,9 @@ class _ScoreCalculationCard extends StatelessWidget {
             SizedBox(height: AppSpacing.sm.h),
             _FormulaLine(
               label: 'Estimasi pada skor saat ini',
-              value: '$currentScore + ($sign${breakdown.delta})',
+              value:
+                  '$currentScore + (${appliedDelta > 0 ? '+' : ''}$appliedDelta)'
+                  ' = ${(currentScore + appliedDelta).clamp(0, 100)}',
             ),
           ],
           SizedBox(height: AppSpacing.xs.h),
@@ -1154,66 +1190,6 @@ class _WeeklyChart extends StatelessWidget {
                 ),
               ),
             ),
-        ],
-      ),
-    );
-  }
-}
-
-// ───────────────────────── Saran tips ─────────────────────────
-class _SaranCard extends StatelessWidget {
-  final List<String> tips;
-  const _SaranCard({required this.tips});
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    final l10n = AppLocalizations.of(context)!;
-    if (tips.isEmpty) return const SizedBox.shrink();
-    return SessionCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.tips_and_updates_outlined,
-                color: p.primaryText,
-                size: AppSpacing.lg.sp,
-              ),
-              SizedBox(width: AppSpacing.xs.w),
-              Text(l10n.tipsForYou, style: AppTypography.bodyStrong),
-            ],
-          ),
-          SizedBox(height: AppSpacing.xs.h),
-          ...tips.map(
-            (t) => Padding(
-              padding: EdgeInsets.symmetric(vertical: AppSpacing.xxs.h),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: AppSpacing.xxs.h),
-                    child: Icon(
-                      Icons.circle,
-                      size: AppSpacing.xxs.sp,
-                      color: p.secondaryText,
-                    ),
-                  ),
-                  SizedBox(width: AppSpacing.xs.w),
-                  Expanded(
-                    child: Text(
-                      t,
-                      style: AppTypography.caption.copyWith(
-                        height: 1.45,
-                        color: p.textPrimary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );

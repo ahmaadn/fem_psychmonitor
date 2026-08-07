@@ -10,7 +10,7 @@ The secondary (Jade, hue 145°) is color-theory-derived, not supplied: ~159° fr
 
 ## 1. Visual Theme & Atmosphere
 
-Fem-Psychmonitor Cherry is **an encouraging, high-energy self-care space rendered in confident color** — the boldest, most saturated variant in the "Strawberry Match" family. Where the base `DESIGN.md` reads soft-clinical and `DESIGN-merlot.md` reads warm-and-grounded, Cherry is built for the moments the product wants to feel alive: a completed streak, a positive weekly trend, a gentle nudge to check in again. The canvas is a crisp, barely-pink near-white in light mode and a deep crimson-black in dark mode — bright enough, in both cases, to let the two saturated brand ramps do the emotional work instead of competing with a busy background.
+Fem-Psychmonitor Cherry is **an encouraging, high-energy self-care space rendered in confident color** — the boldest, most saturated variant in the "Strawberry Match" family. Where the base `DESIGN.md` reads soft-clinical and `DESIGN-merlot.md` reads warm-and-grounded, Cherry is built for the moments the product wants to feel alive: a completed streak, a positive weekly trend, a gentle nudge to check in again. The canvas is a **true, uncolored near-white in light mode and a true near-black in dark mode** — deliberately neutral rather than tinted toward Cherry's own hue, so the saturated brand and accent colors have a genuinely quiet surface to stand out against instead of blending into a background that's quietly the same color as the brand.
 
 The app has two signature surfaces, mirrored from the same architecture Peloton's reference doc describes for its own product: the **history/check-in feed** — a vertically scrolling list of rounded 18dp mood check-in cards, each carrying an emotion-colored icon chip, a title, a timestamp, and a confidence percentage in tabular metric type — and the **emotion trend screen**, where a large **Emotion Trend Ring** anchors the bottom half of the screen (a thick colored arc on a `surface-3` track, the dominant emotion's confidence in 900-weight-equivalent numerals at center), flanked by a weekly summary strip and, during an active recording, a pulsing waveform capture card.
 
@@ -59,22 +59,24 @@ Chrome is minimal on both themes: the bottom nav has no tint pill (color alone m
 | `secondary-800` | `#104C29` | High-emphasis text, rare |
 | `secondary-900` | `#0B321B` | Reserved / deepest emphasis |
 
-### Canvas & Surfaces (Both Themes)
+### Canvas & Surfaces (Both Themes) — Revised: True Neutral, Not Red-Tinted
 
-- **Light Canvas** (`#FFF7F8`): App background — crisp, barely-pink near-white.
-- **Light Surface 1 / 2 / 3** (`#FDEEF0` / `#FBE3E6` / `#F6D0D5`): Cards → nested rows/inputs → pressed/track backgrounds.
-- **Light Divider** (`#F2C2C8`): 1px hairlines.
-- **Dark Canvas** (`#1A0C0F`): App background — deep crimson-black, kept in the primary hue family rather than a neutral charcoal.
-- **Dark Surface 1 / 2 / 3** (`#24141A` / `#301B22` / `#3D242C`): Same role ladder as light, dark register.
-- **Dark Divider** (`#4A2E36`): 1px hairlines.
+**This is the fix for "too much red / not fresh."** The previous version of this file tinted canvas, surfaces, and even body text toward Cherry's hue (352°) for "cohesion" — but that meant every neutral surface in the app was quietly red, so even a *correct* implementation still read as monochrome pink/crimson. Canvas, surfaces, and text below are now genuinely neutral (0% or near-0% saturation) so red only shows up where a screen deliberately puts it, never as background wash.
 
-### Text
+- **Light Canvas** (`#FCFCFC`): App background — true near-white, no color tint.
+- **Light Surface 1 / 2 / 3** (`#F6F6F6` / `#EFEFEF` / `#E3E3E3`): Cards → nested rows/inputs → pressed/track backgrounds.
+- **Light Divider** (`#E0E0E0`): 1px hairlines.
+- **Dark Canvas** (`#141414`): App background — true near-black, no color tint (a genuine Material-style dark, not a crimson-black).
+- **Dark Surface 1 / 2 / 3** (`#1E1E1E` / `#272727` / `#333333`): Same role ladder as light, dark register.
+- **Dark Divider** (`#3A3A3A`): 1px hairlines.
 
-- **Text Primary** (`#2B0E12` light / `#F9E9EA` dark): Titles, metric values, card titles.
-- **Text Secondary** (`#6E3A40` light / `#D6BCC0` dark): Body, metadata.
-- **Text Tertiary** (`#A17178` light / `#A8878C` dark): Meta line, units, captions, disabled.
-- **On-Primary** (`#FFFFFF` light / `#1A0C0F` dark): Text/icon on a `primary-500` fill.
-- **On-Secondary** (`#1A0C0F` both themes): Text/icon on a `secondary-500` fill — **dark text in both themes**, since white fails contrast on Jade-500 (§2.3).
+### Text — Revised: True Neutral, Not Red-Tinted
+
+- **Text Primary** (`#1A1A1A` light / `#F5F5F5` dark): Titles, metric values, card titles — neutral near-black/near-white, not crimson-tinted.
+- **Text Secondary** (`#5C5C5C` light / `#C7C7C7` dark): Body, metadata.
+- **Text Tertiary** (`#8A8A8A` light / `#999999` dark): Meta line, units, captions, disabled.
+- **On-Primary** (`#FFFFFF` light / `#141414` dark): Text/icon on a `primary-500` fill.
+- **On-Secondary** (`#141414` both themes): Text/icon on a `secondary-500` fill — dark text in both themes, since white fails contrast on Jade-500 (§2.3, ratios recompute against the new neutral canvas but the conclusion is unchanged).
 
 ### Functional / Emotion Colors (fixed meaning, theme-invariant)
 
@@ -191,9 +193,22 @@ Fem-Psychmonitor's equivalent of Peloton's fixed in-class metric colors — each
 **Streak / Milestone Card**
 - On hitting a streak milestone: a `Success` (`#1FAD9A`) ring pulse behind the card icon, a brief confetti burst, and "Streak 7 hari!" in `Display` typography, 1.2s duration, paired with a success haptic — direct analog to Peloton's PR burst, re-hued to this file's corrected Success color specifically so it never reads as "Jade, but muted"
 
-### Navigation
+### List / Settings Icon Chip — Color Assignment System (new)
 
-**Bottom Tab Bar**
+The screenshot problem — every row icon in a settings-style list (language, theme, edit profile, reset, delete, logout) rendered as the same pink chip — happens when a list defaults every leading icon to `primary` for lack of any other rule. Fix it with an explicit assignment, not a per-screen judgment call: **a list of icon chips must draw from at least three different color families, chosen by what the row actually does**, never all from one ramp.
+
+| Row category | Chip color family | Example rows |
+|---|---|---|
+| Identity / profile actions | `primary` (Cherry) | Edit profil |
+| Preferences / appearance | `secondary` (Jade) | Tema, Bahasa |
+| Informational / neutral utility | `info` | Bahasa (alt.), help/FAQ links |
+| Caution / resets | `warning` | Asesmen ulang, Reset data |
+| Destructive | `error` | Hapus akun, Keluar |
+| Positive / completed state | `success` | Completed assessment, streak-related settings |
+
+Each chip: base color at 12–15% opacity as the fill (same rule as the Emotion Chip in Core Atoms), icon in that color's on-light/on-dark text-safe step — never the raw base as an icon color, and never `primary` by default just because it's the brand color. A settings list where five rows are `primary` and one is `error` has failed this rule even if the `error` row is technically correct; the point is deliberate variety per category, not just correctness for the one destructive row.
+
+
 - Height: 56dp + safe area
 - Background: `surface-1`, 0.5dp top `divider`
 - Tabs: 4–5 (Home, History, Record, Trends, Profile)
@@ -280,7 +295,7 @@ Fem-Psychmonitor's equivalent of Peloton's fixed in-class metric colors — each
 | Floating | `surface-1` + `0 8px 24px rgba(43,14,18,0.14)` | `surface-2` + `0 8px 24px rgba(0,0,0,0.5)` | Bottom sheets, dialogs |
 | Pressed | `surface-3` | `surface-3` | Active/pressed surfaces, track backgrounds |
 
-**Shadow philosophy:** shadows are invisible on the dark canvas, so dark-theme depth comes entirely from the surface-lightness ladder, same as Peloton's reasoning for pure black — applied here to a warm crimson-black rather than a neutral one.
+**Shadow philosophy:** shadows are invisible on the dark canvas, so dark-theme depth comes entirely from the surface-lightness ladder, same as Peloton's reasoning for pure black — applied here to a true neutral near-black rather than a colored one.
 
 ### Motion
 - **Card tap:** scale 1.0 → 0.98 over 120ms, then push-transition to detail
@@ -309,7 +324,8 @@ Fem-Psychmonitor's equivalent of Peloton's fixed in-class metric colors — each
 - Don't set body-size text directly in `primary-500` or `secondary-500` on light theme without checking §2 — use the documented text-safe step instead
 - Don't let the Emotion Trend Ring's segmented multi-color mode bleed into everyday chrome — it's the one deliberately "loud" moment in an otherwise calm system
 - Don't introduce a third brand hue; Success/Warning/Error/Info already cover the system-state space
-- Don't reuse true black/true white for canvas or max-emphasis text — every token here carries the warm crimson undertone
+- Don't tint canvas, surfaces, or neutral text toward Cherry's hue "for cohesion" — that was this file's original mistake and the direct cause of the "too red" problem; neutrals must stay genuinely uncolored
+- Don't default every list-row icon chip to `primary` — use the Icon Chip Color Assignment system (§4) so a settings-style list draws from at least three color families
 - Don't set white text on a `secondary-500` fill — it fails contrast; use dark text (`on-secondary`) in both themes
 - Don't hand-author a new component's dark-theme colors from scratch — derive them from the same ramp-step relationship already established here
 - Don't over-animate — motion is the recording pulse, ring fill, and streak burst; quiet elsewhere
@@ -347,12 +363,13 @@ Fem-Psychmonitor's equivalent of Peloton's fixed in-class metric colors — each
 ## 9. Agent Prompt Guide
 
 ### Quick Color Reference
-- Light canvas: `#FFF7F8` · Dark canvas: `#1A0C0F`
-- Light surface 1/2/3: `#FDEEF0` / `#FBE3E6` / `#F6D0D5`
-- Dark surface 1/2/3: `#24141A` / `#301B22` / `#3D242C`
+- Light canvas: `#FCFCFC` (true neutral) · Dark canvas: `#141414` (true neutral)
+- Light surface 1/2/3: `#F6F6F6` / `#EFEFEF` / `#E3E3E3`
+- Dark surface 1/2/3: `#1E1E1E` / `#272727` / `#333333`
+- Text primary/secondary/tertiary (light): `#1A1A1A` / `#5C5C5C` / `#8A8A8A` — (dark): `#F5F5F5` / `#C7C7C7` / `#999999`
 - Primary (fill): `#B4182D` · Primary text (light/dark): `#901324` / `#EE8190`
 - Secondary (fill): `#25B15F` · Secondary text (light/dark): `#166939` / `#70E19F`
-- `on-secondary` text/icon: `#1A0C0F` on **both** themes (white fails contrast on Jade-500)
+- `on-secondary` text/icon: `#141414` on **both** themes (white fails contrast on Jade-500)
 - Success `#1FAD9A` · Warning `#F29A18` · Error `#E04343` · Info `#3A82C9`
 - Emotion — Happy `#FFB03C` · Sad `#5388C4` · Anger `#F46325` · Fearful `#946ACC` · Disgust `#A9C234` · Neutral `#B09989`
 - Font: Inter. Base unit: 4dp. Design canvas: 390×844 (ScreenUtil)
@@ -371,8 +388,10 @@ Fem-Psychmonitor's equivalent of Peloton's fixed in-class metric colors — each
 
 - "Build the Fem-Psychmonitor primary button: full pill (999dp radius), `primary-500` background, `on-primary` Inter 15sp 600 text, 14dp × 24dp padding. Pressed: `primary-700` + scale 0.98. Provide a Jade secondary variant (transparent background, 1.5dp `secondary-500` border, `secondary-700`/`secondary-300` text) for 'Lihat Tren'."
 
+- "Build the Fem-Psychmonitor Settings screen list rows using the Icon Chip Color Assignment system: 'Edit profil' gets a `primary` chip, 'Tema' and 'Bahasa' get `secondary` chips, 'Asesmen ulang' and 'Reset data' get `warning` chips, 'Hapus akun' and 'Keluar' get `error` chips. Each chip is 40dp, base color at 15% opacity fill, icon in that color's text-safe variant, on a true-neutral `surface-1` row background — never all the same color family."
+
 ### Iteration Guide
-1. Canvas is a crisp near-white (`#FFF7F8`) in light mode or a deep crimson-black (`#1A0C0F`) in dark mode — never neutral gray or true black/white
+1. Canvas and all neutral text are **true, uncolored neutrals** (`#FCFCFC`/`#141414` for canvas, true grays for text) — never tinted toward Cherry's own hue; that tinting was this file's original bug and the direct cause of the "everything looks red" problem
 2. Cherry (`#B4182D`) and Jade (`#25B15F`) are **co-equal** brand fills, both held at matched saturation — never treat one as "the accent" and the other as filler
 3. Ramps are generated by **fixed hue/saturation, varying lightness only** — this is the "segar, tidak pias" fix; don't fall back to linear-to-white/black mixing for new tokens in this file
 4. The six emotion colors are **fixed semantics** — never recolor per theme beyond the on-light/on-dark text-safe swap, and never reuse one as a generic UI accent
@@ -382,3 +401,4 @@ Fem-Psychmonitor's equivalent of Peloton's fixed in-class metric colors — each
 8. The **Voice Capture Card's** pulsing record-ring and the **Recording Indicator's** pulsing dot are this app's "heartbeat," the direct equivalent of Peloton's LIVE pulse
 9. Selected states are **tonal** (gently lit), not inverted white chips — segmented controls and selected filter pills use a light tint fill, not a stark color-swap
 10. Depth is **surface lightness + a soft shadow on light theme only**; dark theme never uses drop shadows on content
+11. Any settings/list-style screen must draw its row icon chips from **at least three color families** (primary/secondary/info/warning/error/success per §4's Icon Chip Color Assignment table) — never default every row to `primary`

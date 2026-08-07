@@ -5,7 +5,9 @@ import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:fem_psychmonitor/app/providers/privacy_provider.dart';
 import 'package:fem_psychmonitor/app/providers/theme_provider.dart';
+import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/utils/mental_health_score.dart';
+import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:fem_psychmonitor/features/onboarding/models/ocean_model.dart';
@@ -321,11 +323,19 @@ class _SettingsIdentityHeader extends StatelessWidget {
   final OceanScores? ocean;
   final VoidCallback onEditTap;
 
-  String _scoreEmoji(int s) {
-    if (s <= 25) return '😢';
-    if (s <= 50) return '😔';
-    if (s <= 75) return '😊';
-    return '🥰';
+  /// Raster face for the psych-score band.
+  ///
+  /// Font emoji render as tofu/"bald" glyphs on several Android builds, so the
+  /// score row uses the shipped PNG set instead of unicode. Bands follow
+  /// [psychClassKeyForScore]: the two low bands read as sad/neutral, both
+  /// healthy bands share the happy face.
+  String _scoreEmojiAsset(int s) {
+    final key = psychClassKeyForScore(s);
+    return switch (key) {
+      'butuh_perhatian' => EmotionLabelType.sad.emojiAsset,
+      'rentan' => EmotionLabelType.neutral.emojiAsset,
+      _ => EmotionLabelType.happy.emojiAsset,
+    };
   }
 
   String _scoreLabel(int s, bool isEn) {
@@ -359,12 +369,10 @@ class _SettingsIdentityHeader extends StatelessWidget {
         right: AppSpacing.pageX.w,
         bottom: AppSpacing.lg.h,
       ),
-      decoration: BoxDecoration(
-        color: p.surface1,
-        border: Border(
-          bottom: BorderSide(color: p.divider, width: AppBorder.thin),
-        ),
-      ),
+      // Same brand-to-canvas wash as DiscoverHeader, so both top-level tabs
+      // share one header treatment. The gradient already resolves to `canvas`
+      // at the bottom, so a divider on top of it would read as a seam.
+      decoration: BoxDecoration(gradient: p.brandFadeGradient),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -411,11 +419,17 @@ class _SettingsIdentityHeader extends StatelessWidget {
                     ),
                     if (sc != null) ...[
                       SizedBox(height: 4.h),
-                      Text(
-                        '${_scoreEmoji(sc)} $sc · ${_scoreLabel(sc, isEn)}',
-                        style: AppTypography.label.copyWith(
-                          color: p.primaryText,
-                        ),
+                      Row(
+                        children: [
+                          EmotionEmoji(asset: _scoreEmojiAsset(sc), size: 16),
+                          SizedBox(width: AppSpacing.xxs.w),
+                          Text(
+                            '$sc · ${_scoreLabel(sc, isEn)}',
+                            style: AppTypography.label.copyWith(
+                              color: p.primaryText,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ],
@@ -428,7 +442,10 @@ class _SettingsIdentityHeader extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.all(AppSpacing.xs.w),
                   decoration: BoxDecoration(
-                    color: p.surface1.withValues(alpha: 0.75),
+                    // Matches the DiscoverHeader segmented-track alphas: keeps
+                    // the gradient readable through the chrome instead of
+                    // punching an opaque patch into it.
+                    color: p.surface1.withValues(alpha: p.isDark ? 0.34 : 0.62),
                     borderRadius: AppRadius.card,
                     border: Border.all(
                       color: p.primaryFill.withValues(alpha: 0.2),
@@ -459,7 +476,9 @@ class _SettingsIdentityHeader extends StatelessWidget {
                       vertical: AppSpacing.xxs.h + 1,
                     ),
                     decoration: BoxDecoration(
-                      color: p.surface1.withValues(alpha: 0.7),
+                      color: p.surface1.withValues(
+                        alpha: p.isDark ? 0.34 : 0.62,
+                      ),
                       borderRadius: AppRadius.chip,
                       border: Border.all(
                         color: p.primaryFill.withValues(alpha: 0.2),

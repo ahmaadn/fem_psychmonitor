@@ -7,6 +7,7 @@ import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
 import 'package:fem_psychmonitor/app/utils/mental_health_score.dart';
 import 'package:fem_psychmonitor/app/utils/recommendation_engine.dart';
 import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
+import 'package:fem_psychmonitor/app/widgets/recommendation_card.dart';
 import 'package:fem_psychmonitor/data/models/emotion_summary_model.dart';
 import 'package:fem_psychmonitor/data/repositories/recommendation_repository.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
@@ -220,9 +221,9 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(height: AppSpacing.lg.h),
 
                     // [5] Section: For you — diperbagus
-                    _ForYouHeader(isEn: isEn),
+                    ForYouHeader(isEn: isEn),
                     SizedBox(height: AppSpacing.sm.h),
-                    _RecommendationSection(saran: _saran, isEn: isEn),
+                    RecommendationSection(saran: _saran, isEn: isEn),
                   ]),
                 ),
               ),
@@ -274,175 +275,215 @@ class _HeroHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Greeting — on canvas, not wrapped in a card ─────────────
-          _GreetingChip(icon: greetingIcon, label: greetingTime),
-          SizedBox(height: AppSpacing.md.h),
-
-          // Name + subtitle — on canvas, neutral text tokens
-          Text(
-            name.isEmpty ? (isEn ? 'Welcome back' : 'Selamat datang') : name,
-            style: AppTypography.display.copyWith(
-              color: p.textPrimary,
-              height: 1.1,
-            ),
-          ),
-          SizedBox(height: AppSpacing.xxs.h),
-          Text(
-            isEn ? 'How is your heart today?' : 'Bagaimana hatimu hari ini?',
-            style: AppTypography.body.copyWith(color: p.textSecondary),
-          ),
-          SizedBox(height: AppSpacing.lg.h),
-
-          // ── Score block — the only part inside the brand card ───────
+          // ── Hero card — greeting through score, one brand surface ───
           Container(
             width: double.infinity,
             decoration: p.panelStrawberryBold(radius: AppRadius.xxl),
-            child: Stack(
-              children: [
-                // Decorative blobs — onPrimaryFill at low alpha
-                Positioned(
-                  right: -32.w,
-                  top: -30.w,
-                  child: Container(
-                    width: 132.w,
-                    height: 132.w,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: p.onPrimaryFill.withValues(alpha: 0.10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.xxl.r),
+              child: Stack(
+                children: [
+                  // Decorative blobs — onPrimaryFill at low alpha
+                  Positioned(
+                    right: -32.w,
+                    top: -30.w,
+                    child: Container(
+                      width: 132.w,
+                      height: 132.w,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: p.onPrimaryFill.withValues(alpha: 0.10),
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
-                  left: -28.w,
-                  bottom: -36.w,
-                  child: Container(
-                    width: 104.w,
-                    height: 104.w,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: p.onPrimaryFill.withValues(alpha: 0.07),
+                  Positioned(
+                    left: -28.w,
+                    bottom: -36.w,
+                    child: Container(
+                      width: 104.w,
+                      height: 104.w,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: p.onPrimaryFill.withValues(alpha: 0.07),
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(AppSpacing.lg.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  isEn ? 'MENTAL HEALTH' : 'KESEHATAN MENTAL',
-                                  style: AppTypography.label.copyWith(
-                                    color: p.onPrimaryFill.withValues(
-                                      alpha: 0.78,
-                                    ),
-                                    letterSpacing: 0.8,
-                                  ),
-                                ),
-                                SizedBox(height: AppSpacing.xs.h),
-                                Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.baseline,
-                                  textBaseline: TextBaseline.alphabetic,
+                  Padding(
+                    padding: EdgeInsets.all(AppSpacing.lg.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ── Greeting + name, inside the hero card ───────
+                        _GreetingChip(
+                          icon: greetingIcon,
+                          label: greetingTime,
+                          onBrand: true,
+                        ),
+                        SizedBox(height: AppSpacing.md.h),
+                        Text(
+                          name.isEmpty
+                              ? (isEn ? 'Welcome back' : 'Selamat datang')
+                              : name,
+                          style: AppTypography.display.copyWith(
+                            color: p.onPrimaryFill,
+                            height: 1.1,
+                          ),
+                        ),
+                        SizedBox(height: AppSpacing.xxs.h),
+                        Text(
+                          isEn
+                              ? 'How is your heart today?'
+                              : 'Bagaimana hatimu hari ini?',
+                          style: AppTypography.body.copyWith(
+                            color: p.onPrimaryFill.withValues(alpha: 0.80),
+                          ),
+                        ),
+                        SizedBox(height: AppSpacing.lg.h),
+                        Container(
+                          height: AppBorder.thin,
+                          color: p.onPrimaryFill.withValues(alpha: 0.20),
+                        ),
+                        SizedBox(height: AppSpacing.lg.h),
+
+                        // ── Score block ────────────────────────────────
+                        IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      '$score',
-                                      style: AppTypography.metric.copyWith(
-                                        color: p.onPrimaryFill,
-                                        fontSize: 44.sp,
-                                        height: 1.0,
+                                      isEn
+                                          ? 'MENTAL HEALTH'
+                                          : 'KESEHATAN MENTAL',
+                                      style: AppTypography.label.copyWith(
+                                        color: p.onPrimaryFill.withValues(
+                                          alpha: 0.78,
+                                        ),
+                                        letterSpacing: 0.8,
                                       ),
                                     ),
-                                    SizedBox(width: 4.w),
-                                    Text(
-                                      '/ 100',
-                                      style: AppTypography.caption.copyWith(
-                                        color: p.onPrimaryFill.withValues(
-                                          alpha: 0.68,
+                                    SizedBox(height: AppSpacing.xs.h),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.baseline,
+                                      textBaseline: TextBaseline.alphabetic,
+                                      children: [
+                                        Text(
+                                          '$score',
+                                          style: AppTypography.metric.copyWith(
+                                            color: p.onPrimaryFill,
+                                            fontSize: 44.sp,
+                                            height: 1.0,
+                                          ),
+                                        ),
+                                        SizedBox(width: 4.w),
+                                        Text(
+                                          '/ 100',
+                                          style: AppTypography.caption.copyWith(
+                                            color: p.onPrimaryFill.withValues(
+                                              alpha: 0.68,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: AppSpacing.sm.h),
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: AppSpacing.sm.w,
+                                          vertical: 4.h,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: p.onPrimaryFill.withValues(
+                                            alpha: 0.20,
+                                          ),
+                                          borderRadius: AppRadius.chip,
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Container(
+                                              width: 6.w,
+                                              height: 6.w,
+                                              decoration: BoxDecoration(
+                                                color: p.onPrimaryFill,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                            SizedBox(width: 6.w),
+                                            Text(
+                                              scoreLabel,
+                                              style: AppTypography.caption
+                                                  .copyWith(
+                                                    color: p.onPrimaryFill,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: AppSpacing.sm.h),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: AppSpacing.sm.w,
-                                    vertical: 4.h,
+                              ),
+                              SizedBox(width: AppSpacing.md.w),
+                              // Tall emoji panel — stretches the full height of
+                              // the score block instead of a small circle.
+                              Container(
+                                width: 116.w,
+                                decoration: BoxDecoration(
+                                  color: p.onPrimaryFill.withValues(
+                                    alpha: 0.16,
                                   ),
-                                  decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.xxl.r,
+                                  ),
+                                  border: Border.all(
                                     color: p.onPrimaryFill.withValues(
-                                      alpha: 0.20,
+                                      alpha: 0.22,
                                     ),
-                                    borderRadius: AppRadius.chip,
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        width: 6.w,
-                                        height: 6.w,
-                                        decoration: BoxDecoration(
-                                          color: p.onPrimaryFill,
-                                          shape: BoxShape.circle,
-                                        ),
-                                      ),
-                                      SizedBox(width: 6.w),
-                                      Text(
-                                        scoreLabel,
-                                        style: AppTypography.caption.copyWith(
-                                          color: p.onPrimaryFill,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
+                                    width: AppBorder.thin,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: AppSpacing.sm.w),
-                          Container(
-                            width: 76.w,
-                            height: 76.w,
-                            decoration: BoxDecoration(
-                              color: p.onPrimaryFill.withValues(alpha: 0.18),
-                              shape: BoxShape.circle,
-                            ),
-                            alignment: Alignment.center,
-                            child: EmotionEmoji(
-                              asset:
-                                  scoreEmoji?.emojiAsset ??
-                                  'assets/emoji/netral.png',
-                              size: 54,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: AppSpacing.md.h),
-                      ClipRRect(
-                        borderRadius: AppRadius.chip,
-                        child: LinearProgressIndicator(
-                          value: score / 100,
-                          minHeight: 6.h,
-                          backgroundColor: p.onPrimaryFill.withValues(
-                            alpha: 0.24,
-                          ),
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            p.onPrimaryFill,
+                                padding: EdgeInsets.symmetric(
+                                  vertical: AppSpacing.sm.h,
+                                ),
+                                alignment: Alignment.center,
+                                child: EmotionEmoji(
+                                  asset:
+                                      scoreEmoji?.emojiAsset ??
+                                      'assets/emoji/netral.png',
+                                  size: 96,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
+                        SizedBox(height: AppSpacing.md.h),
+                        ClipRRect(
+                          borderRadius: AppRadius.chip,
+                          child: LinearProgressIndicator(
+                            value: score / 100,
+                            minHeight: 6.h,
+                            backgroundColor: p.onPrimaryFill.withValues(
+                              alpha: 0.24,
+                            ),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              p.onPrimaryFill,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -453,12 +494,21 @@ class _HeroHeader extends StatelessWidget {
 
 // ── Greeting Chip ────────────────────────────────────────────────────────────
 
-/// Time-of-day pill: tonal brand wash, ringed glyph, brand-tinted label.
+/// Time-of-day pill.
+///
+/// Two surfaces: the default tonal brand wash (for a neutral canvas) and
+/// [onBrand], used when the chip sits on top of a saturated `primaryFill`
+/// panel where `primaryWash`/`primaryText` would wash out.
 class _GreetingChip extends StatelessWidget {
-  const _GreetingChip({required this.icon, required this.label});
+  const _GreetingChip({
+    required this.icon,
+    required this.label,
+    this.onBrand = false,
+  });
 
   final IconData icon;
   final String label;
+  final bool onBrand;
 
   @override
   Widget build(BuildContext context) {
@@ -472,10 +522,14 @@ class _GreetingChip extends StatelessWidget {
         bottom: AppSpacing.xxs.h,
       ),
       decoration: BoxDecoration(
-        color: p.primaryWash,
+        color: onBrand
+            ? p.onPrimaryFill.withValues(alpha: 0.18)
+            : p.primaryWash,
         borderRadius: AppRadius.chip,
         border: Border.all(
-          color: p.primaryFill.withValues(alpha: p.isDark ? 0.30 : 0.20),
+          color: onBrand
+              ? p.onPrimaryFill.withValues(alpha: 0.28)
+              : p.primaryFill.withValues(alpha: p.isDark ? 0.30 : 0.20),
           width: AppBorder.thin,
         ),
       ),
@@ -487,15 +541,18 @@ class _GreetingChip extends StatelessWidget {
             width: 30.w,
             height: 30.w,
             decoration: BoxDecoration(
-              gradient: p.strawberryGradientBold,
+              color: onBrand ? p.onPrimaryFill.withValues(alpha: 0.22) : null,
+              gradient: onBrand ? null : p.strawberryGradientBold,
               shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: p.primaryFill.withValues(alpha: 0.34),
-                  offset: const Offset(0, 2),
-                  blurRadius: 8,
-                ),
-              ],
+              boxShadow: onBrand
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: p.primaryFill.withValues(alpha: 0.34),
+                        offset: const Offset(0, 2),
+                        blurRadius: 8,
+                      ),
+                    ],
             ),
             child: Icon(icon, color: p.onPrimaryFill, size: 16.sp),
           ),
@@ -503,7 +560,7 @@ class _GreetingChip extends StatelessWidget {
           Text(
             label,
             style: AppTypography.bodyStrong.copyWith(
-              color: p.primaryText,
+              color: onBrand ? p.onPrimaryFill : p.primaryText,
               letterSpacing: 0.2,
             ),
           ),
@@ -762,13 +819,13 @@ class _WeekStrip extends StatelessWidget {
                 vertical: 2.h,
               ),
               decoration: BoxDecoration(
-                color: p.secondarySoft,
+                color: p.error.withValues(alpha: 0.1),
                 borderRadius: AppRadius.chip,
               ),
               child: Text(
                 '$checked/7',
                 style: AppTypography.label.copyWith(
-                  color: p.secondaryText,
+                  color: p.errorText,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -1006,287 +1063,3 @@ class _VoiceCheckinCTA extends StatelessWidget {
   }
 }
 
-// ── For You Header ────────────────────────────────────────────────────────────
-
-class _ForYouHeader extends StatelessWidget {
-  const _ForYouHeader({required this.isEn});
-  final bool isEn;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    return Row(
-      children: [
-        Container(
-          width: 28.w,
-          height: 28.w,
-          decoration: BoxDecoration(
-            color: p.iconChipFill(IconChipFamily.secondary),
-            borderRadius: BorderRadius.circular(AppRadius.sm),
-          ),
-          alignment: Alignment.center,
-          child: Icon(
-            Icons.auto_awesome_rounded,
-            color: p.secondaryText,
-            size: 15.sp,
-          ),
-        ),
-        SizedBox(width: AppSpacing.xs.w),
-        Text(
-          isEn ? 'For you' : 'Untukmu',
-          style: AppTypography.bodyStrong.copyWith(color: p.textPrimary),
-        ),
-      ],
-    );
-  }
-}
-
-// ── Recommendation Section ────────────────────────────────────────────────────
-
-class _RecommendationSection extends StatelessWidget {
-  const _RecommendationSection({required this.saran, required this.isEn});
-  final RecommendationResult? saran;
-  final bool isEn;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-
-    // Loading state — skeletons matching the real card shape, so the section
-    // does not visibly jump in height when the tips land.
-    if (saran == null) {
-      return Column(
-        children: List.generate(3, (i) {
-          return Padding(
-            padding: EdgeInsets.only(bottom: AppSpacing.sm.h),
-            child: Container(
-              padding: EdgeInsets.all(AppSpacing.md.w),
-              decoration: p.card(elevated: true),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40.w,
-                    height: 40.w,
-                    decoration: BoxDecoration(
-                      color: p.surface3,
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                    ),
-                  ),
-                  SizedBox(width: AppSpacing.sm.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 9.h,
-                          width: 72.w,
-                          decoration: BoxDecoration(
-                            color: p.surface3,
-                            borderRadius: AppRadius.chip,
-                          ),
-                        ),
-                        SizedBox(height: AppSpacing.xs.h),
-                        Container(
-                          height: 11.h,
-                          decoration: BoxDecoration(
-                            color: p.surface3,
-                            borderRadius: AppRadius.chip,
-                          ),
-                        ),
-                        SizedBox(height: AppSpacing.xxs.h),
-                        FractionallySizedBox(
-                          widthFactor: i.isEven ? 0.62 : 0.45,
-                          child: Container(
-                            height: 11.h,
-                            decoration: BoxDecoration(
-                              color: p.surface3,
-                              borderRadius: AppRadius.chip,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }),
-      );
-    }
-
-    if (saran!.safetyTriggered) {
-      return Container(
-        padding: EdgeInsets.all(AppSpacing.md.w),
-        decoration: p.card(
-          color: p.warning.withValues(alpha: p.isDark ? 0.16 : 0.10),
-          borderColor: p.warning.withValues(alpha: 0.40),
-          elevated: true,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 40.w,
-                  height: 40.w,
-                  decoration: BoxDecoration(
-                    color: p.iconChipFill(IconChipFamily.warning),
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                  ),
-                  alignment: Alignment.center,
-                  child: Icon(
-                    Icons.favorite_rounded,
-                    // text-safe step, never the raw base as a glyph color
-                    color: p.warningText,
-                    size: 20.sp,
-                  ),
-                ),
-                SizedBox(width: AppSpacing.sm.w),
-                Expanded(
-                  child: Text(
-                    isEn
-                        ? 'You matter — support is here'
-                        : 'Kamu berharga — dukungan ada',
-                    style: AppTypography.bodyStrong.copyWith(
-                      color: p.warningText,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: AppSpacing.sm.h),
-            ...saran!.items.map(
-              (i) => Padding(
-                padding: EdgeInsets.only(bottom: AppSpacing.xs.h),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 6.h),
-                      child: Container(
-                        width: 5.w,
-                        height: 5.w,
-                        decoration: BoxDecoration(
-                          color: p.warningText,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: AppSpacing.xs.w),
-                    Expanded(
-                      child: Text(
-                        i.text,
-                        style: AppTypography.body.copyWith(
-                          color: p.textPrimary,
-                          height: 1.45,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    // Normal recommendations — one card per tip.
-    // Chip family/icon are derived from the tip's OCEAN trait (SaranItem.trait),
-    // not the list index, so the same trait always reads the same way and the
-    // list draws from several color families (DESIGN.md §4 icon-chip system).
-    return Column(
-      children: saran!.items.map((item) {
-        return Padding(
-          padding: EdgeInsets.only(bottom: AppSpacing.sm.h),
-          child: _RecommendationCard(item: item, isEn: isEn),
-        );
-      }).toList(),
-    );
-  }
-}
-
-// ── Recommendation Card ───────────────────────────────────────────────────────
-
-class _RecommendationCard extends StatelessWidget {
-  const _RecommendationCard({required this.item, required this.isEn});
-
-  final SaranItem item;
-  final bool isEn;
-
-  /// Trait → icon-chip family. Deliberately spans several families so a list of
-  /// tips never renders as one repeated brand color (DESIGN.md §4).
-  IconChipFamily get _family => switch (item.trait) {
-    OceanTrait.o => IconChipFamily.info, // curiosity / exploration
-    OceanTrait.c => IconChipFamily.success, // routine / follow-through
-    OceanTrait.e => IconChipFamily.primary, // social energy
-    OceanTrait.a => IconChipFamily.secondary, // connection / warmth
-    OceanTrait.n => IconChipFamily.warning, // emotional regulation
-    null => IconChipFamily.secondary, // neutral default tips
-  };
-
-  IconData get _icon => switch (item.trait) {
-    OceanTrait.o => Icons.explore_rounded,
-    OceanTrait.c => Icons.task_alt_rounded,
-    OceanTrait.e => Icons.groups_rounded,
-    OceanTrait.a => Icons.volunteer_activism_rounded,
-    OceanTrait.n => Icons.self_improvement_rounded,
-    null => Icons.spa_rounded,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    final family = _family;
-    final trait = item.trait;
-
-    return Container(
-      padding: EdgeInsets.all(AppSpacing.md.w),
-      decoration: p.card(elevated: true),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Icon chip — base at 12–15% fill, glyph in the text-safe step
-          Container(
-            width: 40.w,
-            height: 40.w,
-            decoration: BoxDecoration(
-              color: p.iconChipFill(family),
-              borderRadius: BorderRadius.circular(AppRadius.md),
-            ),
-            alignment: Alignment.center,
-            child: Icon(_icon, color: p.iconChipIcon(family), size: 20.sp),
-          ),
-          SizedBox(width: AppSpacing.sm.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (trait != null) ...[
-                  Text(
-                    trait.label(isEn).toUpperCase(),
-                    style: AppTypography.label.copyWith(
-                      color: p.iconChipIcon(family),
-                      letterSpacing: 0.6,
-                    ),
-                  ),
-                  SizedBox(height: AppSpacing.xxs.h),
-                ],
-                Text(
-                  item.text,
-                  style: AppTypography.body.copyWith(
-                    color: p.textPrimary,
-                    height: 1.45,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
