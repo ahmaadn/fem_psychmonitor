@@ -4,10 +4,12 @@ import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
+import 'package:fem_psychmonitor/app/utils/fs_support.dart';
 import 'package:fem_psychmonitor/app/utils/mental_health_score.dart';
 import 'package:fem_psychmonitor/app/utils/recommendation_engine.dart';
 import 'package:fem_psychmonitor/app/widgets/emotion_emoji.dart';
 import 'package:fem_psychmonitor/app/widgets/recommendation_card.dart';
+import 'package:fem_psychmonitor/app/widgets/upload_audio_cta.dart';
 import 'package:fem_psychmonitor/data/models/emotion_summary_model.dart';
 import 'package:fem_psychmonitor/data/repositories/recommendation_repository.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
@@ -15,7 +17,10 @@ import 'package:fem_psychmonitor/data/viewmodels/home_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:fem_psychmonitor/features/home/widgets/today_mood_sheet.dart';
 import 'package:fem_psychmonitor/features/onboarding/models/ocean_model.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:fem_psychmonitor/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +36,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   EmotionLabelType? _todayMood;
   RecommendationResult? _saran;
+  bool _pickingAudio = false;
 
   @override
   void initState() {
@@ -73,6 +79,91 @@ class _HomePageState extends State<HomePage> {
     if (user == null) return;
     await persistDailyMood(userId: user.id, emotion: selected);
     await _loadMoodAndSaran();
+  }
+
+  /// Format yang bisa didekode `EmotionDetector._decodeAudioFile` — WAV/PCM
+  /// langsung, sisanya ditranskode via FFmpeg. Jaga tetap sinkron dengan
+  /// `emotion_detector_io.dart`.
+  static const List<String> _audioExtensions = [
+    'wav',
+    'pcm',
+    'mp3',
+    'm4a',
+    'aac',
+    'mp4',
+    'ogg',
+    'opus',
+    'flac',
+  ];
+
+  /// Memilih file audio dari penyimpanan perangkat lalu mengirimkannya ke
+  /// pipeline analisis yang sama dengan cek-in langsung.
+  Future<void> _pickAudioFile() async {
+    if (_pickingAudio) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+
+    // SER (TFLite + MFCC FFI + FFmpeg) native-only — jangan buka picker di web,
+    // karena EmotionDetector di web hanyalah stub yang selalu gagal.
+    if (kIsWeb) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.uploadAudioWebUnavailable)),
+      );
+      return;
+    }
+
+    setState(() => _pickingAudio = true);
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: _audioExtensions,
+        allowMultiple: false,
+        withData: false,
+      );
+      if (!mounted) return;
+
+      // allowMultiple: false, jadi maksimal satu file.
+      final picked = (result?.files.isNotEmpty ?? false)
+          ? result!.files.first
+          : null;
+      if (picked == null) return; // dibatalkan pengguna
+
+      final sourcePath = picked.path;
+      if (sourcePath == null || sourcePath.trim().isEmpty) {
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.failedToReadAudioPath)),
+        );
+        return;
+      }
+
+      // Beberapa platform mengabaikan allowedExtensions — verifikasi ulang.
+      final ext = picked.extension?.toLowerCase() ??
+          sourcePath.split('.').last.toLowerCase();
+      if (!_audioExtensions.contains(ext)) {
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.uploadAudioUnsupported)),
+        );
+        return;
+      }
+
+      // AiProcessingPage menghapus uploadedAudioPath setelah sesi disimpan,
+      // jadi analisis dijalankan atas salinan temp — file asli tetap utuh.
+      final workingPath = await copyPickedAudioToTemp(
+        sourcePath,
+        picked.name,
+      );
+      if (!mounted) return;
+
+      context.goNamed(RouteNames.recordingProcessing, extra: workingPath);
+    } catch (_) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.uploadAudioFailed)),
+      );
+    } finally {
+      if (mounted) setState(() => _pickingAudio = false);
+    }
   }
 
   // icon berdasarkan waktu hari
@@ -134,6 +225,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
+    final l10n = AppLocalizations.of(context)!;
     final homeVm = context.watch<HomeViewModel>();
     final profileVm = context.watch<ProfileViewModel>();
     final auth = context.watch<AuthViewModel>();
@@ -217,6 +309,15 @@ class _HomePageState extends State<HomePage> {
                       mood: mood,
                       onTap: () => context.goNamed(RouteNames.liveRecording),
                       onMoodTap: _pickMood,
+                    ),
+                    SizedBox(height: AppSpacing.sm.h),
+
+                    // [4b] Unggah rekaman suara dari penyimpanan perangkat
+                    UploadAudioCta(
+                      title: l10n.uploadAudio,
+                      subtitle: l10n.uploadAudioSubtitle,
+                      isLoading: _pickingAudio,
+                      onTap: _pickAudioFile,
                     ),
                     SizedBox(height: AppSpacing.lg.h),
 

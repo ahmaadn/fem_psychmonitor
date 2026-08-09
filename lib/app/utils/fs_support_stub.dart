@@ -5,6 +5,12 @@ Future<String> persistPickedImagePath(String sourcePath, String fileName) async 
   return sourcePath;
 }
 
+/// Web: tidak ada filesystem — path picker dipakai apa adanya (SER tetap
+/// tidak tersedia di web).
+Future<String> copyPickedAudioToTemp(String sourcePath, String fileName) async {
+  return sourcePath;
+}
+
 /// Web: blob / http paths load via [NetworkImage].
 ImageProvider localImageProvider(String path) {
   return NetworkImage(path);

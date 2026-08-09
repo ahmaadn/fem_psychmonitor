@@ -1,4 +1,3 @@
-import 'package:fem_psychmonitor/app/config/app_colors.dart';
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/app/config/app_typography.dart';
@@ -33,10 +32,8 @@ class AppSegmentedControl<T> extends StatelessWidget {
       child: Row(
         children: values.map((v) {
           final isSelected = v == selected;
-          final bg = isSelected
-              ? (p.isDark ? p.primarySoft : AppColors.primary100)
-              : Colors.transparent;
-          final fg = isSelected ? p.primaryText : p.textSecondary;
+          final bg = isSelected ? p.selectedTonal : Colors.transparent;
+          final fg = isSelected ? p.onSelectedTonal : p.textSecondary;
 
           return Expanded(
             child: GestureDetector(

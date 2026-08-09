@@ -268,6 +268,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uploadAudio => 'Upload Audio';
 
   @override
+  String get uploadAudioSubtitle => 'Analyze a recording from your device';
+
+  @override
+  String get uploadAudioUnsupported =>
+      'Unsupported audio format. Use WAV, MP3, M4A, AAC, OGG, OPUS, or FLAC.';
+
+  @override
+  String get uploadAudioFailed => 'Failed to open the audio file.';
+
+  @override
+  String get uploadAudioWebUnavailable =>
+      'Audio analysis is only available on the mobile app.';
+
+  @override
   String get currentMood => 'CURRENT MOOD';
 
   @override

@@ -372,7 +372,7 @@ class _SettingsIdentityHeader extends StatelessWidget {
       // Same brand-to-canvas wash as DiscoverHeader, so both top-level tabs
       // share one header treatment. The gradient already resolves to `canvas`
       // at the bottom, so a divider on top of it would read as a seam.
-      decoration: BoxDecoration(gradient: p.brandFadeGradient),
+      // decoration: BoxDecoration(gradient: p.brandFadeGradient),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -386,7 +386,10 @@ class _SettingsIdentityHeader extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: p.primarySoft,
-                  border: Border.all(color: p.primaryText, width: AppBorder.thin),
+                  border: Border.all(
+                    color: p.primaryText,
+                    width: AppBorder.thin,
+                  ),
                 ),
                 alignment: Alignment.center,
                 child: Text(

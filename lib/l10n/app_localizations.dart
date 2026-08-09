@@ -584,6 +584,30 @@ abstract class AppLocalizations {
   /// **'Upload Audio'**
   String get uploadAudio;
 
+  /// No description provided for @uploadAudioSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze a recording from your device'**
+  String get uploadAudioSubtitle;
+
+  /// No description provided for @uploadAudioUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported audio format. Use WAV, MP3, M4A, AAC, OGG, OPUS, or FLAC.'**
+  String get uploadAudioUnsupported;
+
+  /// No description provided for @uploadAudioFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to open the audio file.'**
+  String get uploadAudioFailed;
+
+  /// No description provided for @uploadAudioWebUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio analysis is only available on the mobile app.'**
+  String get uploadAudioWebUnavailable;
+
   /// No description provided for @currentMood.
   ///
   /// In en, this message translates to:

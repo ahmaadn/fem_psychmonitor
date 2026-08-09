@@ -80,8 +80,13 @@ class CalendarMonthBlock extends StatelessWidget {
                   Expanded(
                     child: AspectRatio(
                       aspectRatio: _cellAspectRatio,
-                      child: _cell(row * 7 + col, startWeekday, cellCount,
-                          isCurrentMonth, now),
+                      child: _cell(
+                        row * 7 + col,
+                        startWeekday,
+                        cellCount,
+                        isCurrentMonth,
+                        now,
+                      ),
                     ),
                   ),
                 ],
@@ -141,22 +146,6 @@ class _MonthHeader extends StatelessWidget {
           DateFormat.MMMM(locale).format(month),
           style: AppTypography.subtitle.copyWith(color: p.textPrimary),
         ),
-        SizedBox(width: AppSpacing.xs.w),
-        if (trackedDays > 0)
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: AppSpacing.xs.w,
-              vertical: 2.h,
-            ),
-            decoration: BoxDecoration(
-              color: p.secondarySoft,
-              borderRadius: AppRadius.chip,
-            ),
-            child: Text(
-              '$trackedDays d · $totalRecordings',
-              style: AppTypography.badge.copyWith(color: p.secondaryText),
-            ),
-          ),
       ],
     );
   }

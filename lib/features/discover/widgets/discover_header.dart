@@ -31,7 +31,7 @@ class DiscoverHeader extends StatelessWidget {
       // header blends into the calendar instead of sitting behind a hard edge.
       // No bottom border: the gradient already resolves to `canvas`, and a
       // divider on top of that reads as a seam.
-      decoration: BoxDecoration(gradient: p.brandFadeGradient),
+      // decoration: BoxDecoration(gradient: p.brandFadeGradient),
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -97,7 +97,7 @@ class DiscoverHeader extends StatelessWidget {
                   // The header is a gradient now, so a flat surface-2 track
                   // reads as a muddy patch. A translucent surface-1 keeps the
                   // gradient visible while still separating the track from the
-                  // primarySoft indicator.
+                  // selectedTonal indicator.
                   color: p.surface1.withValues(alpha: p.isDark ? 0.34 : 0.62),
                   // Track radius must match the indicator's, otherwise the
                   // unselected side reads as a square while the selected pill
@@ -113,7 +113,7 @@ class DiscoverHeader extends StatelessWidget {
                   indicatorSize: TabBarIndicatorSize.tab,
                   dividerColor: Colors.transparent,
                   indicator: BoxDecoration(
-                    color: p.primarySoft,
+                    color: p.selectedTonal,
                     borderRadius: AppRadius.chip,
                   ),
                   // Keep the ripple inside the same pill shape as the
@@ -124,7 +124,7 @@ class DiscoverHeader extends StatelessWidget {
                         ? p.primaryFill.withValues(alpha: 0.10)
                         : Colors.transparent,
                   ),
-                  labelColor: p.primaryText,
+                  labelColor: p.onSelectedTonal,
                   unselectedLabelColor: p.textTertiary,
                   labelStyle: AppTypography.label,
                   unselectedLabelStyle: AppTypography.label,

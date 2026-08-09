@@ -268,6 +268,20 @@ class AppLocalizationsId extends AppLocalizations {
   String get uploadAudio => 'Upload Audio';
 
   @override
+  String get uploadAudioSubtitle => 'Analisis rekaman dari perangkatmu';
+
+  @override
+  String get uploadAudioUnsupported =>
+      'Format audio tidak didukung. Gunakan WAV, MP3, M4A, AAC, OGG, OPUS, atau FLAC.';
+
+  @override
+  String get uploadAudioFailed => 'Gagal membuka file audio.';
+
+  @override
+  String get uploadAudioWebUnavailable =>
+      'Analisis audio hanya tersedia di aplikasi mobile.';
+
+  @override
   String get currentMood => 'MOOD SAAT INI';
 
   @override
