@@ -29,13 +29,13 @@ class AppColors {
   static const Color secondary800 = Color(0xFF104C29);
   static const Color secondary900 = Color(0xFF0B321B);
 
-  // ── Light surfaces ──────────────────────────────────────────────────
+  // ── Light surfaces — broken white (#F3F0E9 canvas anchor) ───────────
   // static const Color canvasLight = Color(0xFFFFF7F8);
-  static const Color canvasLight = Color(0xFFFCFCFC);
-  static const Color surfaceLight1 = Color(0xFFF6F6F6);
-  static const Color surfaceLight2 = Color(0xFFEFEFEF);
-  static const Color surfaceLight3 = Color(0xFFE3E3E3);
-  static const Color dividerLight = Color(0xFFE0E0E0);
+  static const Color canvasLight = Color(0xFFF3F0E9);
+  static const Color surfaceLight1 = Color(0xFFEDE9E0);
+  static const Color surfaceLight2 = Color(0xFFE6E2D7);
+  static const Color surfaceLight3 = Color(0xFFDCD7CA);
+  static const Color dividerLight = Color(0xFFD9D3C6);
 
   // ── Dark surfaces ───────────────────────────────────────────────────
   // static const Color canvasDark = Color(0xFF1A0C0F);

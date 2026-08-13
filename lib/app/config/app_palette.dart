@@ -264,6 +264,20 @@ class AppPalette extends ThemeExtension<AppPalette> {
 
   Color get secondaryFill => AppColors.secondary500;
 
+  /// Tonal fill for a *selected* segment / filter pill (DESIGN.md §4, §9.9).
+  ///
+  /// Selection in this system is "gently lit", never an inverted white chip:
+  /// `primary-100` on light, a `primary-800` tint on dark — which is exactly
+  /// what [primarySoft] already resolves to per theme.
+  Color get selectedTonal => primarySoft;
+
+  /// Text/icon color on a [selectedTonal] fill — `primary-600` (light) /
+  /// `primary-300` (dark).
+  ///
+  /// Uses the ramp's text-safe step ([primaryText]), not [primaryFill]: the
+  /// raw `-500` seed on a pale `primary-100` pill fails small-text contrast.
+  Color get onSelectedTonal => primaryText;
+
   /// Solid canvas only — do not blend primaryWash into page backgrounds.
   LinearGradient get canvasGradient => LinearGradient(
     begin: Alignment.topCenter,
