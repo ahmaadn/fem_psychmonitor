@@ -196,27 +196,28 @@ class _PsychTestPageState extends State<PsychTestPage> {
                                   : vm.previousPsychQuestion,
                             ),
                           ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: PrimaryButton(
-                              text: isLast
-                                  ? l10n.finishAndGoToRecording
-                                  : (isEnglish ? 'Next' : 'Lanjut'),
-                              isDisabled: !isLast || selectedOption == null,
-                              onPressed: isLast && selectedOption != null
-                                  ? () {
-                                      _advanceTimer?.cancel();
-                                      vm.calculatePsychResult();
-                                      context.pushNamed(
-                                        RouteNames.psychResult,
-                                      );
-                                    }
-                                  : () {
-                                      _advanceTimer?.cancel();
-                                      vm.nextPsychQuestion();
-                                    },
+                          // No "Next" button: picking an option auto-advances
+                          // (see _onOptionSelected). Only the last question
+                          // gets an explicit CTA, because it is deliberately
+                          // not auto-navigated.
+                          if (isLast) ...[
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: PrimaryButton(
+                                text: l10n.finishAndGoToRecording,
+                                isDisabled: selectedOption == null,
+                                onPressed: selectedOption != null
+                                    ? () {
+                                        _advanceTimer?.cancel();
+                                        vm.calculatePsychResult();
+                                        context.pushNamed(
+                                          RouteNames.psychResult,
+                                        );
+                                      }
+                                    : () {},
+                              ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                     ],
