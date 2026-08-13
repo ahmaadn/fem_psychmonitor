@@ -59,24 +59,26 @@ Chrome is minimal on both themes: the bottom nav has no tint pill (color alone m
 | `secondary-800` | `#104C29` | High-emphasis text, rare |
 | `secondary-900` | `#0B321B` | Reserved / deepest emphasis |
 
-### Canvas & Surfaces (Both Themes) — Revised: True Neutral, Not Red-Tinted
+### Canvas & Surfaces (Both Themes) — Revised: Warm Neutral, Client Palette
 
-**This is the fix for "too much red / not fresh."** The previous version of this file tinted canvas, surfaces, and even body text toward Cherry's hue (352°) for "cohesion" — but that meant every neutral surface in the app was quietly red, so even a *correct* implementation still read as monochrome pink/crimson. Canvas, surfaces, and text below are now genuinely neutral (0% or near-0% saturation) so red only shows up where a screen deliberately puts it, never as background wash.
+**Client feedback: the previous true-neutral (0% saturation) gray canvas felt cold/sterile against the warm Cherry primary — "kurang sreg."** The client-supplied palette (`#561C24` / `#6D2932` / `#C7B7A3` / `#E8D8C4`) turns out to split cleanly into two coherent families: the two dark tones sit at hue ≈352° — the *same* hue as Cherry primary, just desaturated and darkened — and the two light tones sit at hue ≈33°, a warm cream/tan rather than a colorless gray. So this isn't a return to the old "tint everything toward Cherry" mistake (which made light-theme surfaces themselves look pink); it's a genuinely different, intentionally warm neutral family, generated with the same fixed-hue/fixed-saturation, vary-lightness-only method used for the brand ramps in §2.
 
-- **Light Canvas** (`#FCFCFC`): App background — true near-white, no color tint.
-- **Light Surface 1 / 2 / 3** (`#F6F6F6` / `#EFEFEF` / `#E3E3E3`): Cards → nested rows/inputs → pressed/track backgrounds.
-- **Light Divider** (`#E0E0E0`): 1px hairlines.
-- **Dark Canvas** (`#141414`): App background — true near-black, no color tint (a genuine Material-style dark, not a crimson-black).
-- **Dark Surface 1 / 2 / 3** (`#1E1E1E` / `#272727` / `#333333`): Same role ladder as light, dark register.
-- **Dark Divider** (`#3A3A3A`): 1px hairlines.
+- **Light Canvas** (`#E8D8C4`): App background — warm cream, hue 33°.
+- **Light Surface 1 / 2 / 3** (`#DDCEBB` / `#C7B7A3` / `#C2A684`): Cards → nested rows/inputs → pressed/track backgrounds.
+- **Light Divider** (`#B8986F`): 1px hairlines.
+- **Dark Canvas** (`#351317`): App background — deep maroon-black, hue 352° (same family as Cherry primary, not a crimson wash).
+- **Dark Surface 1 / 2 / 3** (`#561C24` / `#62222B` / `#6D2932`): Same role ladder as light, dark register.
+- **Dark Divider** (`#802D38`): 1px hairlines.
+
+> Tokens marked *(client)* are exact hex values supplied by the client: Light Canvas, Light Surface 2, Dark Surface 1, Dark Surface 3. The remaining steps (Light Surface 1/3, Light Divider, Dark Canvas, Dark Surface 2, Dark Divider) are derived to fill out the ramp at matching hue/saturation — re-check with the client if exact hex parity across every step matters to them.
 
 ### Text — Revised: True Neutral, Not Red-Tinted
 
 - **Text Primary** (`#1A1A1A` light / `#F5F5F5` dark): Titles, metric values, card titles — neutral near-black/near-white, not crimson-tinted.
 - **Text Secondary** (`#5C5C5C` light / `#C7C7C7` dark): Body, metadata.
 - **Text Tertiary** (`#8A8A8A` light / `#999999` dark): Meta line, units, captions, disabled.
-- **On-Primary** (`#FFFFFF` light / `#141414` dark): Text/icon on a `primary-500` fill.
-- **On-Secondary** (`#141414` both themes): Text/icon on a `secondary-500` fill — dark text in both themes, since white fails contrast on Jade-500 (§2.3, ratios recompute against the new neutral canvas but the conclusion is unchanged).
+- **On-Primary** (`#FFFFFF` light / `#351317` dark): Text/icon on a `primary-500` fill.
+- **On-Secondary** (`#351317` both themes): Text/icon on a `secondary-500` fill — dark text in both themes, since white fails contrast on Jade-500 (§2.3, ratios recompute against the new warm canvas but the conclusion is unchanged).
 
 ### Functional / Emotion Colors (fixed meaning, theme-invariant)
 
@@ -363,13 +365,13 @@ Each chip: base color at 12–15% opacity as the fill (same rule as the Emotion 
 ## 9. Agent Prompt Guide
 
 ### Quick Color Reference
-- Light canvas: `#FCFCFC` (true neutral) · Dark canvas: `#141414` (true neutral)
-- Light surface 1/2/3: `#F6F6F6` / `#EFEFEF` / `#E3E3E3`
-- Dark surface 1/2/3: `#1E1E1E` / `#272727` / `#333333`
+- Light canvas: `#E8D8C4` (warm cream, hue 33°) · Dark canvas: `#351317` (deep maroon, hue 352°, same family as Cherry)
+- Light surface 1/2/3: `#DDCEBB` / `#C7B7A3` / `#C2A684`
+- Dark surface 1/2/3: `#561C24` / `#62222B` / `#6D2932`
 - Text primary/secondary/tertiary (light): `#1A1A1A` / `#5C5C5C` / `#8A8A8A` — (dark): `#F5F5F5` / `#C7C7C7` / `#999999`
 - Primary (fill): `#B4182D` · Primary text (light/dark): `#901324` / `#EE8190`
 - Secondary (fill): `#25B15F` · Secondary text (light/dark): `#166939` / `#70E19F`
-- `on-secondary` text/icon: `#141414` on **both** themes (white fails contrast on Jade-500)
+- `on-secondary` text/icon: `#351317` on **both** themes (white fails contrast on Jade-500)
 - Success `#1FAD9A` · Warning `#F29A18` · Error `#E04343` · Info `#3A82C9`
 - Emotion — Happy `#FFB03C` · Sad `#5388C4` · Anger `#F46325` · Fearful `#946ACC` · Disgust `#A9C234` · Neutral `#B09989`
 - Font: Inter. Base unit: 4dp. Design canvas: 390×844 (ScreenUtil)
@@ -391,7 +393,7 @@ Each chip: base color at 12–15% opacity as the fill (same rule as the Emotion 
 - "Build the Fem-Psychmonitor Settings screen list rows using the Icon Chip Color Assignment system: 'Edit profil' gets a `primary` chip, 'Tema' and 'Bahasa' get `secondary` chips, 'Asesmen ulang' and 'Reset data' get `warning` chips, 'Hapus akun' and 'Keluar' get `error` chips. Each chip is 40dp, base color at 15% opacity fill, icon in that color's text-safe variant, on a true-neutral `surface-1` row background — never all the same color family."
 
 ### Iteration Guide
-1. Canvas and all neutral text are **true, uncolored neutrals** (`#FCFCFC`/`#141414` for canvas, true grays for text) — never tinted toward Cherry's own hue; that tinting was this file's original bug and the direct cause of the "everything looks red" problem
+1. Canvas and surfaces are **warm neutrals per the client palette** (`#E8D8C4`→`#C2A684` light, `#351317`→`#6D2932` dark) — light-theme neutrals sit at hue 33° (cream/tan), dark-theme neutrals sit at hue 352° (same family as Cherry, desaturated). Body text stays true, uncolored gray in both themes — don't tint text toward either hue, and don't push the dark-theme canvas hue back toward full Cherry saturation; that full-saturation tinting was this file's original bug
 2. Cherry (`#B4182D`) and Jade (`#25B15F`) are **co-equal** brand fills, both held at matched saturation — never treat one as "the accent" and the other as filler
 3. Ramps are generated by **fixed hue/saturation, varying lightness only** — this is the "segar, tidak pias" fix; don't fall back to linear-to-white/black mixing for new tokens in this file
 4. The six emotion colors are **fixed semantics** — never recolor per theme beyond the on-light/on-dark text-safe swap, and never reuse one as a generic UI accent
