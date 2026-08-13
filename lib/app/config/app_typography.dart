@@ -1,113 +1,136 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'app_colors.dart';
 
+/// Inter type scale (DESIGN.md §3). Design sizes on 390×844 canvas.
 class AppTypography {
-  /// **Display (32px, Bold)**
-  ///
-  /// Gunakan untuk:
-  /// * Judul pada Splash Screen.
-  /// * Metrik hero/utama (misal: skor emosional berukuran besar).
-  /// * Ringkasan status emosional utama.
-  static TextStyle get display => GoogleFonts.plusJakartaSans(
-    fontSize: 32,
-    fontWeight: FontWeight.bold,
-    letterSpacing: -0.64, // -2% Tracking
-    color: AppColors.onSurface,
+  AppTypography._();
+
+  static TextStyle _inter({
+    required double size,
+    required FontWeight weight,
+    double height = 1.4,
+    double letterSpacing = 0,
+    Color? color,
+    FontFeature? feature,
+    bool scale = false,
+  }) {
+    final fontSize = scale ? size.sp : size;
+    return GoogleFonts.inter(
+      fontSize: fontSize,
+      fontWeight: weight,
+      height: height,
+      letterSpacing: letterSpacing,
+      color: color,
+      fontFeatures: feature != null ? [feature] : null,
+    );
+  }
+
+  static TextStyle get display => _inter(
+    size: 28,
+    weight: FontWeight.w700,
+    height: 1.2,
+    letterSpacing: -0.3,
   );
 
-  /// **H1 (24px, Bold)**
-  ///
-  /// Gunakan untuk:
-  /// * Header layar utama (Misal: Judul halaman "Dashboard" atau "Profile").
-  static TextStyle get h1 => GoogleFonts.plusJakartaSans(
-    fontSize: 24,
-    fontWeight: FontWeight.bold,
-    color: AppColors.onSurface,
+  static TextStyle get title => _inter(
+    size: 22,
+    weight: FontWeight.w700,
+    height: 1.25,
+    letterSpacing: -0.2,
   );
 
-  /// **H2 (20px, Semi-bold)**
-  ///
-  /// Gunakan untuk:
-  /// * Header/Judul dari sebuah section (bagian).
-  /// * Judul di dalam Card (Card titles).
-  static TextStyle get h2 => GoogleFonts.plusJakartaSans(
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
-    color: AppColors.onSurface,
+  static TextStyle get subtitle =>
+      _inter(size: 18, weight: FontWeight.w600, height: 1.3);
+
+  static TextStyle get bodyStrong =>
+      _inter(size: 15, weight: FontWeight.w600, height: 1.4);
+
+  static TextStyle get body =>
+      _inter(size: 15, weight: FontWeight.w400, height: 1.5);
+
+  static TextStyle get caption => _inter(
+    size: 13,
+    weight: FontWeight.w500,
+    height: 1.35,
+    letterSpacing: 0.1,
   );
 
-  /// **Body Large (18px, Medium)**
-  ///
-  /// Gunakan untuk:
-  /// * Teks body utama.
-  /// * Paragraf pengantar (Intro paragraphs).
-  /// * **Pesan "Companion"**: Nasihat langsung atau *insight* psikologis yang diberikan kepada pengguna.
-  static TextStyle get bodyLg => GoogleFonts.manrope(
-    fontSize: 18,
-    fontWeight: FontWeight.w500,
-    color: AppColors.onSurface,
+  static TextStyle get label => _inter(
+    size: 12,
+    weight: FontWeight.w600,
+    height: 1.2,
+    letterSpacing: 0.4,
   );
 
-  /// **Body Medium (16px, Regular)**
-  ///
-  /// Gunakan untuk:
-  /// * Teks body standar.
-  /// * Label pada form input.
-  static TextStyle get bodyMd => GoogleFonts.manrope(
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
-    color: AppColors.onSurface,
+  static TextStyle get metric => _inter(
+    size: 32,
+    weight: FontWeight.w700,
+    height: 1.1,
+    letterSpacing: -0.5,
+    feature: const FontFeature.tabularFigures(),
   );
 
-  /// **Body Small (14px, Regular)**
-  ///
-  /// Gunakan untuk:
-  /// * Deskripsi sekunder/tambahan.
-  /// * *Captions* di bawah gambar atau grafik.
-  /// * Metadata untuk item di dalam *list* (daftar).
-  static TextStyle get bodySm => GoogleFonts.manrope(
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: AppColors.onSurface,
+  static TextStyle get button => _inter(
+    size: 15,
+    weight: FontWeight.w600,
+    height: 1.0,
+    letterSpacing: 0.1,
   );
 
-  /// **Label (12px, Semi-bold)**
-  ///
-  /// Gunakan untuk:
-  /// * Teks di dalam tombol (Button text).
-  /// * *Tags* atau *Chips* kategori.
-  /// * *Micro-copy* (teks instruksi singkat).
-  static TextStyle get label => GoogleFonts.beVietnamPro(
-    fontSize: 12,
-    fontWeight: FontWeight.w600,
-    color: AppColors.onSurface,
+  /// Badge — streak / "Recording" (DESIGN.md §3).
+  static TextStyle get badge => _inter(
+    size: 10,
+    weight: FontWeight.w700,
+    height: 1.0,
+    letterSpacing: 0.5,
   );
 
-  /// **Extra Small / XS (10px, Semi-bold)**
-  ///
-  /// Gunakan untuk:
-  /// * Label data berukuran sangat kecil (misal: angka pada sumbu grafik).
-  /// * Metadata minor.
-  /// * Label pada *Bottom Navigation Bar*.
-  static TextStyle get xs => GoogleFonts.beVietnamPro(
-    fontSize: 10,
-    fontWeight: FontWeight.w600,
-    color: AppColors.onSurface,
+  /// Tab label — bottom nav (DESIGN.md §3).
+  static TextStyle get tabLabel => _inter(
+    size: 11,
+    weight: FontWeight.w600,
+    height: 1.0,
+    letterSpacing: 0.1,
   );
 
-  /// Menggabungkan semua style di atas ke dalam [TextTheme] Material Design.
-  /// Ini memungkinkan komponen bawaan Flutter mengenali tipografi desain Anda.
+  /// Dense chart / axis labels (derived from label).
+  static TextStyle get micro => _inter(
+    size: 10,
+    weight: FontWeight.w500,
+    height: 1.2,
+    letterSpacing: 0.2,
+  );
+
+  /// Emoji glyph sizes (not freelanced per screen).
+  static TextStyle get emojiSm =>
+      _inter(size: 14, weight: FontWeight.w400, height: 1.0);
+  static TextStyle get emojiMd =>
+      _inter(size: 18, weight: FontWeight.w400, height: 1.0);
+  static TextStyle get emojiLg =>
+      _inter(size: 22, weight: FontWeight.w400, height: 1.0);
+  static TextStyle get emojiXl =>
+      _inter(size: 32, weight: FontWeight.w400, height: 1.0);
+  static TextStyle get emojiHero =>
+      _inter(size: 40, weight: FontWeight.w400, height: 1.0);
+
   static TextTheme get textTheme {
     return TextTheme(
       displayLarge: display,
-      headlineLarge: h1,
-      headlineMedium: h2,
-      bodyLarge: bodyLg,
-      bodyMedium: bodyMd,
-      bodySmall: bodySm,
-      labelLarge: label,
-      labelSmall: xs,
+      displayMedium: display,
+      displaySmall: title,
+      headlineLarge: title,
+      headlineMedium: subtitle,
+      headlineSmall: bodyStrong,
+      titleLarge: title,
+      titleMedium: subtitle,
+      titleSmall: bodyStrong,
+      bodyLarge: body,
+      bodyMedium: body,
+      bodySmall: caption,
+      labelLarge: button,
+      labelMedium: label,
+      labelSmall: label,
     );
   }
 }

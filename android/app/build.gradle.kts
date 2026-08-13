@@ -35,15 +35,11 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        ndk {
-            abiFilters += setOf("armeabi-v7a", "arm64-v8a")
-        }
-
         if (cmakeListsFile.exists()) {
             externalNativeBuild {
                 cmake {
                     cppFlags += "-std=c++17 -O3 -ffast-math"
-                    abiFilters += setOf("arm64-v8a", "x86_64")
+                    abiFilters += setOf("arm64-v8a")
                 }
             }
         }
@@ -74,6 +70,12 @@ android {
     androidResources {
         noCompress += "tflite"
     }
+
+    packaging {
+        jniLibs {
+            excludes += setOf("lib/armeabi-v7a/**", "lib/x86_64/**")
+        }
+    }
 }
 
 flutter {
@@ -81,5 +83,4 @@ flutter {
 }
 
 dependencies {
-     implementation("org.tensorflow:tensorflow-lite-select-tf-ops:+")
 }

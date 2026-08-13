@@ -1,0 +1,144 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "trait": "E",
+      "keyed": "+",
+      "statement_id": "Saya adalah sosok yang menghidupkan suasana dalam sebuah pesta atau kumpul-kumpul.",
+      "statement_en": "I am the life of the party or social gathering."
+    },
+    {
+      "id": 2,
+      "trait": "A",
+      "keyed": "+",
+      "statement_id": "Saya mudah berempati dengan apa yang dirasakan orang lain.",
+      "statement_en": "I easily empathize with what others feel."
+    },
+    {
+      "id": 3,
+      "trait": "C",
+      "keyed": "+",
+      "statement_id": "Saya langsung menyelesaikan tugas atau pekerjaan rumah begitu ada kesempatan.",
+      "statement_en": "I complete tasks or chores as soon as I have the chance."
+    },
+    {
+      "id": 4,
+      "trait": "N",
+      "keyed": "+",
+      "statement_id": "Suasana hati saya sering berubah-ubah.",
+      "statement_en": "My mood often changes."
+    },
+    {
+      "id": 5,
+      "trait": "O",
+      "keyed": "+",
+      "statement_id": "Saya memiliki imajinasi yang hidup.",
+      "statement_en": "I have a vivid imagination."
+    },
+    {
+      "id": 6,
+      "trait": "E",
+      "keyed": "-",
+      "statement_id": "Saya cenderung tidak banyak bicara.",
+      "statement_en": "I tend not to talk much."
+    },
+    {
+      "id": 7,
+      "trait": "A",
+      "keyed": "-",
+      "statement_id": "Saya tidak terlalu peduli dengan masalah yang dihadapi orang lain.",
+      "statement_en": "I do not care much about other peoples problems."
+    },
+    {
+      "id": 8,
+      "trait": "C",
+      "keyed": "-",
+      "statement_id": "Saya sering lupa mengembalikan barang ke tempat asalnya.",
+      "statement_en": "I often forget to put things back in their place."
+    },
+    {
+      "id": 9,
+      "trait": "N",
+      "keyed": "-",
+      "statement_id": "Saya cenderung merasa tenang hampir sepanjang waktu.",
+      "statement_en": "I tend to feel calm almost all the time."
+    },
+    {
+      "id": 10,
+      "trait": "O",
+      "keyed": "-",
+      "statement_id": "Saya tidak tertarik dengan ide-ide yang abstrak.",
+      "statement_en": "I am not interested in abstract ideas."
+    },
+    {
+      "id": 11,
+      "trait": "E",
+      "keyed": "+",
+      "statement_id": "Saya senang mengobrol dengan banyak orang berbeda saat menghadiri acara.",
+      "statement_en": "I enjoy chatting with many different people at events."
+    },
+    {
+      "id": 12,
+      "trait": "A",
+      "keyed": "+",
+      "statement_id": "Saya bisa merasakan emosi yang sedang dirasakan orang lain.",
+      "statement_en": "I can feel the emotions that others are experiencing."
+    },
+    {
+      "id": 13,
+      "trait": "C",
+      "keyed": "+",
+      "statement_id": "Saya menyukai keteraturan dalam segala hal.",
+      "statement_en": "I like order in everything."
+    },
+    {
+      "id": 14,
+      "trait": "N",
+      "keyed": "+",
+      "statement_id": "Saya mudah merasa kesal atau marah.",
+      "statement_en": "I get irritated or angry easily."
+    },
+    {
+      "id": 15,
+      "trait": "O",
+      "keyed": "-",
+      "statement_id": "Saya kesulitan memahami ide-ide yang abstrak.",
+      "statement_en": "I have difficulty understanding abstract ideas."
+    },
+    {
+      "id": 16,
+      "trait": "E",
+      "keyed": "-",
+      "statement_id": "Saya lebih suka berada di belakang layar daripada tampil di depan.",
+      "statement_en": "I prefer to stay behind the scenes rather than be in the spotlight."
+    },
+    {
+      "id": 17,
+      "trait": "A",
+      "keyed": "-",
+      "statement_id": "Sebenarnya saya tidak terlalu tertarik pada orang lain.",
+      "statement_en": "I am not really that interested in other people."
+    },
+    {
+      "id": 18,
+      "trait": "C",
+      "keyed": "-",
+      "statement_id": "Saya cenderung membuat kekacauan dalam mengerjakan sesuatu.",
+      "statement_en": "I tend to create mess when doing things."
+    },
+    {
+      "id": 19,
+      "trait": "N",
+      "keyed": "-",
+      "statement_id": "Saya jarang merasa sedih atau murung.",
+      "statement_en": "I rarely feel sad or gloomy."
+    },
+    {
+      "id": 20,
+      "trait": "O",
+      "keyed": "-",
+      "statement_id": "Saya merasa daya imajinasi saya kurang berkembang.",
+      "statement_en": "I feel my imagination is underdeveloped."
+    }
+  ]
+}

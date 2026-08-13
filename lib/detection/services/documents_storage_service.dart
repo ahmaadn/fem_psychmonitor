@@ -1,6 +1,12 @@
+// DocumentsStorageService — penyimpanan rekaman & timeline deteksi terenkripsi.
+//
+// Menangani: (1) penulisan stream PCM rekaman dan finalisasi ke file WAV,
+// (2) penyimpanan timeline hasil deteksi sebagai JSON terenkripsi AES-256-CBC,
+// serta (3) resolusi direktori Documents (publik di Android, app-documents di
+// platform lain) termasuk permintaan izin storage bila perlu.
+
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:fem_psychmonitor/app/utils/emotion_config.dart';
@@ -8,6 +14,11 @@ import 'package:flutter/foundation.dart' hide Key;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+/// Layanan penyimpanan file rekaman dan timeline deteksi emosi.
+///
+/// File rekaman disimpan sebagai WAV (PCM16, mono, 16 kHz), sedangkan timeline
+/// deteksi disimpan sebagai JSON yang dienkripsi dengan AES-256-CBC. Pada
+/// Android, file disimpan ke folder Documents publik agar mudah diakses pengguna.
 class DocumentsStorageService {
   static const String appName = 'fem_psychmonitor';
 
@@ -18,6 +29,7 @@ class DocumentsStorageService {
   static const String _documentsFolderName = 'documents';
   static const String _encryptionKey = 'fem_psychmonitor_docs_key_32bytes';
 
+  /// Membuat id sesi unik berbasis waktu UTC (YYYYMMDD_HHMMSS_mmm).
   String createSessionId() {
     final now = DateTime.now().toUtc();
     return '${now.year.toString().padLeft(4, '0')}'
@@ -29,6 +41,10 @@ class DocumentsStorageService {
         '${now.millisecond.toString().padLeft(3, '0')}';
   }
 
+  /// Membuka sink penulisan PCM untuk sesi [sessionId].
+  ///
+  /// Mengembalikan record berisi file PCM dan [IOSink]-nya. File lama dengan
+  /// nama yang sama akan dihapus terlebih dahulu.
   Future<({File pcmFile, IOSink sink})> openRecordingSink({
     required String sessionId,
   }) async {
@@ -44,6 +60,9 @@ class DocumentsStorageService {
     return (pcmFile: pcmFile, sink: sink);
   }
 
+  /// Memfinalisasi rekaman: menambahkan header WAV ke file PCM lalu
+  /// menghapus file PCM asli. Mengembalikan path file WAV, atau null bila
+  /// [pcmFile] tidak ada.
   Future<String?> finalizeRecording(
     File? pcmFile, {
     required String sessionId,
@@ -52,18 +71,25 @@ class DocumentsStorageService {
       return null;
     }
 
-    final rawBytes = await pcmFile.readAsBytes();
+    final pcmLength = await pcmFile.length();
     final recordingDir = await _getRecordingDir();
     final safeId = _sanitizeSessionId(sessionId);
     final wavFile = File('${recordingDir.path}/filerecord_$safeId.wav');
 
-    final header = _buildWavHeader(rawBytes.lengthInBytes);
-    await wavFile.writeAsBytes([...header, ...rawBytes], flush: true);
+    final header = _buildWavHeader(pcmLength);
+    final sink = wavFile.openWrite();
+    sink.add(header);
+    await sink.addStream(pcmFile.openRead());
+    await sink.flush();
+    await sink.close();
 
     await pcmFile.delete();
     return wavFile.path;
   }
 
+  /// Menyimpan [timeline] hasil deteksi sebagai file JSON terenkripsi
+  /// AES-256-CBC beserta metadata sesi. Enkripsi dijalankan di background
+  /// isolate via [compute]. Mengembalikan path file hasil.
   Future<String> saveEncryptedDetectionTimeline({
     required List<EmotionResult> timeline,
     required String? recordingPath,
@@ -107,32 +133,16 @@ class DocumentsStorageService {
       'detected_labels': timeline.map((e) => e.label.name).toSet().toList(),
     };
 
-    final plaintextPayload = jsonEncode({
-      'metadata': metadata,
-      'timeline': timelineJson,
-    });
-
-    final iv = IV.fromSecureRandom(16);
-    final normalizedKey = _normalizeAesKey(_encryptionKey);
-    final encrypter = Encrypter(
-      AES(Key.fromUtf8(normalizedKey), mode: AESMode.cbc),
+    final finalJsonStr = await compute(
+      _performHeavyEncryption,
+      EncryptionIsolateData(
+        metadata: metadata,
+        timelineJson: timelineJson,
+        encryptionKey: _encryptionKey,
+      ),
     );
-    final encrypted = encrypter.encrypt(plaintextPayload, iv: iv);
 
-    final encryptedEnvelope = {
-      'metadata': metadata,
-      'encryption': {
-        'algorithm': 'AES-256-CBC',
-        'encoding': 'base64',
-        'iv': iv.base64,
-      },
-      'ciphertext': encrypted.base64,
-    };
-
-    await outFile.writeAsString(
-      const JsonEncoder.withIndent('  ').convert(encryptedEnvelope),
-      flush: true,
-    );
+    await outFile.writeAsString(finalJsonStr, flush: true);
 
     return outFile.path;
   }
@@ -145,15 +155,15 @@ class DocumentsStorageService {
     return sanitized.isEmpty ? createSessionId() : sanitized;
   }
 
-  String _normalizeAesKey(String key) {
-    if (key.length == 16 || key.length == 24 || key.length == 32) {
-      return key;
-    }
-    if (key.length > 32) {
-      return key.substring(0, 32);
-    }
-    return key.padRight(32, '0');
-  }
+  // String _normalizeAesKey(String key) {
+  //   if (key.length == 16 || key.length == 24 || key.length == 32) {
+  //     return key;
+  //   }
+  //   if (key.length > 32) {
+  //     return key.substring(0, 32);
+  //   }
+  //   return key.padRight(32, '0');
+  // }
 
   Future<Directory> _getRecordingDir() async {
     final appDir = await _getAppDocumentsDir();
@@ -293,4 +303,61 @@ class DocumentsStorageService {
 
     return bytes.buffer.asUint8List();
   }
+}
+
+/// Data yang dikirim ke background isolate untuk enkripsi timeline.
+///
+/// Dipisah sebagai class agar dapat dilewatkan melalui [compute] (harus
+/// bisa di-serialize antar isolate).
+class EncryptionIsolateData {
+  final Map<String, dynamic> metadata;
+  final List<Map<String, dynamic>> timelineJson;
+  final String encryptionKey;
+
+  EncryptionIsolateData({
+    required this.metadata,
+    required this.timelineJson,
+    required this.encryptionKey,
+  });
+}
+
+/// Mengenkripsi payload (metadata + timeline) dengan AES-256-CBC dan IV acak.
+///
+/// Dijalankan pada background isolate agar tidak memblokir UI. Mengembalikan
+/// string JSON berisi metadata, info enkripsi (algoritma/encoding/iv), dan
+/// ciphertext dalam base64.
+String _performHeavyEncryption(EncryptionIsolateData data) {
+  final plaintextPayload = jsonEncode({
+    'metadata': data.metadata,
+    'timeline': data.timelineJson,
+  });
+
+  final iv = IV.fromSecureRandom(16);
+  final normalizedKey = _normalizeAesKeyStatic(data.encryptionKey);
+  final encrypter = Encrypter(
+    AES(Key.fromUtf8(normalizedKey), mode: AESMode.cbc),
+  );
+  final encrypted = encrypter.encrypt(plaintextPayload, iv: iv);
+
+  final encryptedEnvelope = {
+    'metadata': data.metadata,
+    'encryption': {
+      'algorithm': 'AES-256-CBC',
+      'encoding': 'base64',
+      'iv': iv.base64,
+    },
+    'ciphertext': encrypted.base64,
+  };
+
+  return const JsonEncoder.withIndent('  ').convert(encryptedEnvelope);
+}
+
+String _normalizeAesKeyStatic(String key) {
+  if (key.length == 16 || key.length == 24 || key.length == 32) {
+    return key;
+  }
+  if (key.length > 32) {
+    return key.substring(0, 32);
+  }
+  return key.padRight(32, '0');
 }

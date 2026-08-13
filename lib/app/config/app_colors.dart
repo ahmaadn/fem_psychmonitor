@@ -1,118 +1,93 @@
 import 'package:flutter/material.dart';
 
+/// Static token table for Strawberry Match (DESIGN.md §2).
+/// Theme-aware chrome: use [AppPalette] via `context.palette`.
 class AppColors {
   AppColors._();
 
-  // --- Brand Colors ---
-  static const Color primary = Color(0xFF1B6B51);
+  // ── Primary ramp — Cherry seed #B4182D ───────────────────────────────
+  static const Color primary50 = Color(0xFFFCE8EB);
+  static const Color primary100 = Color(0xFFF9D2D7);
+  static const Color primary200 = Color(0xFFF4AEB7);
+  static const Color primary300 = Color(0xFFEE8190);
+  static const Color primary400 = Color(0xFFE64258);
+  static const Color primary500 = Color(0xFFB4182D);
+  static const Color primary600 = Color(0xFF901324);
+  static const Color primary700 = Color(0xFF710F1C);
+  static const Color primary800 = Color(0xFF510B14);
+  static const Color primary900 = Color(0xFF36070E);
+
+  // ── Secondary ramp — Jade seed #25B15F ───────────────────────────────
+  static const Color secondary50 = Color(0xFFEAFBF1);
+  static const Color secondary100 = Color(0xFFCDF4DD);
+  static const Color secondary200 = Color(0xFFA2EBC1);
+  static const Color secondary300 = Color(0xFF70E19F);
+  static const Color secondary400 = Color(0xFF3DD67D);
+  static const Color secondary500 = Color(0xFF25B15F);
+  static const Color secondary600 = Color(0xFF1D8B4B);
+  static const Color secondary700 = Color(0xFF166939);
+  static const Color secondary800 = Color(0xFF104C29);
+  static const Color secondary900 = Color(0xFF0B321B);
+
+  // ── Light surfaces — broken white (#F3F0E9 canvas anchor) ───────────
+  // static const Color canvasLight = Color(0xFFFFF7F8);
+  static const Color canvasLight = Color(0xFFF3F0E9);
+  static const Color surfaceLight1 = Color(0xFFEDE9E0);
+  static const Color surfaceLight2 = Color(0xFFE6E2D7);
+  static const Color surfaceLight3 = Color(0xFFDCD7CA);
+  static const Color dividerLight = Color(0xFFD9D3C6);
+
+  // ── Dark surfaces ───────────────────────────────────────────────────
+  // static const Color canvasDark = Color(0xFF1A0C0F);
+  static const Color canvasDark = Color(0xFF141414);
+  static const Color surfaceDark1 = Color(0xFF1E1E1E);
+  static const Color surfaceDark2 = Color(0xFF272727);
+  static const Color surfaceDark3 = Color(0xFF333333);
+  static const Color dividerDark = Color(0xFF3A3A3A);
+
+  // ── Text ────────────────────────────────────────────────────────────
+  static const Color textPrimaryLight = Color(0xFF1A1A1A);
+  static const Color textSecondaryLight = Color(0xFF5C5C5C);
+  static const Color textTertiaryLight = Color(0xFF8A8A8A);
+  static const Color textPrimaryDark = Color(0xFFF5F5F5);
+  static const Color textSecondaryDark = Color(0xFFC7C7C7);
+  static const Color textTertiaryDark = Color(0xFF999999);
   static const Color onPrimary = Color(0xFFFFFFFF);
-  static const Color primaryContainer = Color(0xFF78C2A4);
-  static const Color primaryFixed = Color(0xFFA6F2D2);
+  static const Color onSecondary = Color(0xFF141414);
 
-  // Chips / Selection
-  static const Color tertiary = Color(0xFF6D5096);
-  static const Color tertiaryFixed = Color(0xFFEDDCFF);
-  static const Color tertiaryContainer = Color(0xFFC5A5F1);
+  // ── Semantics ───────────────────────────────────────────────────────
+  static const Color success = Color(0xFF1FAD9A);
+  static const Color successOnLight = Color(0xFF147064);
+  static const Color successOnDark = Color(0xFF41B9A9);
+  static const Color warning = Color(0xFFF29A18);
+  static const Color warningOnLight = Color(0xFF9D6410);
+  static const Color warningOnDark = Color(0xFFF4A93B);
+  static const Color error = Color(0xFFE04343);
+  static const Color errorOnLight = Color(0xFFBE3939);
+  static const Color errorOnDark = Color(0xFFE55F5F);
+  static const Color info = Color(0xFF3A82C9);
+  static const Color infoOnLight = Color(0xFF316EAB);
+  static const Color infoOnDark = Color(0xFF5895D1);
 
-  // Secondary / Actions
-  static const Color secondary = Color(0xFFFED172);
-  static const Color secondaryContainer = Color(0xFFFED172);
-  static const Color secondaryFixed = Color(0xFFFFDF9F);
-  static const Color onSecondaryFixed = Color(0xFF261A00);
+  // ── Emotion base + text-safe (DESIGN.md §2.6) ───────────────────────
+  static const Color emotionHappy = Color(0xFFFFB03C);
+  static const Color emotionSad = Color(0xFF5388C4);
+  static const Color emotionAnger = Color(0xFFF46325);
+  static const Color emotionFearful = Color(0xFF946ACC);
+  static const Color emotionDisgust = Color(0xFFA9C234);
+  static const Color emotionNeutral = Color(0xFFB09989);
 
-  // --- Background & Surface (Stacked Silk / Sanctuary Vibe) ---
-  /// Base Layer
-  static const Color background = Color(0xFFF9F9F9);
+  static const Color emotionHappyOnLight = Color(0xFF8C6121);
+  static const Color emotionSadOnLight = Color(0xFF4774A7);
+  static const Color emotionAngerOnLight = Color(0xFFB74A1C);
+  static const Color emotionFearfulOnLight = Color(0xFF7E5AAD);
+  static const Color emotionDisgustOnLight = Color(0xFF5D6B1D);
+  static const Color emotionNeutralOnLight = Color(0xFF726359);
 
-  /// The Canvas
-  static const Color surface = Color(0xFFF9F9F9);
-
-  /// Secondary Content
-  static const Color surfaceContainerLow = Color(0xFFF3F3F3);
-
-  /// Floating Cards / Pop
-  static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
-
-  /// Deep Context (Modals)
-  static const Color surfaceDim = Color(0xFFDADADA);
-
-  /// Text Fields
-  static const Color surfaceContainerHighest = Color(0xFFE2E2E2);
-
-  // Text & Icon Colors
-  static const Color onSurface = Color(0xFF1A1C1C);
-
-  /// Untuk fine-line icons
-  static const Color onSurfaceVariant = Color(0xFF1A1C1C);
-  static const Color onBackground = Color(0xFF1A1C1C);
-
-  // Success
-  // Indikator progres positif, keberhasilan upload.
-  static const Color success = Color(0xFF8BA888);
-  static const Color successSurface = Color(0xFFE8EFE8);
-
-  // Info
-  // Informasi tambahan atau bantuan.
-  static const Color info = Color(0xFFAEC6CF);
-  static const Color infoSurface = Color(0xFFEEF3F5);
-
-  // Error/Warning
-  // Peringatan atau emosi negatif yang kuat.
-  static const Color warning = Color(0xFFD67D7D);
-  static const Color warningSurface = Color(0xFFF8EFEF);
-
-  // Border / Outline
-  // The "Ghost Border" (Gunakan dengan opacity 15% pada UI)
-  static const Color outline = Color(0xFFBEC9C2);
-  static const Color outlineVariant = Color(0xFFBEC9C2);
-
-  // Ambient Shadow: 6% opacity dari on_surface (#1A1C1C)
-  static const Color shadow = Color(0x0F1A1C1C);
-
-  // --- Emotion Colors ---
-  // 1. Marah (Anger)
-  static const Color emotionAnger = warning; // #D67D7D (Muted Coral)
-  static const Color emotionAngerSurface = Color(0xFFF8EFEF);
-  static const Color onEmotionAnger = Color(0xFFFFFFFF); // Teks Putih
-
-  // 2. Sedih (Sadness)
-  static const Color emotionSadness = info; // #AEC6CF (Misty Blue)
-  static const Color emotionSadnessSurface = Color(0xFFEEF3F5);
-  static const Color onEmotionSadness = Color(0xFF1A1C1C);
-
-  // 3. Bahagia (Happiness)
-  static const Color emotionHappiness = secondary; // #FED172 (Soft Gold)
-  static const Color emotionHappinessSurface = Color(0xFFFFF8E7);
-  static const Color onEmotionHappiness = Color(0xFF1A1C1C);
-
-  // 4. Jijik (Disgust)
-  static const Color emotionDisgust = Color(0xFFB8C297); // Soft Matcha
-  static const Color emotionDisgustSurface = Color(0xFFF6F8EF);
-  static const Color onEmotionDisgust = Color(0xFF1A1C1C);
-
-  // 5. Takut (Fear)
-  static const Color emotionFear = Color(0xFFA39CB8); // Dusty Indigo
-  static const Color emotionFearSurface = Color(0xFFF3F2F6);
-  static const Color onEmotionFear = Color(0xFF1A1C1C);
-
-  // 6. Netral (Neutral)
-  static const Color emotionNetral = Color(0xFFD1CFC9); // Warm Greige
-  static const Color emotionNetralSurface = Color(0xFFF9F8F6);
-  static const Color onEmotionNetral = Color(0xFF1A1C1C);
-
-  static ColorScheme colorScheme = const ColorScheme.light(
-    primary: primary,
-    onPrimary: onPrimary,
-    primaryContainer: primaryContainer,
-    secondary: secondary,
-    onSecondary: onSurface,
-    secondaryContainer: secondaryContainer,
-    surface: surface,
-    onSurface: onSurface,
-    error: warning, // Menggunakan Muted Coral untuk error
-    onError: Colors.white,
-    outline: outline,
-    outlineVariant: outlineVariant,
-    shadow: shadow,
-  );
+  static const Color emotionHappyOnDark = Color(0xFFFFBC59);
+  static const Color emotionSadOnDark = Color(0xFF6D9ACD);
+  static const Color emotionAngerOnDark = Color(0xFFF67A46);
+  static const Color emotionFearfulOnDark = Color(0xFFA480D4);
+  static const Color emotionDisgustOnDark = Color(0xFFB6CB52);
+  static const Color emotionNeutralOnDark = Color(0xFFBCA89B);
 }
