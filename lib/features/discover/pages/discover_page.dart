@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
 import 'package:fem_psychmonitor/data/models/calendar_day_summary.dart';
+import 'package:fem_psychmonitor/data/sync/sync_service.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/history_viewmodel.dart';
 import 'package:fem_psychmonitor/features/discover/widgets/calendar_month_block.dart';
@@ -86,8 +89,7 @@ class _DiscoverPageState extends State<DiscoverPage>
     final rows = ((startWeekday + daysInMonth) / 7).ceil();
 
     // Cell width = (usable width - 6 gutters) / 7; height = width / 0.86.
-    final usable =
-        MediaQuery.sizeOf(context).width - (AppSpacing.pageX.w * 2);
+    final usable = MediaQuery.sizeOf(context).width - (AppSpacing.pageX.w * 2);
     final cellW = (usable - (AppSpacing.xxs.w * 6)) / 7;
     final cellH = cellW / 0.86;
 
@@ -189,7 +191,9 @@ class _DiscoverPageState extends State<DiscoverPage>
     if (user == null) return;
     final selected = await showTodayMoodSheet(context);
     if (selected == null || !mounted) return;
+    final sync = context.read<SyncService>();
     await persistDailyMood(userId: user.id, emotion: selected, day: day);
+    unawaited(sync.synchronize());
     if (!mounted) return;
     await context.read<HistoryViewModel>().loadCalendarYear(day.year);
   }
@@ -213,7 +217,8 @@ class _CalendarTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(height: AppSpacing.xs.h),        const EmotionLegendStrip(),
+        SizedBox(height: AppSpacing.xs.h),
+        const EmotionLegendStrip(),
         SizedBox(height: AppSpacing.xs.h),
         Expanded(
           child: ListView.builder(

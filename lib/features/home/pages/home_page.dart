@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fem_psychmonitor/app/config/app_palette.dart';
 import 'package:fem_psychmonitor/app/config/app_constants.dart';
 import 'package:fem_psychmonitor/app/config/app_spacing.dart';
@@ -12,11 +14,11 @@ import 'package:fem_psychmonitor/app/widgets/recommendation_card.dart';
 import 'package:fem_psychmonitor/app/widgets/upload_audio_cta.dart';
 import 'package:fem_psychmonitor/data/models/emotion_summary_model.dart';
 import 'package:fem_psychmonitor/data/repositories/recommendation_repository.dart';
+import 'package:fem_psychmonitor/data/sync/sync_service.dart';
 import 'package:fem_psychmonitor/data/viewmodels/auth_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/home_viewmodel.dart';
 import 'package:fem_psychmonitor/data/viewmodels/profile_viewmodel.dart';
 import 'package:fem_psychmonitor/features/home/widgets/today_mood_sheet.dart';
-import 'package:fem_psychmonitor/features/onboarding/models/ocean_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -77,7 +79,9 @@ class _HomePageState extends State<HomePage> {
     if (selected == null || !mounted) return;
     final user = context.read<AuthViewModel>().currentUser;
     if (user == null) return;
+    final sync = context.read<SyncService>();
     await persistDailyMood(userId: user.id, emotion: selected);
+    unawaited(sync.synchronize());
     await _loadMoodAndSaran();
   }
 
@@ -138,7 +142,8 @@ class _HomePageState extends State<HomePage> {
       }
 
       // Beberapa platform mengabaikan allowedExtensions — verifikasi ulang.
-      final ext = picked.extension?.toLowerCase() ??
+      final ext =
+          picked.extension?.toLowerCase() ??
           sourcePath.split('.').last.toLowerCase();
       if (!_audioExtensions.contains(ext)) {
         messenger.showSnackBar(
@@ -149,18 +154,13 @@ class _HomePageState extends State<HomePage> {
 
       // AiProcessingPage menghapus uploadedAudioPath setelah sesi disimpan,
       // jadi analisis dijalankan atas salinan temp — file asli tetap utuh.
-      final workingPath = await copyPickedAudioToTemp(
-        sourcePath,
-        picked.name,
-      );
+      final workingPath = await copyPickedAudioToTemp(sourcePath, picked.name);
       if (!mounted) return;
 
       context.goNamed(RouteNames.recordingProcessing, extra: workingPath);
     } catch (_) {
       if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.uploadAudioFailed)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(l10n.uploadAudioFailed)));
     } finally {
       if (mounted) setState(() => _pickingAudio = false);
     }
@@ -1163,4 +1163,3 @@ class _VoiceCheckinCTA extends StatelessWidget {
     );
   }
 }
-

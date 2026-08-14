@@ -134,7 +134,11 @@ class SqliteAuthRepository extends AuthRepository with SyncQueueHelper {
         where: 'user_id = ?',
         whereArgs: [guestId],
       );
-      await db.delete(AppTables.authTokens, where: 'user_id = ?', whereArgs: [guestId]);
+      await db.delete(
+        AppTables.authTokens,
+        where: 'user_id = ?',
+        whereArgs: [guestId],
+      );
       await db.delete(AppTables.users, where: 'id = ?', whereArgs: [guestId]);
     }
 
@@ -262,45 +266,83 @@ class SqliteAuthRepository extends AuthRepository with SyncQueueHelper {
         'reason': 'assessment',
       });
     }
+    if (!user.isGuest) {
+      await enqueue(
+        entityType: SyncEntity.user,
+        entityId: user.id,
+        operation: SyncOperation.update,
+        payloadJson: syncPayloadJson(user.toJson()),
+      );
+    }
     return user;
   }
 
   @override
   Future<void> deleteAccount(String userId) async {
     final db = await DatabaseHelper.instance.database;
-    await db.delete(AppTables.authTokens, where: 'user_id = ?', whereArgs: [userId]);
-    await db.delete(AppTables.users, where: 'id = ?', whereArgs: [userId]);
+    await db.transaction((txn) async {
+      await txn.delete(
+        AppTables.authTokens,
+        where: 'user_id = ?',
+        whereArgs: [userId],
+      );
+      await txn.delete(
+        AppTables.syncQueue,
+        where: 'entity_type != ?',
+        whereArgs: [SyncEntity.accountDelete],
+      );
+      await txn.delete(AppTables.users, where: 'id = ?', whereArgs: [userId]);
+    });
   }
 
   @override
   Future<void> resetUserData(String userId) async {
     final db = await DatabaseHelper.instance.database;
-    await db.delete(AppTables.detectionResults,
+    await db.transaction((txn) async {
+      await txn.delete(
+        AppTables.detectionResults,
         where:
             'session_id IN (SELECT id FROM ${AppTables.detectionSessions} WHERE user_id = ?)',
-        whereArgs: [userId]);
-    await db.delete(AppTables.detectionSessions,
-        where: 'user_id = ?', whereArgs: [userId]);
-    await db.delete(AppTables.dailyMoods,
-        where: 'user_id = ?', whereArgs: [userId]);
-    await db.delete(AppTables.mentalScoreLog,
-        where: 'user_id = ?', whereArgs: [userId]);
-    await db.update(
-      AppTables.users,
-      {
-        'ocean_o': null,
-        'ocean_c': null,
-        'ocean_e': null,
-        'ocean_a': null,
-        'ocean_n': null,
-        'ocean_completed_at': null,
-        'psych_score': null,
-        'psych_class': null,
-        'updated_at': DateTime.now().millisecondsSinceEpoch,
-      },
-      where: 'id = ?',
-      whereArgs: [userId],
-    );
+        whereArgs: [userId],
+      );
+      await txn.delete(
+        AppTables.detectionSessions,
+        where: 'user_id = ?',
+        whereArgs: [userId],
+      );
+      await txn.delete(
+        AppTables.dailyMoods,
+        where: 'user_id = ?',
+        whereArgs: [userId],
+      );
+      await txn.delete(
+        AppTables.mentalScoreLog,
+        where: 'user_id = ?',
+        whereArgs: [userId],
+      );
+      await txn.delete(
+        AppTables.syncQueue,
+        where: 'synced_at IS NULL AND entity_type IN (?, ?)',
+        whereArgs: [SyncEntity.detectionSession, SyncEntity.dailyMood],
+      );
+      await txn.update(
+        AppTables.users,
+        {
+          'ocean_o': null,
+          'ocean_c': null,
+          'ocean_e': null,
+          'ocean_a': null,
+          'ocean_n': null,
+          'ocean_completed_at': null,
+          'psych_score': null,
+          'psych_class': null,
+          'is_dirty': 0,
+          'updated_at': DateTime.now().millisecondsSinceEpoch,
+        },
+        where: 'id = ?',
+        whereArgs: [userId],
+      );
+    });
   }
 
   String _hashPassword(String password, String salt) {

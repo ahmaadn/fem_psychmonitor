@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:fem_psychmonitor/app/config/app_config.dart';
 import 'package:fem_psychmonitor/app/config/app_theme.dart';
 import 'package:fem_psychmonitor/app/providers/locale_provider.dart';
 import 'package:fem_psychmonitor/app/providers/privacy_provider.dart';
@@ -9,8 +12,13 @@ import 'package:fem_psychmonitor/data/repositories/detection_repository.dart';
 import 'package:fem_psychmonitor/data/repositories/question_repository.dart';
 import 'package:fem_psychmonitor/data/repositories/recommendation_repository.dart';
 import 'package:fem_psychmonitor/data/repositories/api/api_auth_repository.dart';
+import 'package:fem_psychmonitor/data/repositories/api/api_client.dart';
+import 'package:fem_psychmonitor/data/repositories/api/api_daily_mood_repository.dart';
 import 'package:fem_psychmonitor/data/repositories/api/api_detection_repository.dart';
 import 'package:fem_psychmonitor/data/repositories/api/api_user_repository.dart';
+import 'package:fem_psychmonitor/data/repositories/hybrid/hybrid_auth_repository.dart';
+import 'package:fem_psychmonitor/data/repositories/hybrid/hybrid_detection_repository.dart';
+import 'package:fem_psychmonitor/data/repositories/hybrid/hybrid_user_repository.dart';
 import 'package:fem_psychmonitor/data/repositories/sqlite/sqlite_auth_repository.dart';
 import 'package:fem_psychmonitor/data/repositories/sqlite/sqlite_detection_repository.dart';
 import 'package:fem_psychmonitor/data/repositories/sqlite/sqlite_question_repository.dart';
@@ -55,17 +63,46 @@ Future<void> main() async {
   await DatabaseHelper.instance.database;
   await QuestionSeeder.instance.seedIfEmpty();
 
-  final authRepo = SqliteAuthRepository();
-  final detectionRepo = SqliteDetectionRepository();
-  final userRepo = SqliteUserRepository();
+  final sessionStore = RemoteAuthSessionStore();
+  await sessionStore.load();
+  final apiClient = ApiClient(
+    baseUrl: AppConfig.apiBaseUrl,
+    sessionStore: sessionStore,
+    timeout: const Duration(seconds: AppConfig.apiTimeoutSeconds),
+  );
+  final apiAuthRepo = ApiAuthRepository(apiClient: apiClient);
+  final apiUserRepo = ApiUserRepository(apiClient: apiClient);
+  final apiDetectionRepo = ApiDetectionRepository(apiClient: apiClient);
+  final apiDailyMoodRepo = ApiDailyMoodRepository(apiClient: apiClient);
+
+  final localAuthRepo = SqliteAuthRepository();
+  final localDetectionRepo = SqliteDetectionRepository();
+  final localUserRepo = SqliteUserRepository();
+  final syncService = SqliteSyncService(
+    apiAuth: apiAuthRepo,
+    apiUser: apiUserRepo,
+    apiDetection: apiDetectionRepo,
+    apiDailyMood: apiDailyMoodRepo,
+  );
+  final authRepo = HybridAuthRepository(
+    local: localAuthRepo,
+    remote: apiAuthRepo,
+    remoteUser: apiUserRepo,
+    onRemoteAuthenticated: syncService.synchronize,
+  );
+  final userRepo = HybridUserRepository(
+    local: localUserRepo,
+    remote: apiUserRepo,
+    onChanged: syncService.synchronize,
+  );
   final questionRepo = SqliteQuestionRepository();
   final recommendationRepo = SqliteRecommendationRepository();
 
-  final syncService = SqliteSyncService(
-    apiAuth: ApiAuthRepository(),
-    apiUser: ApiUserRepository(),
-    apiDetection: ApiDetectionRepository(),
+  final detectionRepo = HybridDetectionRepository(
+    local: localDetectionRepo,
+    sync: syncService,
   );
+  unawaited(syncService.synchronize());
 
   final authViewModel = AuthViewModel(authRepo: authRepo);
   final homeViewModel = HomeViewModel(detectionRepo: detectionRepo);

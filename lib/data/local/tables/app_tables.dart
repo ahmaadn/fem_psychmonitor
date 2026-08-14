@@ -44,4 +44,7 @@ class SyncEntity {
   static const String user = 'user';
   static const String detectionSession = 'detection_session';
   static const String authToken = 'auth_token';
+  static const String dailyMood = 'daily_mood';
+  static const String userDataReset = 'user_data_reset';
+  static const String accountDelete = 'account_delete';
 }

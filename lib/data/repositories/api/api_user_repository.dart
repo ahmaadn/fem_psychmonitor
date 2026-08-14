@@ -1,39 +1,80 @@
 import 'package:fem_psychmonitor/data/models/user_model.dart';
+import 'package:fem_psychmonitor/data/repositories/api/api_auth_repository.dart';
+import 'package:fem_psychmonitor/data/repositories/api/api_client.dart';
 import 'package:fem_psychmonitor/data/repositories/user_repository.dart';
-import 'package:http/http.dart' as http;
 
-/// HTTP-backed [UserRepository] scaffold. No-op until a [baseUrl] is set.
 class ApiUserRepository extends UserRepository {
-  ApiUserRepository({this.baseUrl, http.Client? client})
-      : _client = client ?? http.Client();
+  ApiUserRepository({required ApiClient apiClient}) : _api = apiClient;
 
-  final String? baseUrl;
-  final http.Client _client;
+  final ApiClient _api;
 
-  bool get _isEnabled => baseUrl != null && baseUrl!.isNotEmpty;
+  bool get isEnabled => _api.isEnabled;
+  bool get hasRemoteSession => _api.hasRemoteSession;
 
   @override
   Future<UserModel> getProfile() async {
-    if (!_isEnabled) {
-      throw StateError('ApiUserRepository disabled — no base URL configured');
-    }
-    // TODO(server): GET {baseUrl}/users/me
-    throw UnimplementedError('ApiUserRepository.getProfile requires a live server');
+    final json = await _api.requestJson('GET', '/users/me');
+    return userFromServer(json['user'] as Map<String, dynamic>);
   }
 
   @override
   Future<UserModel> updateProfile(UserModel user) async {
-    if (!_isEnabled) return user;
-    // TODO(server): PUT {baseUrl}/users/me with user.toJson()
-    throw UnimplementedError('ApiUserRepository.updateProfile requires a live server');
+    final json = await _api.requestJson(
+      'PUT',
+      '/users/me',
+      body: {
+        'fullName': user.fullName,
+        'phone': user.phone,
+        'dateOfBirth': user.dateOfBirth?.millisecondsSinceEpoch,
+      },
+    );
+    return userFromServer(json['user'] as Map<String, dynamic>);
+  }
+
+  Future<UserModel> syncState(UserModel user) async {
+    final json = await _api.requestJson(
+      'PUT',
+      '/users/me/sync',
+      body: {
+        'fullName': user.fullName,
+        'phone': user.phone,
+        'dateOfBirth': user.dateOfBirth?.millisecondsSinceEpoch,
+        'oceanScores': user.oceanScores?.toMap(),
+        'oceanCompletedAt': user.oceanCompletedAt?.millisecondsSinceEpoch,
+        'psychScore': user.psychScore,
+        'psychClass': user.psychClass,
+      },
+    );
+    return userFromServer(json['user'] as Map<String, dynamic>);
+  }
+
+  Future<UserModel> updateAssessment(UserModel user) async {
+    final scores = user.oceanScores;
+    if (scores == null ||
+        user.oceanCompletedAt == null ||
+        user.psychScore == null ||
+        user.psychClass == null) {
+      return user;
+    }
+    final json = await _api.requestJson(
+      'PUT',
+      '/users/me/assessment',
+      body: {
+        'oceanScores': scores.toMap(),
+        'oceanCompletedAt': user.oceanCompletedAt!.millisecondsSinceEpoch,
+        'psychScore': user.psychScore,
+        'psychClass': user.psychClass,
+      },
+    );
+    return userFromServer(json['user'] as Map<String, dynamic>);
   }
 
   @override
   Future<void> changePassword(String oldPassword, String newPassword) async {
-    if (!_isEnabled) return;
-    // TODO(server): POST {baseUrl}/users/me/password
-    throw UnimplementedError('ApiUserRepository.changePassword requires a live server');
+    await _api.request(
+      'POST',
+      '/users/me/password',
+      body: {'oldPassword': oldPassword, 'newPassword': newPassword},
+    );
   }
-
-  void close() => _client.close();
 }

@@ -8,6 +8,8 @@
 ///
 /// Until a live server exists, [pushDirty] / [pullRemote] are guarded no-ops.
 abstract class SyncService {
+  Future<int> synchronize();
+
   /// Push all pending (unsynced) queue entries to the remote API.
   /// Returns the number of entries successfully synced.
   Future<int> pushDirty();
