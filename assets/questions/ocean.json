@@ -4,8 +4,8 @@
       "id": 1,
       "trait": "E",
       "keyed": "+",
-      "statement_id": "Saya adalah sosok yang menghidupkan suasana dalam sebuah pesta atau kumpul-kumpul.",
-      "statement_en": "I am the life of the party or social gathering."
+      "statement_id": "Saya biasanya membuat suasana menjadi lebih hidup ketika berkumpul bersama orang lain.",
+      "statement_en": "I usually make the atmosphere livelier when gathering with other people."
     },
     {
       "id": 2,
@@ -18,8 +18,8 @@
       "id": 3,
       "trait": "C",
       "keyed": "+",
-      "statement_id": "Saya langsung menyelesaikan tugas atau pekerjaan rumah begitu ada kesempatan.",
-      "statement_en": "I complete tasks or chores as soon as I have the chance."
+      "statement_id": "Saya berusaha menyelesaikan tugas sesegera mungkin ketika memiliki kesempatan.",
+      "statement_en": "I try to complete tasks as soon as possible when I have the chance."
     },
     {
       "id": 4,
@@ -32,8 +32,8 @@
       "id": 5,
       "trait": "O",
       "keyed": "+",
-      "statement_id": "Saya memiliki imajinasi yang hidup.",
-      "statement_en": "I have a vivid imagination."
+      "statement_id": "Saya sering memiliki banyak ide atau membayangkan berbagai kemungkinan.",
+      "statement_en": "I often have many ideas or imagine various possibilities."
     },
     {
       "id": 6,
@@ -53,8 +53,8 @@
       "id": 8,
       "trait": "C",
       "keyed": "-",
-      "statement_id": "Saya sering lupa mengembalikan barang ke tempat asalnya.",
-      "statement_en": "I often forget to put things back in their place."
+      "statement_id": "Saya sering lupa merapikan atau mengatur kembali barang setelah digunakan.",
+      "statement_en": "I often forget to tidy up or put things back after using them."
     },
     {
       "id": 9,
@@ -67,8 +67,8 @@
       "id": 10,
       "trait": "O",
       "keyed": "-",
-      "statement_id": "Saya tidak tertarik dengan ide-ide yang abstrak.",
-      "statement_en": "I am not interested in abstract ideas."
+      "statement_id": "Saya kurang tertarik memikirkan gagasan atau konsep yang rumit.",
+      "statement_en": "I am not very interested in thinking about complex ideas or concepts."
     },
     {
       "id": 11,
@@ -102,8 +102,8 @@
       "id": 15,
       "trait": "O",
       "keyed": "-",
-      "statement_id": "Saya kesulitan memahami ide-ide yang abstrak.",
-      "statement_en": "I have difficulty understanding abstract ideas."
+      "statement_id": "Saya kesulitan memahami konsep yang rumit atau membutuhkan banyak pemikiran.",
+      "statement_en": "I have difficulty understanding complex concepts that require a lot of thinking."
     },
     {
       "id": 16,
@@ -116,8 +116,8 @@
       "id": 17,
       "trait": "A",
       "keyed": "-",
-      "statement_id": "Sebenarnya saya tidak terlalu tertarik pada orang lain.",
-      "statement_en": "I am not really that interested in other people."
+      "statement_id": "Saya tidak terlalu tertarik untuk mengetahui apa yang dipikirkan atau dirasakan orang lain.",
+      "statement_en": "I am not very interested in knowing what other people think or feel."
     },
     {
       "id": 18,
@@ -137,8 +137,8 @@
       "id": 20,
       "trait": "O",
       "keyed": "-",
-      "statement_id": "Saya merasa daya imajinasi saya kurang berkembang.",
-      "statement_en": "I feel my imagination is underdeveloped."
+      "statement_id": "Saya merasa tidak memiliki banyak imajinasi atau ide-ide baru.",
+      "statement_en": "I feel like I don't have much imagination or new ideas."
     }
   ]
 }
